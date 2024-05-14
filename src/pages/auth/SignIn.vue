@@ -1,0 +1,153 @@
+<template>
+  <q-page>
+    <div class="row">
+      <div class="col-sm-6 col-md-8 col-lg-9" :class="leftColStyle">
+        <q-img height="100vh" src="~assets/images/bg_login.png" />
+      </div>
+      <div class="col-12 col-sm-6 col-md-4 col-lg-3 flex flex-center q-pt-xs-xl q-px-xl" :class="$q.dark.isActive ? 'bg-dark' : 'bg-white'">
+        <q-card flat :class="$q.dark.isActive ? 'bg-dark' : 'bg-white'">
+          <q-card-section class="q-mb-xl">
+            <q-item-label>
+              <div class="row">
+                <q-img src="~assets/images/img.png" height="3em" />
+              </div>
+            </q-item-label>
+          </q-card-section>
+          <q-card-section>
+            <q-form @submit="onSubmit" class="q-gutter-y-lg">
+              <q-input
+                ref="userId"
+                label-color="orange"
+                color="orange"
+                :label="$t('login_id')"
+                :hint="$t('login_id_hint')"
+                v-model="form.id"
+                lazy-rules
+                :rules="[val => !!val || $t('login_id_hint')]"
+              ></q-input>
+              <!--            class="q-mt-md"-->
+              <q-input
+                ref="passWd"
+                label-color="orange"
+                color="orange"
+                type="password"
+                :label="$t('login_password')"
+                :hint="$t('login_password_hint')"
+                v-model="form.password"
+                lazy-rules
+                :rules="[val => !!val || $t('login_password_hint')]"
+              ></q-input>
+              <q-toggle v-model="form.idSave" :label="$t('login_id_save')" />
+              <q-btn type="submit" class="full-width q-mt-xl" unelevated color="primary" size="lg" :label="$t('login_button')" />
+            </q-form>
+          </q-card-section>
+        </q-card>
+      </div>
+    </div>
+    <footer-bar />
+  </q-page>
+</template>
+
+<script setup>
+import { computed, onBeforeMount, ref } from 'vue';
+import { useStore } from 'vuex';
+import FooterBar from 'layouts/FooterBar.vue';
+import { useQuasar } from 'quasar';
+import { api } from '/src/boot/axios';
+import authHeader from 'boot/authHeader';
+import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
+const $q = useQuasar();
+const leftColStyle = computed(() => ({ hidden: $q.screen.lt.sm }));
+const router = useRouter();
+
+const compCd = ref(null);
+const userId = ref(null);
+const passWd = ref(null);
+const form = ref({
+  compCd: '',
+  id: '',
+  password: '',
+  compCdSave: false,
+  idSave: false,
+});
+
+const $store = useStore();
+const onSubmit = () => {
+  if (form.value.id !== true) {
+    idToStorageSave();
+
+    api
+      .post('/api/auth/login', form.value, {
+        headers: authHeader(),
+      })
+      .then(res => {
+        if (res.data.data.accessToken && res.data.state === 200) {
+          localStorage.setItem('token', JSON.stringify(res.data.data));
+          router.push({ path: '/main' });
+
+          api
+            .get('/api/sys/user_data', { headers: authHeader() })
+            .then(response => {
+              console.log('user: ', JSON.stringify(response.data.data));
+              $store.commit('showcase/getUserNm', response.data.data.userNm);
+              $store.commit('showcase/getUserNmx', response.data.data.userNmx);
+              $store.commit('showcase/getEmpCd', response.data.data.empCd);
+              $store.commit('showcase/getSalesCd', response.data.data.salesCd);
+              $store.commit('showcase/getSalesNm', response.data.data.salesNm);
+              $store.commit('showcase/getDeptCd', response.data.data.deptCd);
+              $store.commit('showcase/getDeptNm', response.data.data.deptNm);
+              $store.commit('showcase/getJobTitleCd', response.data.data.jobTitleCd);
+              $store.commit('showcase/getJobTitleNm', response.data.data.jobTitleNm);
+            })
+            .catch(res => {
+              console.log('error ==> ' + res);
+            });
+
+          console.log('drawer : ' + $store.state.showcase.id);
+        } else {
+          $q.notify({
+            group: false,
+            icon: 'report_problem',
+            message: t('login_check_message'),
+            color: 'negative',
+            position: 'bottom-right',
+          });
+        }
+
+        return res.data.data;
+      })
+      .catch(res => {
+        console.log('error');
+      });
+  }
+};
+
+const idToStorageSave = () => {
+  if (form.value.idSave) {
+    $q.localStorage.set('idSave', form.value.id);
+  } else {
+    $q.localStorage.set('idSave', '');
+  }
+};
+
+onBeforeMount(() => {
+  form.value.id = $q.localStorage.getItem('idSave');
+  form.value.idSave = !!form.value.id;
+
+  if (form.value.idSave) {
+    setTimeout(() => {
+      passWd.value.focus();
+    }, 100);
+  } else if (form.value.idSave) {
+    setTimeout(() => {
+      compCd.value.focus();
+    }, 100);
+  } else {
+    setTimeout(() => {
+      compCd.value.focus();
+    }, 100);
+  }
+});
+</script>
