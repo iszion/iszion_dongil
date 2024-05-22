@@ -714,7 +714,7 @@ onMounted(() => {
 });
 ////******* Screen Height resize check 부분 끝 *********************************//
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 .super-small.q-field--dense {
   .q-field__control-container,
   .q-field__native {

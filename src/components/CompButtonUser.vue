@@ -1,7 +1,7 @@
 <template>
   <div>
     <q-btn dense no-caps rounded outline color="secondary" @click="alertClick" style="min-width: 95px; max-width: 95px" class="text-body2">
-      <q-icon name="search" size="14px" class="q-pt-xs q-mr-sm" />
+      <q-icon name="search" size="15px" class="q-pt-xs q-mr-sm" />
       {{ value.userId }}
     </q-btn>
   </div>

@@ -39,8 +39,8 @@
                   label-color="orange"
                   v-model="searchParam.deptCd"
                   :options="deptOptionsSearch"
-                  option-value="commCd"
-                  option-label="commNm"
+                  option-value="deptCd"
+                  option-label="deptNm"
                   option-disable="inactive"
                   emit-value
                   map-options
@@ -287,7 +287,8 @@ const insaFileName = ref(null);
 const salesOptions = ref(null);
 const deptOptionsSearch = ref(null);
 const deptOptions = ref(null);
-const jobTitleOptions = ref(null);
+const titlOptions = ref(null);
+const pstnOptions = ref(null);
 
 const searchParam = reactive({
   deptCd: '',
@@ -356,11 +357,6 @@ const columnDefs = reactive({
       pinned: 'left',
     },
     {
-      headerName: 'ROLE',
-      field: 'role',
-      minWidth: 100,
-    },
-    {
       headerName: '닉네임',
       field: 'userNmx',
       maxWidth: 100,
@@ -375,20 +371,20 @@ const columnDefs = reactive({
       cellStyle: { textAlign: 'center' },
     },
     {
-      headerName: '영업담당',
-      field: 'salesNm',
-      maxWidth: 100,
-      minWidth: 100,
-    },
-    {
-      headerName: '소속부서',
+      headerName: '소속팀',
       field: 'deptNm',
       maxWidth: 100,
       minWidth: 100,
     },
     {
       headerName: '직위',
-      field: 'jobTitleNm',
+      field: 'pstnNm',
+      maxWidth: 100,
+      minWidth: 100,
+    },
+    {
+      headerName: '직급',
+      field: 'titlNm',
       maxWidth: 100,
       minWidth: 100,
     },
@@ -398,25 +394,20 @@ const columnDefs = reactive({
       minWidth: 150,
     },
     {
-      headerName: '전화번호',
-      field: 'tel',
-      minWidth: 150,
-    },
-    {
       headerName: '이메일',
       field: 'email',
       minWidth: 150,
     },
     {
       headerName: '입사일',
-      field: 'empIday',
+      field: 'inDay',
       maxWidth: 130,
       minWidth: 130,
       cellStyle: { textAlign: 'center' },
     },
     {
       headerName: '퇴사일',
-      field: 'empOday',
+      field: 'outDay',
       maxWidth: 130,
       minWidth: 130,
       cellStyle: { textAlign: 'center' },
@@ -428,26 +419,32 @@ const columnDefs = reactive({
       minWidth: 100,
       cellStyle: { textAlign: 'center' },
     },
+    {
+      headerName: '파일명',
+      field: 'filename',
+      maxWidth: 100,
+      minWidth: 100,
+      cellStyle: { textAlign: 'center' },
+    },
   ],
 });
 
 const oldFormData = ref(null);
 const formData = ref({
   userId: '',
-  role: '',
   userNm: '',
   userNmx: '',
   empCd: '',
-  salesCd: '',
   deptCd: '',
-  jobTitleCd: '',
-  email: '',
+  pstnCd: '',
+  titlCd: '',
   mobile: '',
-  tel: '',
-  levelCd: '',
-  empIday: '',
-  empOday: '',
+  email: '',
+  inDay: '',
+  outDay: '',
   explains: '',
+  filename: '',
+  filenameX: '',
 });
 
 const selectedRows = ref();
@@ -490,9 +487,9 @@ const rowSelection = ref(null);
 onBeforeMount(() => {
   rowSelection.value = 'multiple';
   getData();
-  getDataCommOption('301');
-  getDataCommOption('701');
-  getDataCommOption('702');
+  getDataDeptOption();
+  getDataPstnOption();
+  getDataTitlOption();
 });
 
 const userIdFocus = ref(null);
@@ -669,6 +666,7 @@ const saveDataAndHandleResult = resFormData => {
 const getData = async () => {
   try {
     const response = await api.post('/api/sys/sys1010_list', { paramDeptCd: searchParam.deptCd }, { headers: authHeader() });
+    console.log('data::: ', JSON.stringify(response.data.data));
     rowData.rows = response.data.data;
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -690,32 +688,36 @@ const getSelectData = async resParamUserId => {
 };
 // ***** 사용자정보 선택된 자료 가져오기 부분  *****************************//
 
-// ***** 공통코드정보 가져오기 부분  *****************************//
-async function getDataCommOption(resParamCommCd1) {
+// ***** 소속팀정보 가져오기 부분  *****************************//
+async function getDataDeptOption() {
   try {
-    const response = await api.post('/api/mst/comm_option_list', { paramCommCd1: resParamCommCd1 }, { headers: authHeader() });
-    switch (resParamCommCd1) {
-      case '301':
-        salesOptions.value = response.data.data;
-        break;
-      case '701':
-        deptOptions.value = response.data.data;
-        deptOptionsSearch.value = JSON.parse(JSON.stringify(deptOptions.value));
-        console.log(JSON.stringify(deptOptionsSearch.value));
-        deptOptionsSearch.value.push({ commCd: '', commNm: '전체' });
-
-        break;
-      case '702':
-        jobTitleOptions.value = response.data.data;
-        break;
-      default:
-        break;
-    }
+    const response = await api.post('/api/mst/dept_option_list', { paramSetYear: '2024' }, { headers: authHeader() });
+    deptOptions.value = response.data.data;
+    deptOptionsSearch.value = JSON.parse(JSON.stringify(deptOptions.value));
+    console.log(JSON.stringify(deptOptionsSearch.value));
+    deptOptionsSearch.value.push({ deptCd: '', deptNm: '전체' });
   } catch (error) {
     console.error('Error fetching users:', error);
   }
 }
-// ***** 사용정보 선택된 자료 가져오기 부분  *****************************//
+// ***** 직위정보 가져오기 부분  *****************************//
+async function getDataPstnOption() {
+  try {
+    const response = await api.post('/api/mst/pstn_option_list', { paramSetYear: '2024' }, { headers: authHeader() });
+    pstnOptions.value = response.data.data;
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+}
+// ***** 직급정보 가져오기 부분  *****************************//
+async function getDataTitlOption() {
+  try {
+    const response = await api.post('/api/mst/titl_option_list', { paramSetYear: '2024' }, { headers: authHeader() });
+    titlOptions.value = response.data.data;
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+}
 
 // **************************************************************//
 // ***** DataBase 연결부분 끝  *************************************//

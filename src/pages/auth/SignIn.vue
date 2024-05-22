@@ -9,7 +9,11 @@
           <q-card-section class="q-mb-xl">
             <q-item-label>
               <div class="row">
-                <q-img src="~assets/images/img.png" height="3em" />
+                <q-avatar square class="q-mr-sm" size="md">
+                  <q-img src="/src/assets/images/dongil_logo.png" />
+                </q-avatar>
+                <div class="self-center"><span class="text-h5 text-weight-bold">동일석유주식회사</span><br /></div>
+                <span class="text-weight-bold self-center q-mt-md" style="font-size: 1.92em">{{ $t('project_name') }}</span>
               </div>
             </q-item-label>
           </q-card-section>
@@ -62,14 +66,11 @@ const $q = useQuasar();
 const leftColStyle = computed(() => ({ hidden: $q.screen.lt.sm }));
 const router = useRouter();
 
-const compCd = ref(null);
 const userId = ref(null);
 const passWd = ref(null);
 const form = ref({
-  compCd: '',
   id: '',
   password: '',
-  compCdSave: false,
   idSave: false,
 });
 
@@ -141,10 +142,6 @@ onBeforeMount(() => {
       passWd.value.focus();
     }, 100);
   } else if (form.value.idSave) {
-    setTimeout(() => {
-      compCd.value.focus();
-    }, 100);
-  } else {
     setTimeout(() => {
       compCd.value.focus();
     }, 100);

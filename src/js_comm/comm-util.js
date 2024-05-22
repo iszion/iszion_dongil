@@ -21,4 +21,24 @@ export default {
     }
     return value.replace(',', '');
   },
+
+  getToday() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  },
+  getTodayYear() {
+    const today = new Date();
+    return today.getFullYear();
+  },
+  getTodayMonth() {
+    const today = new Date();
+    return String(today.getMonth() + 1).padStart(2, '0');
+  },
+  getTodayDay() {
+    const today = new Date();
+    return String(today.getDate()).padStart(2, '0');
+  },
 };

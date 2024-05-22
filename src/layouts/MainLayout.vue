@@ -4,25 +4,66 @@
       <q-toolbar>
         <RouterLink class="" to="/main" @click="rootView">
           <q-avatar square size="sm">
-            <img src="~assets/images/dongil_logo.png" />
+            <img src="../assets/images/dongil_logo.png" />
           </q-avatar>
         </RouterLink>
 
-        <div v-if="!$q.screen.xs" class="text-h6 text-weight-bold q-pl-sm">{{ $t('project_name') }}</div>
-        <q-btn class="q-ml-lg" rounded color="purple" dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
+        <div v-if="!$q.screen.xs" class="text-h6 text-weight-bold q-pl-sm self-center">{{ $t('project_name') }}</div>
+
+        <q-separator class="q-mx-xs-sm" dark vertical inset />
+
+        <div style="max-width: 300px">
+          <q-select
+            style="width: 100px; font-size: 1.04em"
+            dense
+            :bg-color="ev_set_color"
+            standout="text-white"
+            label-color="orange"
+            class="super-small"
+            v-model="ev_set_year_group"
+            :options="ev_set_year_options"
+            option-value="stdSetYear"
+            option-label="stdYearNm"
+            options-dense
+            emit-value
+            map-options
+            @update:model-value="handleSelectedSetYear"
+          />
+        </div>
+
+        <q-separator class="q-mx-xs-sm" dark vertical inset />
+
+        <q-btn rounded color="purple" dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
 
         <q-space />
-        {{ $q.screen.name }}
+        <!--  Main Menu List -->
+        <q-tabs
+          v-model="activeTab"
+          active-class="text-white text-bold"
+          dense
+          no-caps
+          inline-label
+          align="center"
+          active-color="primary"
+          indicator-color="orange"
+          v-if="$q.screen.gt.sm"
+        >
+          <template v-for="m in menuListData.mainMenu" :key="m.menu_cd">
+            <q-tab :name="m.name" @click="selectMenu(m)" class="text-bold text-subtitle2">
+              <q-icon :name="m.icon" class="q-mr-xs" />
+              <q-tooltip class="lt-sm bg-indigo" :offset="[10, 10]">
+                {{ m.label }}
+              </q-tooltip>
+              <span class="gt-sm">{{ m.label }}</span>
+              <!--              {{ $q.screen.md ? null : $t(m.labelExt) }}-->
+            </q-tab>
+          </template>
+          <!--        <q-route-tab icon="menu" exact replace label="종합정보1" to="inf" />-->
+        </q-tabs>
+        <!--  end of Main Menu List -->
         <q-space />
-
-        <q-separator class="q-mr-sm-sm" dark vertical inset />
-
-        <q-btn dense round flat icon="email">
-          <q-badge color="red" floating transparent> 4 </q-badge>
-        </q-btn>
-
         <q-separator class="q-mx-sm-sm" dark vertical inset />
-
+        {{ $q.screen.name }}
         <q-btn flat round dense :icon="$q.dark.isActive ? 'light_mode' : 'dark_mode'" @click="toggleDarkMode">
           <q-tooltip
             class="bg-amber text-black shadow-4"
@@ -57,33 +98,6 @@
         <!-- MAIN MENU ICON  끝  -->
         <q-separator class="q-mx-sm-sm" dark vertical inset />
 
-        <!-- 언어선택 ICON  -->
-        <q-btn flat round dence icon="language">
-          <q-tooltip
-            class="bg-amber text-black shadow-4"
-            anchor="top middle"
-            self="top middle"
-            transition-show="rotate"
-            transition-hide="rotate"
-            :offset="[10, 10]"
-          >
-            <q-icon name="language" size="0.8rem" />
-            <strong> 언어선택 </strong>
-          </q-tooltip>
-          <q-menu :offset="[20, 10]" transition-show="rotate" transition-hide="rotate">
-            <q-list dense style="min-width: 100px">
-              <q-item clickable v-close-popup @click="selectLanguage('ko-KR')">
-                <q-item-section>한국어</q-item-section>
-              </q-item>
-              <q-item clickable v-close-popup @click="selectLanguage('en-US')">
-                <q-item-section>English(US)</q-item-section>
-              </q-item>
-            </q-list>
-          </q-menu>
-        </q-btn>
-        <!-- 언어선택 ICON  끝  -->
-        <q-separator class="q-mx-sm-sm" dark vertical inset />
-
         <!-- 사용자 관리 ICON   -->
         <q-btn flat size="sm" class="q-pa-none q-ml-sm">
           <div v-if="!$q.screen.xs">
@@ -108,32 +122,6 @@
         <!-- 사용자 관리 ICON 끝  -->
       </q-toolbar>
 
-      <!--  Main Menu List -->
-      <q-tabs
-        v-model="activeTab"
-        :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-4 text-dark'"
-        :active-class="$q.dark.isActive ? 'bg-dark text-orange' : 'bg-grey-7 text-white'"
-        dense
-        no-caps
-        inline-label
-        align="center"
-        active-color="primary"
-        indicator-color="orange"
-        v-if="$q.screen.gt.sm"
-      >
-        <template v-for="m in menuListData.mainMenu" :key="m.menu_cd">
-          <q-tab :name="m.name" @click="selectMenu(m)" class="text-bold text-subtitle2">
-            <q-icon :name="m.icon" class="q-mr-xs" />
-            <q-tooltip class="lt-lg bg-indigo" :offset="[10, 10]">
-              {{ $t(m.labelExt) }}
-            </q-tooltip>
-            <span class="gt-md">{{ $t(m.labelExt) }}</span>
-            <!--              {{ $q.screen.md ? null : $t(m.labelExt) }}-->
-          </q-tab>
-        </template>
-        <!--        <q-route-tab icon="menu" exact replace label="종합정보1" to="inf" />-->
-      </q-tabs>
-      <!--  end of Main Menu List -->
       <q-separator class="bg-grey" />
       <div v-if="pageTitleBarVisible" class="row" :class="$q.dark.isActive ? 'bg-grey-8 text-white' : 'bg-grey-4 text-dark'">
         <div v-if="!$q.screen.xs" style="width: 230px" class="text-center self-center bg-grey-5">
@@ -292,7 +280,7 @@ const toggleDarkMode = () => {
 };
 
 const selectLanguage = val => {
-  import(`../../node_modules/quasar/lang/${val}.js`).then(lang => {
+  import(`../../node_modules/quasar/lang/${val}.mjs`).then(lang => {
     $q.lang.set(lang.default);
     locale.value = val;
     $q.localStorage.set('lang', val);
@@ -404,17 +392,62 @@ const handleBeforeUnload = event => {
 // ***** DataBase 연결부분  ***************************************//
 // **************************************************************//
 onBeforeMount(() => {
-  getMainMenuData();
+  getDataSetYear();
+  getDataMainMenu();
 });
+// ***** DataBase 설정기간자료 가져오기 부분 *****************************//
+const ev_set_year_group = ref(null);
+const ev_set_color = ref(null);
+const ev_set_year_options = ref([]);
+const handleSelectedSetYear = resSelected => {
+  console.log('selected SetYear: ', resSelected.locCh);
+  handle_ev_set_color(resSelected.locCh);
+};
+const handle_ev_set_color = val => {
+  switch (val) {
+    case '0':
+      ev_set_color.value = 'teal';
+      break;
+    case '1':
+      ev_set_color.value = 'blue';
+      break;
+    case '2':
+      ev_set_color.value = 'red';
+      break;
+    case '3':
+      ev_set_color.value = 'orange';
+      break;
+    default:
+      ev_set_color.value = null;
+  }
+};
+// ***** 검색 선택 자동 처리 부분 끝 *****************************//
+const getDataSetYear = async () => {
+  try {
+    const response = await api.post('/api/aux/aux1010_list', {}, { headers: authHeader() });
+
+    response.data.data.forEach(val => {
+      if (!ev_set_year_group.value) {
+        ev_set_year_group.value = val.stdYearNm;
+        handle_ev_set_color(val.locCh);
+      }
+      ev_set_year_options.value.push(val);
+    });
+    console.log('setYear:: ', JSON.stringify(ev_set_year_options.value));
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+};
 // ***** DataBase 메인메뉴자료 가져오기 부분 *****************************//
 const menuListData = reactive({
   mainMenu: {},
   subMenu: {},
 });
-const getMainMenuData = async () => {
+const getDataMainMenu = async () => {
   try {
     const response = await api.post('/api/sys/menu_main_list', { paramUserId: 'admin' }, { headers: authHeader() });
     menuListData.mainMenu = response.data.data;
+    // console.log('menu:: ', JSON.stringify(menuListData.mainMenu));
     // console.log('name data : ' + $store.state.showcase.userNm);
     // console.log('namex data : ' + $store.state.showcase.userNmx);
     // console.log('emp data : ' + $store.state.showcase.empCd);
@@ -471,5 +504,11 @@ const getFavMenuData = async param => {
   background-color: #333; /* Optional: Set background color */
   color: white; /* Optional: Set text color */
   /* Add any other styling you need */
+}
+.q-field__native,
+.q-field__prefix,
+.q-field__suffix,
+.q-field__input {
+  color: red !important;
 }
 </style>

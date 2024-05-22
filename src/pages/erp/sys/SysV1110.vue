@@ -21,8 +21,8 @@
                 label-color="orange"
                 v-model="selectedDept"
                 :options="deptOptions"
-                option-value="commCd"
-                option-label="commNm"
+                option-value="deptCd"
+                option-label="deptNm"
                 option-disable="inactive"
                 emit-value
                 map-options
@@ -155,11 +155,9 @@ import authHeader from 'boot/authHeader';
 import { isEmpty, isEqual } from 'lodash';
 import jsonUtil from 'src/js_comm/json-util';
 import notifySave from 'src/js_comm/notify-save';
-import CompToggleSal from 'components/CompToggleSal.vue';
-import CompToggleBuy from 'components/CompToggleBuy.vue';
-import CompToggleInv from 'components/CompToggleInv.vue';
-import CompToggleAcc from 'components/CompToggleAcc.vue';
-import CompToggleRem from 'components/CompToggleRem.vue';
+import CompToggleHpe from 'components/CompToggleHpe.vue';
+import CompToggleHce from 'components/CompToggleHce.vue';
+import CompToggleHpr from 'components/CompToggleHpr.vue';
 import CompToggleAux from 'components/CompToggleAux.vue';
 import CompToggleMst from 'components/CompToggleMst.vue';
 import CompToggleSys from 'components/CompToggleSys.vue';
@@ -238,7 +236,8 @@ const columnDefs = reactive({
     {
       headerName: '아이디',
       field: 'userId',
-      minWidth: 140,
+      minWidth: 120,
+      maxWidth: 120,
       filter: true,
       pinned: 'left',
       cellRenderer: CompButtonUser,
@@ -255,16 +254,37 @@ const columnDefs = reactive({
     {
       headerName: '성명',
       field: 'userNm',
-      minWidth: 110,
-      maxWidth: 110,
+      minWidth: 80,
+      maxWidth: 80,
       filter: true,
       pinned: 'left',
     },
     {
+      headerName: '사원번호',
+      field: 'empCd',
+      filter: true,
+      minWidth: 100,
+      maxWidth: 100,
+    },
+    {
+      headerName: '부서',
+      field: 'deptNm',
+      minWidth: 110,
+      maxWidth: 110,
+      filter: true,
+    },
+    {
+      headerName: '직위',
+      field: 'titlNm',
+      minWidth: 90,
+      maxWidth: 90,
+      filter: true,
+    },
+    {
       headerName: '권한레벨',
       field: 'levelCd',
-      minWidth: 140,
-      maxWidth: 140,
+      minWidth: 120,
+      maxWidth: 120,
       filter: true,
       cellRenderer: CompSelectLevel,
       cellRendererParams: {
@@ -274,99 +294,59 @@ const columnDefs = reactive({
       },
     },
     {
-      headerName: '판매',
+      headerName: '성과평가',
       headerComponent: CompCheckHeader,
       headerComponentParams: {
         headerCheckYn: false,
         updateSelectedValue: row => {
-          checkAll('gnSal', row.value ? 'Y' : 'N');
+          checkAll('gnHpe', row.value ? 'Y' : 'N');
         },
       },
-      field: 'gnSal',
-      maxWidth: 90,
-      minWidth: 90,
-      cellStyle: { textAlign: 'center' },
-      cellRenderer: CompToggleSal,
-      cellRendererParams: {
-        updateSelectedValue: row => {
-          onCellValueChanged();
-        },
-      },
-    },
-    {
-      headerName: '매입',
-      headerComponent: CompCheckHeader,
-      headerComponentParams: {
-        headerCheckYn: false,
-        updateSelectedValue: row => {
-          checkAll('gnBuy', row.value ? 'Y' : 'N');
-        },
-      },
-      field: 'gnBuy',
-      maxWidth: 90,
-      minWidth: 90,
-      cellStyle: { textAlign: 'center' },
-      cellRenderer: CompToggleBuy,
-      cellRendererParams: {
-        updateSelectedValue: row => {
-          onCellValueChanged();
-        },
-      },
-    },
-    {
-      headerName: '재고',
-      headerComponent: CompCheckHeader,
-      headerComponentParams: {
-        headerCheckYn: false,
-        updateSelectedValue: row => {
-          checkAll('gnInv', row.value ? 'Y' : 'N');
-        },
-      },
-      field: 'gnInv',
-      maxWidth: 90,
-      minWidth: 90,
-      cellStyle: { textAlign: 'center' },
-      cellRenderer: CompToggleInv,
-      cellRendererParams: {
-        updateSelectedValue: row => {
-          onCellValueChanged();
-        },
-      },
-    },
-    {
-      headerName: '회계',
-      headerComponent: CompCheckHeader,
-      headerComponentParams: {
-        headerCheckYn: false,
-        updateSelectedValue: row => {
-          checkAll('gnAcc', row.value ? 'Y' : 'N');
-        },
-      },
-      field: 'gnAcc',
-      maxWidth: 90,
-      minWidth: 90,
-      cellStyle: { textAlign: 'center' },
-      cellRenderer: CompToggleAcc,
-      cellRendererParams: {
-        updateSelectedValue: row => {
-          onCellValueChanged();
-        },
-      },
-    },
-    {
-      headerName: '안내통지',
-      headerComponent: CompCheckHeader,
-      headerComponentParams: {
-        headerCheckYn: false,
-        updateSelectedValue: row => {
-          checkAll('gnRem', row.value ? 'Y' : 'N');
-        },
-      },
-      field: 'gnRem',
+      field: 'gnHpe',
       maxWidth: 110,
       minWidth: 110,
       cellStyle: { textAlign: 'center' },
-      cellRenderer: CompToggleRem,
+      cellRenderer: CompToggleHpe,
+      cellRendererParams: {
+        updateSelectedValue: row => {
+          onCellValueChanged();
+        },
+      },
+    },
+    {
+      headerName: '역량평가',
+      headerComponent: CompCheckHeader,
+      headerComponentParams: {
+        headerCheckYn: false,
+        updateSelectedValue: row => {
+          checkAll('gnHce', row.value ? 'Y' : 'N');
+        },
+      },
+      field: 'gnHce',
+      maxWidth: 110,
+      minWidth: 110,
+      cellStyle: { textAlign: 'center' },
+      cellRenderer: CompToggleHce,
+      cellRendererParams: {
+        updateSelectedValue: row => {
+          onCellValueChanged();
+        },
+      },
+    },
+    {
+      headerName: '승격심사',
+      headerComponent: CompCheckHeader,
+      headerComponentParams: {
+        headerCheckYn: false,
+        updateSelectedValue: row => {
+          checkAll('gnHpr', row.value ? 'Y' : 'N');
+        },
+      },
+      field: 'gnHpr',
+      maxWidth: 110,
+      minWidth: 110,
+      cellStyle: { textAlign: 'center' },
+      cellRenderer: CompToggleHpr,
       cellRendererParams: {
         updateSelectedValue: row => {
           onCellValueChanged();
@@ -432,25 +412,6 @@ const columnDefs = reactive({
           onCellValueChanged();
         },
       },
-    },
-    {
-      headerName: '부서',
-      field: 'deptNm',
-      minWidth: 120,
-      filter: true,
-    },
-    {
-      headerName: '직위',
-      field: 'jobTitleNm',
-      minWidth: 120,
-      filter: true,
-    },
-    {
-      headerName: '사원번호',
-      field: 'empCd',
-      filter: true,
-      minWidth: 100,
-      maxWidth: 100,
     },
   ],
 });
@@ -686,7 +647,7 @@ const rowSelectionDialog = ref(null);
 onBeforeMount(() => {
   rowSelection.value = 'multiple';
   getData();
-  getDataCommOption('701');
+  getDataDeptOption('2024');
 });
 
 const saveDataSection = () => {
@@ -871,23 +832,11 @@ const selectedDept = ref('');
 const salesOptions = ref([]);
 const deptOptions = ref([]);
 const jobTitleOptions = ref([]);
-async function getDataCommOption(resParamCommCd1) {
+async function getDataDeptOption(resStdYear) {
   try {
-    const response = await api.post('/api/mst/comm_option_list', { paramCommCd1: resParamCommCd1 }, { headers: authHeader() });
-    switch (resParamCommCd1) {
-      case '301': // 영업담당
-        salesOptions.value = response.data.data;
-        break;
-      case '701': // 부서
-        deptOptions.value = response.data.data;
-        deptOptions.value.push({ commNm: '전체', commCd: '' });
-        break;
-      case '702': // 직위
-        jobTitleOptions.value = response.data.data;
-        break;
-      default:
-        break;
-    }
+    const response = await api.post('/api/mst/dept_option_list', { paramStdYear: resStdYear }, { headers: authHeader() });
+    deptOptions.value = response.data.data;
+    deptOptions.value.push({ deptNm: '전체', deptCd: '' });
   } catch (error) {
     console.error('Error fetching users:', error);
   }

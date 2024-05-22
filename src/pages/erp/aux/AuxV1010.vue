@@ -484,7 +484,7 @@ onMounted(() => {
 const saveDataAndHandleResult = resFormData => {
   console.log('del ::: ', JSON.stringify(resFormData));
   api
-    .post('/api/mst/mst1010_save', resFormData, { headers: authHeader() })
+    .post('/api/aux/aux1010_save', resFormData, { headers: authHeader() })
     .then(res => {
       let saveStatus = {};
       if (res.data.rtn === '0') {
@@ -542,7 +542,7 @@ const saveDataAndHandleResult = resFormData => {
 // ***** 사용자정보 목록 자료 가져오기 부분  *****************************//
 const getData = async () => {
   try {
-    const response = await api.post('/api/mst/mst1010_list', {}, { headers: authHeader() });
+    const response = await api.post('/api/aux/aux1010_list', {}, { headers: authHeader() });
     rowData.rows = response.data.data;
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -553,7 +553,7 @@ const getData = async () => {
 // ***** 사용자정보 선택된 자료 가져오기 부분  *****************************//
 const getSelectData = async (resStdYear, resStdFg) => {
   try {
-    const response = await api.post('/api/mst/mst1010_select', { paramStdYear: resStdYear, paramStdFg: resStdFg }, { headers: authHeader() });
+    const response = await api.post('/api/aux/aux1010_select', { paramStdYear: resStdYear, paramStdFg: resStdFg }, { headers: authHeader() });
     formData.value = response.data.data[0];
     // oldFormData.value = JSON.parse(JSON.stringify(formData.value)); // 초기자료 저장
     console.log(JSON.stringify(formData.value));
