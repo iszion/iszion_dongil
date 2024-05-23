@@ -3,12 +3,12 @@
     <!-- contents zone -->
     <div class="row q-pa-sm q-col-gutter-md">
       <!-- contents List -->
-      <div class="col-12" :class="{ 'col-lg-8': isClassActive }">
+      <div class="col-12" :class="{ 'col-lg-6': isClassActive }">
         <q-card bordered>
           <!-- contents list title bar -->
           <q-bar class="q-px-sm">
             <q-icon name="list_alt" />
-            <span class="text-subtitle2 q-px-sm">인사기본정보 리스트</span>
+            <span class="text-subtitle2 q-px-sm">사용정보 리스트</span>
             <q-space />
             <q-btn
               class="q-pa-xs"
@@ -94,7 +94,7 @@
       </div>
       <!--  end of contents list -->
       <!-- contents List -->
-      <div v-if="isScreenVisible" class="col-12 col-lg-4">
+      <div v-if="isScreenVisible" class="col-12 col-lg-6">
         <q-form class="">
           <q-card bordered>
             <!-- contents list title bar -->
@@ -125,101 +125,36 @@
                 <div class="q-pa-md">
                   <div class="row q-col-gutter-xl">
                     <div class="col-12 col-md-6">
-                      <q-card class="q-ma-xs q-pa-sm">
-                        <q-img src="https://cdn.quasar.dev/img/avatar6.jpg" />
+                      <q-card class="my-card">
+                        <q-card-section horizontal>
+                          <q-img class="col" src="https://cdn.quasar.dev/img/avatar.png" />
+
+                          <q-card-actions vertical class="justify-around">
+                            <q-btn flat round color="primary" icon="photo_camera" @click="openFilePicker" />
+                            <q-btn flat round color="accent" icon="image" />
+                            <q-btn flat round color="red" icon="delete" />
+                          </q-card-actions>
+                        </q-card-section>
+                        <q-separator />
+
+                        <q-card-actions>
+                          <div class="text-bold text-subtitle2">파일명: {{ insaFileName }}</div>
+                        </q-card-actions>
                       </q-card>
                     </div>
                     <div class="col-12 col-md-6">
-                      <q-input ref="empCdFocus" v-model="formData.empCd" label="사원 ID" label-color="orange" :disable="formDisable">
+                      <q-input ref="userIdFocus" v-model="formData.userId" label="사원 ID" label-color="orange" :disable="formDisable">
                         <template v-slot:append>
                           <q-icon size="0.8em" name="done" class="cursor-pointer q-mt-lg">
                             <q-tooltip transition-show="rotate" transition-hide="rotate" class="bg-amber text-black shadow-4">
-                              사번 중복체크
+                              ID 중복체크
                             </q-tooltip>
                           </q-icon>
                         </template>
                       </q-input>
-                      <q-input v-model="formData.empNm" label="성명" label-color="orange" :disable="formDisable" />
-
-                      <q-select
-                        :disable="formDisable"
-                        v-model="formData.deptCd"
-                        :options="deptOptions"
-                        label="소속팀"
-                        label-color="orange"
-                        option-value="deptCd"
-                        option-label="deptNm"
-                        options-dense
-                        emit-value
-                        map-options
-                      >
-                        <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
-                          <q-item v-bind="itemProps">
-                            <q-item-section>
-                              <q-item-label v-html="opt.deptNm" />
-                            </q-item-section>
-                            <q-item-section side>
-                              <q-toggle :model-value="selected" @update:model-value="toggleOption(opt)" />
-                            </q-item-section>
-                          </q-item>
-                        </template>
-                      </q-select>
-                    </div>
-                  </div>
-
-                  <div class="row q-col-gutter-xl">
-                    <div class="col-12 col-md-6">
-                      <q-select
-                        options-dense
-                        :disable="formDisable"
-                        v-model="formData.titlCd"
-                        :options="titlOptions"
-                        option-value="titlCd"
-                        option-label="titlNm"
-                        label="직급"
-                        label-color="orange"
-                        emit-value
-                        map-options
-                      >
-                        <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
-                          <q-item v-bind="itemProps">
-                            <q-item-section>
-                              <q-item-label v-html="opt.titlNm" />
-                            </q-item-section>
-                            <q-item-section side>
-                              <q-toggle :model-value="selected" @update:model-value="toggleOption(opt)" />
-                            </q-item-section>
-                          </q-item>
-                        </template>
-                      </q-select>
-                      <q-select
-                        options-dense
-                        :disable="formDisable"
-                        v-model="formData.catgCd"
-                        :options="catgOptions"
-                        option-value="catgCd"
-                        option-label="catgNm"
-                        label="직분류"
-                        label-color="orange"
-                        emit-value
-                        map-options
-                      >
-                        <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
-                          <q-item v-bind="itemProps">
-                            <q-item-section>
-                              <q-item-label v-html="opt.catgNm" />
-                            </q-item-section>
-                            <q-item-section side>
-                              <q-toggle :model-value="selected" @update:model-value="toggleOption(opt)" />
-                            </q-item-section>
-                          </q-item>
-                        </template>
-                      </q-select>
-                      <q-input v-model="formData.mobile" label="Mobile" label-color="orange" :disable="formDisable" />
-                      <q-input v-model="formData.inDay" type="date" label="입사일" label-color="orange" :disable="formDisable" />
-                      <q-input v-model="formData.outDay" type="date" label="퇴사일" label-color="orange" :disable="formDisable" />
-                    </div>
-                    <div class="col-12 col-md-6">
+                      <q-input v-model="formData.userNm" label="성명" label-color="orange" :disable="formDisable" />
+                      <q-input v-model="formData.userNmx" label="닉네임" label-color="orange" :disable="formDisable" />
+                      <q-input v-model="formData.empCd" color="primary" label="사원번호" label-color="orange" :disable="formDisable" />
                       <q-select
                         options-dense
                         :disable="formDisable"
@@ -243,23 +178,28 @@
                           </q-item>
                         </template>
                       </q-select>
+                    </div>
+                  </div>
 
+                  <div class="row q-col-gutter-xl">
+                    <div class="col-12 col-md-6">
+                      <!--                    <q-badge color="secondary" multi-line> Model: "{{ formData.deptCd }}" </q-badge>-->
                       <q-select
-                        options-dense
                         :disable="formDisable"
-                        v-model="formData.evtgCd"
-                        :options="evtgOptions"
-                        option-value="evtgCd"
-                        option-label="evtgNm"
-                        label="평가대상그룹"
+                        v-model="formData.deptCd"
+                        :options="deptOptions"
+                        label="소속팀"
                         label-color="orange"
+                        option-value="deptCd"
+                        option-label="deptNm"
+                        options-dense
                         emit-value
                         map-options
                       >
                         <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
                           <q-item v-bind="itemProps">
                             <q-item-section>
-                              <q-item-label v-html="opt.evtgNm" />
+                              <q-item-label v-html="opt.deptNm" />
                             </q-item-section>
                             <q-item-section side>
                               <q-toggle :model-value="selected" @update:model-value="toggleOption(opt)" />
@@ -267,16 +207,47 @@
                           </q-item>
                         </template>
                       </q-select>
-
+                      <!--                    <q-badge color="secondary" multi-line> Model: "{{ formData.jobTitleCd }}" </q-badge>-->
+                      <q-select
+                        :disable="formDisable"
+                        v-model="formData.titlCd"
+                        :options="titlOptions"
+                        label="직급"
+                        label-color="orange"
+                        option-value="titlCd"
+                        option-label="titlNm"
+                        options-dense
+                        emit-value
+                        map-options
+                      >
+                        <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
+                          <q-item v-bind="itemProps">
+                            <q-item-section>
+                              <q-item-label v-html="opt.titlNm" />
+                            </q-item-section>
+                            <q-item-section side>
+                              <q-toggle :model-value="selected" @update:model-value="toggleOption(opt)" />
+                            </q-item-section>
+                          </q-item>
+                        </template>
+                      </q-select>
+                      <q-input v-model="formData.inDay" type="date" label="입사일" label-color="orange" :disable="formDisable" />
+                      <q-input v-model="formData.outDay" type="date" label="퇴사일" label-color="orange" :disable="formDisable" />
+                    </div>
+                    <div class="col-12 col-md-6">
                       <q-input v-model="formData.email" label="이메일" label-color="orange" :disable="formDisable" />
-
-                      <div class="q-mt-xs q-gutter-sm">
-                        <q-radio keep-color v-model="formData.gender" val="M" label="남자" color="teal" />
-                        <q-radio keep-color v-model="formData.gender" val="F" label="여자" color="orange" />
-                      </div>
-                      <q-separator class="q-mb-xs" />
-
-                      <q-input v-model="formData.birthday" type="date" label="생년월일" label-color="orange" :disable="formDisable" />
+                      <q-input v-model="formData.mobile" label="Mobile" label-color="orange" :disable="formDisable" />
+                      <q-input
+                        :disable="formDisable"
+                        type="textarea"
+                        v-model="formData.explains"
+                        label="참고사항"
+                        label-color="orange"
+                        autogrow
+                        counter
+                        maxlength="30"
+                        hint="30자까지 입력가능"
+                      />
                     </div>
                   </div>
                 </div>
@@ -297,7 +268,7 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 import 'ag-grid-community/styles/ag-theme-balham.css';
 import { AgGridVue } from 'ag-grid-vue3';
 import { QBtn, QIcon, useQuasar } from 'quasar';
-import { computed, onBeforeMount, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
+import { computed, onBeforeMount, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 import { api } from '/src/boot/axios';
 
 import authHeader from 'boot/authHeader';
@@ -310,12 +281,11 @@ const $q = useQuasar();
 
 let isSaveFg = null;
 
+const insaFileName = ref(null);
 const deptOptionsSearch = ref(null);
 const deptOptions = ref(null);
 const titlOptions = ref(null);
 const pstnOptions = ref(null);
-const catgOptions = ref(null);
-const evtgOptions = ref(null);
 
 const searchParam = reactive({
   deptCd: '',
@@ -325,37 +295,6 @@ const statusEdit = reactive({
   icon: '',
   message: '',
   color: '',
-});
-
-onBeforeUnmount(() => {
-  // Remove the resize event listener when the component is destroyed
-  window.removeEventListener('resize', handleResize);
-});
-
-const props = defineProps(['setStdYearGroup']);
-const setYearGroup = ref({
-  setYear: '',
-  setFg: '',
-  setLocCh: '',
-});
-
-onBeforeMount(() => {
-  setYearGroup.value.setYear = props.setStdYearGroup.setStdYear;
-  setYearGroup.value.setFg = props.setStdYearGroup.setStdFg;
-  setYearGroup.value.setLocCh = props.setStdYearGroup.setLocCh;
-
-  rowSelection.value = 'multiple';
-  getData();
-  getDataDeptOption();
-  getDataPstnOption();
-  getDataTitlOption();
-  getDataCatgOption();
-  getDataEvtgOption();
-});
-
-onMounted(() => {
-  window.addEventListener('resize', handleResize);
-  handleResize();
 });
 
 const formDisable = ref(true);
@@ -374,13 +313,6 @@ const contentZoneStyle = computed(() => ({
 const gridApi = ref(null);
 const rowData = reactive({ rows: [] });
 
-const dateFormatter = params => {
-  const dateStr = params.value;
-  if (dateStr && dateStr.length === 8) {
-    return `${dateStr.slice(0, 4)}-${dateStr.slice(4, 6)}-${dateStr.slice(6)}`;
-  }
-  return dateStr;
-};
 const onGridReady = params => {
   gridApi.value = params.api;
 };
@@ -408,27 +340,32 @@ const columnDefs = reactive({
       pinned: 'left',
     },
     {
-      headerName: '#',
-      width: 60,
-      pinned: 'left',
-      valueGetter: function (params) {
-        // Customize row numbers as needed
-        return params.node.rowIndex + 1;
-      },
-    },
-    {
       headerName: 'ID',
-      field: 'empCd',
+      field: 'userId',
       pinned: 'left',
       maxWidth: 100,
       minWidth: 100,
     },
     {
       headerName: '성명',
-      field: 'empNm',
+      field: 'userNm',
       minWidth: 100,
       maxWidth: 100,
       pinned: 'left',
+    },
+    {
+      headerName: '닉네임',
+      field: 'userNmx',
+      maxWidth: 100,
+      minWidth: 100,
+      cellStyle: { textAlign: 'center' },
+    },
+    {
+      headerName: '사원번호',
+      field: 'empCd',
+      maxWidth: 100,
+      minWidth: 100,
+      cellStyle: { textAlign: 'center' },
     },
     {
       headerName: '소속팀',
@@ -449,46 +386,18 @@ const columnDefs = reactive({
       minWidth: 100,
     },
     {
-      headerName: '직분류',
-      field: 'catgNm',
-      maxWidth: 120,
-      minWidth: 120,
-    },
-    {
-      headerName: '평가대상그룹',
-      field: 'evtgNm',
-      maxWidth: 120,
-      minWidth: 120,
-    },
-    {
-      headerName: '성별',
-      field: 'gender',
-      maxWidth: 80,
-      minWidth: 80,
-    },
-    {
-      headerName: '생년월일',
-      field: 'birthday',
-      valueFormatter: dateFormatter,
-      maxWidth: 130,
-      minWidth: 130,
-    },
-    {
       headerName: 'Mobile',
       field: 'mobile',
-      maxWidth: 150,
       minWidth: 150,
     },
     {
       headerName: '이메일',
       field: 'email',
-      maxWidth: 150,
       minWidth: 150,
     },
     {
       headerName: '입사일',
       field: 'inDay',
-      valueFormatter: dateFormatter,
       maxWidth: 130,
       minWidth: 130,
       cellStyle: { textAlign: 'center' },
@@ -496,9 +405,22 @@ const columnDefs = reactive({
     {
       headerName: '퇴사일',
       field: 'outDay',
-      valueFormatter: dateFormatter,
       maxWidth: 130,
       minWidth: 130,
+      cellStyle: { textAlign: 'center' },
+    },
+    {
+      headerName: '참고사항',
+      field: 'explains',
+      maxWidth: 100,
+      minWidth: 100,
+      cellStyle: { textAlign: 'center' },
+    },
+    {
+      headerName: '파일명',
+      field: 'filename',
+      maxWidth: 100,
+      minWidth: 100,
       cellStyle: { textAlign: 'center' },
     },
   ],
@@ -506,19 +428,20 @@ const columnDefs = reactive({
 
 const oldFormData = ref(null);
 const formData = ref({
+  userId: '',
+  userNm: '',
+  userNmx: '',
   empCd: '',
-  empNm: '',
   deptCd: '',
-  catgCd: '',
   pstnCd: '',
   titlCd: '',
-  evtgCd: '',
-  gender: '',
-  birthday: '',
   mobile: '',
   email: '',
   inDay: '',
   outDay: '',
+  explains: '',
+  filename: '',
+  filenameX: '',
 });
 
 const selectedRows = ref();
@@ -533,7 +456,7 @@ const onSelectionChanged = event => {
   isShowSaveBtn.value = isShowDeleteBtn.value;
 
   if (selectedRows.value.length === 1) {
-    getDataSelect(selectedRows.value[0].stdYear, selectedRows.value[0].empCd);
+    getDataSelect(selectedRows.value[0].userId);
     isShowStatusEdit.value = true;
     statusEdit.icon = 'edit_note';
     statusEdit.message = '수정/삭제모드 입니다';
@@ -558,7 +481,15 @@ const onSelectionChanged = event => {
 
 const rowSelection = ref(null);
 
-const empCdFocus = ref(null);
+onBeforeMount(() => {
+  rowSelection.value = 'multiple';
+  getData();
+  getDataDeptOption();
+  getDataPstnOption();
+  getDataTitlOption();
+});
+
+const userIdFocus = ref(null);
 const addDataSection = () => {
   formData.value = {};
   oldFormData.value = {};
@@ -571,7 +502,7 @@ const addDataSection = () => {
   formDisable.value = false;
   formData.value.outDay = '9999-12-31';
   setTimeout(() => {
-    empCdFocus.value.focus();
+    userIdFocus.value.focus();
   }, 100);
 };
 const deleteDataSection = () => {
@@ -606,9 +537,10 @@ const deleteDataSection = () => {
     });
 };
 const saveDataSection = () => {
-  formData.value.birthday = commUtil.unFormatDate(formData.value.birthday);
+  console.log(formData.value.inDay, ' = ', formData.value.outDay);
   formData.value.inDay = commUtil.unFormatDate(formData.value.inDay);
   formData.value.outDay = commUtil.unFormatDate(formData.value.outDay);
+  console.log(formData.value.inDay, ' = ', formData.value.outDay);
 
   if (isEqual(formData.value, oldFormData.value)) {
     $q.dialog({
@@ -635,6 +567,14 @@ const myTweak = offset => {
 const handleResize = () => {
   contentZoneHeight.value = window.innerHeight - screenSizeHeight.value - 180;
 };
+onBeforeUnmount(() => {
+  // Remove the resize event listener when the component is destroyed
+  window.removeEventListener('resize', handleResize);
+});
+onMounted(() => {
+  window.addEventListener('resize', handleResize);
+  handleResize();
+});
 
 // **************************************************************//
 // ***** DataBase 연결부분    *************************************//
@@ -643,9 +583,8 @@ const handleResize = () => {
 // ***** 자료저장 및 삭제 처리부분 *****************************//
 // saveStatus = 0=수정성공 1=신규성공 2=삭제성공 3=수정에러 4=시스템에러
 const saveDataAndHandleResult = resFormData => {
-  console.log('save::: ', JSON.stringify(resFormData));
   api
-    .post('/api/mst/mst1010_save', resFormData, { headers: authHeader() })
+    .post('/api/sys/sys1010_save', resFormData, { headers: authHeader() })
     .then(res => {
       let saveStatus = {};
       if (res.data.rtn === '0') {
@@ -653,7 +592,7 @@ const saveDataAndHandleResult = resFormData => {
           saveStatus.rtn = 1;
           saveStatus.rtn1 = res.data.rtnMsg1;
           saveStatus.rtn2 = '신규추가 완료';
-          formData.value.oldUserId = formData.value.empCd;
+          formData.value.oldUserId = formData.value.userId;
 
           let newData = [formData.value];
           gridApi.value.applyTransaction({
@@ -668,20 +607,19 @@ const saveDataAndHandleResult = resFormData => {
           const selectedData = gridApi.value.getSelectedRows();
 
           // selectedData[0] = { ...formData.value };
+          selectedData[0].userId = formData.value.userId;
+          selectedData[0].oldUserId = formData.value.userId;
+          selectedData[0].userNm = formData.value.userNm;
+          selectedData[0].userNmx = formData.value.userNmx;
           selectedData[0].empCd = formData.value.empCd;
-          selectedData[0].oldEmpCd = formData.value.empCd;
-          selectedData[0].empNm = formData.value.empNm;
-          selectedData[0].deptCd = formData.value.deptCd;
-          selectedData[0].catgCd = formData.value.catgCd;
           selectedData[0].pstnCd = formData.value.pstnCd;
+          selectedData[0].deptCd = formData.value.deptCd;
           selectedData[0].titlCd = formData.value.titlCd;
-          selectedData[0].evtgCd = formData.value.evtgCd;
-          selectedData[0].gender = formData.value.gender;
-          selectedData[0].birthday = formData.value.birthday;
           selectedData[0].mobile = formData.value.mobile;
           selectedData[0].email = formData.value.email;
           selectedData[0].inDay = formData.value.inDay;
           selectedData[0].outDay = formData.value.outDay;
+          selectedData[0].explains = formData.value.explains;
           gridApi.value.applyTransaction({
             update: selectedData,
           });
@@ -707,8 +645,8 @@ const saveDataAndHandleResult = resFormData => {
 const getData = async () => {
   try {
     const response = await api.post(
-      '/api/mst/mst1010_list',
-      { paramSetYear: setYearGroup.value.setYear, paramDeptCd: searchParam.deptCd, paramSearchWord: searchParam.word },
+      '/api/sys/sys1010_list',
+      { paramDeptCd: searchParam.deptCd, paramSearchWord: searchParam.word },
       { headers: authHeader() },
     );
     rowData.rows = response.data.data;
@@ -719,12 +657,12 @@ const getData = async () => {
 // ***** 사용자정보 목록 자료 가져오기 부분  *****************************//
 
 // ***** 사용자정보 선택된 자료 가져오기 부분  *****************************//
-const getDataSelect = async (resStdYear, resEmpCd) => {
+const getDataSelect = async resParamUserId => {
   try {
-    const response = await api.post('/api/mst/mst1010_select', { paramStdYear: resStdYear, paramEmpCd: resEmpCd }, { headers: authHeader() });
+    const response = await api.post('/api/sys/sys1010_select', { paramUserId: resParamUserId }, { headers: authHeader() });
     formData.value = response.data.data[0];
+    // console.log('select data ::: ', JSON.stringify(formData.value));
     oldFormData.value = JSON.parse(JSON.stringify(formData.value)); // 초기자료 저장
-    formData.value.birthday = commUtil.formatDate(response.data.data[0].birthday);
     formData.value.inDay = commUtil.formatDate(response.data.data[0].inDay);
     formData.value.outDay = commUtil.formatDate(response.data.data[0].outDay);
   } catch (error) {
@@ -736,9 +674,10 @@ const getDataSelect = async (resStdYear, resEmpCd) => {
 // ***** 소속팀정보 가져오기 부분  *****************************//
 async function getDataDeptOption() {
   try {
-    const response = await api.post('/api/mst/dept_option_list', { paramSetYear: setYearGroup.value.setYear }, { headers: authHeader() });
+    const response = await api.post('/api/mst/dept_option_list', { paramSetYear: '2024' }, { headers: authHeader() });
     deptOptions.value = response.data.data;
     deptOptionsSearch.value = JSON.parse(JSON.stringify(deptOptions.value));
+    console.log(JSON.stringify(deptOptionsSearch.value));
     deptOptionsSearch.value.push({ deptCd: '', deptNm: '전체' });
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -747,8 +686,9 @@ async function getDataDeptOption() {
 // ***** 직위정보 가져오기 부분  *****************************//
 async function getDataPstnOption() {
   try {
-    const response = await api.post('/api/mst/pstn_option_list', { paramSetYear: setYearGroup.value.setYear }, { headers: authHeader() });
+    const response = await api.post('/api/mst/pstn_option_list', { paramSetYear: '2024' }, { headers: authHeader() });
     pstnOptions.value = response.data.data;
+    console.log('pstn ::: ', JSON.stringify(pstnOptions.value));
   } catch (error) {
     console.error('Error fetching users:', error);
   }
@@ -756,26 +696,9 @@ async function getDataPstnOption() {
 // ***** 직급정보 가져오기 부분  *****************************//
 async function getDataTitlOption() {
   try {
-    const response = await api.post('/api/mst/titl_option_list', { paramSetYear: setYearGroup.value.setYear }, { headers: authHeader() });
+    const response = await api.post('/api/mst/titl_option_list', { paramSetYear: '2024' }, { headers: authHeader() });
     titlOptions.value = response.data.data;
-  } catch (error) {
-    console.error('Error fetching users:', error);
-  }
-}
-// ***** 직분류정보 가져오기 부분  *****************************//
-async function getDataCatgOption() {
-  try {
-    const response = await api.post('/api/mst/catg_option_list', { paramSetYear: setYearGroup.value.setYear }, { headers: authHeader() });
-    catgOptions.value = response.data.data;
-  } catch (error) {
-    console.error('Error fetching users:', error);
-  }
-}
-// ***** 평가대상그룹정보 가져오기 부분  *****************************//
-async function getDataEvtgOption() {
-  try {
-    const response = await api.post('/api/mst/evtg_option_list', { paramSetYear: setYearGroup.value.setYear }, { headers: authHeader() });
-    evtgOptions.value = response.data.data;
+    console.log('titl ::: ', JSON.stringify(titlOptions.value));
   } catch (error) {
     console.error('Error fetching users:', error);
   }
@@ -784,6 +707,27 @@ async function getDataEvtgOption() {
 // **************************************************************//
 // ***** DataBase 연결부분 끝  *************************************//
 // **************************************************************//
+
+const openFilePicker = () => {
+  // 파일 선택 대화 상자 열기
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*'; // 이미지 파일만 선택 가능하도록 설정 (선택 사항)
+  input.onchange = event => {
+    const file = event.target.files[0];
+    if (file) {
+      // 파일이 선택된 경우, 여기에서 파일 업로드 로직을 추가할 수 있습니다.
+      uploadFile(file);
+    }
+  };
+  input.click();
+};
+const uploadFile = file => {
+  // 파일 업로드 로직을 작성하세요.
+  insaFileName.value = file.name;
+  console.log('Selected file:', file);
+  // 여기에서 파일을 업로드하는 코드를 추가하세요.
+};
 </script>
 
 <style lang="sass" scoped>

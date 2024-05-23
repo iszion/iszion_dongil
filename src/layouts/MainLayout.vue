@@ -2,13 +2,11 @@
   <q-layout view="hHh lpR fFf">
     <q-header class="shadow-1 bg-grey-8">
       <q-toolbar>
-        <RouterLink class="" to="/main" @click="rootView">
-          <q-avatar square size="sm">
-            <img src="../assets/images/dongil_logo.png" />
-          </q-avatar>
-        </RouterLink>
+        <q-avatar square size="sm" @click="rootView" class="cursor-pointer">
+          <img src="../assets/images/dongil_logo.png" />
+        </q-avatar>
 
-        <div v-if="!$q.screen.xs" class="text-h6 text-weight-bold q-pl-sm self-center">{{ $t('project_name') }}</div>
+        <div v-if="!$q.screen.xs" class="text-h6 text-weight-bold q-pl-sm self-center cursor-pointer" @click="rootView">{{ $t('project_name') }}</div>
 
         <q-separator class="q-mx-xs-sm" dark vertical inset />
 
@@ -105,7 +103,7 @@
             <div class="text-caption text-bold q-mr-sm">{{ $store.state.showcase.deptNm }}</div>
           </div>
           <q-avatar color="deep-orange">
-            <img loading="eager" src="https://cdn.quasar.dev/img/avatar6.jpg" />
+            <q-img loading="eager" src="https://cdn.quasar.dev/img/avatar6.jpg" />
           </q-avatar>
           <q-menu :offset="[0, 10]" transition-show="scale" transition-hide="scale">
             <q-list style="min-width: 100px">
@@ -176,7 +174,7 @@
       </q-tree>
     </q-drawer>
     <q-page-container>
-      <router-view />
+      <router-view :setStdYearGroup="setStdYearGroup" />
     </q-page-container>
 
     <footer-bar />
@@ -295,11 +293,14 @@ onMounted(() => {
     menuList.value = [];
   }
 });
+
+// 메인화면 재시작 (평가기준년도 변경시 실행)
 const rootView = () => {
   leftDrawerOpen.value = false;
   pageTitleBarVisible.value = false;
   activeTab.value = null;
   menuList.value = [];
+  router.push('/main');
 };
 /* ******************************************************************************* */
 /* ************  end of Head Main Control select  ******************************** */
@@ -399,9 +400,18 @@ onBeforeMount(() => {
 const ev_set_year_group = ref(null);
 const ev_set_color = ref(null);
 const ev_set_year_options = ref([]);
+const setStdYearGroup = ref({
+  setStdYear: '',
+  setStdFg: '',
+  setLocCh: '',
+});
 const handleSelectedSetYear = resSelected => {
   console.log('selected SetYear: ', resSelected.locCh);
   handle_ev_set_color(resSelected.locCh);
+  setStdYearGroup.value.setStdYear = resSelected.stdYear;
+  setStdYearGroup.value.setStdFg = resSelected.stdFg;
+  setStdYearGroup.value.setLocCh = resSelected.locCh;
+  rootView();
 };
 const handle_ev_set_color = val => {
   switch (val) {
@@ -433,7 +443,9 @@ const getDataSetYear = async () => {
       }
       ev_set_year_options.value.push(val);
     });
-    console.log('setYear:: ', JSON.stringify(ev_set_year_options.value));
+    setStdYearGroup.value.setStdYear = ev_set_year_options.value[0].stdYear; // 기준년도
+    setStdYearGroup.value.setStdFg = ev_set_year_options.value[0].stdFg; // 적용구분
+    setStdYearGroup.value.setLocCh = ev_set_year_options.value[0].locCh; // 처리상태
   } catch (error) {
     console.error('Error fetching users:', error);
   }

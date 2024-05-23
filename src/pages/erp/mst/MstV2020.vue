@@ -80,6 +80,23 @@ const updateData = ref([]);
 const showSaveBtn = ref(false);
 const showDeleteBtn = ref(false);
 
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize);
+});
+const props = defineProps(['setStdYearGroup']);
+onBeforeMount(() => {
+  rowSelection.value = 'multiple';
+  getData();
+});
+
+onMounted(() => {
+  console.log('setYear::::==: ', props.setStdYearGroup.setStdYear);
+  console.log('setYear::::==: ', props.setStdYearGroup.setStdFg);
+  console.log('setYear::::==: ', props.setStdYearGroup.setLocCh);
+  window.addEventListener('resize', handleResize);
+  handleResize();
+});
+
 const onGridReady = params => {
   gridApi.value = params.api;
 };
@@ -184,11 +201,6 @@ const onCellValueChanged = () => {
 };
 
 const rowSelection = ref(null);
-
-onBeforeMount(() => {
-  rowSelection.value = 'multiple';
-  getData();
-});
 
 //*******************************************************//
 //****  신규 자료 추가부분     ******************************//
@@ -299,13 +311,6 @@ const myTweak = offset => {
 const handleResize = () => {
   contentZoneHeight.value = window.innerHeight - screenSizeHeight.value - 180;
 };
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', handleResize);
-});
-onMounted(() => {
-  window.addEventListener('resize', handleResize);
-  handleResize();
-});
 
 // **************************************************************//
 // ***** DataBase 연결부분    *************************************//

@@ -113,7 +113,7 @@
                 <q-space />
                 <div class="q-gutter-xs">
                   <q-btn v-if="isShowSaveBtn" outline color="primary" dense @click="saveDataSection"><q-icon name="save" size="xs" /> 저장 </q-btn>
-                  <q-btn outline color="positive" dense @click="addDataSection"><q-icon name="add" size="xs" /> 신규 </q-btn>
+                  <!--                  <q-btn outline color="positive" dense @click="addDataSection"><q-icon name="add" size="xs" /> 신규 </q-btn>-->
                 </div>
               </q-toolbar>
             </q-card-actions>
@@ -143,113 +143,74 @@
                       </q-card>
                     </div>
                     <div class="col-12 col-md-6">
-                      <q-input ref="userIdFocus" v-model="formData.userId" label="사원 ID" label-color="orange" :disable="formDisable">
-                        <template v-slot:append>
-                          <q-icon size="0.8em" name="done" class="cursor-pointer q-mt-lg">
-                            <q-tooltip transition-show="rotate" transition-hide="rotate" class="bg-amber text-black shadow-4">
-                              ID 중복체크
-                            </q-tooltip>
-                          </q-icon>
+                      <q-field label="사원ID" label-color="orange" stack-label>
+                        <template v-slot:control>
+                          <div class="self-center full-width no-outline" tabindex="0">{{ formData.empCd }}</div>
                         </template>
-                      </q-input>
-                      <q-input v-model="formData.userNm" label="성명" label-color="orange" :disable="formDisable" />
-                      <q-input v-model="formData.userNmx" label="닉네임" label-color="orange" :disable="formDisable" />
-                      <q-input v-model="formData.empCd" color="primary" label="사원번호" label-color="orange" :disable="formDisable" />
+                      </q-field>
+                      <q-field label="성명" label-color="orange" stack-label>
+                        <template v-slot:control>
+                          <div class="self-center full-width no-outline" tabindex="0">{{ formData.userNm }}</div>
+                        </template>
+                      </q-field>
+                      <q-input v-model="formData.userNmx" label="닉네임" :label-color="$q.dark.isActive ? 'green' : 'blue'" :disable="formDisable" />
+                      <q-field label="사원번호" label-color="orange" stack-label>
+                        <template v-slot:control>
+                          <div class="self-center full-width no-outline" tabindex="0">{{ formData.empCd }}</div>
+                        </template>
+                      </q-field>
+                      <q-field label="직위" label-color="orange" stack-label>
+                        <template v-slot:control>
+                          <div class="self-center full-width no-outline" tabindex="0">{{ formData.pstnNm }}</div>
+                        </template>
+                      </q-field>
                     </div>
                   </div>
 
                   <div class="row q-col-gutter-xl">
                     <div class="col-12 col-md-6">
-                      <q-input v-model="formData.role" label="ROLE" label-color="orange" :disable="formDisable" />
-                      <!--                    <q-badge color="secondary" multi-line> Model: "{{ formData.salesCd }}" </q-badge>-->
-                      <q-select
-                        options-dense
-                        :disable="formDisable"
-                        v-model="formData.salesCd"
-                        :options="salesOptions"
-                        option-value="commCd"
-                        option-label="commNm"
-                        label="영업담당"
-                        label-color="orange"
-                        emit-value
-                        map-options
-                      >
-                        <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
-                          <q-item v-bind="itemProps">
-                            <q-item-section>
-                              <q-item-label v-html="opt.commNm" />
-                            </q-item-section>
-                            <q-item-section side>
-                              <q-toggle :model-value="selected" @update:model-value="toggleOption(opt)" />
-                            </q-item-section>
-                          </q-item>
+                      <q-field label="소속팀" label-color="orange" stack-label>
+                        <template v-slot:control>
+                          <div class="self-center full-width no-outline" tabindex="0">{{ formData.deptNm }}</div>
                         </template>
-                      </q-select>
-                      <!--                    <q-badge color="secondary" multi-line> Model: "{{ formData.deptCd }}" </q-badge>-->
-                      <q-select
-                        :disable="formDisable"
-                        v-model="formData.deptCd"
-                        :options="deptOptions"
-                        label="소속부서"
-                        label-color="orange"
-                        option-value="commCd"
-                        option-label="commNm"
-                        options-dense
-                        emit-value
-                        map-options
-                      >
-                        <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
-                          <q-item v-bind="itemProps">
-                            <q-item-section>
-                              <q-item-label v-html="opt.commNm" />
-                            </q-item-section>
-                            <q-item-section side>
-                              <q-toggle :model-value="selected" @update:model-value="toggleOption(opt)" />
-                            </q-item-section>
-                          </q-item>
+                      </q-field>
+                      <q-field label="직급" label-color="orange" stack-label>
+                        <template v-slot:control>
+                          <div class="self-center full-width no-outline" tabindex="0">{{ formData.titlNm }}</div>
                         </template>
-                      </q-select>
-                      <!--                    <q-badge color="secondary" multi-line> Model: "{{ formData.jobTitleCd }}" </q-badge>-->
-                      <q-select
-                        :disable="formDisable"
-                        v-model="formData.jobTitleCd"
-                        :options="jobTitleOptions"
-                        label="직위"
-                        label-color="orange"
-                        option-value="commCd"
-                        option-label="commNm"
-                        options-dense
-                        emit-value
-                        map-options
-                      >
-                        <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
-                          <q-item v-bind="itemProps">
-                            <q-item-section>
-                              <q-item-label v-html="opt.commNm" />
-                            </q-item-section>
-                            <q-item-section side>
-                              <q-toggle :model-value="selected" @update:model-value="toggleOption(opt)" />
-                            </q-item-section>
-                          </q-item>
+                      </q-field>
+                      <q-field label="입사일" label-color="orange" stack-label>
+                        <template v-slot:control>
+                          <div class="self-center full-width no-outline" tabindex="0">{{ formData.inDay }}</div>
                         </template>
-                      </q-select>
-                      <q-input v-model="formData.empIday" type="date" label="입사일" label-color="orange" :disable="formDisable" />
-                      <q-input v-model="formData.empOday" type="date" label="퇴사일" label-color="orange" :disable="formDisable" />
+                      </q-field>
+                      <q-field label="퇴사일" label-color="orange" stack-label>
+                        <template v-slot:control>
+                          <div class="self-center full-width no-outline" tabindex="0">{{ formData.outDay }}</div>
+                        </template>
+                      </q-field>
                     </div>
                     <div class="col-12 col-md-6">
-                      <q-input v-model="formData.email" label="이메일" label-color="orange" :disable="formDisable" />
-                      <q-input v-model="formData.mobile" label="Mobile" label-color="orange" :disable="formDisable" />
-                      <q-input v-model="formData.tel" label="전화번호" label-color="orange" :disable="formDisable" />
+                      <q-field label="이메일" label-color="orange" stack-label>
+                        <template v-slot:control>
+                          <div class="self-center full-width no-outline" tabindex="0">{{ formData.email }}</div>
+                        </template>
+                      </q-field>
+                      <q-field label="전화번호" label-color="orange" stack-label>
+                        <template v-slot:control>
+                          <div class="self-center full-width no-outline" tabindex="0">{{ formData.mobile }}</div>
+                        </template>
+                      </q-field>
                       <q-input
                         :disable="formDisable"
                         type="textarea"
                         v-model="formData.explains"
                         label="참고사항"
-                        label-color="orange"
+                        :label-color="$q.dark.isActive ? 'green' : 'blue'"
                         autogrow
                         counter
-                        maxlength="30"
-                        hint="30자까지 입력가능"
+                        maxlength="100"
+                        hint="100자까지 입력가능"
                       />
                     </div>
                   </div>
@@ -278,13 +239,13 @@ import authHeader from 'boot/authHeader';
 import { isEqual } from 'lodash';
 import jsonUtil from 'src/js_comm/json-util';
 import notifySave from 'src/js_comm/notify-save';
+import commUtil from 'src/js_comm/comm-util';
 
 const $q = useQuasar();
 
 let isSaveFg = null;
 
 const insaFileName = ref(null);
-const salesOptions = ref(null);
 const deptOptionsSearch = ref(null);
 const deptOptions = ref(null);
 const titlOptions = ref(null);
@@ -316,6 +277,13 @@ const contentZoneStyle = computed(() => ({
 const gridApi = ref(null);
 const rowData = reactive({ rows: [] });
 
+const dateFormatter = params => {
+  const dateStr = params.value;
+  if (dateStr && dateStr.length === 8) {
+    return `${dateStr.slice(0, 4)}-${dateStr.slice(4, 6)}-${dateStr.slice(6)}`;
+  }
+  return dateStr;
+};
 const onGridReady = params => {
   gridApi.value = params.api;
 };
@@ -401,6 +369,7 @@ const columnDefs = reactive({
     {
       headerName: '입사일',
       field: 'inDay',
+      valueFormatter: dateFormatter,
       maxWidth: 130,
       minWidth: 130,
       cellStyle: { textAlign: 'center' },
@@ -408,6 +377,7 @@ const columnDefs = reactive({
     {
       headerName: '퇴사일',
       field: 'outDay',
+      valueFormatter: dateFormatter,
       maxWidth: 130,
       minWidth: 130,
       cellStyle: { textAlign: 'center' },
@@ -459,7 +429,7 @@ const onSelectionChanged = event => {
   isShowSaveBtn.value = isShowDeleteBtn.value;
 
   if (selectedRows.value.length === 1) {
-    getSelectData(selectedRows.value[0].userId);
+    getDataSelect(selectedRows.value[0].userId);
     isShowStatusEdit.value = true;
     statusEdit.icon = 'edit_note';
     statusEdit.message = '수정/삭제모드 입니다';
@@ -503,7 +473,7 @@ const addDataSection = () => {
   isSaveFg = 'I';
   isShowSaveBtn.value = true;
   formDisable.value = false;
-  formData.value.empOday = '9999-12-31';
+  formData.value.outDay = '9999-12-31';
   setTimeout(() => {
     userIdFocus.value.focus();
   }, 100);
@@ -540,8 +510,8 @@ const deleteDataSection = () => {
     });
 };
 const saveDataSection = () => {
-  formData.value.empIday = reFormatDate(formData.value.empIday);
-  formData.value.empOday = reFormatDate(formData.value.empOday);
+  formData.value.inDay = commUtil.unFormatDate(formData.value.inDay);
+  formData.value.outDay = commUtil.unFormatDate(formData.value.outDay);
 
   if (isEqual(formData.value, oldFormData.value)) {
     $q.dialog({
@@ -558,24 +528,6 @@ const saveDataSection = () => {
   } else {
     saveDataAndHandleResult(jsonUtil.dataJsonParse(isSaveFg, formData.value));
   }
-};
-
-const reFormatDate = rawDate => {
-  return rawDate ? rawDate.replace(/-/g, '') : null;
-};
-
-const formatDate = rawDate => {
-  if (rawDate) {
-    const year = rawDate.substring(0, 4);
-    const month = rawDate.substring(4, 6);
-    const day = rawDate.substring(6, 8);
-    return `${year}-${month}-${day}`;
-  } else {
-    return null;
-  }
-};
-const reFormatMinus = resData => {
-  return resData ? resData.replace(/-/g, '') : null;
 };
 
 const screenSizeHeight = ref(0);
@@ -628,18 +580,16 @@ const saveDataAndHandleResult = resFormData => {
           // selectedData[0] = { ...formData.value };
           selectedData[0].userId = formData.value.userId;
           selectedData[0].oldUserId = formData.value.userId;
-          selectedData[0].role = formData.value.role;
           selectedData[0].userNm = formData.value.userNm;
           selectedData[0].userNmx = formData.value.userNmx;
           selectedData[0].empCd = formData.value.empCd;
-          selectedData[0].salesCd = formData.value.salesCd;
+          selectedData[0].pstnCd = formData.value.pstnCd;
           selectedData[0].deptCd = formData.value.deptCd;
-          selectedData[0].jobTitleCd = formData.value.jobTitleCd;
+          selectedData[0].titlCd = formData.value.titlCd;
           selectedData[0].mobile = formData.value.mobile;
-          selectedData[0].tel = formData.value.tel;
           selectedData[0].email = formData.value.email;
-          selectedData[0].empIday = formData.value.empIday;
-          selectedData[0].empOday = formData.value.empOday;
+          selectedData[0].inDay = formData.value.inDay;
+          selectedData[0].outDay = formData.value.outDay;
           selectedData[0].explains = formData.value.explains;
           gridApi.value.applyTransaction({
             update: selectedData,
@@ -665,8 +615,11 @@ const saveDataAndHandleResult = resFormData => {
 // ***** 사용자정보 목록 자료 가져오기 부분  *****************************//
 const getData = async () => {
   try {
-    const response = await api.post('/api/sys/sys1010_list', { paramDeptCd: searchParam.deptCd }, { headers: authHeader() });
-    console.log('data::: ', JSON.stringify(response.data.data));
+    const response = await api.post(
+      '/api/sys/sys1010_list',
+      { paramDeptCd: searchParam.deptCd, paramSearchWord: searchParam.word },
+      { headers: authHeader() },
+    );
     rowData.rows = response.data.data;
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -675,13 +628,14 @@ const getData = async () => {
 // ***** 사용자정보 목록 자료 가져오기 부분  *****************************//
 
 // ***** 사용자정보 선택된 자료 가져오기 부분  *****************************//
-const getSelectData = async resParamUserId => {
+const getDataSelect = async resParamUserId => {
   try {
     const response = await api.post('/api/sys/sys1010_select', { paramUserId: resParamUserId }, { headers: authHeader() });
     formData.value = response.data.data[0];
+    // console.log('select data ::: ', JSON.stringify(formData.value));
     oldFormData.value = JSON.parse(JSON.stringify(formData.value)); // 초기자료 저장
-    formData.value.empIday = formatDate(response.data.data[0].empIday);
-    formData.value.empOday = formatDate(response.data.data[0].empOday);
+    formData.value.inDay = commUtil.formatDate(response.data.data[0].inDay);
+    formData.value.outDay = commUtil.formatDate(response.data.data[0].outDay);
   } catch (error) {
     console.error('Error fetching users:', error);
   }
@@ -705,6 +659,7 @@ async function getDataPstnOption() {
   try {
     const response = await api.post('/api/mst/pstn_option_list', { paramSetYear: '2024' }, { headers: authHeader() });
     pstnOptions.value = response.data.data;
+    console.log('pstn ::: ', JSON.stringify(pstnOptions.value));
   } catch (error) {
     console.error('Error fetching users:', error);
   }
@@ -714,6 +669,7 @@ async function getDataTitlOption() {
   try {
     const response = await api.post('/api/mst/titl_option_list', { paramSetYear: '2024' }, { headers: authHeader() });
     titlOptions.value = response.data.data;
+    console.log('titl ::: ', JSON.stringify(titlOptions.value));
   } catch (error) {
     console.error('Error fetching users:', error);
   }

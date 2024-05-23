@@ -1,17 +1,14 @@
 export default {
   formatDate(rawDate) {
     if (rawDate) {
-      const year = rawDate.substring(0, 4);
-      const month = rawDate.substring(4, 6);
-      const day = rawDate.substring(6, 8);
-      return `${year}-${month}-${day}`;
+      return `${rawDate.slice(0, 4)}-${rawDate.slice(4, 6)}-${rawDate.slice(6)}`;
     } else {
-      return null;
+      return '';
     }
   },
 
-  reFormatDate(rawDate) {
-    return rawDate ? rawDate.replace(/-/g, '') : null;
+  unFormatDate(rawDate) {
+    return rawDate ? rawDate.replace(/-/g, '') : '';
   },
 
   removeComma(value) {
