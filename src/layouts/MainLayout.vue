@@ -100,7 +100,6 @@
         <q-btn flat size="sm" class="q-pa-none q-ml-sm">
           <div v-if="!$q.screen.xs">
             <div class="text-subtitle2 text-bold q-mr-sm">{{ $store.state.showcase.userNmx }}</div>
-            <div class="text-caption text-bold q-mr-sm">{{ $store.state.showcase.deptNm }}</div>
           </div>
           <q-avatar color="deep-orange">
             <q-img loading="eager" src="https://cdn.quasar.dev/img/avatar6.jpg" />
@@ -174,7 +173,8 @@
       </q-tree>
     </q-drawer>
     <q-page-container>
-      <router-view :setStdYearGroup="setStdYearGroup" />
+      <!--      <router-view :setYearGroup="setYearGroup" />-->
+      <router-view />
     </q-page-container>
 
     <footer-bar />
@@ -400,17 +400,18 @@ onBeforeMount(() => {
 const ev_set_year_group = ref(null);
 const ev_set_color = ref(null);
 const ev_set_year_options = ref([]);
-const setStdYearGroup = ref({
-  setStdYear: '',
-  setStdFg: '',
+const setYearGroup = ref({
+  setYear: '',
+  setFg: '',
   setLocCh: '',
 });
 const handleSelectedSetYear = resSelected => {
   console.log('selected SetYear: ', resSelected.locCh);
   handle_ev_set_color(resSelected.locCh);
-  setStdYearGroup.value.setStdYear = resSelected.stdYear;
-  setStdYearGroup.value.setStdFg = resSelected.stdFg;
-  setStdYearGroup.value.setLocCh = resSelected.locCh;
+  // setYearGroup.value.setYear = resSelected.stdYear;
+  // setYearGroup.value.setFg = resSelected.stdFg;
+  // setYearGroup.value.setLocCh = resSelected.locCh;
+  storgeYearGroupSave(resSelected.stdYear + '|' + resSelected.stdFg + '|' + resSelected.locCh);
   rootView();
 };
 const handle_ev_set_color = val => {
@@ -443,9 +444,10 @@ const getDataSetYear = async () => {
       }
       ev_set_year_options.value.push(val);
     });
-    setStdYearGroup.value.setStdYear = ev_set_year_options.value[0].stdYear; // 기준년도
-    setStdYearGroup.value.setStdFg = ev_set_year_options.value[0].stdFg; // 적용구분
-    setStdYearGroup.value.setLocCh = ev_set_year_options.value[0].locCh; // 처리상태
+    // setYearGroup.value.setStdYear = ev_set_year_options.value[0].stdYear; // 기준년도
+    // setYearGroup.value.setStdFg = ev_set_year_options.value[0].stdFg; // 적용구분
+    // setYearGroup.value.setLocCh = ev_set_year_options.value[0].locCh; // 처리상태
+    storgeYearGroupSave(ev_set_year_options.value[0].stdYear + '|' + ev_set_year_options.value[0].stdFg + '|' + ev_set_year_options.value[0].locCh);
   } catch (error) {
     console.error('Error fetching users:', error);
   }
@@ -508,6 +510,18 @@ const getFavMenuData = async param => {
 // **************************************************************//
 // ***** DataBase 연결부분 끝  *************************************//
 // **************************************************************//
+
+const storgeYearGroupSave = resSetYearGroup => {
+  $q.localStorage.set('setYearGroup', resSetYearGroup);
+  getStorgeSetYearGroup();
+};
+const getStorgeSetYearGroup = () => {
+  const _value = $q.localStorage.getItem('setYearGroup').split('|');
+  setYearGroup.value.setYear = _value[0];
+  setYearGroup.value.setFg = _value[1];
+  setYearGroup.value.setLocCh = _value[2];
+  console.log('Main SetYear Group :: ', setYearGroup.value.setYear, setYearGroup.value.setFg, setYearGroup.value.setLocCh);
+};
 </script>
 
 <style scoped lang="scss">

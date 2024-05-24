@@ -44,6 +44,7 @@
                           label-color="orange"
                           :disable="formDisable"
                           :rules="[val => (val >= '2000' && val <= '2100') || '2000년 ~ 2100년']"
+                          class="custom-font-size"
                         >
                           <template v-slot:append>
                             <q-avatar class="q-mt-md"> 년 </q-avatar>
@@ -570,7 +571,7 @@ const getSelectData = async (resStdYear, resStdFg) => {
 // ***** DataBase 연결부분 끝  *************************************//
 // **************************************************************//
 </script>
-<style lang="sass" scoped>
+<style lang="sass">
 .loc-ch-0-teal
   color: teal
 .loc-ch-1-blue
@@ -579,4 +580,10 @@ const getSelectData = async (resStdYear, resStdFg) => {
   color: red
 .loc-ch-3-orange
   color: orange
+</style>
+<style scoped>
+.custom-font-size {
+  font-size: 18px;
+  font-weight: bold;
+}
 </style>

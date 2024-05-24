@@ -80,6 +80,33 @@ const updateData = ref([]);
 const showSaveBtn = ref(false);
 const showDeleteBtn = ref(false);
 
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize);
+});
+onBeforeMount(() => {
+  getStorgeSetYearGroup();
+  rowSelection.value = 'multiple';
+  getData();
+});
+onMounted(() => {
+  window.addEventListener('resize', handleResize);
+  handleResize();
+});
+// 기준평가기간 적용부분
+const setYearGroup = ref({
+  setYear: '',
+  setFg: '',
+  setLocCh: '',
+});
+const getStorgeSetYearGroup = () => {
+  const _value = $q.localStorage.getItem('setYearGroup').split('|');
+  setYearGroup.value.setYear = _value[0];
+  setYearGroup.value.setFg = _value[1];
+  setYearGroup.value.setLocCh = _value[2];
+  console.log('Sub SetYear Group :: ', setYearGroup.value.setYear, setYearGroup.value.setFg, setYearGroup.value.setLocCh);
+};
+// 기준평가기간 적용부분 끝
+
 const onGridReady = params => {
   gridApi.value = params.api;
 };
@@ -171,11 +198,6 @@ const onCellValueChanged = () => {
 
 const rowSelection = ref(null);
 
-onBeforeMount(() => {
-  rowSelection.value = 'multiple';
-  getData();
-});
-
 //*******************************************************//
 //****  신규 자료 추가부분     ******************************//
 const addDataSection = () => {
@@ -183,7 +205,7 @@ const addDataSection = () => {
   updateData.value = [];
   const addIndex = 0;
   const newItems = {
-    stdYear: '2024',
+    stdYear: setYearGroup.value.setYear,
     pstnCd: '',
     oldPstnCd: '',
     pstnNm: '',
@@ -283,14 +305,6 @@ const myTweak = offset => {
 const handleResize = () => {
   contentZoneHeight.value = window.innerHeight - screenSizeHeight.value - 180;
 };
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', handleResize);
-});
-onMounted(() => {
-  window.addEventListener('resize', handleResize);
-  handleResize();
-});
-
 // **************************************************************//
 // ***** DataBase 연결부분    *************************************//
 // **************************************************************//
@@ -298,7 +312,7 @@ onMounted(() => {
 // ***** 소속팀정보 가저오기 부분  **************************//
 const getData = async () => {
   try {
-    const response = await api.post('/api/mst/mst2030_list', { paramSetYear: '2024' }, { headers: authHeader() });
+    const response = await api.post('/api/mst/mst2030_list', { paramSetYear: setYearGroup.value.setYear }, { headers: authHeader() });
     rowData.rows = response.data.data;
     rowDataBack.value = JSON.parse(JSON.stringify(response.data.data));
     updateData.value = [];

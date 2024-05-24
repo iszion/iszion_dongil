@@ -130,16 +130,16 @@
                       </q-card>
                     </div>
                     <div class="col-12 col-md-6">
-                      <q-input ref="empCdFocus" v-model="formData.empCd" label="사원 ID" label-color="orange" :disable="formDisable">
+                      <q-input ref="empCdFocus" v-model="formData.empCd" label="사원 ID" label-color="orange" :disable="formDisableEmpCd">
                         <template v-slot:append>
-                          <q-icon size="0.8em" name="done" class="cursor-pointer q-mt-lg">
+                          <q-icon size="0.8em" name="done" class="cursor-pointer q-mt-lg" @click="getDataEmpCdCheck">
                             <q-tooltip transition-show="rotate" transition-hide="rotate" class="bg-amber text-black shadow-4">
                               사번 중복체크
                             </q-tooltip>
                           </q-icon>
                         </template>
                       </q-input>
-                      <q-input v-model="formData.empNm" label="성명" label-color="orange" :disable="formDisable" />
+                      <q-input ref="empNmFocus" v-model="formData.empNm" label="성명" label-color="orange" :disable="formDisable" />
 
                       <q-select
                         :disable="formDisable"
@@ -271,8 +271,8 @@
                       <q-input v-model="formData.email" label="이메일" label-color="orange" :disable="formDisable" />
 
                       <div class="q-mt-xs q-gutter-sm">
-                        <q-radio keep-color v-model="formData.gender" val="M" label="남자" color="teal" />
-                        <q-radio keep-color v-model="formData.gender" val="F" label="여자" color="orange" />
+                        <q-radio keep-color v-model="formData.gender" val="M" label="남자" color="teal" :disable="formDisable" />
+                        <q-radio keep-color v-model="formData.gender" val="F" label="여자" color="orange" :disable="formDisable" />
                       </div>
                       <q-separator class="q-mb-xs" />
 
@@ -332,17 +332,8 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', handleResize);
 });
 
-const props = defineProps(['setStdYearGroup']);
-const setYearGroup = ref({
-  setYear: '',
-  setFg: '',
-  setLocCh: '',
-});
-
 onBeforeMount(() => {
-  setYearGroup.value.setYear = props.setStdYearGroup.setStdYear;
-  setYearGroup.value.setFg = props.setStdYearGroup.setStdFg;
-  setYearGroup.value.setLocCh = props.setStdYearGroup.setLocCh;
+  getStorgeSetYearGroup();
 
   rowSelection.value = 'multiple';
   getData();
@@ -353,11 +344,27 @@ onBeforeMount(() => {
   getDataEvtgOption();
 });
 
+// 기준평가기간 적용부분
+const setYearGroup = ref({
+  setYear: '',
+  setFg: '',
+  setLocCh: '',
+});
+const getStorgeSetYearGroup = () => {
+  const _value = $q.localStorage.getItem('setYearGroup').split('|');
+  setYearGroup.value.setYear = _value[0];
+  setYearGroup.value.setFg = _value[1];
+  setYearGroup.value.setLocCh = _value[2];
+  console.log('Sub SetYear Group :: ', setYearGroup.value.setYear, setYearGroup.value.setFg, setYearGroup.value.setLocCh);
+};
+// 기준평가기간 적용부분 끝
+
 onMounted(() => {
   window.addEventListener('resize', handleResize);
   handleResize();
 });
 
+const formDisableEmpCd = ref(true);
 const formDisable = ref(true);
 const isScreenVisible = ref(true);
 const isClassActive = ref(true);
@@ -539,6 +546,7 @@ const onSelectionChanged = event => {
     statusEdit.message = '수정/삭제모드 입니다';
     statusEdit.color = 'accent';
     isSaveFg = 'U';
+    formDisableEmpCd.value = true;
     formDisable.value = false;
   } else if (selectedRows.value.length > 1) {
     isSaveFg = 'D';
@@ -559,6 +567,7 @@ const onSelectionChanged = event => {
 const rowSelection = ref(null);
 
 const empCdFocus = ref(null);
+const empNmFocus = ref(null);
 const addDataSection = () => {
   formData.value = {};
   oldFormData.value = {};
@@ -568,7 +577,9 @@ const addDataSection = () => {
   statusEdit.color = 'primary';
   isSaveFg = 'I';
   isShowSaveBtn.value = true;
-  formDisable.value = false;
+  formDisableEmpCd.value = false;
+  formDisable.value = true;
+  formData.value.stdYear = setYearGroup.value.setYear;
   formData.value.outDay = '9999-12-31';
   setTimeout(() => {
     empCdFocus.value.focus();
@@ -703,7 +714,7 @@ const saveDataAndHandleResult = resFormData => {
       console.log('error: ', error);
     });
 };
-// ***** 사용자정보 목록 자료 가져오기 부분  *****************************//
+// ***** 인사정보 목록 자료 가져오기 부분  *****************************//
 const getData = async () => {
   try {
     const response = await api.post(
@@ -716,9 +727,8 @@ const getData = async () => {
     console.error('Error fetching users:', error);
   }
 };
-// ***** 사용자정보 목록 자료 가져오기 부분  *****************************//
 
-// ***** 사용자정보 선택된 자료 가져오기 부분  *****************************//
+// ***** 인사정보 선택된 자료 가져오기 부분  *****************************//
 const getDataSelect = async (resStdYear, resEmpCd) => {
   try {
     const response = await api.post('/api/mst/mst1010_select', { paramStdYear: resStdYear, paramEmpCd: resEmpCd }, { headers: authHeader() });
@@ -731,7 +741,36 @@ const getDataSelect = async (resStdYear, resEmpCd) => {
     console.error('Error fetching users:', error);
   }
 };
-// ***** 사용자정보 선택된 자료 가져오기 부분  *****************************//
+
+// ***** 사원번호 중복체크 부분  *****************************//
+const getDataEmpCdCheck = async () => {
+  try {
+    const response = await api.post(
+      '/api/mst/mst1010_empCd_check',
+      { paramStdYear: setYearGroup.value.setYear, paramEmpCd: formData.value.empCd },
+      { headers: authHeader() },
+    );
+    console.log('check :: ', response.data.data[0].ch);
+    if (response.data.data[0].ch === 0) {
+      formDisable.value = false;
+      setTimeout(() => {
+        empNmFocus.value.focus();
+      }, 100);
+    } else {
+      formData.value.empCd = null;
+      empCdFocus.value.focus();
+      formDisable.value = true;
+      $q.notify({
+        position: 'top-right',
+        type: 'negative',
+        message: '중복된 사원번호가 존재합니다. 다른 사원번호로 입력하세요.',
+        timeout: 1000,
+      });
+    }
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+};
 
 // ***** 소속팀정보 가져오기 부분  *****************************//
 async function getDataDeptOption() {

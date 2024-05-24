@@ -95,12 +95,6 @@ const onSubmit = () => {
               $store.commit('showcase/getUserNm', response.data.data.userNm);
               $store.commit('showcase/getUserNmx', response.data.data.userNmx);
               $store.commit('showcase/getEmpCd', response.data.data.empCd);
-              $store.commit('showcase/getSalesCd', response.data.data.salesCd);
-              $store.commit('showcase/getSalesNm', response.data.data.salesNm);
-              $store.commit('showcase/getDeptCd', response.data.data.deptCd);
-              $store.commit('showcase/getDeptNm', response.data.data.deptNm);
-              $store.commit('showcase/getJobTitleCd', response.data.data.jobTitleCd);
-              $store.commit('showcase/getJobTitleNm', response.data.data.jobTitleNm);
             })
             .catch(res => {
               console.log('error ==> ' + res);

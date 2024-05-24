@@ -644,12 +644,6 @@ const onCellValueChangedDialog = () => {
 const rowSelection = ref(null);
 const rowSelectionDialog = ref(null);
 
-onBeforeMount(() => {
-  rowSelection.value = 'multiple';
-  getData();
-  getDataDeptOption('2024');
-});
-
 const saveDataSection = () => {
   let iu = [];
   let iuD = [];
@@ -715,14 +709,37 @@ const myTweak = offset => {
 const handleResize = () => {
   contentZoneHeight.value = window.innerHeight - screenSizeHeight.value - 180;
 };
+
 onBeforeUnmount(() => {
   // Remove the resize event listener when the component is destroyed
   window.removeEventListener('resize', handleResize);
 });
+onBeforeMount(() => {
+  getStorgeSetYearGroup();
+  rowSelection.value = 'multiple';
+  getData();
+  getDataDeptOption();
+});
+
 onMounted(() => {
   window.addEventListener('resize', handleResize);
   handleResize();
 });
+
+// 기준평가기간 적용부분
+const setYearGroup = ref({
+  setYear: '',
+  setFg: '',
+  setLocCh: '',
+});
+const getStorgeSetYearGroup = () => {
+  const _value = $q.localStorage.getItem('setYearGroup').split('|');
+  setYearGroup.value.setYear = _value[0];
+  setYearGroup.value.setFg = _value[1];
+  setYearGroup.value.setLocCh = _value[2];
+  console.log('Sub SetYear Group :: ', setYearGroup.value.setYear, setYearGroup.value.setFg, setYearGroup.value.setLocCh);
+};
+// 기준평가기간 적용부분 끝
 
 const checkAll = (resId, resCheck) => {
   for (let i = 0; i < rowData.rows.length; i++) {
@@ -773,7 +790,7 @@ const getData = async () => {
   try {
     const response = await api.post(
       '/api/sys/sys1110_grntg_list',
-      { paramDeptCd: selectedDept.value, paramSearchValue: searchValue.value },
+      { paramSetYear: setYearGroup.value.setYear, paramDeptCd: selectedDept.value, paramSearchValue: searchValue.value },
       { headers: authHeader() },
     );
     rowData.rows = response.data.data;
@@ -829,12 +846,10 @@ const getDataDialog = async () => {
 
 /// ***** 공통코드정보 가져오기 부분  *****************************//
 const selectedDept = ref('');
-const salesOptions = ref([]);
 const deptOptions = ref([]);
-const jobTitleOptions = ref([]);
-async function getDataDeptOption(resStdYear) {
+async function getDataDeptOption() {
   try {
-    const response = await api.post('/api/mst/dept_option_list', { paramStdYear: resStdYear }, { headers: authHeader() });
+    const response = await api.post('/api/mst/dept_option_list', { paramStdYear: setYearGroup.value.setYear }, { headers: authHeader() });
     deptOptions.value = response.data.data;
     deptOptions.value.push({ deptNm: '전체', deptCd: '' });
   } catch (error) {

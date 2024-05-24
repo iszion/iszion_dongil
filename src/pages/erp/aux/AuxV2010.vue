@@ -3,12 +3,12 @@
     <!-- contents zone -->
     <div class="row q-pa-sm q-col-gutter-md">
       <!-- contents List -->
-      <div class="col-12 col-lg-6">
+      <div class="col-12 col-lg-5">
         <q-card bordered>
           <!-- contents list title bar -->
           <q-bar class="q-px-sm">
             <q-icon name="list_alt" />
-            <span class="text-subtitle2 q-px-sm">사용정보 리스트</span>
+            <span class="text-subtitle2 q-px-sm">기준인사정보 리스트</span>
             <q-space />
           </q-bar>
           <!--  end of contents list title bar -->
@@ -30,7 +30,7 @@
                   map-options
                   style="min-width: 150px; max-width: 150px"
                   label="소속팀"
-                  @update:model-value="getDataUser"
+                  @update:model-value="getDataEmp"
                 />
                 <q-input
                   stack-label
@@ -49,7 +49,7 @@
               </div>
               <q-space />
               <div class="q-gutter-xs">
-                <q-btn outline color="positive" dense @click="getDataUser"><q-icon name="search" size="xs" /> 조회 </q-btn>
+                <q-btn outline color="positive" dense @click="getDataEmp"><q-icon name="search" size="xs" /> 조회 </q-btn>
               </div>
             </q-toolbar>
           </q-card-actions>
@@ -61,12 +61,12 @@
               <ag-grid-vue
                 style="width: 100%; height: 100%"
                 :class="$q.dark.isActive ? 'ag-theme-alpine-dark' : 'ag-theme-alpine'"
-                :columnDefs="columnDefsUser.columns"
-                :rowData="rowDataUser.rows"
-                :defaultColDef="defaultColDefUser.def"
-                :rowSelection="rowSelectionUser"
-                @selection-changed="onSelectionChangedUser"
-                @grid-ready="onGridReadyUser"
+                :columnDefs="columnDefsEmp.columns"
+                :rowData="rowDataEmp.rows"
+                :defaultColDef="defaultColDefEmp.def"
+                :rowSelection="rowSelectionEmp"
+                @selection-changed="onSelectionChangedEmp"
+                @grid-ready="onGridReadyEmp"
               >
               </ag-grid-vue>
             </div>
@@ -75,21 +75,41 @@
       </div>
       <!--  end of contents list -->
       <!-- contents List -->
-      <div class="col-12 col-lg-6">
+      <div class="col-12 col-lg-7">
         <q-card bordered>
           <!-- contents list title bar -->
           <q-bar class="q-px-sm">
             <q-icon name="list_alt" />
-            <span class="text-subtitle2 q-px-sm">권한받는 사용자 리스트</span>
+            <span class="text-subtitle2 q-px-sm">평가대상자 선택</span>
             <q-space />
           </q-bar>
           <!--  end of contents list title bar -->
           <q-card-actions align="right" class="q-pa-none">
             <q-toolbar class="row">
-              <div v-if="!isEmpty(selectedRows)">
-                <span class="text-subtitle1 text-bold">주는쪽 : </span>
-                <span class="text-subtitle1 text-bold"> ( {{ selectedRows[0].userId }} ) {{ selectedRows[0].userNm }} </span>
+              <div v-if="!isEmpty(selectedRows)" class="q-mr-xl">
+                <span class="text-subtitle1 text-bold">평가자 : </span>
+                <span class="text-subtitle1 text-bold"> ( {{ selectedRows[0].empCd }} ) {{ selectedRows[0].empNm }} </span>
               </div>
+              <div class="row q-col-gutter-md">
+                <q-select
+                  dense
+                  stack-label
+                  options-dense
+                  class="q-px-md q-mr-sm"
+                  label-color="orange"
+                  v-model="selectedEvs"
+                  :options="evsOptions"
+                  option-value="commCd"
+                  option-label="commNm"
+                  option-disable="inactive"
+                  emit-value
+                  map-options
+                  style="min-width: 150px; max-width: 150px"
+                  label="평가승인구분"
+                  @update:model-value="handleSelectedEvs"
+                />
+              </div>
+
               <q-space />
               <div class="q-gutter-xs">
                 <q-btn v-if="isShowSaveBtn" outline color="primary" dense @click="saveDataSection">
@@ -108,6 +128,7 @@
                 :class="$q.dark.isActive ? 'ag-theme-alpine-dark' : 'ag-theme-alpine'"
                 :columnDefs="columnDefs.columns"
                 :rowData="rowData.rows"
+                :rowSelection="rowSelection"
                 :defaultColDef="defaultColDef.def"
                 @grid-ready="onGridReady"
               >
@@ -151,7 +172,7 @@ const contentZoneStyle = computed(() => ({
 const gridApi = ref(null);
 const gridApiUser = ref(null);
 const rowData = reactive({ rows: [] });
-const rowDataUser = reactive({ rows: [] });
+const rowDataEmp = reactive({ rows: [] });
 
 onBeforeUnmount(() => {
   // Remove the resize event listener when the component is destroyed
@@ -160,14 +181,16 @@ onBeforeUnmount(() => {
 onBeforeMount(() => {
   getStorgeSetYearGroup();
 
-  rowSelectionUser.value = 'single';
-  getDataUser();
+  rowSelectionEmp.value = 'single';
+  rowSelection.value = 'multiple';
+  getDataEmp();
 });
 
 onMounted(() => {
   window.addEventListener('resize', handleResize);
   handleResize();
   getDataDeptOption();
+  getDataCommOption('201');
 });
 
 // 기준평가기간 적용부분
@@ -185,11 +208,11 @@ const getStorgeSetYearGroup = () => {
 };
 // 기준평가기간 적용부분 끝
 
-const onGridReadyUser = params => {
+const onGridReadyEmp = params => {
   gridApiUser.value = params.api;
 };
 
-const defaultColDefUser = reactive({
+const defaultColDefEmp = reactive({
   def: {
     flex: 1,
     sortable: false,
@@ -199,7 +222,7 @@ const defaultColDefUser = reactive({
   },
 });
 
-const columnDefsUser = reactive({
+const columnDefsEmp = reactive({
   columns: [
     {
       headerName: '#',
@@ -213,87 +236,45 @@ const columnDefsUser = reactive({
       },
     },
     {
-      headerName: '주는쪽',
+      headerName: '선택',
       field: '',
-      maxWidth: 70,
-      minWidth: 70,
+      maxWidth: 60,
+      minWidth: 60,
       pinned: 'left',
       cellStyle: { textAlign: 'center' },
       checkboxSelection: true,
     },
     {
-      headerName: '받는쪽',
-      field: 'targetYn',
-      maxWidth: 70,
-      minWidth: 70,
-      pinned: 'left',
-      cellRenderer: CompToggleAuth,
-      cellRendererParams: {
-        // paramSourceUserId: sourceUserId.value,
-        updateSelectedValue: row => {
-          if (isEmpty(selectedSourceUserId.value)) {
-            row.value.targetYn = 'N';
-            $q.dialog({
-              dark: true,
-              title: '안내',
-              message: '주는쪽을 먼저 선택하세요',
-            });
-          } else {
-            if (row.value.targetYn === 'Y' && selectedSourceUserId.value === row.value.targetUserId) {
-              Notify.create({
-                type: 'my-notify',
-                position: 'top-right',
-                color: 'negative',
-                message: '주는쪽 ID와 받는쪽 ID가 같으면 안됩니다.',
-                group: false,
-                actions: [
-                  {
-                    label: '닫기',
-                    color: 'dark',
-                    handler: () => {
-                      /* ... */
-                    },
-                  },
-                ],
-                timeout: 5000,
-              });
-              row.value.targetYn = 'N';
-            } else {
-              onCellValueChanged();
-            }
-          }
-        },
-      },
-    },
-    {
-      headerName: '아이디',
-      field: 'userId',
+      headerName: '사번',
+      field: 'empCd',
       maxWidth: 100,
       minWidth: 100,
-      pinned: 'left',
+      cellStyle: { textAlign: 'center' },
     },
     {
       headerName: '성명',
-      field: 'userNm',
-      minWidth: 100,
-      maxWidth: 100,
-      pinned: 'left',
+      field: 'empNm',
+      minWidth: 80,
+      maxWidth: 80,
+      cellStyle: { textAlign: 'center' },
+    },
+    {
+      headerName: '소속분류',
+      field: 'depgNm',
+      maxWidth: 90,
+      minWidth: 90,
+      cellStyle: { textAlign: 'center' },
+    },
+    {
+      headerName: '직급',
+      field: 'titlNm',
+      maxWidth: 70,
+      minWidth: 70,
+      cellStyle: { textAlign: 'center' },
     },
     {
       headerName: '소속팀',
       field: 'deptNm',
-      maxWidth: 100,
-      minWidth: 100,
-    },
-    {
-      headerName: '직위',
-      field: 'pstnNm',
-      maxWidth: 100,
-      minWidth: 100,
-    },
-    {
-      headerName: '사원번호',
-      field: 'empCd',
       maxWidth: 100,
       minWidth: 100,
       cellStyle: { textAlign: 'center' },
@@ -308,8 +289,8 @@ const onGridReady = params => {
 const defaultColDef = reactive({
   def: {
     flex: 1,
-    sortable: false,
-    filter: false,
+    sortable: true,
+    filter: true,
     floatingFilter: false,
     editable: false,
   },
@@ -319,8 +300,10 @@ const columnDefs = reactive({
   columns: [
     {
       headerName: '#',
+      filter: false,
       minWidth: 60,
       maxWidth: 60,
+      pinned: 'left',
       cellStyle: { textAlign: 'center' },
       valueGetter: function (params) {
         // Customize row numbers as needed
@@ -328,16 +311,41 @@ const columnDefs = reactive({
       },
     },
     {
-      headerName: '아이디',
-      field: 'targetUserId',
+      headerName: '',
+      field: '',
+      sortable: false,
+      filter: false,
+      maxWidth: 60,
+      minWidth: 60,
+      pinned: 'left',
+      cellStyle: { textAlign: 'center' },
+      checkboxSelection: true,
+      headerCheckboxSelection: true,
+    },
+    {
+      headerName: '사번',
+      field: 'empCd',
       maxWidth: 100,
       minWidth: 100,
     },
     {
       headerName: '성명',
-      field: 'userNm',
+      field: 'empNm',
       minWidth: 100,
       maxWidth: 100,
+    },
+    {
+      headerName: '소속분류',
+      field: 'depgNm',
+      maxWidth: 90,
+      minWidth: 90,
+      cellStyle: { textAlign: 'center' },
+    },
+    {
+      headerName: '직급',
+      field: 'titlNm',
+      maxWidth: 100,
+      minWidth: 100,
     },
     {
       headerName: '소속팀',
@@ -345,72 +353,21 @@ const columnDefs = reactive({
       maxWidth: 100,
       minWidth: 100,
     },
-    {
-      headerName: '직위',
-      field: 'pstnNm',
-      maxWidth: 100,
-      minWidth: 100,
-    },
-    {
-      headerName: '사원번호',
-      field: 'empCd',
-      maxWidth: 100,
-      minWidth: 100,
-      cellStyle: { textAlign: 'center' },
-    },
   ],
 });
 
 const selectedRows = ref();
 const isShowSaveBtn = ref(false);
 
-const onSelectionChangedUser = event => {
+const onSelectionChangedEmp = event => {
   selectedRows.value = event.api.getSelectedRows();
   if (!isEmpty(selectedRows.value)) {
-    selectedSourceUserId.value = selectedRows.value[0].sourceUserId;
-    for (let i = 0; updateData.value.length > i; i++) {
-      if (selectedSourceUserId.value === updateData.value[i].targetUserId) {
-        rowData.rows[i].targetYn = 'N';
-      }
-    }
-    onCellValueChanged();
+    getDataSelectEmp(selectedRows.value[0].empCd);
   }
 };
 
-const onCellValueChanged = () => {
-  updateData.value = [];
-  for (let i = 0; rowDataUser.rows.length > i; i++) {
-    if (rowDataUser.rows[i].targetYn === 'Y') {
-      updateData.value.push(rowDataUser.rows[i]);
-    }
-  }
-  rowData.rows = updateData.value;
-  console.log(JSON.stringify(rowData.rows));
-  isShowSaveBtn.value = updateData.value.length > 0;
-  let messageV = null;
-  if (updateData.value.length > 0) {
-    messageV = updateData.value.length + ' 명이 선택 되었습니다.';
-
-    Notify.create({
-      type: 'my-notify',
-      position: 'bottom',
-      color: 'primary',
-      message: messageV,
-      group: false,
-      actions: [
-        {
-          label: '닫기',
-          color: 'dark',
-          handler: () => {
-            /* ... */
-          },
-        },
-      ],
-      timeout: 5000,
-    });
-  }
-};
-const rowSelectionUser = ref(null);
+const rowSelectionEmp = ref(null);
+const rowSelection = ref(null);
 
 const updateData = ref([]);
 const showSaveBtn = ref(false);
@@ -463,19 +420,32 @@ const handleResize = () => {
 // **************************************************************//
 
 // ***** 사용자정보 목록 자료 가져오기 부분  *****************************//
-const getDataUser = async () => {
+const getDataEmp = async () => {
   try {
     const response = await api.post(
-      '/api/sys/sys1120_list',
+      '/api/aux/aux2010_list',
       { paramSetYear: setYearGroup.value.setYear, paramDeptCd: selectedDept.value, paramSearchValue: searchValue.value },
       { headers: authHeader() },
     );
-    rowDataUser.rows = response.data.data;
+    rowDataEmp.rows = response.data.data;
   } catch (error) {
     console.error('Error fetching users:', error);
   }
 };
-// ***** 사용자정보 목록 자료 가져오기 부분  *****************************//
+
+// ***** 선택한 인사정보 소속사원 자료 가져오기 부분  *****************************//
+const getDataSelectEmp = async resEmpCd => {
+  try {
+    const response = await api.post(
+      '/api/aux/aux2010_select',
+      { paramSetYear: setYearGroup.value.setYear, paramEmpCd: resEmpCd },
+      { headers: authHeader() },
+    );
+    rowData.rows = response.data.data;
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+};
 
 // ***** 자료저장 및 삭제 처리부분 *****************************//
 // saveStatus = 0=수정성공 1=신규성공 2=삭제성공 3=수정에러 4=시스템에러
@@ -516,6 +486,22 @@ async function getDataDeptOption(resParamCommCd1) {
     console.error('Error fetching users:', error);
   }
 }
+
+// ***** DataBase 공통코드 가져오기 부분 *****************************//
+const evsOptions = ref([]);
+const selectedEvs = ref(null);
+// ***** 공통코드정보 가져오기 부분  *****************************//
+async function getDataCommOption(resParamCommCd1) {
+  try {
+    const response = await api.post('/api/mst/comm_option_list', { paramCommCd1: resParamCommCd1 }, { headers: authHeader() });
+    evsOptions.value = response.data.data;
+    selectedEvs.value = evsOptions.value[0].commCd;
+    // deptOptions.value.push({ commCd: '', commNm: '전체' });
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+}
+
 // **************************************************************//
 // ***** DataBase 연결부분 끝  *************************************//
 // **************************************************************//
