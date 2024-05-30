@@ -1,11 +1,17 @@
 import axios from 'axios';
 import {ref} from 'vue';
 import {boot} from "quasar/wrappers";
+import {Cookies} from "quasar";
 
 const api = axios.create({ baseURL: process.env.SERVER_URL })
 
 export default boot(({ app, router }) => {
   api.interceptors.request.use(function (config) {
+    const token = Cookies.get('accessToken');
+    if (!token) {
+      router.push('/')
+    }
+    config.headers.Authorization = 'Bearer ' + token;
     return config;
   }, function (error) {
     return Promise.reject(error);
@@ -15,12 +21,12 @@ export default boot(({ app, router }) => {
     return response;
   }, function (error) {
     const originalRequest = error.config;
-    const data = localStorage.getItem('token');
-    const accessObject = JSON.parse(data);
+    const accessToken = Cookies.get('accessToken');
+    const refreshToken = Cookies.get('refreshToken');
 
     const form = ref({
-      accessToken: accessObject.accessToken,
-      refreshToken: accessObject.refreshToken,
+      accessToken: accessToken,
+      refreshToken: refreshToken,
     });
 
     if (error.response.status === 401 && !originalRequest._retry) {
@@ -31,7 +37,7 @@ export default boot(({ app, router }) => {
       }
 
       try {
-        api.post('/api/auth/reissue', form.value, {headers})
+        api.post('/api/auth/reissue', form.value)
           .then(res => {
             localStorage.removeItem('token');
             localStorage.setItem('token', JSON.stringify(res.data.data))

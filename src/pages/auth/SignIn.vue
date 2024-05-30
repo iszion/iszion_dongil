@@ -56,7 +56,7 @@
 import { computed, onBeforeMount, ref } from 'vue';
 import { useStore } from 'vuex';
 import FooterBar from 'layouts/FooterBar.vue';
-import { useQuasar } from 'quasar';
+import { useQuasar, Cookies } from 'quasar';
 import { api } from '/src/boot/axios';
 import authHeader from 'boot/authHeader';
 import { useRouter } from 'vue-router';
@@ -86,6 +86,8 @@ const onSubmit = () => {
       .then(res => {
         if (res.data.data.accessToken && res.data.state === 200) {
           localStorage.setItem('token', JSON.stringify(res.data.data));
+          Cookies.set('accessToken', JSON.stringify(res.data.data.accessToken), {expires: '60m'})
+          Cookies.set('refreshToken', JSON.stringify(res.data.data.refreshToken), {expires: 1})
           router.push({ path: '/main' });
 
           api
