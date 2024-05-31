@@ -632,7 +632,6 @@ const saveDataAndHandleResult = resFormData => {
 // ***** 사용자정보 목록 자료 가져오기 부분  *****************************//
 const getData = async () => {
   try {
-    console.log("getData")
     const response = await api.post(
       '/api/sys/sys1010_list',
       { paramSetYear: setYearGroup.value.setYear, paramDeptCd: searchParam.deptCd, paramSearchWord: searchParam.word },

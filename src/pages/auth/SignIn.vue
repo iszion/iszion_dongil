@@ -91,8 +91,9 @@ const onSubmit = () => {
           router.push({ path: '/main' });
 
           api
-            .get('/api/sys/user_data', { headers: authHeader() })
+            .get('/api/sys/user_data')
             .then(response => {
+              console.log("user1 : " + JSON.stringify(response))
               console.log('user: ', JSON.stringify(response.data.data));
               $store.commit('showcase/getUserNm', response.data.data.userNm);
               $store.commit('showcase/getUserNmx', response.data.data.userNmx);
