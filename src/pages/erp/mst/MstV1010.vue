@@ -127,6 +127,12 @@
                     <div class="col-12 col-md-6">
                       <q-card class="q-ma-xs q-pa-sm">
                         <q-img src="https://cdn.quasar.dev/img/avatar6.jpg" />
+                        <div class="row q-pa-xs">
+                          <q-avatar color="blue" text-color="white" icon="photo_camera" size="md" class="q-pa-none" />
+                          <q-space />
+                          <q-avatar color="red" text-color="white" icon="delete_forever" size="md" class="q-pa-none" />
+                        </div>
+                        <div class="text-center">{{ formData.imageFileNm }}</div>
                       </q-card>
                     </div>
                     <div class="col-12 col-md-6">
@@ -526,6 +532,7 @@ const formData = ref({
   email: '',
   inDay: '',
   outDay: '',
+  imageFileNm: '',
 });
 
 const selectedRows = ref();
