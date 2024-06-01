@@ -126,13 +126,13 @@
                   <div class="row q-col-gutter-xl">
                     <div class="col-12 col-md-6">
                       <q-card class="q-ma-xs q-pa-sm">
-                        <q-img src="https://cdn.quasar.dev/img/avatar6.jpg" />
+                        <q-img id="imageDisplay" src=""/>
                         <div class="row q-pa-xs">
-                          <q-avatar color="blue" text-color="white" icon="photo_camera" size="md" class="q-pa-none" />
+                          <q-avatar color="blue" text-color="white" icon="photo_camera" size="md" class="q-pa-none" @click="openFilePicker"/>
                           <q-space />
                           <q-avatar color="red" text-color="white" icon="delete_forever" size="md" class="q-pa-none" />
                         </div>
-                        <div class="text-center">{{ formData.imageFileNm }}</div>
+                        <div class="text-center">{{ formData.imageFileNmFull }}</div>
                       </q-card>
                     </div>
                     <div class="col-12 col-md-6">
@@ -302,7 +302,7 @@ import 'ag-grid-community/styles/ag-theme-quartz.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import 'ag-grid-community/styles/ag-theme-balham.css';
 import { AgGridVue } from 'ag-grid-vue3';
-import { QBtn, QIcon, useQuasar } from 'quasar';
+import {Cookies, QBtn, QIcon, useQuasar} from 'quasar';
 import { computed, onBeforeMount, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
 import { api } from '/src/boot/axios';
 
@@ -332,6 +332,8 @@ const statusEdit = reactive({
   message: '',
   color: '',
 });
+
+const insaFileName = ref(null);
 
 onBeforeUnmount(() => {
   // Remove the resize event listener when the component is destroyed
@@ -533,6 +535,7 @@ const formData = ref({
   inDay: '',
   outDay: '',
   imageFileNm: '',
+  imageFileNmFull: '',
 });
 
 const selectedRows = ref();
@@ -726,8 +729,7 @@ const getData = async () => {
   try {
     const response = await api.post(
       '/api/mst/mst1010_list',
-      { paramSetYear: setYearGroup.value.setYear, paramDeptCd: searchParam.deptCd, paramSearchWord: searchParam.word },
-      { headers: authHeader() },
+      { paramSetYear: setYearGroup.value.setYear, paramDeptCd: searchParam.deptCd, paramSearchWord: searchParam.word }
     );
     rowData.rows = response.data.data;
   } catch (error) {
@@ -744,6 +746,22 @@ const getDataSelect = async (resStdYear, resEmpCd) => {
     formData.value.birthday = commUtil.formatDate(response.data.data[0].birthday);
     formData.value.inDay = commUtil.formatDate(response.data.data[0].inDay);
     formData.value.outDay = commUtil.formatDate(response.data.data[0].outDay);
+
+    const token = Cookies.get('accessToken');
+    console.log("token : " + token);
+    const imgResponse = await api.get('http://localhost:8080/attach/images/cogi.jpeg', {
+      headers: {
+        'Authorization': `Bearer ${token}` // 토큰을 Authorization 헤더에 추가
+      }
+    })
+
+    const imageBlob = await imgResponse.data.blob();
+    const imageUrl = URL.createObjectURL(imageBlob);
+
+    const imageElement = document.getElementById('imageDisplay');
+    console.log(imageUrl)
+    imageElement.src = imageUrl;
+
   } catch (error) {
     console.error('Error fetching users:', error);
   }
@@ -830,6 +848,36 @@ async function getDataEvtgOption() {
 // **************************************************************//
 // ***** DataBase 연결부분 끝  *************************************//
 // **************************************************************//
+
+const openFilePicker = () => {
+  // 파일 선택 대화 상자 열기
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*'; // 이미지 파일만 선택 가능하도록 설정 (선택 사항)
+  input.onchange = event => {
+    const file = event.target.files[0];
+    if (file) {
+      // 파일이 선택된 경우, 여기에서 파일 업로드 로직을 추가할 수 있습니다.
+      uploadFile(file);
+    }
+  };
+  input.click();
+};
+
+const uploadFile = file => {
+  // 파일 업로드 로직을 작성하세요.
+  insaFileName.value = file.name;
+  const fileData = new FormData();
+  fileData.append('file', file);
+  fileData.append('empCd', formData.value.empCd);
+
+  api.post('/api/mst/upload', fileData, )
+    .then(res => {
+      console.log("success")
+    }).catch(error => {
+      console.log('error : ' + error)
+  })
+};
 </script>
 
 <style lang="sass" scoped>
