@@ -1,7 +1,7 @@
 <template>
-  <q-page class="q-pa-xs" :style-fn="myTweak">
+  <q-page class="q-pa-xs-xs q-pa-sm-md" :style-fn="myTweak">
     <!-- contents zone -->
-    <div class="row q-pa-sm q-col-gutter-md">
+    <div class="row q-col-gutter-md">
       <!-- contents List -->
       <div class="col-12 col-md-3">
         <q-card bordered>

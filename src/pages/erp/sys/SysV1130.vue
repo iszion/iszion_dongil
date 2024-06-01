@@ -1,7 +1,7 @@
 <template>
-  <q-page class="q-pa-xs" :style-fn="myTweak">
+  <q-page class="q-pa-xs-xs q-pa-sm-md" :style-fn="myTweak">
     <!-- contents zone -->
-    <div class="row q-pa-sm q-col-gutter-md">
+    <div class="row q-col-gutter-md">
       <!-- contents List -->
       <div class="col-12 col-md-4">
         <q-card bordered>
@@ -85,15 +85,16 @@
                 @update:model-value="handleSelectedUser"
               />
 
-              <q-space />
               <span v-if="selectedProg" class="text-subtitle1 text-bold shadow-5 q-px-lg q-py-xs bg-secondary rounded-borders">
-                {{ selectedProg.progNm }} ( {{ selectedProg.progId }} )</span
-              >
+                {{ selectedProg.progNm }}
+              </span>
               <q-space />
               <q-btn v-if="showSaveUserBtn" outline dense color="primary" @click="saveDataUserSection" v-close-popup class="q-px-sm q-mr-sm"
                 ><q-icon class="q-mr-xs" name="save" size="xs" /> 권한 적용하기
               </q-btn>
-              <q-btn outline dense color="primary" v-close-popup class="q-px-sm"><q-icon class="q-mr-xs" name="close" size="xs" /> 닫기 </q-btn>
+              <q-btn outline dense color="primary" v-close-popup class="q-px-sm"
+                ><q-icon name="close" size="xs" /><span v-if="!$q.screen.xs" class="q-pl-xs">닫기</span></q-btn
+              >
             </q-toolbar>
           </q-card-actions>
 

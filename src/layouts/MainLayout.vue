@@ -12,7 +12,7 @@
 
         <div style="max-width: 300px">
           <q-select
-            style="width: 100px; font-size: 1.04em"
+            style="width: 120px; font-size: 1.04em"
             dense
             :bg-color="ev_set_color"
             standout="text-white"
@@ -26,7 +26,13 @@
             emit-value
             map-options
             @update:model-value="handleSelectedSetYear"
-          />
+          >
+            <template v-slot:append>
+              <q-icon size="xs" name="refresh" @click="getDataSetYear()">
+                <q-tooltip class="bg-indigo" :offset="[10, 10]"> 기준년도 Reset </q-tooltip>
+              </q-icon>
+            </template>
+          </q-select>
         </div>
 
         <q-separator class="q-mx-xs-sm" dark vertical inset />
@@ -438,10 +444,13 @@ const handle_ev_set_color = val => {
   }
 };
 // ***** 검색 선택 자동 처리 부분 끝 *****************************//
+
 const getDataSetYear = async () => {
   try {
     const response = await api.post('/api/aux/aux1010_list', {}, { headers: authHeader() });
 
+    ev_set_year_options.value = [];
+    ev_set_year_group.value = null;
     response.data.data.forEach(val => {
       if (!ev_set_year_group.value) {
         ev_set_year_group.value = val.stdYearNm;

@@ -1,7 +1,7 @@
 <template>
-  <q-page class="q-pa-xs">
+  <q-page>
     <!-- contents zone -->
-    <div class="row q-pa-sm q-col-gutter-xs">
+    <div class="row">
       <!-- contents List -->
       <div class="col-12 col-sm-6">
         <MstV2020 />

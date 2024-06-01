@@ -1,14 +1,14 @@
 <template>
-  <q-page class="q-pa-xs" :style-fn="myTweak">
+  <q-page class="q-pa-xs-xs q-pa-sm-md" :style-fn="myTweak">
     <!-- contents zone -->
-    <div class="row q-pa-sm q-col-gutter-md">
+    <div class="row q-col-gutter-md">
       <!-- contents List -->
       <div class="col-12 col-lg-5">
         <q-card bordered>
           <!-- contents list title bar -->
           <q-bar class="q-px-sm">
             <q-icon name="list_alt" />
-            <span class="text-subtitle2 q-px-sm">기준인사정보 리스트</span>
+            <span class="text-subtitle2 q-px-sm">평가자 선택</span>
             <q-space />
           </q-bar>
           <!--  end of contents list title bar -->
@@ -48,9 +48,11 @@
                 </q-input>
               </div>
               <q-space />
-              <div class="q-gutter-xs">
-                <q-btn outline color="positive" dense @click="getDataEmp"><q-icon name="search" size="xs" /> 조회 </q-btn>
-              </div>
+              <q-btn outline color="positive" dense @click="getDataEmp"><q-icon name="search" size="xs" /> 조회 </q-btn>
+              <q-btn v-if="isShowSaveBtn3" outline color="primary" dense class="q-ma-xs q-pr-lg" @click="saveDataSection3">
+                <q-icon name="delete" size="xs" class="q-mr-sm" />
+                삭제하기
+              </q-btn>
             </q-toolbar>
           </q-card-actions>
 
@@ -81,48 +83,90 @@
           <q-bar class="q-px-sm">
             <q-icon name="list_alt" />
             <span class="text-subtitle2 q-px-sm">평가대상자 선택</span>
-            <q-space />
           </q-bar>
           <!--  end of contents list title bar -->
-          <q-card-actions align="right" class="q-pa-none">
-            <q-toolbar class="row">
-              <div v-if="!isEmpty(selectedRows)" class="q-mr-xl">
-                <span class="text-subtitle1 text-bold">평가자 : </span>
-                <span class="text-subtitle1 text-bold"> ( {{ selectedRows[0].empCd }} ) {{ selectedRows[0].empNm }} </span>
-              </div>
-              <div class="row q-col-gutter-md">
-                <q-select
-                  dense
-                  stack-label
-                  options-dense
-                  class="q-px-md q-mr-sm"
-                  label-color="orange"
-                  v-model="selectedEvs"
-                  :options="evsOptions"
-                  option-value="commCd"
-                  option-label="commNm"
-                  option-disable="inactive"
-                  emit-value
-                  map-options
-                  style="min-width: 150px; max-width: 150px"
-                  label="평가승인구분"
-                  @update:model-value="handleSelectedEvs"
-                />
-              </div>
-
+          <div class="row q-pa-xs">
+            <div v-if="!isEmpty(selectedRows)" class="col-xs-12 col-sm-4 row">
+              <span class="text-subtitle1 text-bold q-mx-sm q-pt-sm">평가자 : </span>
+              <span class="text-subtitle1 text-bold q-mr-md q-pt-sm"> {{ selectedRows[0].empNm }} ( {{ selectedRows[0].empCd }} )</span>
               <q-space />
-              <div class="q-gutter-xs">
-                <q-btn v-if="isShowSaveBtn" outline color="primary" dense @click="saveDataSection">
-                  <q-icon name="content_copy" size="xs" class="q-mr-sm" /> 권한복사 시작</q-btn
-                >
+              <q-btn v-if="isShowSaveBtn1" outline color="primary" dense class="q-ma-xs q-pr-lg" @click="saveDataSection">
+                <q-badge color="orange" floating>{{ selectedRowsTarget.length }}</q-badge>
+                <q-icon name="save" size="xs" class="q-mr-sm" />
+                저장하기
+              </q-btn>
+            </div>
+
+            <div class="col-xs-12 col-sm-8 row">
+              <q-select
+                dense
+                :disable="isDesableEvs"
+                stack-label
+                options-dense
+                class="q-px-md"
+                label-color="orange"
+                v-model="selectedEvs"
+                :options="evsOptions"
+                option-value="commCd"
+                option-label="commNm"
+                option-disable="inactive"
+                emit-value
+                map-options
+                style="min-width: 120px; max-width: 120px"
+                label="평가승인구분"
+                @update:model-value="getDataSelectEmp"
+              />
+              <q-select
+                dense
+                :disable="isDesableEvs"
+                stack-label
+                options-dense
+                class="q-px-md q-mr-xs"
+                label-color="orange"
+                v-model="selectedDept1"
+                :options="deptOptions"
+                option-value="deptCd"
+                option-label="deptNm"
+                option-disable="inactive"
+                emit-value
+                map-options
+                style="min-width: 140px; max-width: 140px"
+                label="소속팀"
+                @update:model-value="getDataSelectEmp"
+              />
+              <q-select
+                dense
+                :disable="isDesableEvs"
+                stack-label
+                options-dense
+                class="q-px-md"
+                label-color="orange"
+                v-model="selectedTitl"
+                :options="titlOptions"
+                option-value="titlCd"
+                option-label="titlNm"
+                option-disable="inactive"
+                emit-value
+                map-options
+                style="min-width: 90px; max-width: 90px"
+                label="직급"
+                @update:model-value="getDataSelectEmp"
+              />
+              <q-space />
+              <div class="q-gutter-xs q-pa-xs">
+                <q-btn v-if="isShowSaveBtn2" outline color="primary" dense class="q-ma-xs q-pr-lg" @click="saveDataSection">
+                  <q-badge color="orange" floating>{{ selectedRowsTarget.length }}</q-badge>
+                  <q-icon name="save" size="xs" class="q-mr-sm" />
+                  저장하기
+                </q-btn>
               </div>
-            </q-toolbar>
-          </q-card-actions>
+            </div>
+          </div>
 
           <q-separator size="3px" />
 
           <q-card-section class="q-pa-xs">
-            <div :style="contentZoneStyle">
+            <div :key="gridKey" :style="contentZoneStyle">
               <ag-grid-vue
                 style="width: 100%; height: 100%"
                 :class="$q.dark.isActive ? 'ag-theme-alpine-dark' : 'ag-theme-alpine'"
@@ -130,6 +174,7 @@
                 :rowData="rowData.rows"
                 :rowSelection="rowSelection"
                 :defaultColDef="defaultColDef.def"
+                @selection-changed="onSelectionTargetEmp"
                 @grid-ready="onGridReady"
               >
               </ag-grid-vue>
@@ -160,9 +205,11 @@ import CompToggleAuth from 'components/CompToggleAuth.vue';
 const $q = useQuasar();
 
 let isSaveFg = 'I';
+const isDesableEvs = ref(true);
 
 const searchValue = ref('');
 const selectedSourceUserId = ref('');
+const gridKey = ref(0);
 
 const contentZoneHeight = ref(500);
 const contentZoneStyle = computed(() => ({
@@ -173,6 +220,11 @@ const gridApi = ref(null);
 const gridApiUser = ref(null);
 const rowData = reactive({ rows: [] });
 const rowDataEmp = reactive({ rows: [] });
+const rowSelectionEmp = ref(null);
+const rowSelection = ref(null);
+
+const updateData = ref([]);
+const showSaveBtn = ref(false);
 
 onBeforeUnmount(() => {
   // Remove the resize event listener when the component is destroyed
@@ -190,6 +242,7 @@ onMounted(() => {
   window.addEventListener('resize', handleResize);
   handleResize();
   getDataDeptOption();
+  getDataTitlOption();
   getDataCommOption('201');
 });
 
@@ -204,7 +257,7 @@ const getStorgeSetYearGroup = () => {
   setYearGroup.value.setYear = _value[0];
   setYearGroup.value.setFg = _value[1];
   setYearGroup.value.setLocCh = _value[2];
-  console.log('Sub SetYear Group :: ', setYearGroup.value.setYear, setYearGroup.value.setFg, setYearGroup.value.setLocCh);
+  // console.log('Sub SetYear Group :: ', setYearGroup.value.setYear, setYearGroup.value.setFg, setYearGroup.value.setLocCh);
 };
 // 기준평가기간 적용부분 끝
 
@@ -215,8 +268,8 @@ const onGridReadyEmp = params => {
 const defaultColDefEmp = reactive({
   def: {
     flex: 1,
-    sortable: false,
-    filter: false,
+    sortable: true,
+    filter: true,
     floatingFilter: false,
     editable: false,
   },
@@ -228,7 +281,7 @@ const columnDefsEmp = reactive({
       headerName: '#',
       minWidth: 60,
       maxWidth: 60,
-      pinned: 'left',
+      initialPinned: 'left',
       cellStyle: { textAlign: 'center' },
       valueGetter: function (params) {
         // Customize row numbers as needed
@@ -236,11 +289,11 @@ const columnDefsEmp = reactive({
       },
     },
     {
-      headerName: '선택',
+      headerName: '',
       field: '',
       maxWidth: 60,
       minWidth: 60,
-      pinned: 'left',
+      initialPinned: 'left',
       cellStyle: { textAlign: 'center' },
       checkboxSelection: true,
     },
@@ -249,41 +302,41 @@ const columnDefsEmp = reactive({
       field: 'empCd',
       maxWidth: 100,
       minWidth: 100,
-      cellStyle: { textAlign: 'center' },
     },
     {
       headerName: '성명',
       field: 'empNm',
       minWidth: 80,
       maxWidth: 80,
-      cellStyle: { textAlign: 'center' },
-    },
-    {
-      headerName: '소속분류',
-      field: 'depgNm',
-      maxWidth: 90,
-      minWidth: 90,
-      cellStyle: { textAlign: 'center' },
     },
     {
       headerName: '직급',
       field: 'titlNm',
-      maxWidth: 70,
-      minWidth: 70,
-      cellStyle: { textAlign: 'center' },
+      minWidth: 80,
     },
     {
       headerName: '소속팀',
       field: 'deptNm',
-      maxWidth: 100,
-      minWidth: 100,
-      cellStyle: { textAlign: 'center' },
+      minWidth: 140,
     },
   ],
 });
 
 const onGridReady = params => {
   gridApi.value = params.api;
+  selectedRowsTarget.value = [];
+  params.api.forEachNode(node => {
+    // console.log('node : ', node.data);
+    // 타겟 평가자와 선택한 평가자가 같은면 체크
+    if (node.data.evsEmpCd === selectedRows.value[0].empCd) {
+      node.setSelected(true);
+    }
+  });
+  if (isEmpty(selectedRowsTarget.value)) {
+    isShowSaveBtn1.value = false;
+    isShowSaveBtn2.value = false;
+    isShowSaveBtn3.value = false;
+  }
 };
 
 const defaultColDef = reactive({
@@ -331,25 +384,28 @@ const columnDefs = reactive({
     {
       headerName: '성명',
       field: 'empNm',
-      minWidth: 100,
-      maxWidth: 100,
+      minWidth: 80,
+      maxWidth: 80,
     },
     {
       headerName: '소속분류',
       field: 'depgNm',
-      maxWidth: 90,
-      minWidth: 90,
-      cellStyle: { textAlign: 'center' },
-    },
-    {
-      headerName: '직급',
-      field: 'titlNm',
       maxWidth: 100,
       minWidth: 100,
     },
     {
+      headerName: '직급',
+      field: 'titlNm',
+      minWidth: 80,
+    },
+    {
       headerName: '소속팀',
       field: 'deptNm',
+      minWidth: 100,
+    },
+    {
+      headerName: '평가자',
+      field: 'evsEmpNm',
       maxWidth: 100,
       minWidth: 100,
     },
@@ -357,53 +413,74 @@ const columnDefs = reactive({
 });
 
 const selectedRows = ref();
-const isShowSaveBtn = ref(false);
+const selectedRowsTarget = ref();
+const isShowSaveBtn1 = ref(false);
+const isShowSaveBtn2 = ref(false);
+const isShowSaveBtn3 = ref(false);
 
 const onSelectionChangedEmp = event => {
   selectedRows.value = event.api.getSelectedRows();
   if (!isEmpty(selectedRows.value)) {
-    getDataSelectEmp(selectedRows.value[0].empCd);
+    // console.log('year : ', selectedRows.value[0].stdYear);
+    getDataSelectEmp();
+    isDesableEvs.value = false;
+  } else {
+    isDesableEvs.value = true;
+    rowData.rows = [];
   }
 };
-
-const rowSelectionEmp = ref(null);
-const rowSelection = ref(null);
-
-const updateData = ref([]);
-const showSaveBtn = ref(false);
-
-const saveDataSection = () => {
-  for (let i = 0; i < updateData.value.length; i++) {
-    updateData.value[i].sourceUserId = selectedSourceUserId.value;
+const onSelectionTargetEmp = event => {
+  selectedRowsTarget.value = event.api.getSelectedRows();
+  if (isEmpty(selectedRowsTarget.value)) {
+    isShowSaveBtn1.value = false;
+    isShowSaveBtn2.value = false;
+    isShowSaveBtn3.value = true;
+  } else {
+    isShowSaveBtn3.value = false;
+    if ($q.screen.xs) {
+      isShowSaveBtn1.value = true;
+      isShowSaveBtn2.value = false;
+    } else {
+      isShowSaveBtn1.value = false;
+      isShowSaveBtn2.value = true;
+    }
   }
-
+  // console.log('data :: ', JSON.stringify(selectedRowsTarget.value));
+};
+const saveDataSection = () => {
   let iu = [];
   let iuD = [];
   // 신규/수정 부분
 
-  for (let i = 0; i < updateData.value.length; i++) {
-    let tmpJson;
-    tmpJson = '{"mode": "I","data":' + JSON.stringify(updateData.value[i]) + '}';
+  for (let i = 0; i < selectedRowsTarget.value.length; i++) {
+    // selectedRows.value[0].empCd
+    let tmpJson1 = {};
+    tmpJson1['stdYear'] = selectedRows.value[0].stdYear; // 선택한 인사정보 기준년도
+    tmpJson1['evsEmpCd'] = selectedRows.value[0].empCd; // 선택한 인사정보 평가자
+    tmpJson1['evsCd'] = selectedEvs.value; // 선택한 평가승인구분
+    tmpJson1['evtEmpCd'] = selectedRowsTarget.value[i].empCd; // 선택한 타겟 인사정보 사번
+    let tmpJson = '{"mode": "I","data":' + JSON.stringify(tmpJson1) + '}';
+    // console.log('json Data : ', tmpJson);
     iu.push(tmpJson);
-    tmpJson = '{"mode": "D","data":' + JSON.stringify(updateData.value[i]) + '}';
-    iuD.push(tmpJson);
   }
 
-  if (updateData.value.length <= 0) {
-    $q.dialog({
-      dark: true,
-      title: '안내',
-      message: '변경된 자료가 없습니다. ',
-      // persistent: true,
-    })
-      .onOk(() => {})
-      .onCancel(() => {})
-      .onDismiss(() => {
-        // 확인/취소 모두 실행되었을때
-      });
-  } else {
-    saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
-  }
+  saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
+};
+
+const saveDataSection3 = () => {
+  let iu = [];
+  let iuD = [];
+  // 신규/수정 부분
+
+  let tmpJson1 = {};
+  tmpJson1['stdYear'] = selectedRows.value[0].stdYear; // 선택한 인사정보 기준년도
+  tmpJson1['evsEmpCd'] = selectedRows.value[0].empCd; // 선택한 인사정보 평가자
+  tmpJson1['evsCd'] = selectedEvs.value; // 선택한 평가승인구분
+  let tmpJson = '{"mode": "D","data":' + JSON.stringify(tmpJson1) + '}';
+  console.log('json Data : ', tmpJson);
+  iuD.push(tmpJson);
+
+  saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
 };
 
 const screenSizeHeight = ref(0);
@@ -434,14 +511,21 @@ const getDataEmp = async () => {
 };
 
 // ***** 선택한 인사정보 소속사원 자료 가져오기 부분  *****************************//
-const getDataSelectEmp = async resEmpCd => {
+const getDataSelectEmp = async () => {
   try {
     const response = await api.post(
       '/api/aux/aux2010_select',
-      { paramSetYear: setYearGroup.value.setYear, paramEmpCd: resEmpCd },
+      {
+        paramSetYear: setYearGroup.value.setYear,
+        paramDeptCd: selectedDept1.value,
+        paramTitlCd: selectedTitl.value,
+        paramEvsEmpCd: selectedRows.value[0].empCd,
+        paramEvsCd: selectedEvs.value,
+      },
       { headers: authHeader() },
     );
     rowData.rows = response.data.data;
+    gridKey.value += 1;
   } catch (error) {
     console.error('Error fetching users:', error);
   }
@@ -451,7 +535,7 @@ const getDataSelectEmp = async resEmpCd => {
 // saveStatus = 0=수정성공 1=신규성공 2=삭제성공 3=수정에러 4=시스템에러
 const saveDataAndHandleResult = resFormData => {
   api
-    .post('/api/sys/sys1120_save', resFormData, { headers: authHeader() })
+    .post('/api/aux/aux2010_save', resFormData, { headers: authHeader() })
     .then(res => {
       let saveStatus = {};
       if (res.data.rtn === '0') {
@@ -474,14 +558,27 @@ const saveDataAndHandleResult = resFormData => {
 // ***** DataBase 소속자료 가져오기 부분 *****************************//
 const deptOptions = ref([]);
 const selectedDept = ref('');
-// ***** 공통코드정보 가져오기 부분  *****************************//
+const selectedDept1 = ref('');
 async function getDataDeptOption(resParamCommCd1) {
   try {
-    console.log('year :: ', setYearGroup.value.setYear);
     const response = await api.post('/api/mst/dept_option_list', { paramSetYear: setYearGroup.value.setYear }, { headers: authHeader() });
 
     deptOptions.value = response.data.data;
     deptOptions.value.push({ deptCd: '', deptNm: '전체' });
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+}
+
+// ***** DataBase 직급자료 가져오기 부분 *****************************//
+const titlOptions = ref([]);
+const selectedTitl = ref('');
+async function getDataTitlOption(resParamCommCd1) {
+  try {
+    const response = await api.post('/api/mst/titl_option_list', { paramSetYear: setYearGroup.value.setYear }, { headers: authHeader() });
+
+    titlOptions.value = response.data.data;
+    titlOptions.value.push({ titlCd: '', titlNm: '전체' });
   } catch (error) {
     console.error('Error fetching users:', error);
   }

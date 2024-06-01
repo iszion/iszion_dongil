@@ -1,5 +1,5 @@
 <template>
-  <q-page class="q-pa-md" :style-fn="myTweak">
+  <q-page class="q-pa-xs-xs q-pa-sm-md" :style-fn="myTweak">
     <q-banner rounded :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-3'">
       <template v-slot:avatar>
         <q-icon name="menu_book" color="primary" />
