@@ -23,15 +23,12 @@ export default {
 
   /* *****  Main Menu 부분  *****  */
   main_menu_fav: 'Favorites',
-  main_menu_acc: 'Account',
-  main_menu_inf: 'Information',
   main_menu_aux: 'Operation',
   main_menu_man: 'DashBoard',
-  main_menu_buy: 'Buy',
-  main_menu_sal: 'Sale',
-  main_menu_inv: 'Inventory',
+  main_menu_hpr: 'elevation of status',
+  main_menu_hce: 'evaluate ability',
+  main_menu_hpe: 'performance evaluation',
   main_menu_mst: 'Master',
-  main_menu_rem: 'Notice',
   main_menu_sys: 'System',
 
   /* *****  Sub Menu MST 부분  *****  */

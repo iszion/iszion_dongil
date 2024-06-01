@@ -1,7 +1,7 @@
 <template>
-  <q-page class="q-pa-xs" :style-fn="myTweak">
+  <q-page class="q-pa-xs-xs q-pa-sm-md" :style-fn="myTweak">
     <!-- contents zone -->
-    <div class="row q-pa-sm q-col-gutter-md">
+    <div class="row q-col-gutter-md">
       <!-- contents List -->
       <div class="col-12">
         <q-card bordered>
@@ -46,7 +46,9 @@
                   <q-icon name="search" size="xs" class="q-mt-sm cursor-pointer" @click="getData" />
                 </template>
               </q-input>
-              <q-btn outline color="positive" dense @click="getData"><q-icon class="q-mr-sm" name="refresh" size="xs" />다시 불러오기</q-btn>
+              <q-btn outline color="positive" dense @click="getData"
+                ><q-icon class="q-mr-sm" name="refresh" size="xs" /><span v-if="!$q.screen.xs">다시 불러오기</span></q-btn
+              >
               <q-space />
               <div class="q-gutter-xs">
                 <q-btn v-if="showSaveBtn" outline color="primary" dense @click="saveDataSection"><q-icon name="save" size="xs" /> 저장 </q-btn>
@@ -85,7 +87,7 @@
     <q-card flat bordered style="max-width: 1050px; width: 100%">
       <q-bar>
         <q-icon name="list_alt" />
-        <div>프로그램 권한조정 관리</div>
+        <div>권한조정 관리</div>
         <q-space />
         <span class="text-bold text-subtitle1"> [ {{ showDialogTitle.userId }} ] {{ showDialogTitle.userNm }}</span>
         <q-space />

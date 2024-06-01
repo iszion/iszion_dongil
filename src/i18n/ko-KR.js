@@ -23,15 +23,12 @@ export default {
 
   /* *****  Main Menu 부분  *****  */
   main_menu_fav: '즐겨찾기',
-  main_menu_acc: '회계관리',
-  main_menu_inf: '종합정보',
   main_menu_aux: '보조운영',
   main_menu_man: '대시보드',
-  main_menu_buy: '매입관리',
-  main_menu_sal: '판매관리',
-  main_menu_inv: '재고관리',
+  main_menu_hpr: '승격심사',
+  main_menu_hce: '역량평가',
+  main_menu_hpe: '성과평가',
   main_menu_mst: '기준정보',
-  main_menu_rem: '안내통지',
   main_menu_sys: '시스템',
 
   /* *****  Sub Menu MST 부분  *****  */

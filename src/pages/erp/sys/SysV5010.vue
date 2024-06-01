@@ -1,5 +1,5 @@
 <template>
-  <q-page class="q-pa-md" :style-fn="myScreenBasicHeight">
+  <q-page class="q-pa-xs-xs q-pa-sm-md" :style-fn="myScreenBasicHeight">
     <q-card bordered>
       <q-bar class="q-px-sm">
         <q-icon name="list_alt" />

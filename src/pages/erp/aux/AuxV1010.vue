@@ -1,7 +1,7 @@
 <template>
-  <q-page class="q-pa-xs" :style-fn="myTweak">
+  <q-page class="q-pa-xs-xs q-pa-sm-md" :style-fn="myTweak">
     <!-- contents zone -->
-    <div class="row q-pa-sm q-col-gutter-md">
+    <div class="row q-col-gutter-md">
       <!-- contents List -->
       <div v-if="isScreenVisible" class="col-12">
         <q-form class="">
@@ -17,12 +17,15 @@
             </q-bar>
             <!--  end of contents list title bar -->
             <q-card-actions align="right" class="q-pa-none">
-              <q-toolbar class="row">
-                <div class="q-gutter-xs"></div>
+              <q-toolbar>
+                <q-btn outline color="positive" dense @click="getData"><q-icon name="refresh" size="xs" class="q-mr-xs" /> 다시 불러오기 </q-btn>
                 <q-space />
                 <div class="q-gutter-xs">
-                  <q-btn v-if="isShowSaveBtn" outline color="primary" dense @click="saveDataSection"><q-icon name="save" size="xs" /> 저장 </q-btn>
                   <q-btn outline color="positive" dense @click="addDataSection"><q-icon name="add" size="xs" /> 신규 </q-btn>
+                  <q-btn v-if="formData.stdYear" outline color="primary" dense @click="saveDataSection"><q-icon name="save" size="xs" /> 저장 </q-btn>
+                  <q-btn v-if="selectedRows.length > 0" outline color="negative" dense @click="deleteDataSection">
+                    <q-icon name="delete" size="xs" /> 삭제
+                  </q-btn>
                 </div>
               </q-toolbar>
             </q-card-actions>
@@ -151,22 +154,8 @@
             </q-btn>
           </q-bar>
           <!--  end of contents list title bar -->
-          <q-card-actions align="right" class="q-pa-none">
-            <q-toolbar class="row">
-              <q-btn outline color="positive" dense @click="getData"><q-icon name="refresh" size="xs" class="q-mr-xs" /> 다시 불러오기 </q-btn>
-              <q-space />
-              <div class="q-gutter-xs">
-                <q-btn v-if="isShowDeleteBtn" outline color="negative" dense @click="deleteDataSection">
-                  <q-icon name="delete" size="xs" /> 삭제</q-btn
-                >
-              </div>
-            </q-toolbar>
-          </q-card-actions>
-
-          <q-separator size="3px" />
-
           <q-card-section class="q-pa-xs">
-            <div :style="contentZoneStyle">
+            <div :key="gridKey" :style="contentZoneStyle">
               <ag-grid-vue
                 style="width: 100%; height: 100%"
                 :class="$q.dark.isActive ? 'ag-theme-alpine-dark' : 'ag-theme-alpine'"
@@ -206,9 +195,7 @@ const $q = useQuasar();
 
 let isSaveFg = null;
 
-const divCdOptionsSearch = ref(null);
-const divCdOptions = ref(null);
-const unitOptions = ref(null);
+const gridKey = ref(0);
 
 window.dateFormatRendering = function dateFormatRendering(params) {
   return formatDate(params.value);
@@ -238,6 +225,14 @@ const rowData = reactive({ rows: [] });
 
 const onGridReady = params => {
   gridApi.value = params.api;
+  let firstNodeSet = false;
+  params.api.forEachNode(node => {
+    console.log('node: ', JSON.stringify(node.data));
+    if (!firstNodeSet) {
+      node.setSelected(true);
+      firstNodeSet = true;
+    }
+  });
 };
 
 const defaultColDef = reactive({
@@ -315,19 +310,15 @@ const formDataInitialize = () => {
   formData.value.locCh = '';
 };
 
-const selectedRows = ref();
+const selectedRows = ref([]);
 const isShowStatusEdit = ref(false);
-const isShowDeleteBtn = ref(false);
-const isShowSaveBtn = ref(false);
 
 const onSelectionChanged = event => {
   selectedRows.value = event.api.getSelectedRows();
   isShowStatusEdit.value = false;
-  isShowDeleteBtn.value = selectedRows.value.length > 0;
-  isShowSaveBtn.value = isShowDeleteBtn.value;
 
   if (selectedRows.value.length === 1) {
-    getSelectData(selectedRows.value[0].stdYear, selectedRows.value[0].stdFg);
+    getDataSelect(selectedRows.value[0].stdYear, selectedRows.value[0].stdFg);
     isShowStatusEdit.value = true;
     statusEdit.icon = 'edit_note';
     statusEdit.message = '수정/삭제모드 입니다';
@@ -352,29 +343,47 @@ const onSelectionChanged = event => {
 
 const rowSelection = ref(null);
 
+const screenSizeHeight = ref(0);
+const myTweak = offset => {
+  screenSizeHeight.value = offset;
+  return { minHeight: offset ? `calc(100vh - ${offset}px)` : '100vh' };
+};
+const handleResize = () => {
+  contentZoneHeight.value = window.innerHeight - screenSizeHeight.value - 490;
+};
+onBeforeUnmount(() => {
+  // Remove the resize event listener when the component is destroyed
+  window.removeEventListener('resize', handleResize);
+});
 onBeforeMount(() => {
   rowSelection.value = 'multiple';
   getData();
 });
+onMounted(() => {
+  window.addEventListener('resize', handleResize);
+  handleResize();
+});
 
 const stdYearFocus = ref(null);
 const addDataSection = () => {
-  formDataInitialize();
-  oldFormData.value = formData;
-  isShowStatusEdit.value = true;
-  statusEdit.icon = 'edit';
-  statusEdit.message = '신규입력모드 입니다';
-  statusEdit.color = 'primary';
-  isSaveFg = 'I';
-  isShowSaveBtn.value = true;
-  formDisable.value = false;
-
-  formData.value.stdYear = String(commUtil.getTodayYear());
-  formData.value.stdFg = '0';
-  formData.value.sDay = String(commUtil.getTodayYear()) + '-01-01';
-  formData.value.eDay = String(commUtil.getTodayYear()) + '-12-31';
+  gridApi.value.deselectAll();
   setTimeout(() => {
-    stdYearFocus.value.focus();
+    formDataInitialize();
+    oldFormData.value = formData;
+    isShowStatusEdit.value = true;
+    statusEdit.icon = 'edit';
+    statusEdit.message = '신규입력모드 입니다';
+    statusEdit.color = 'primary';
+    isSaveFg = 'I';
+    formDisable.value = false;
+
+    formData.value.stdYear = String(commUtil.getTodayYear());
+    formData.value.stdFg = '0';
+    formData.value.sDay = String(commUtil.getTodayYear()) + '-01-01';
+    formData.value.eDay = String(commUtil.getTodayYear()) + '-12-31';
+    setTimeout(() => {
+      stdYearFocus.value.focus();
+    }, 100);
   }, 100);
 };
 const deleteDataSection = () => {
@@ -459,26 +468,38 @@ const formatDate = rawDate => {
     return null;
   }
 };
-const screenSizeHeight = ref(0);
-const myTweak = offset => {
-  screenSizeHeight.value = offset;
-  return { minHeight: offset ? `calc(100vh - ${offset}px)` : '100vh' };
-};
-const handleResize = () => {
-  contentZoneHeight.value = window.innerHeight - screenSizeHeight.value - 490;
-};
-onBeforeUnmount(() => {
-  // Remove the resize event listener when the component is destroyed
-  window.removeEventListener('resize', handleResize);
-});
-onMounted(() => {
-  window.addEventListener('resize', handleResize);
-  handleResize();
-});
 
 // **************************************************************//
 // ***** DataBase 연결부분    *************************************//
 // **************************************************************//
+
+// ***** 사용자정보 목록 자료 가져오기 부분  *****************************//
+const getData = async () => {
+  try {
+    const response = await api.post('/api/aux/aux1010_list', {}, { headers: authHeader() });
+    rowData.rows = response.data.data;
+    gridKey.value += 1;
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+};
+// ***** 사용자정보 목록 자료 가져오기 부분  *****************************//
+
+// ***** 사용자정보 선택된 자료 가져오기 부분  *****************************//
+const getDataSelect = async (resStdYear, resStdFg) => {
+  try {
+    const response = await api.post('/api/aux/aux1010_select', { paramStdYear: resStdYear, paramStdFg: resStdFg }, { headers: authHeader() });
+    formData.value = response.data.data[0];
+    // oldFormData.value = JSON.parse(JSON.stringify(formData.value)); // 초기자료 저장
+    console.log(JSON.stringify(formData.value));
+    formData.value.sDay = formatDate(response.data.data[0].sDay);
+    formData.value.eDay = formatDate(response.data.data[0].eDay);
+    oldFormData.value = JSON.parse(JSON.stringify(formData.value)); // 초기자료 저장
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+};
+// ***** 사용자정보 선택된 자료 가져오기 부분  *****************************//
 
 // ***** 자료저장 및 삭제 처리부분 *****************************//
 // saveStatus = 0=수정성공 1=신규성공 2=삭제성공 3=수정에러 4=시스템에러
@@ -540,32 +561,6 @@ const saveDataAndHandleResult = resFormData => {
       console.log('error: ', error);
     });
 };
-// ***** 사용자정보 목록 자료 가져오기 부분  *****************************//
-const getData = async () => {
-  try {
-    const response = await api.post('/api/aux/aux1010_list', {}, { headers: authHeader() });
-    rowData.rows = response.data.data;
-  } catch (error) {
-    console.error('Error fetching users:', error);
-  }
-};
-// ***** 사용자정보 목록 자료 가져오기 부분  *****************************//
-
-// ***** 사용자정보 선택된 자료 가져오기 부분  *****************************//
-const getSelectData = async (resStdYear, resStdFg) => {
-  try {
-    const response = await api.post('/api/aux/aux1010_select', { paramStdYear: resStdYear, paramStdFg: resStdFg }, { headers: authHeader() });
-    formData.value = response.data.data[0];
-    // oldFormData.value = JSON.parse(JSON.stringify(formData.value)); // 초기자료 저장
-    console.log(JSON.stringify(formData.value));
-    formData.value.sDay = formatDate(response.data.data[0].sDay);
-    formData.value.eDay = formatDate(response.data.data[0].eDay);
-    oldFormData.value = JSON.parse(JSON.stringify(formData.value)); // 초기자료 저장
-  } catch (error) {
-    console.error('Error fetching users:', error);
-  }
-};
-// ***** 사용자정보 선택된 자료 가져오기 부분  *****************************//
 
 // **************************************************************//
 // ***** DataBase 연결부분 끝  *************************************//
