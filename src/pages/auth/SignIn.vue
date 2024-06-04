@@ -85,16 +85,15 @@ const onSubmit = () => {
       })
       .then(res => {
         if (res.data.data.accessToken && res.data.state === 200) {
-          localStorage.setItem('token', JSON.stringify(res.data.data));
-          Cookies.set('accessToken', JSON.stringify(res.data.data.accessToken), {expires: '60m'})
-          Cookies.set('refreshToken', JSON.stringify(res.data.data.refreshToken), {expires: 1})
+          //Cookies.set('accessToken', JSON.stringify(res.data.data.accessToken), {expires: '60m'})
+          //Cookies.set('refreshToken', JSON.stringify(res.data.data.refreshToken), {expires: 1})
+          sessionStorage.setItem('accessToken', JSON.stringify(res.data.data.accessToken));
+          sessionStorage.setItem('refreshToken', JSON.stringify(res.data.data.refreshToken));
           router.push({ path: '/main' });
 
           api
             .get('/api/sys/user_data')
             .then(response => {
-              console.log("user1 : " + JSON.stringify(response))
-              console.log('user: ', JSON.stringify(response.data.data));
               $store.commit('showcase/getUserNm', response.data.data.userNm);
               $store.commit('showcase/getUserNmx', response.data.data.userNmx);
               $store.commit('showcase/getEmpCd', response.data.data.empCd);

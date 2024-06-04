@@ -7,7 +7,8 @@ const api = axios.create({ baseURL: process.env.SERVER_URL })
 
 export default boot(({ app, router }) => {
   api.interceptors.request.use(function (config) {
-    const token = Cookies.get('accessToken');
+    //const token = Cookies.get('accessToken');
+    const token = sessionStorage.getItem('accessToken');
     if (!token) {
       router.push('/')
     }
@@ -22,8 +23,10 @@ export default boot(({ app, router }) => {
   }, async function (error) {
     const originalRequest = error.config;
 
-    const accessToken = Cookies.get('accessToken');
-    const refreshToken = Cookies.get('refreshToken');
+    //const accessToken = Cookies.get('accessToken');
+    //const refreshToken = Cookies.get('refreshToken');
+    const accessToken = sessionStorage.getItem('accessToken');
+    const refreshToken = sessionStorage.getItem('refreshToken');
 
     const form = ref({
       accessToken: accessToken,
@@ -37,12 +40,16 @@ export default boot(({ app, router }) => {
         const res = await api.post('/api/auth/reissue', form.value);
 
         // 새로운 토큰 저장
-        localStorage.removeItem('token');
-        localStorage.setItem('token', JSON.stringify(res.data.data));
-        Cookies.remove('accessToken');
-        Cookies.remove('refreshToken');
-        Cookies.set('accessToken', res.data.data.accessToken, {expires: '60m'});
-        Cookies.set('refreshToken', res.data.data.refreshToken, {expires: 1});
+        //Cookies.remove('accessToken');
+        //Cookies.remove('refreshToken');
+        //Cookies.set('accessToken', res.data.data.accessToken, {expires: '60m'});
+        //Cookies.set('refreshToken', res.data.data.refreshToken, {expires: 1});
+
+        sessionStorage.removeItem('accessToken');
+        sessionStorage.removeItem('refreshToken');
+
+        sessionStorage.setItem('accessToken', JSON.stringify(res.data.data.accessToken));
+        sessionStorage.setItem('refreshToken', JSON.stringify(res.data.data.refreshToken));
 
         // 원래 요청의 헤더를 새 토큰으로 설정
         originalRequest.headers['Authorization'] = `Bearer ${res.data.data.accessToken}`;

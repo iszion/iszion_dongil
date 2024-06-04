@@ -357,41 +357,17 @@ const form = ref({
   refreshToken: accessObject.refreshToken,
 });*/
 
-const access_token = Cookies.get('accessToken');
-const refresh_token = Cookies.get('refreshToken');
+const access_token = sessionStorage.getItem('accessToken');
 
 const logout = () => {
   api
-    .post('/api/auth/logout', access_token, {
-      headers: authHeader(),
-    })
+    .post('/api/auth/logout', access_token)
     .then(res => {
-      localStorage.removeItem('token');
-      Cookies.remove('accessToken');
-      Cookies.remove('refreshToken');
       router.push({ path: '/' });
     })
     .catch(res => {
       console.log('Error');
     });
-};
-
-const handleBeforeUnload = event => {
-  const confirmationMessage = 'Are you sure you want to leave?';
-  event.returnValue = confirmationMessage;
-
-  api
-    .post('/api/auth/logout', form.value, {
-      headers: authHeader(),
-    })
-    .then(res => {
-      localStorage.removeItem('token');
-      router.push({ path: '/' });
-    })
-    .catch(res => {
-      console.log('Error');
-    });
-  return confirmationMessage;
 };
 
 // window.addEventListener('beforeunload', handleBeforeUnload);
