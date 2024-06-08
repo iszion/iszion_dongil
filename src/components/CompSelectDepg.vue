@@ -17,7 +17,6 @@
 
 <script setup>
 import { api } from '/src/boot/axios';
-import authHeader from 'boot/authHeader';
 import { onBeforeMount, ref } from 'vue';
 
 const props = defineProps(['params']);
@@ -40,7 +39,7 @@ onBeforeMount(() => {
 // ***** 공통코드(보안레벨) 자료 가져오기 부분  *****************************//
 const getData = async () => {
   try {
-    const response = await api.post('/api/mst/comm_option_list', { paramCommCd1: '101' }, { headers: authHeader() });
+    const response = await api.post('/api/mst/comm_option_list', { paramCommCd1: '101' });
     options.value = response.data.data;
     // console.log('getData1: ', JSON.stringify(response.data.data));
   } catch (error) {

@@ -65,7 +65,6 @@ import { QBtn, QIcon, useDialogPluginComponent } from 'quasar';
 import { AgGridVue } from 'ag-grid-vue3';
 import { onBeforeMount, reactive, ref } from 'vue';
 import { api } from '/src/boot/axios';
-import authHeader from 'boot/authHeader';
 import commUtil from 'src/js_comm/comm-util';
 
 const { dialogRef, onDialogHide, onDialogOK, onDialogCancel } = useDialogPluginComponent();
@@ -211,11 +210,11 @@ const onRowDoubleClicked = params => {
 // ***** 고객정보 검색리스트 *****************************//
 const getData = async () => {
   try {
-    const response = await api.post(
-      '/api/mst/helpCust_list',
-      { paramCustNm: searchParams.value.searchNm, paramCloseDay: params.paramCloseDay, paramAll: searchParams.value.searchAll },
-      { headers: authHeader() },
-    );
+    const response = await api.post('/api/mst/helpCust_list', {
+      paramCustNm: searchParams.value.searchNm,
+      paramCloseDay: params.paramCloseDay,
+      paramAll: searchParams.value.searchAll,
+    });
     rowData.rows = response.data.data;
     if (response.data.data.length > 0) {
       setTimeout(() => {

@@ -116,7 +116,6 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useQuasar } from 'quasar';
 import IconList from 'components/IconList.vue';
 import { api } from '/src/boot/axios';
-import authHeader from 'boot/authHeader';
 import jsonUtil from 'src/js_comm/json-util';
 import notifySave from 'src/js_comm/notify-save';
 
@@ -552,7 +551,7 @@ const progReloadBtn = () => {
   prog_tree_data.value = [];
 
   api
-    .post('/api/sys/sys5020_prog_list', {}, { headers: authHeader() })
+    .post('/api/sys/sys5020_prog_list', {})
     .then(res => {
       prog_tree_data.value = res.data.data;
 
@@ -584,7 +583,7 @@ const menuReloadBtn = () => {
   menu_tree_data.value = [];
   console.log('menuReloadBtn');
   api
-    .post('/api/sys/sys5020_menu_list', { paramSelectedGroup: selectedGroup.value }, { headers: authHeader() })
+    .post('/api/sys/sys5020_menu_list', { paramSelectedGroup: selectedGroup.value })
     .then(res => {
       console.log('res :::: ', res.data);
       if (res.data.data.length > 0) {
@@ -617,7 +616,7 @@ const groupOptions = ref([]);
 const selectedGroup = ref(null);
 const getGroupData = async () => {
   try {
-    const response = await api.post('/api/sys/prog_group_list', { paramUserId: '' }, { headers: authHeader() });
+    const response = await api.post('/api/sys/prog_group_list', { paramUserId: '' });
     // 옵션 초기화
     groupOptions.value = [];
 
@@ -639,7 +638,7 @@ const saveData = async resFormData => {
   let saveStatus = 0;
   try {
     await api
-      .post('/api/sys/sys5020_save', resFormData, { headers: authHeader() })
+      .post('/api/sys/sys5020_save', resFormData)
       .then(res => {
         // console.log('save: ', res.data.rtn);
         saveStatus = res.data.rtn;
@@ -660,7 +659,7 @@ const deleteData = async resFormData => {
   let saveStatus = 2; // 삭제성공
   try {
     await api
-      .post('/api/sys/sys5020_select_delete', resFormData, { headers: authHeader() })
+      .post('/api/sys/sys5020_select_delete', resFormData)
       .then(res => {
         // console.log('save: ', res.data.rtn);
         saveStatus = res.data.rtn;

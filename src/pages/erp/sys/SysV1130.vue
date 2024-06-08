@@ -132,7 +132,6 @@ import { AgGridVue } from 'ag-grid-vue3';
 import { QBtn, QIcon, useQuasar } from 'quasar';
 import { computed, h, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 import { api } from '/src/boot/axios';
-import authHeader from 'boot/authHeader';
 import CompCheckHeader from 'components/CompCheckHeader.vue';
 import CompToggleScr from 'components/CompToggleScr.vue';
 import CompToggleNew from 'components/CompToggleNew.vue';
@@ -546,7 +545,7 @@ const handleSelectedUser = resSelectedGroup => {
 // ***** 프로그램 목록 자료 가져오기 부분  *****************************//
 const getDataProg = async () => {
   try {
-    const response = await api.post('/api/sys/sys5010_menu_list', { groupCd: selectedGroup.value }, { headers: authHeader() });
+    const response = await api.post('/api/sys/sys5010_menu_list', { groupCd: selectedGroup.value });
     rowDataProg.rows = response.data.data;
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -558,11 +557,7 @@ const getDataProg = async () => {
 // ***** 프로그램 권한정보 선택된 자료 가져오기 부분  *****************************//
 const getDataUser = async resProgId => {
   try {
-    const response = await api.post(
-      '/api/sys/sys1130_user_list',
-      { paramUserId: 'daon', paramDeptCd: selectedDept.value, paramProgId: resProgId },
-      { headers: authHeader() },
-    );
+    const response = await api.post('/api/sys/sys1130_user_list', { paramUserId: 'daon', paramDeptCd: selectedDept.value, paramProgId: resProgId });
     rowDataUser.rows = response.data.data;
     rowDataUserBack.value = JSON.parse(JSON.stringify(response.data.data));
     updateData.value = [];
@@ -576,7 +571,7 @@ const getDataUser = async resProgId => {
 // ***** 프로그램 권한정보 저장하기 부분  *****************************//
 const saveDataUserAndHandleResult = resFormData => {
   api
-    .post('/api/sys/sys1110_grntp_save', resFormData, { headers: authHeader() })
+    .post('/api/sys/sys1110_grntp_save', resFormData)
     .then(res => {
       let saveStatus = {};
       if (res.data.rtn === '0') {
@@ -602,7 +597,7 @@ const groupOptions = ref([]);
 const selectedGroup = ref('');
 const getDataGroup = async () => {
   try {
-    const response = await api.post('/api/sys/prog_group_list', { paramUserId: '' }, { headers: authHeader() });
+    const response = await api.post('/api/sys/prog_group_list', { paramUserId: '' });
     // 옵션 초기화
     groupOptions.value = response.data.data;
     groupOptions.value.push({ groupNm: '전체', groupCd: '' });
@@ -618,7 +613,7 @@ const selectedDept = ref(null);
 // ***** 공통코드정보 가져오기 부분  *****************************//
 async function getDataCommOption(resParamCommCd1) {
   try {
-    const response = await api.post('/api/mst/comm_option_list', { paramCommCd1: resParamCommCd1 }, { headers: authHeader() });
+    const response = await api.post('/api/mst/comm_option_list', { paramCommCd1: resParamCommCd1 });
     deptOptions.value = response.data.data;
     deptOptions.value.push({ commCd: '', commNm: '전체' });
   } catch (error) {

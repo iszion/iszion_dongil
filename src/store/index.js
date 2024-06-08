@@ -1,6 +1,5 @@
-import { store } from 'quasar/wrappers'
-import { createStore } from 'vuex'
-import showcase from "./showcase";
+import { store } from 'quasar/wrappers';
+import { createPinia } from 'pinia';
 
 // import example from './module-example'
 
@@ -13,17 +12,26 @@ import showcase from "./showcase";
  * with the Store instance.
  */
 
-export default store(function (/* { ssrContext } */) {
-  const Store = createStore({
-    modules: {
-      // example
-      showcase
-    },
+// export default store(function (/* { ssrContext } */) {
+//   const Store = createStore({
+//     modules: {
+//       // example
+//       showcase,
+//     },
+//
+//     // enable strict mode (adds overhead!)
+//     // for dev mode and --debug builds only
+//     strict: process.env.DEBUGGING,
+//   });
+//
+//   return Store;
+// });
 
-    // enable strict mode (adds overhead!)
-    // for dev mode and --debug builds only
-    strict: process.env.DEBUGGING
-  })
+export default store((/* { ssrContext } */) => {
+  const pinia = createPinia();
 
-  return Store
-})
+  // You can add Pinia plugins here
+  // pinia.use(SomePiniaPlugin)
+
+  return pinia;
+});

@@ -6,13 +6,15 @@
           <img src="../assets/images/dongil_logo.png" />
         </q-avatar>
 
-        <div v-if="!$q.screen.xs" class="text-h6 text-weight-bold q-pl-sm self-center cursor-pointer" @click="rootView">{{ $t('project_name') }}</div>
+        <div v-if="!$q.screen.lt.lg" class="text-h6 text-weight-bold q-pl-sm self-center cursor-pointer" @click="rootView">
+          {{ $t('project_name') }}
+        </div>
 
         <q-separator class="q-mx-xs-sm" dark vertical inset />
 
         <div style="max-width: 300px">
           <q-select
-            style="width: 120px; font-size: 1.04em"
+            style="width: 125px; font-size: 1.04em"
             dense
             :bg-color="ev_set_color"
             standout="text-white"
@@ -67,7 +69,6 @@
         <!--  end of Main Menu List -->
         <q-space />
         <q-separator class="q-mx-sm-sm" dark vertical inset />
-        {{ $q.screen.name }}
         <q-btn flat round dense :icon="$q.dark.isActive ? 'light_mode' : 'dark_mode'" @click="toggleDarkMode">
           <q-tooltip
             class="bg-amber text-black shadow-4"
@@ -83,7 +84,7 @@
           </q-tooltip>
         </q-btn>
         <!-- dark_mode-->
-
+        <q-separator v-if="$q.screen.xs" class="q-mx-sm-sm" dark vertical inset />
         <!-- MAIN MENU ICON  -->
         <q-btn flat round dence icon="apps" v-if="!$q.screen.gt.sm">
           <q-menu :offset="[40, 10]" transition-show="flip-right" transition-hide="flip-left">
@@ -105,7 +106,8 @@
         <!-- 사용자 관리 ICON   -->
         <q-btn flat size="sm" class="q-pa-none q-ml-sm">
           <div v-if="!$q.screen.xs">
-            <div class="text-subtitle2 text-bold q-mr-sm">{{ $store.state.showcase.userNmx }}</div>
+            <div class="text-subtitle2 text-bold q-mr-sm text-orange" style="font-size: 1.2em">{{ storeUser.setDeptNm }}</div>
+            <div class="text-subtitle2 text-bold q-mr-sm">{{ storeUser.setEmpNm }}</div>
           </div>
           <q-avatar color="deep-orange">
             <q-img loading="eager" src="https://cdn.quasar.dev/img/avatar6.jpg" />
@@ -127,7 +129,7 @@
 
       <q-separator class="bg-grey" />
       <div v-if="pageTitleBarVisible" class="row" :class="$q.dark.isActive ? 'bg-grey-8 text-white' : 'bg-grey-4 text-dark'">
-        <div v-if="!$q.screen.xs" style="width: 230px" class="text-center self-center bg-grey-5">
+        <div v-if="!$q.screen.lt.md" style="width: 230px" class="text-center self-center bg-grey-5">
           <q-icon :name="menuIcon" size="sm" class="q-pb-xs q-pr-sm" />
           <span v-if="mainMenuTitle.titleName" class="text-h6 text-weight-bold">{{ $t(mainMenuTitle.titleName) }}</span>
         </div>
@@ -156,14 +158,14 @@
         :filter="filter"
         v-model:expanded="treeExpanded"
         no-connectors
-        selected-color="red"
+        :selected-color="$q.dark.isActive ? 'orange' : 'blue-14'"
         v-model:selected="selected"
         @click="handleNodeClick"
       >
         <template #header-folder="props">
           <div class="row items-center">
             <q-icon :color="$q.dark.isActive ? 'orange' : 'blue'" size="12px" class="q-mr-sm" :name="props.node.icon || 'share'" />
-            <div class="text-bold" :class="$q.dark.isActive ? 'text-orange' : 'text-blue'">
+            <div class="text-bold" :class="$q.dark.isActive ? 'text-white' : 'text-dark'">
               {{ $te(props.node.labelExt) ? $t(props.node.labelExt) : props.node.label }}
             </div>
           </div>
@@ -179,7 +181,6 @@
       </q-tree>
     </q-drawer>
     <q-page-container>
-      <!--      <router-view :setYearGroup="setYearGroup" />-->
       <router-view />
     </q-page-container>
 
@@ -190,17 +191,19 @@
 <script setup>
 import { onBeforeMount, onMounted, reactive, ref } from 'vue';
 import FooterBar from 'layouts/FooterBar.vue';
-import { QIcon, useQuasar, Cookies } from 'quasar';
+import { QIcon, useQuasar, Cookies, SessionStorage } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { api } from '/src/boot/axios';
-import authHeader from 'boot/authHeader';
 import PageTitlebar from 'components/comm/PageTitlebar.vue';
-import { useStore } from 'vuex';
+import { useUserInfoStore } from 'src/store/setUserInfo';
+import { useYearInfoStore } from 'src/store/setYearInfo';
+
+const storeUser = useUserInfoStore();
+const storeYear = useYearInfoStore();
 
 const $q = useQuasar();
 const router = useRouter();
-const $store = useStore();
 
 const activeTab = ref(null);
 const filter = ref('');
@@ -281,10 +284,11 @@ const toggleLeftDrawer = () => {
 const toggleDarkMode = () => {
   $q.dark.toggle();
   $q.localStorage.set('darkMode', $q.dark.isActive);
+  selectLanguage('ko-KR');
 };
 
 const selectLanguage = val => {
-  import(`../../node_modules/quasar/lang/${val}.mjs`).then(lang => {
+  import(`../../node_modules/quasar/lang/${val}.js`).then(lang => {
     $q.lang.set(lang.default);
     locale.value = val;
     $q.localStorage.set('lang', val);
@@ -292,6 +296,14 @@ const selectLanguage = val => {
 };
 
 const { locale } = useI18n();
+
+onBeforeMount(() => {
+  selectLanguage('ko-KR');
+  getDataSetYear();
+  setTimeout(() => {
+    getDataMainMenu();
+  }, 100);
+});
 
 onMounted(() => {
   if ($q.screen.width >= $q.screen.sizes.sm) {
@@ -357,17 +369,37 @@ const form = ref({
   refreshToken: accessObject.refreshToken,
 });*/
 
-const access_token = sessionStorage.getItem('accessToken');
+const access_token = Cookies.get('accessToken');
+const refresh_token = Cookies.get('refreshToken');
 
 const logout = () => {
   api
     .post('/api/auth/logout', access_token)
     .then(res => {
+      localStorage.removeItem('token');
+      Cookies.remove('accessToken');
+      Cookies.remove('refreshToken');
       router.push({ path: '/' });
     })
     .catch(res => {
       console.log('Error');
     });
+};
+
+const handleBeforeUnload = event => {
+  const confirmationMessage = 'Are you sure you want to leave?';
+  event.returnValue = confirmationMessage;
+
+  api
+    .post('/api/auth/logout', form.value)
+    .then(res => {
+      localStorage.removeItem('token');
+      router.push({ path: '/' });
+    })
+    .catch(res => {
+      console.log('Error');
+    });
+  return confirmationMessage;
 };
 
 // window.addEventListener('beforeunload', handleBeforeUnload);
@@ -376,28 +408,119 @@ const logout = () => {
 /* ******  end of  token 처리 부분   ************************************************ */
 /* ******************************************************************************** */
 
-// **************************************************************//
-// ***** DataBase 연결부분  ***************************************//
-// **************************************************************//
-onBeforeMount(() => {
-  getDataSetYear();
-  getDataMainMenu();
-});
 // ***** DataBase 설정기간자료 가져오기 부분 *****************************//
 const ev_set_year_group = ref(null);
 const ev_set_color = ref(null);
 const ev_set_year_options = ref([]);
-const setYearGroup = ref({
-  setYear: '',
-  setFg: '',
-  setLocCh: '',
+// **************************************************************//
+// ***** DataBase 연결부분  ***************************************//
+// **************************************************************//
+
+// ***** 유저정보 처리 부분 *****************************//
+const getDataSetUserInfo = async () => {
+  storeUser.setEmpCd = SessionStorage.getItem('empCd');
+  try {
+    const response = await api.post('/api/sys/user_info', { paramSetYear: storeYear.setYear, paramUserId: storeUser.setEmpCd });
+    storgeUserInfoGroupSave(
+      response.data.data[0].empCd +
+        '|' +
+        response.data.data[0].empNm +
+        '|' +
+        response.data.data[0].empNmx +
+        '|' +
+        response.data.data[0].depgCd +
+        '|' +
+        response.data.data[0].depgNm +
+        '|' +
+        response.data.data[0].deptCd +
+        '|' +
+        response.data.data[0].deptNm +
+        '|' +
+        response.data.data[0].titlCd +
+        '|' +
+        response.data.data[0].titlNm +
+        '|' +
+        response.data.data[0].pstnCd +
+        '|' +
+        response.data.data[0].pstnNm,
+    );
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+};
+// ***** 유저정보 처리 부분 끝 *****************************//
+
+const getDataSetYear = async () => {
+  try {
+    const response = await api.post('/api/aux/aux1010_list', {});
+
+    ev_set_year_options.value = [];
+    ev_set_year_group.value = null;
+    response.data.data.forEach(val => {
+      if (!ev_set_year_group.value) {
+        ev_set_year_group.value = val.stdYearNm;
+        handle_ev_set_color(val.locCh);
+      }
+      ev_set_year_options.value.push(val);
+    });
+    storgeYearGroupSave(ev_set_year_options.value[0].stdYear + '|' + ev_set_year_options.value[0].stdFg + '|' + ev_set_year_options.value[0].locCh);
+    getDataSetUserInfo();
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+};
+// ***** DataBase 메인메뉴자료 가져오기 부분 *****************************//
+const menuListData = reactive({
+  mainMenu: {},
+  subMenu: {},
 });
+const getDataMainMenu = async () => {
+  try {
+    const response = await api.post('/api/sys/menu_main_list', { paramUserId: 'admin' });
+    menuListData.mainMenu = response.data.data;
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+};
+
+// ***** DataBase 서브메뉴자료 가져오기 부분 *****************************//
+const getSubMenuData = async param => {
+  const paramData = { paramGroupCd: param };
+  try {
+    const response = await api.post('/api/sys/menu_sub_list', paramData);
+
+    menuList.value = buildTreeMenuData(response.data.data);
+
+    leftDrawerOpen.value = true;
+    pageTitleBarVisible.value = true;
+    // return response.data.data;
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+};
+
+// 즐겨찾기
+const getFavMenuData = async param => {
+  const paramData = { paramUserId: 'admin' };
+  try {
+    const response = await api.post('/api/sys/menu_fav_list', paramData);
+
+    menuList.value = buildTreeMenuData(response.data.data);
+
+    leftDrawerOpen.value = true;
+    pageTitleBarVisible.value = true;
+    // return response.data.data;
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+};
+// **************************************************************//
+// ***** DataBase 연결부분 끝  *************************************//
+// **************************************************************//
+
 const handleSelectedSetYear = resSelected => {
   console.log('selected SetYear: ', resSelected.locCh);
   handle_ev_set_color(resSelected.locCh);
-  // setYearGroup.value.setYear = resSelected.stdYear;
-  // setYearGroup.value.setFg = resSelected.stdFg;
-  // setYearGroup.value.setLocCh = resSelected.locCh;
   storgeYearGroupSave(resSelected.stdYear + '|' + resSelected.stdFg + '|' + resSelected.locCh);
   rootView();
 };
@@ -421,110 +544,53 @@ const handle_ev_set_color = val => {
 };
 // ***** 검색 선택 자동 처리 부분 끝 *****************************//
 
-const getDataSetYear = async () => {
-  try {
-    const response = await api.post('/api/aux/aux1010_list', {}, { headers: authHeader() });
+// ***** 유저정보 설정 부분 *****************************//
 
-    ev_set_year_options.value = [];
-    ev_set_year_group.value = null;
-    response.data.data.forEach(val => {
-      if (!ev_set_year_group.value) {
-        ev_set_year_group.value = val.stdYearNm;
-        handle_ev_set_color(val.locCh);
-      }
-      ev_set_year_options.value.push(val);
-    });
-    // setYearGroup.value.setStdYear = ev_set_year_options.value[0].stdYear; // 기준년도
-    // setYearGroup.value.setStdFg = ev_set_year_options.value[0].stdFg; // 적용구분
-    // setYearGroup.value.setLocCh = ev_set_year_options.value[0].locCh; // 처리상태
-    storgeYearGroupSave(ev_set_year_options.value[0].stdYear + '|' + ev_set_year_options.value[0].stdFg + '|' + ev_set_year_options.value[0].locCh);
-  } catch (error) {
-    console.error('Error fetching users:', error);
-  }
-};
-// ***** DataBase 메인메뉴자료 가져오기 부분 *****************************//
-const menuListData = reactive({
-  mainMenu: {},
-  subMenu: {},
-});
-const getDataMainMenu = async () => {
-  try {
-    const response = await api.post('/api/sys/menu_main_list', { paramUserId: 'admin' }, { headers: authHeader() });
-    menuListData.mainMenu = response.data.data;
-    // console.log('menu:: ', JSON.stringify(menuListData.mainMenu));
-    // console.log('name data : ' + $store.state.showcase.userNm);
-    // console.log('namex data : ' + $store.state.showcase.userNmx);
-    // console.log('emp data : ' + $store.state.showcase.empCd);
-    // console.log('sales data : ' + $store.state.showcase.salesCd);
-    // console.log('sales data : ' + $store.state.showcase.salesNm);
-    // console.log('dept data : ' + $store.state.showcase.deptCd);
-    // console.log('dept data : ' + $store.state.showcase.deptNm);
-    // console.log('jobTitle data : ' + $store.state.showcase.jobTitleCd);
-    // console.log('jobTitle data : ' + $store.state.showcase.jobTitleNm);
-  } catch (error) {
-    console.error('Error fetching users:', error);
-  }
+const storgeUserInfoGroupSave = resSetUserInfoGroup => {
+  SessionStorage.set('setUserInfoGroup', resSetUserInfoGroup);
+  getStorgeSetUserInfoGroup();
 };
 
-// ***** DataBase 서브메뉴자료 가져오기 부분 *****************************//
-const getSubMenuData = async param => {
-  const paramData = { paramGroupCd: param };
-  try {
-    const response = await api.post('/api/sys/menu_sub_list', paramData, { headers: authHeader() });
-
-    menuList.value = buildTreeMenuData(response.data.data);
-
-    leftDrawerOpen.value = true;
-    pageTitleBarVisible.value = true;
-    // return response.data.data;
-  } catch (error) {
-    console.error('Error fetching users:', error);
-  }
+const getStorgeSetUserInfoGroup = () => {
+  const _value = SessionStorage.getItem('setUserInfoGroup').split('|');
+  storeUser.setEmpCd = _value[0];
+  storeUser.setEmpNm = _value[1];
+  storeUser.setEmpNmx = _value[2];
+  storeUser.setDepgCd = _value[3];
+  storeUser.setDepgNm = _value[4];
+  storeUser.setDeptCd = _value[5];
+  storeUser.setDeptNm = _value[6];
+  storeUser.setTitlCd = _value[7];
+  storeUser.setTitlNm = _value[8];
+  storeUser.setPstnCd = _value[9];
+  storeUser.setPstnNm = _value[10];
+  // console.log(
+  //   'Main SetUser Info Group :: ',
+  //   storeUser.setEmpCd,
+  //   storeUser.setEmpNm,
+  //   storeUser.setEmpNmx,
+  //   storeUser.setDepgCd,
+  //   storeUser.setDepgNm,
+  //   storeUser.setDeptCd,
+  //   storeUser.setDeptNm,
+  //   storeUser.setTitlCd,
+  //   storeUser.setTitlNm,
+  //   storeUser.setPstnCd,
+  //   storeUser.setPstnNm,
+  // );
 };
-
-// 즐겨찾기
-const getFavMenuData = async param => {
-  const paramData = { paramUserId: 'admin' };
-  try {
-    const response = await api.post('/api/sys/menu_fav_list', paramData, { headers: authHeader() });
-
-    menuList.value = buildTreeMenuData(response.data.data);
-
-    leftDrawerOpen.value = true;
-    pageTitleBarVisible.value = true;
-    // return response.data.data;
-  } catch (error) {
-    console.error('Error fetching users:', error);
-  }
-};
-// **************************************************************//
-// ***** DataBase 연결부분 끝  *************************************//
-// **************************************************************//
-
 const storgeYearGroupSave = resSetYearGroup => {
-  $q.localStorage.set('setYearGroup', resSetYearGroup);
+  SessionStorage.set('setYearGroup', resSetYearGroup);
   getStorgeSetYearGroup();
 };
+
 const getStorgeSetYearGroup = () => {
-  const _value = $q.localStorage.getItem('setYearGroup').split('|');
-  setYearGroup.value.setYear = _value[0];
-  setYearGroup.value.setFg = _value[1];
-  setYearGroup.value.setLocCh = _value[2];
-  console.log('Main SetYear Group :: ', setYearGroup.value.setYear, setYearGroup.value.setFg, setYearGroup.value.setLocCh);
+  const _value = SessionStorage.getItem('setYearGroup').split('|');
+  storeYear.setYear = _value[0];
+  storeYear.setFg = _value[1];
+  storeYear.setLocCh = _value[2];
+  console.log('Main SetYear Group :: ', storeYear.setYear, storeYear.setFg, storeYear.setLocCh);
 };
 </script>
 
-<style scoped lang="scss">
-.custom-footer {
-  height: 30px; /* Adjust the height to your desired value */
-  background-color: #333; /* Optional: Set background color */
-  color: white; /* Optional: Set text color */
-  /* Add any other styling you need */
-}
-.q-field__native,
-.q-field__prefix,
-.q-field__suffix,
-.q-field__input {
-  color: red !important;
-}
-</style>
+<style scoped lang="scss"></style>

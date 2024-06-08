@@ -116,7 +116,6 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useQuasar } from 'quasar';
 import IconList from 'components/IconList.vue';
 import { api } from '/src/boot/axios';
-import authHeader from 'boot/authHeader';
 import notifySave from 'src/js_comm/notify-save';
 import jsonUtil from 'src/js_comm/json-util';
 
@@ -553,7 +552,7 @@ const progReloadBtn = () => {
   prog_tree_data.value = [];
 
   api
-    .post('/api/sys/sys5020_prog_list', {}, { headers: authHeader() })
+    .post('/api/sys/sys5020_prog_list', {})
     .then(res => {
       prog_tree_data.value = res.data.data;
 
@@ -585,7 +584,7 @@ const menuReloadBtn = () => {
   menu_tree_data.value = [];
   console.log('menuReloadBtn');
   api
-    .post('/api/sys/sys5030_fav_menu_list', { paramUserId: selectedUserId.value }, { headers: authHeader() })
+    .post('/api/sys/sys5030_fav_menu_list', { paramUserId: selectedUserId.value })
     .then(res => {
       console.log('res :::: ', res.data);
       if (res.data.data.length > 0) {
@@ -618,7 +617,7 @@ const usersOptions = ref([]);
 const selectedUserId = ref(null);
 const getGroupData = async () => {
   try {
-    const response = await api.post('/api/sys/sys1010_list', { paramDeptCd: '' }, { headers: authHeader() });
+    const response = await api.post('/api/sys/sys1010_list', { paramDeptCd: '' });
     // 옵션 초기화
     usersOptions.value = [];
 
@@ -640,7 +639,7 @@ const saveData = async resFormData => {
   let saveStatus = 0;
   try {
     await api
-      .post('/api/sys/sys5030_fav_save', resFormData, { headers: authHeader() })
+      .post('/api/sys/sys5030_fav_save', resFormData)
       .then(res => {
         // console.log('save: ', res.data.rtn);
         saveStatus = res.data.rtn;
@@ -661,7 +660,7 @@ const deleteData = async resFormData => {
   let saveStatus = 2; // 삭제성공
   try {
     await api
-      .post('/api/sys/sys5030_fav_select_delete', resFormData, { headers: authHeader() })
+      .post('/api/sys/sys5030_fav_select_delete', resFormData)
       .then(res => {
         // console.log('save: ', res.data.rtn);
         saveStatus = res.data.rtn;

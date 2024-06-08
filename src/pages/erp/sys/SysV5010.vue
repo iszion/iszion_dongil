@@ -292,7 +292,6 @@ import { QIcon, QBtn, QToggle, useQuasar } from 'quasar';
 import { api } from '/src/boot/axios';
 import notifySave from 'src/js_comm/notify-save';
 import jsonUtil from 'src/js_comm/json-util';
-import authHeader from 'boot/authHeader';
 
 import TestButtonVue from 'components/TestButton.vue';
 
@@ -670,7 +669,7 @@ const isSaveProcess = () => {
 // saveStatus = 0=수정성공 1=신규성공 2=삭제성공 3=수정에러 4=시스템에러
 const saveDataAndHandleResult = resFormData => {
   api
-    .post('/api/sys/sys5010_save', resFormData, { headers: authHeader() })
+    .post('/api/sys/sys5010_save', resFormData)
     .then(res => {
       let saveStatus = {};
       if (res.data.rtn === '0') {
@@ -736,9 +735,9 @@ const getDataProg = async () => {
   try {
     let response = null;
     if (selectedList.value === 'group') {
-      response = await api.post('/api/sys/sys5010_group_list', { groupCd: selectedGroup.value }, { headers: authHeader() });
+      response = await api.post('/api/sys/sys5010_group_list', { groupCd: selectedGroup.value });
     } else {
-      response = await api.post('/api/sys/sys5010_menu_list', { groupCd: selectedGroup.value }, { headers: authHeader() });
+      response = await api.post('/api/sys/sys5010_menu_list', { groupCd: selectedGroup.value });
     }
     rowData.rows = response.data.data;
   } catch (error) {
@@ -751,7 +750,7 @@ const groupOptions = ref([]);
 const selectedGroup = ref(null);
 const getDataGroup = async () => {
   try {
-    const response = await api.post('/api/sys/prog_group_list', { paramUserId: '' }, { headers: authHeader() });
+    const response = await api.post('/api/sys/prog_group_list', { paramUserId: '' });
     // 옵션 초기화
     groupOptions.value = [];
     groupOptions.value.push({ groupNm: '전체', groupCd: '' });

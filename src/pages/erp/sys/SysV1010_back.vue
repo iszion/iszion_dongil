@@ -271,7 +271,6 @@ import { QBtn, QIcon, useQuasar } from 'quasar';
 import { computed, onBeforeMount, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 import { api } from '/src/boot/axios';
 
-import authHeader from 'boot/authHeader';
 import { isEqual } from 'lodash';
 import jsonUtil from 'src/js_comm/json-util';
 import notifySave from 'src/js_comm/notify-save';
@@ -584,7 +583,7 @@ onMounted(() => {
 // saveStatus = 0=수정성공 1=신규성공 2=삭제성공 3=수정에러 4=시스템에러
 const saveDataAndHandleResult = resFormData => {
   api
-    .post('/api/sys/sys1010_save', resFormData, { headers: authHeader() })
+    .post('/api/sys/sys1010_save', resFormData)
     .then(res => {
       let saveStatus = {};
       if (res.data.rtn === '0') {
@@ -644,11 +643,7 @@ const saveDataAndHandleResult = resFormData => {
 // ***** 사용자정보 목록 자료 가져오기 부분  *****************************//
 const getData = async () => {
   try {
-    const response = await api.post(
-      '/api/sys/sys1010_list',
-      { paramDeptCd: searchParam.deptCd, paramSearchWord: searchParam.word },
-      { headers: authHeader() },
-    );
+    const response = await api.post('/api/sys/sys1010_list', { paramDeptCd: searchParam.deptCd, paramSearchWord: searchParam.word });
     rowData.rows = response.data.data;
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -659,7 +654,7 @@ const getData = async () => {
 // ***** 사용자정보 선택된 자료 가져오기 부분  *****************************//
 const getDataSelect = async resParamUserId => {
   try {
-    const response = await api.post('/api/sys/sys1010_select', { paramUserId: resParamUserId }, { headers: authHeader() });
+    const response = await api.post('/api/sys/sys1010_select', { paramUserId: resParamUserId });
     formData.value = response.data.data[0];
     // console.log('select data ::: ', JSON.stringify(formData.value));
     oldFormData.value = JSON.parse(JSON.stringify(formData.value)); // 초기자료 저장
@@ -674,7 +669,7 @@ const getDataSelect = async resParamUserId => {
 // ***** 소속팀정보 가져오기 부분  *****************************//
 async function getDataDeptOption() {
   try {
-    const response = await api.post('/api/mst/dept_option_list', { paramSetYear: '2024' }, { headers: authHeader() });
+    const response = await api.post('/api/mst/dept_option_list', { paramSetYear: '2024' });
     deptOptions.value = response.data.data;
     deptOptionsSearch.value = JSON.parse(JSON.stringify(deptOptions.value));
     console.log(JSON.stringify(deptOptionsSearch.value));
@@ -686,7 +681,7 @@ async function getDataDeptOption() {
 // ***** 직위정보 가져오기 부분  *****************************//
 async function getDataPstnOption() {
   try {
-    const response = await api.post('/api/mst/pstn_option_list', { paramSetYear: '2024' }, { headers: authHeader() });
+    const response = await api.post('/api/mst/pstn_option_list', { paramSetYear: '2024' });
     pstnOptions.value = response.data.data;
     console.log('pstn ::: ', JSON.stringify(pstnOptions.value));
   } catch (error) {
@@ -696,7 +691,7 @@ async function getDataPstnOption() {
 // ***** 직급정보 가져오기 부분  *****************************//
 async function getDataTitlOption() {
   try {
-    const response = await api.post('/api/mst/titl_option_list', { paramSetYear: '2024' }, { headers: authHeader() });
+    const response = await api.post('/api/mst/titl_option_list', { paramSetYear: '2024' });
     titlOptions.value = response.data.data;
     console.log('titl ::: ', JSON.stringify(titlOptions.value));
   } catch (error) {

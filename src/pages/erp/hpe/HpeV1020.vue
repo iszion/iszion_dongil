@@ -34,26 +34,26 @@
             </div>
           </div>
         </div>
-        <div class="col-xs-12 col-sm-4 q-pa-sm">
-          <div class="row">
-            <q-space />
-            <span class="text-bold text-subtitle2 q-pr-sm text-blue">작성자<q-icon name="chevron_right" size="xs" /> </span>
-            <q-breadcrumbs separator="|" class="text-blue text-bold" active-color="secondary">
-              <q-breadcrumbs-el icon="room_preferences" :label="setEvGroup.evtGroup.deptNm" style="width: 90px" />
-              <q-breadcrumbs-el icon="star_half" :label="setEvGroup.evtGroup.titlNm" style="width: 60px" />
-              <q-breadcrumbs-el icon="person" :label="setEvGroup.evtGroup.empNm" style="width: 70px" />
-            </q-breadcrumbs>
-          </div>
-          <q-separator spaced />
-          <div class="row">
-            <q-space />
-            <span class="text-bold text-subtitle2 q-pr-sm text-orange">승인자<q-icon name="chevron_right" size="xs" /></span>
-            <q-breadcrumbs separator="|" class="text-orange text-bold" active-color="secondary">
-              <q-breadcrumbs-el icon="room_preferences" :label="setEvGroup.evsGroup.deptNm" style="width: 90px" />
-              <q-breadcrumbs-el icon="star" :label="setEvGroup.evsGroup.titlNm" style="width: 60px" />
-              <q-breadcrumbs-el icon="person" :label="setEvGroup.evsGroup.empNm" style="width: 70px" />
-            </q-breadcrumbs>
-          </div>
+        <div class="col-xs-12 col-sm-4 q-my-sm">
+          <q-card class="q-ml-sm-md q-pa-sm" :class="$q.screen.xs ? 'q-mt-xs' : 'row flex-center'" style="height: 100%">
+            <q-card-section class="row q-pa-none justify-center">
+              <span class="text-bold text-subtitle2 q-pr-sm text-blue">작성자<q-icon name="chevron_right" size="xs" /> </span>
+              <q-breadcrumbs separator="|" class="text-blue text-bold" active-color="secondary">
+                <q-breadcrumbs-el icon="room_preferences" :label="setEvGroup.evtGroup.deptNm" style="width: 90px" />
+                <q-breadcrumbs-el icon="star_half" :label="setEvGroup.evtGroup.titlNm" style="width: 60px" />
+                <q-breadcrumbs-el icon="person" :label="setEvGroup.evtGroup.empNm" style="width: 70px" />
+              </q-breadcrumbs>
+            </q-card-section>
+            <q-separator color="grey-4" spaced />
+            <q-card-section class="row q-pa-none justify-center">
+              <span class="text-bold text-subtitle2 q-pr-sm text-orange">승인자<q-icon name="chevron_right" size="xs" /></span>
+              <q-breadcrumbs separator="|" class="text-orange text-bold" active-color="secondary">
+                <q-breadcrumbs-el icon="room_preferences" :label="setEvGroup.evsGroup.deptNm" style="width: 90px" />
+                <q-breadcrumbs-el icon="star" :label="setEvGroup.evsGroup.titlNm" style="width: 60px" />
+                <q-breadcrumbs-el icon="person" :label="setEvGroup.evsGroup.empNm" style="width: 70px" />
+              </q-breadcrumbs>
+            </q-card-section>
+          </q-card>
         </div>
       </div>
     </q-card>
@@ -67,7 +67,7 @@
       <q-separator size="3px" class="q-mb-xs" />
 
       <div class="row">
-        <div class="col-xs-12 col-lg-7">
+        <div class="col-xs-12 col-md-7">
           <q-card-section>
             <q-toolbar class="row q-pa-none">
               <div class="q-gutter-xs">
@@ -102,26 +102,26 @@
             </div>
           </q-card-section>
         </div>
-        <div class="col-xs-12 col-lg-5">
+        <div class="col-xs-12 col-md-5">
           <q-card-section>
             <q-toolbar class="row q-pa-none">
               <q-breadcrumbs v-if="formData.status !== '4'" gutter="none" class="text-orange" active-color="grey">
                 <q-breadcrumbs-el label="진행중" v-if="formData.status >= 0 && selectedRows.length === 1" />
                 <q-breadcrumbs-el label="승인대기" v-if="formData.status >= 1 && selectedRows.length === 1" />
-                <q-breadcrumbs-el label="평가작성" v-if="formData.status >= 2 && selectedRows.length === 1" />
-                <q-breadcrumbs-el label="평가대기" v-if="formData.status >= 3 && selectedRows.length === 1" />
+                <q-breadcrumbs-el label="평가작성" v-if="formData.status >= 3 && selectedRows.length === 1" />
+                <q-breadcrumbs-el label="평가대기" v-if="formData.status >= 4 && selectedRows.length === 1" />
                 <q-breadcrumbs-el label="평가완료" v-if="formData.status >= 5 && selectedRows.length === 1" />
               </q-breadcrumbs>
               <q-breadcrumbs gutter="none" class="text-orange" active-color="grey">
-                <q-breadcrumbs-el label="승인반려" v-if="formData.status === '4' && selectedRows.length === 1" />
+                <q-breadcrumbs-el label="승인반려" v-if="formData.status === '2' && selectedRows.length === 1" />
               </q-breadcrumbs>
               <q-space />
               <div class="q-gutter-xs">
-                <q-btn v-if="formData.status === '2'" outline color="blue-12" dense @click="saveDataSection">
+                <q-btn v-if="formData.status === '3'" outline color="blue-12" dense @click="saveDataSection">
                   <q-icon name="save" size="xs" /><span v-if="!$q.screen.xs" class="q-ml-xs">저장</span>
                 </q-btn>
-                <q-btn v-if="formData.status === '2'" outline color="grey" dense @click="clearFieldSection" class="q-pr-md">
-                  <q-icon name="backspace" size="xs" /> <span v-if="!$q.screen.xs" class="q-ml-xs">Clear</span>
+                <q-btn v-if="formData.status === '3' && formData.selfCh !== ''" outline color="grey" dense @click="clearFieldSection" class="q-pr-md">
+                  <q-icon name="backspace" size="xs" /> <span v-if="!$q.screen.xs" class="q-ml-xs">CLEAR</span>
                 </q-btn>
               </div>
             </q-toolbar>
@@ -175,7 +175,7 @@
                   <!--                  />-->
                   <q-field dense ref="fieldRef" :model-value="formData.workPer" :hint="'목표달성율' + formData.workPer + '%'" class="q-mt-md">
                     <template v-slot:control>
-                      <q-slider v-model="formData.workPer" :min="0" :max="100" label-always />
+                      <q-slider :disable="formReadonly" v-model="formData.workPer" :min="0" :max="100" label-always />
                       <span></span>
                     </template>
                   </q-field>
@@ -183,7 +183,7 @@
                 <div class="col">
                   <q-field label="자기평가점수" stack-label bottom-slots label-color="red">
                     <template v-slot:control>
-                      <div class="self-center full-width no-outline" tabindex="0">{{ formData.markPoint }}</div>
+                      <div class="self-center full-width no-outline" tabindex="0">{{ formData.selfPoint }}</div>
                     </template>
                     <template v-slot:hint>평가선택점수</template>
                   </q-field>
@@ -195,7 +195,7 @@
                 <q-radio
                   keep-color
                   :disable="formReadonly"
-                  v-model="formData.markCh"
+                  v-model="formData.selfCh"
                   val="S"
                   label="S"
                   color="deep-orange"
@@ -206,7 +206,7 @@
                 <q-radio
                   keep-color
                   :disable="formReadonly"
-                  v-model="formData.markCh"
+                  v-model="formData.selfCh"
                   val="A"
                   label="A"
                   color="blue"
@@ -217,7 +217,7 @@
                 <q-radio
                   keep-color
                   :disable="formReadonly"
-                  v-model="formData.markCh"
+                  v-model="formData.selfCh"
                   val="B"
                   label="B"
                   color="cyan"
@@ -228,7 +228,7 @@
                 <q-radio
                   keep-color
                   :disable="formReadonly"
-                  v-model="formData.markCh"
+                  v-model="formData.selfCh"
                   val="C"
                   label="C"
                   color="teal"
@@ -239,7 +239,7 @@
                 <q-radio
                   keep-color
                   :disable="formReadonly"
-                  v-model="formData.markCh"
+                  v-model="formData.selfCh"
                   val="D"
                   label="D"
                   color="green"
@@ -265,22 +265,21 @@ import { AgGridVue } from 'ag-grid-vue3';
 import { computed, onBeforeMount, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 import { isEmpty, isEqual } from 'lodash';
 import { api } from 'boot/axios';
-import authHeader from 'boot/authHeader';
 import notifySave from 'src/js_comm/notify-save';
 import { QBtn, QIcon, useQuasar } from 'quasar';
 import jsonUtil from 'src/js_comm/json-util';
-import commUtil from 'src/js_comm/comm-util';
-import CompSelectLevel from 'components/CompSelectLevel.vue';
+import { useUserInfoStore } from 'src/store/setUserInfo';
+import { useYearInfoStore } from 'src/store/setYearInfo';
+const storeUser = useUserInfoStore();
+const storeYear = useYearInfoStore();
 
 const setEvsCd = ref('2011101'); // 성과평가 공통코드
-const setEmpCd = ref('2195159');
-// const setEmpCd = ref('2206004'); // 기준 피평가자 사번
 
 const rowData = reactive({ rows: [] });
 
 // grid Height 자동처리부분
 const gridHeight = ref(300); // 초기 높이
-const rowHeight = 45; // 행당 높이 (예: 25px)
+const rowHeight = 46; // 행당 높이 (예: 25px)
 const minHeight = ref(135); // 최소 높이 (예: 300px) rowHeight의 3배
 watch(
   () => rowData.rows,
@@ -299,22 +298,22 @@ watch(
 const handlePointClick = val => {
   switch (val) {
     case 'S':
-      formData.value.markPoint = 100;
+      formData.value.selfPoint = 100;
       break;
     case 'A':
-      formData.value.markPoint = 90;
+      formData.value.selfPoint = 90;
       break;
     case 'B':
-      formData.value.markPoint = 80;
+      formData.value.selfPoint = 80;
       break;
     case 'C':
-      formData.value.markPoint = 70;
+      formData.value.selfPoint = 70;
       break;
     case 'D':
-      formData.value.markPoint = 60;
+      formData.value.selfPoint = 60;
       break;
     default:
-      formData.value.markPoint = 0;
+      formData.value.selfPoint = 0;
       break;
   }
 };
@@ -377,36 +376,39 @@ const columnDefs = reactive({
     {
       headerName: '가중치',
       field: 'weight',
-      maxWidth: 90,
-      minWidth: 90,
+      maxWidth: 95,
+      minWidth: 95,
       resizable: false,
       pinned: 'right',
       cellStyle: params => {
-        return $q.dark.isActive ? { color: 'cyan', fontWeight: '700' } : { color: 'blue', fontWeight: '700' };
+        return $q.dark.isActive ? { color: 'cyan', fontWeight: '300' } : { color: 'blue', fontWeight: '300' };
       },
     },
     {
       headerName: '진행상태',
       field: 'statusNm',
-      minWidth: 100,
-      maxWidth: 100,
+      minWidth: 120,
+      maxWidth: 120,
       pinned: 'right',
       cellStyle: params => {
-        switch (params.data.status) {
-          case '0':
-            return null;
-          case '1':
+        if (params.data.status === '0') {
+          return null;
+        } else if (params.data.status === '1') {
+          return $q.dark.isActive ? { color: 'orange' } : { color: 'orange' };
+        } else if (params.data.status === '2') {
+          return $q.dark.isActive ? { color: 'red' } : { color: 'red' };
+        } else if (params.data.status === '3') {
+          if (params.data.selfCh === '') {
             return $q.dark.isActive ? { color: 'orange' } : { color: 'orange' };
-          case '2':
-            return $q.dark.isActive ? { color: 'lime' } : { color: 'teal' };
-          case '3':
-            return $q.dark.isActive ? { color: 'pink' } : { color: 'purple' };
-          case '4':
-            return $q.dark.isActive ? { color: 'red' } : { color: 'red' };
-          case '5':
-            return $q.dark.isActive ? { color: 'cyan' } : { color: 'blue' };
-          default:
-            return null;
+          } else {
+            return $q.dark.isActive ? { color: 'teal' } : { color: 'teal' };
+          }
+        } else if (params.data.status === '4') {
+          return $q.dark.isActive ? { color: 'pink' } : { color: 'purple' };
+        } else if (params.data.status === '5') {
+          return $q.dark.isActive ? { color: 'cyan' } : { color: 'blue' };
+        } else {
+          return null;
         }
       },
     },
@@ -415,14 +417,18 @@ const columnDefs = reactive({
 let totalWeight = 0;
 const totalComputeWeight = () => {
   totalWeight = 0;
-  totalWeight = rowData.rows.reduce((sum, item) => sum + item.weight, 0);
+  rowData.rows.forEach(item => {
+    totalWeight += item.weight;
+  });
+
   const pinnedBottomRowData = [
     {
-      targetDoc: '가중치 합계',
+      targetDoc: '합계',
       weight: totalWeight,
     },
   ];
-  gridApi.value.setPinnedBottomRowData(pinnedBottomRowData);
+
+  gridApi.value.updateGridOptions({ pinnedBottomRowData });
 };
 // 기준평가자연결정보
 const setEvGroup = reactive({
@@ -443,30 +449,14 @@ const setEvGroup = reactive({
     titlNm: '',
   },
 });
-// 기준평가기간 적용부분
-const setYearGroup = ref({
-  setYear: '',
-  setFg: '',
-  setLocCh: '',
-});
-const getStorgeSetYearGroup = () => {
-  const _value = $q.localStorage.getItem('setYearGroup').split('|');
-  setYearGroup.value.setYear = _value[0];
-  setYearGroup.value.setFg = _value[1];
-  setYearGroup.value.setLocCh = _value[2];
-  // console.log('Sub SetYear Group :: ', setYearGroup.value.setYear, setYearGroup.value.setFg, setYearGroup.value.setLocCh);
-};
-// 기준평가기간 적용부분 끝
 
 onBeforeUnmount(() => {
   // Remove the resize event listener when the component is destroyed
   window.removeEventListener('resize', handleResize);
 });
 onBeforeMount(() => {
-  getStorgeSetYearGroup();
-
   rowSelection.value = 'multiple';
-  getDataEvsn(setEmpCd.value, setEvsCd.value);
+  getDataEvsn(storeUser.setEmpCd, setEvsCd.value);
   getData();
 });
 
@@ -480,6 +470,7 @@ const oldFormData = ref(null);
 const formData = ref({
   stdYear: '',
   empCd: '',
+  workNo: 0,
   seq: 0,
   targetDoc: '',
   evaS: '',
@@ -490,8 +481,8 @@ const formData = ref({
   weight: 0,
   workDoc: '',
   workPer: 0,
-  markCh: '',
-  markPoint: 0,
+  selfCh: '',
+  selfPoint: 0,
   status: '',
   statusDate: '00000000',
   returnDoc: '',
@@ -499,8 +490,9 @@ const formData = ref({
 });
 
 const formDataInitialize = () => {
-  formData.value.stdYear = setYearGroup.value.setYear;
-  formData.value.empCd = setEmpCd.value;
+  formData.value.stdYear = storeYear.setYear;
+  formData.value.empCd = storeUser.setEmpCd;
+  formData.value.workNo = 1;
   formData.value.seq = 1;
   formData.value.targetDoc = '';
   formData.value.evaS = '';
@@ -511,8 +503,8 @@ const formDataInitialize = () => {
   formData.value.weight = 0;
   formData.value.workDoc = '';
   formData.value.workPer = 0;
-  formData.value.markCh = '';
-  formData.value.markPoint = 0;
+  formData.value.selfCh = '';
+  formData.value.selfPoint = 0;
   formData.value.status = '';
   formData.value.statusDate = '00000000';
   formData.value.returnDoc = '';
@@ -526,25 +518,24 @@ const sendCountCancel = ref(0);
 let oldWeight = 0;
 const onSelectionChanged = event => {
   selectedRows.value = event.api.getSelectedRows();
-  console.log('row:: ', selectedRows.value.length);
 
   sendCount.value = 0;
   sendCountCancel.value = 0;
   selectedRows.value.forEach(row => {
-    if (row.status === '2' && row.workDoc && row.markPoint > 0 && row.workPer > 0) {
+    if (row.status === '3' && row.workDoc && row.selfPoint > 0 && row.workPer > 0) {
       sendCount.value++;
     }
-    if (row.status === '3') {
+    if (row.status === '4' && row.markCh === '') {
       sendCountCancel.value++;
     }
   });
 
   formReadonly.value = true;
   if (selectedRows.value.length === 1) {
-    if (selectedRows.value[0].status === '2') {
+    if (selectedRows.value[0].status === '3') {
       formReadonly.value = false;
     }
-    getDataSelect(selectedRows.value[0].stdYear, selectedRows.value[0].empCd, selectedRows.value[0].seq);
+    getDataSelect(selectedRows.value[0].stdYear, selectedRows.value[0].empCd, selectedRows.value[0].workNo);
     oldWeight = selectedRows.value[0].weight;
     isSaveFg = 'U';
     formDisable.value = false;
@@ -611,8 +602,8 @@ const sendAuthRequest = () => {
       let iuD = [];
       for (let i = 0; i < selectedRows.value.length; i++) {
         // 작성중 또는 반려자료 승인요청 체크
-        if (selectedRows.value[i].status === '2') {
-          selectedRows.value[i].status = '3'; // 평가대기 코드
+        if (selectedRows.value[i].status === '3') {
+          selectedRows.value[i].status = '4'; // 평가대기 코드
           let tmpJson = '{"mode": "' + isSaveFg + '","data":' + JSON.stringify(selectedRows.value[i]) + '}';
           console.log('update send : ', JSON.stringify(selectedRows.value[i]));
           iu.push(tmpJson);
@@ -649,8 +640,8 @@ const sendAuthRequestCancel = () => {
       let iuD = [];
       for (let i = 0; i < selectedRows.value.length; i++) {
         // 평가대기 체크
-        if (selectedRows.value[i].status === '3') {
-          selectedRows.value[i].status = '2';
+        if (selectedRows.value[i].status === '4') {
+          selectedRows.value[i].status = '3';
           let tmpJson = '{"mode": "' + isSaveFg + '","data":' + JSON.stringify(selectedRows.value[i]) + '}';
           console.log('update send : ', JSON.stringify(selectedRows.value[i]));
           iu.push(tmpJson);
@@ -683,8 +674,8 @@ const clearFieldSection = () => {
   })
     .onOk(() => {
       formData.value.workDoc = '';
-      formData.value.markCh = '';
-      formData.value.markPoint = 0;
+      formData.value.selfCh = '';
+      formData.value.selfPoint = 0;
       formData.value.workPer = 0;
     })
     .onCancel(() => {})
@@ -700,11 +691,11 @@ const clearFieldSection = () => {
 const getDataEvsn = async (resEmpCd, resEvsCd) => {
   console.log('param: ', resEmpCd, resEvsCd);
   try {
-    const response = await api.post(
-      '/api/aux/aux_emp_evsn_list',
-      { paramSetYear: setYearGroup.value.setYear, paramEmpCd: resEmpCd, paramEvsCd: resEvsCd },
-      { headers: authHeader() },
-    );
+    const response = await api.post('/api/aux/aux_emp_evsn_list', {
+      paramSetYear: storeYear.setYear,
+      paramEmpCd: resEmpCd,
+      paramEvsCd: resEvsCd,
+    });
     setEvGroup.evsGroup.empCd = response.data.data[0].evsEmpCd;
     setEvGroup.evsGroup.empNm = response.data.data[0].evsEmpNm;
     setEvGroup.evsGroup.deptCd = response.data.data[0].evsDeptCd;
@@ -727,20 +718,11 @@ const getDataEvsn = async (resEmpCd, resEvsCd) => {
 let maxSeq = 0;
 const getData = async () => {
   try {
-    const response = await api.post(
-      '/api/hpe/hpe1020_list',
-      { paramSetYear: setYearGroup.value.setYear, paramEmpCd: setEmpCd.value },
-      { headers: authHeader() },
-    );
+    const response = await api.post('/api/hpe/hpe1020_list', { paramSetYear: storeYear.setYear, paramEmpCd: storeUser.setEmpCd });
     rowData.rows = response.data.data;
     if (rowData.rows.length > 0) {
       minHeight.value = 90;
     }
-    rowData.rows.forEach(row => {
-      if (row.seq > maxSeq) {
-        maxSeq = row.seq;
-      }
-    });
     sendCount.value = 0;
     gridKey.value += 1;
     console.log('getData : ', JSON.stringify(rowData.rows));
@@ -752,16 +734,14 @@ const getData = async () => {
 // ***** 선택한 성과/목표정보 목록 자료 가져오기 부분  *****************************//
 const getDataSelect = async () => {
   try {
-    const response = await api.post(
-      '/api/hpe/hpe1020_select',
-      {
-        paramSetYear: setYearGroup.value.setYear,
-        paramEmpCd: selectedRows.value[0].empCd,
-        paramSeq: selectedRows.value[0].seq,
-      },
-      { headers: authHeader() },
-    );
+    const response = await api.post('/api/hpe/hpe1020_select', {
+      paramSetYear: storeYear.setYear,
+      paramEmpCd: selectedRows.value[0].empCd,
+      paramWorkNo: selectedRows.value[0].workNo,
+    });
     formData.value = response.data.data[0];
+    formData.value.targetDoc = formData.value.targetDoc.replace(/\n/g, '<br>');
+
     console.log('getSelect1 : ', JSON.stringify(response.data.data[0]));
     oldFormData.value = JSON.parse(JSON.stringify(formData.value)); // 초기자료 저장
     console.log('getSelect2 : ', JSON.stringify(formData.value));
@@ -775,7 +755,7 @@ const getDataSelect = async () => {
 const saveDataAndHandleResult = resFormData => {
   console.log('form data : ', JSON.stringify(resFormData));
   api
-    .post('/api/hpe/hpe1020_save', resFormData, { headers: authHeader() })
+    .post('/api/hpe/hpe1020_save', resFormData)
     .then(res => {
       let saveStatus = {};
       if (res.data.rtn === '0') {
@@ -806,6 +786,11 @@ const updateByteCount = () => {
 };
 
 const gridOptions = {
+  getRowStyle: params => {
+    if (params.node.rowPinned) {
+      return { backgroundColor: 'lightblue' };
+    }
+  },
   localeText: { noRowsToShow: '조회 결과가 없습니다.' },
 };
 </script>

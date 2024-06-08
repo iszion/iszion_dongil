@@ -58,11 +58,12 @@ import { AgGridVue } from 'ag-grid-vue3';
 import { QBtn, QIcon, useQuasar } from 'quasar';
 import { computed, onBeforeMount, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
 import { api } from '/src/boot/axios';
-import authHeader from 'boot/authHeader';
 import { isEmpty } from 'lodash';
 import jsonUtil from 'src/js_comm/json-util';
 import notifySave from 'src/js_comm/notify-save';
-import CompSelectDepg from 'components/CompSelectDepg.vue';
+
+import { useYearInfoStore } from 'src/store/setYearInfo';
+const storeYear = useYearInfoStore();
 
 const $q = useQuasar();
 
@@ -84,7 +85,6 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', handleResize);
 });
 onBeforeMount(() => {
-  getStorgeSetYearGroup();
   rowSelection.value = 'multiple';
   getData();
 });
@@ -92,20 +92,6 @@ onMounted(() => {
   window.addEventListener('resize', handleResize);
   handleResize();
 });
-// 기준평가기간 적용부분
-const setYearGroup = ref({
-  setYear: '',
-  setFg: '',
-  setLocCh: '',
-});
-const getStorgeSetYearGroup = () => {
-  const _value = $q.localStorage.getItem('setYearGroup').split('|');
-  setYearGroup.value.setYear = _value[0];
-  setYearGroup.value.setFg = _value[1];
-  setYearGroup.value.setLocCh = _value[2];
-  console.log('Sub SetYear Group :: ', setYearGroup.value.setYear, setYearGroup.value.setFg, setYearGroup.value.setLocCh);
-};
-// 기준평가기간 적용부분 끝
 
 const onGridReady = params => {
   gridApi.value = params.api;
@@ -205,7 +191,7 @@ const addDataSection = () => {
   updateData.value = [];
   const addIndex = 0;
   const newItems = {
-    stdYear: setYearGroup.value.setYear,
+    stdYear: storeYear.setYear,
     titlCd: '',
     oldTitlCd: '',
     titlNm: '',
@@ -312,7 +298,7 @@ const handleResize = () => {
 // ***** 소속팀정보 가저오기 부분  **************************//
 const getData = async () => {
   try {
-    const response = await api.post('/api/mst/mst2040_list', { paramSetYear: setYearGroup.value.setYear }, { headers: authHeader() });
+    const response = await api.post('/api/mst/mst2040_list', { paramSetYear: storeYear.setYear });
     rowData.rows = response.data.data;
     rowDataBack.value = JSON.parse(JSON.stringify(response.data.data));
     updateData.value = [];
@@ -324,7 +310,7 @@ const getData = async () => {
 // ***** 소속팀정보 저장하기 부분  **************************//
 const saveDataAndHandleResult = resFormData => {
   api
-    .post('/api/mst/mst2040_save', resFormData, { headers: authHeader() })
+    .post('/api/mst/mst2040_save', resFormData)
     .then(res => {
       let saveStatus = {};
       if (res.data.rtn === '0') {

@@ -129,17 +129,7 @@
                       <q-card class="q-pa-xs shadow-7">
                         <q-card-section horizontal>
                           <q-img spinner-color="white" class="" src="https://cdn.quasar.dev/img/avatar.png" />
-
-                          <q-card-actions vertical class="justify-around q-px-none">
-                            <q-btn flat round color="primary" icon="photo_camera" @click="openFilePicker" />
-                            <q-btn flat round color="accent" icon="image" />
-                            <q-btn flat round color="red" icon="delete" />
-                          </q-card-actions>
                         </q-card-section>
-                        <q-separator class="q-my-xs" />
-                        <q-card-actions class="q-py-xs">
-                          <div class="text-bold text-subtitle2">파일명: {{ insaFileName }}</div>
-                        </q-card-actions>
                       </q-card>
                     </div>
                     <div class="col-12 col-md-6">
@@ -154,34 +144,36 @@
                         </template>
                       </q-field>
                       <q-input v-model="formData.userNmx" label="닉네임" :label-color="$q.dark.isActive ? 'green' : 'blue'" :disable="formDisable" />
-                      <q-field label="사원번호" label-color="orange" stack-label>
-                        <template v-slot:control>
-                          <div class="self-center full-width no-outline" tabindex="0">{{ formData.empCd }}</div>
-                        </template>
-                      </q-field>
                     </div>
                   </div>
 
                   <div class="row q-col-gutter-xl">
                     <div class="col-12 col-md-6 q-gutter-y-sm">
+                      <q-field label="사원번호" label-color="orange" stack-label>
+                        <template v-slot:control>
+                          <div class="self-center full-width no-outline" tabindex="0">{{ formData.empCd }}</div>
+                        </template>
+                      </q-field>
                       <q-field label="소속팀" label-color="orange" stack-label>
                         <template v-slot:control>
                           <div class="self-center full-width no-outline" tabindex="0">{{ formData.deptNm }}</div>
                         </template>
                       </q-field>
-                      <q-field label="직급" label-color="orange" stack-label>
-                        <template v-slot:control>
-                          <div class="self-center full-width no-outline" tabindex="0">{{ formData.titlNm }}</div>
-                        </template>
-                      </q-field>
+
                       <q-field label="입사일" label-color="orange" stack-label>
                         <template v-slot:control>
                           <div class="self-center full-width no-outline" tabindex="0">{{ formData.inDay }}</div>
                         </template>
                       </q-field>
-                      <q-field label="퇴사일" label-color="orange" stack-label>
+
+                      <q-field label="전화번호" label-color="orange" stack-label>
                         <template v-slot:control>
-                          <div class="self-center full-width no-outline" tabindex="0">{{ formData.outDay }}</div>
+                          <div class="self-center full-width no-outline" tabindex="0">{{ formData.mobile }}</div>
+                        </template>
+                      </q-field>
+                      <q-field label="이메일" label-color="orange" stack-label>
+                        <template v-slot:control>
+                          <div class="self-center full-width no-outline" tabindex="0">{{ formData.email }}</div>
                         </template>
                       </q-field>
                     </div>
@@ -191,16 +183,17 @@
                           <div class="self-center full-width no-outline" tabindex="0">{{ formData.pstnNm }}</div>
                         </template>
                       </q-field>
-                      <q-field label="이메일" label-color="orange" stack-label>
+                      <q-field label="직급" label-color="orange" stack-label>
                         <template v-slot:control>
-                          <div class="self-center full-width no-outline" tabindex="0">{{ formData.email }}</div>
+                          <div class="self-center full-width no-outline" tabindex="0">{{ formData.titlNm }}</div>
                         </template>
                       </q-field>
-                      <q-field label="전화번호" label-color="orange" stack-label>
+                      <q-field label="퇴사일" label-color="orange" stack-label>
                         <template v-slot:control>
-                          <div class="self-center full-width no-outline" tabindex="0">{{ formData.mobile }}</div>
+                          <div class="self-center full-width no-outline" tabindex="0">{{ formData.outDay }}</div>
                         </template>
                       </q-field>
+
                       <q-input
                         :disable="formDisable"
                         type="textarea"
@@ -235,11 +228,12 @@ import { QBtn, QIcon, useQuasar } from 'quasar';
 import { computed, onBeforeMount, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 import { api } from '/src/boot/axios';
 
-import authHeader from 'boot/authHeader';
 import { isEqual } from 'lodash';
 import jsonUtil from 'src/js_comm/json-util';
 import notifySave from 'src/js_comm/notify-save';
 import commUtil from 'src/js_comm/comm-util';
+import { useYearInfoStore } from 'src/store/setYearInfo';
+const storeYear = useYearInfoStore();
 
 const $q = useQuasar();
 
@@ -290,7 +284,6 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', handleResize);
 });
 onBeforeMount(() => {
-  getStorgeSetYearGroup();
   rowSelection.value = 'single';
   getData();
   getDataDeptOption();
@@ -301,21 +294,6 @@ onMounted(() => {
   window.addEventListener('resize', handleResize);
   handleResize();
 });
-
-// 기준평가기간 적용부분
-const setYearGroup = ref({
-  setYear: '',
-  setFg: '',
-  setLocCh: '',
-});
-const getStorgeSetYearGroup = () => {
-  const _value = $q.localStorage.getItem('setYearGroup').split('|');
-  setYearGroup.value.setYear = _value[0];
-  setYearGroup.value.setFg = _value[1];
-  setYearGroup.value.setLocCh = _value[2];
-  console.log('Sub SetYear Group :: ', setYearGroup.value.setYear, setYearGroup.value.setFg, setYearGroup.value.setLocCh);
-};
-// 기준평가기간 적용부분 끝
 
 const onGridReady = params => {
   gridApi.value = params.api;
@@ -572,7 +550,7 @@ const handleResize = () => {
 // saveStatus = 0=수정성공 1=신규성공 2=삭제성공 3=수정에러 4=시스템에러
 const saveDataAndHandleResult = resFormData => {
   api
-    .post('/api/sys/sys1010_save', resFormData, { headers: authHeader() })
+    .post('/api/sys/sys1010_save', resFormData)
     .then(res => {
       let saveStatus = {};
       if (res.data.rtn === '0') {
@@ -632,11 +610,11 @@ const saveDataAndHandleResult = resFormData => {
 // ***** 사용자정보 목록 자료 가져오기 부분  *****************************//
 const getData = async () => {
   try {
-    const response = await api.post(
-      '/api/sys/sys1010_list',
-      { paramSetYear: setYearGroup.value.setYear, paramDeptCd: searchParam.deptCd, paramSearchWord: searchParam.word },
-
-    );
+    const response = await api.post('/api/sys/sys1010_list', {
+      paramSetYear: storeYear.setYear,
+      paramDeptCd: searchParam.deptCd,
+      paramSearchWord: searchParam.word,
+    });
     rowData.rows = response.data.data;
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -647,11 +625,7 @@ const getData = async () => {
 // ***** 사용자정보 선택된 자료 가져오기 부분  *****************************//
 const getDataSelect = async resParamUserId => {
   try {
-    const response = await api.post(
-      '/api/sys/sys1010_select',
-      { paramSetYear: setYearGroup.value.setYear, paramUserId: resParamUserId },
-      { headers: authHeader() },
-    );
+    const response = await api.post('/api/sys/sys1010_select', { paramSetYear: storeYear.setYear, paramUserId: resParamUserId });
     formData.value = response.data.data[0];
     // console.log('select data ::: ', JSON.stringify(formData.value));
     oldFormData.value = JSON.parse(JSON.stringify(formData.value)); // 초기자료 저장
@@ -666,7 +640,7 @@ const getDataSelect = async resParamUserId => {
 // ***** 소속팀정보 가져오기 부분  *****************************//
 async function getDataDeptOption() {
   try {
-    const response = await api.post('/api/mst/dept_option_list', { paramSetYear: setYearGroup.value.setYear }, { headers: authHeader() });
+    const response = await api.post('/api/mst/dept_option_list', { paramSetYear: storeYear.setYear });
     deptOptions.value = response.data.data;
     deptOptionsSearch.value = JSON.parse(JSON.stringify(deptOptions.value));
     console.log(JSON.stringify(deptOptionsSearch.value));
@@ -678,7 +652,7 @@ async function getDataDeptOption() {
 // ***** 직위정보 가져오기 부분  *****************************//
 async function getDataPstnOption() {
   try {
-    const response = await api.post('/api/mst/pstn_option_list', { paramSetYear: setYearGroup.value.setYear }, { headers: authHeader() });
+    const response = await api.post('/api/mst/pstn_option_list', { paramSetYear: storeYear.setYear });
     pstnOptions.value = response.data.data;
     console.log('pstn ::: ', JSON.stringify(pstnOptions.value));
   } catch (error) {
@@ -688,9 +662,8 @@ async function getDataPstnOption() {
 // ***** 직급정보 가져오기 부분  *****************************//
 async function getDataTitlOption() {
   try {
-    const response = await api.post('/api/mst/titl_option_list', { paramSetYear: setYearGroup.value.setYear }, { headers: authHeader() });
+    const response = await api.post('/api/mst/titl_option_list', { paramSetYear: storeYear.setYear });
     titlOptions.value = response.data.data;
-    console.log('titl ::: ', JSON.stringify(titlOptions.value));
   } catch (error) {
     console.error('Error fetching users:', error);
   }

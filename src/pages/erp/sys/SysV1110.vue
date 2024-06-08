@@ -16,13 +16,14 @@
               <q-select
                 dense
                 stack-label
-                options-dense
+                options-dense팀
                 class="q-pb-sm q-pl-sm q-mr-lg"
                 label-color="orange"
                 v-model="selectedDept"
                 :options="deptOptions"
                 option-value="deptCd"
                 option-label="deptNm"
+                options-dense
                 option-disable="inactive"
                 emit-value
                 map-options
@@ -153,10 +154,10 @@ import { AgGridVue } from 'ag-grid-vue3';
 import { QBtn, QIcon, QToggle, useQuasar } from 'quasar';
 import { computed, h, onBeforeMount, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 import { api } from '/src/boot/axios';
-import authHeader from 'boot/authHeader';
 import { isEmpty, isEqual } from 'lodash';
 import jsonUtil from 'src/js_comm/json-util';
 import notifySave from 'src/js_comm/notify-save';
+
 import CompToggleHpe from 'components/CompToggleHpe.vue';
 import CompToggleHce from 'components/CompToggleHce.vue';
 import CompToggleHpr from 'components/CompToggleHpr.vue';
@@ -174,6 +175,8 @@ import CompToggleApp from 'components/CompToggleApp.vue';
 import CompToggleRpt from 'components/CompToggleRpt.vue';
 import CompToggleExc from 'components/CompToggleExc.vue';
 import CompToggleLoc from 'components/CompToggleLoc.vue';
+import { useYearInfoStore } from 'src/store/setYearInfo';
+const storeYear = useYearInfoStore();
 
 const $q = useQuasar();
 
@@ -248,8 +251,8 @@ const columnDefs = reactive({
           showDialogTitle.value.userId = row.value.userId;
           showDialogTitle.value.userNm = row.value.userNm;
           isDialogVisible.value = true;
+          selectedGroup.value = null;
           getDataDialog();
-          getGroupData();
         },
       },
     },
@@ -717,31 +720,16 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', handleResize);
 });
 onBeforeMount(() => {
-  getStorgeSetYearGroup();
   rowSelection.value = 'multiple';
   getData();
   getDataDeptOption();
+  getGroupData();
 });
 
 onMounted(() => {
   window.addEventListener('resize', handleResize);
   handleResize();
 });
-
-// 기준평가기간 적용부분
-const setYearGroup = ref({
-  setYear: '',
-  setFg: '',
-  setLocCh: '',
-});
-const getStorgeSetYearGroup = () => {
-  const _value = $q.localStorage.getItem('setYearGroup').split('|');
-  setYearGroup.value.setYear = _value[0];
-  setYearGroup.value.setFg = _value[1];
-  setYearGroup.value.setLocCh = _value[2];
-  console.log('Sub SetYear Group :: ', setYearGroup.value.setYear, setYearGroup.value.setFg, setYearGroup.value.setLocCh);
-};
-// 기준평가기간 적용부분 끝
 
 const checkAll = (resId, resCheck) => {
   for (let i = 0; i < rowData.rows.length; i++) {
@@ -766,7 +754,7 @@ const checkAllProg = (resId, resCheck) => {
 // ***** 사용자 권한정보 저장하기 부분  *****************************//
 const saveDataAndHandleResult = resFormData => {
   api
-    .post('/api/sys/sys1110_grntg_save', resFormData, { headers: authHeader() })
+    .post('/api/sys/sys1110_grntg_save', resFormData)
     .then(res => {
       let saveStatus = {};
       if (res.data.rtn === '0') {
@@ -790,11 +778,11 @@ const saveDataAndHandleResult = resFormData => {
 // ***** 사용자 권한정보 선택된 자료 가져오기 부분  *****************************//
 const getData = async () => {
   try {
-    const response = await api.post(
-      '/api/sys/sys1110_grntg_list',
-      { paramSetYear: setYearGroup.value.setYear, paramDeptCd: selectedDept.value, paramSearchValue: searchValue.value },
-      { headers: authHeader() },
-    );
+    const response = await api.post('/api/sys/sys1110_grntg_list', {
+      paramSetYear: storeYear.setYear,
+      paramDeptCd: selectedDept.value,
+      paramSearchValue: searchValue.value,
+    });
     rowData.rows = response.data.data;
     rowDataBack.value = JSON.parse(JSON.stringify(response.data.data));
     updateData.value = [];
@@ -807,7 +795,7 @@ const getData = async () => {
 // ***** 프로그램 권한정보 저장하기 부분  *****************************//
 const saveDataDialogAndHandleResult = resFormData => {
   api
-    .post('/api/sys/sys1110_grntp_save', resFormData, { headers: authHeader() })
+    .post('/api/sys/sys1110_grntp_save', resFormData)
     .then(res => {
       let saveStatus = {};
       if (res.data.rtn === '0') {
@@ -831,11 +819,7 @@ const saveDataDialogAndHandleResult = resFormData => {
 // ***** 프로그램 권한정보 선택된 자료 가져오기 부분  *****************************//
 const getDataDialog = async () => {
   try {
-    const response = await api.post(
-      '/api/sys/sys1110_grntp_list',
-      { paramUserId: showDialogTitle.value.userId, paramGroupCd: selectedGroup.value },
-      { headers: authHeader() },
-    );
+    const response = await api.post('/api/sys/sys1110_grntp_list', { paramUserId: showDialogTitle.value.userId, paramGroupCd: selectedGroup.value });
     rowDataDialog.rows = response.data.data;
     rowDataDialogBack.value = JSON.parse(JSON.stringify(response.data.data));
     updateData.value = [];
@@ -846,26 +830,25 @@ const getDataDialog = async () => {
 };
 // ***** 프로그램 선택된 자료 가져오기 부분  *****************************//
 
-/// ***** 공통코드정보 가져오기 부분  *****************************//
+/// ***** 부서코드정보 가져오기 부분  *****************************//
 const selectedDept = ref('');
 const deptOptions = ref([]);
 async function getDataDeptOption() {
   try {
-    const response = await api.post('/api/mst/dept_option_list', { paramStdYear: setYearGroup.value.setYear }, { headers: authHeader() });
+    const response = await api.post('/api/mst/dept_option_list', { paramSetYear: storeYear.setYear });
     deptOptions.value = response.data.data;
     deptOptions.value.push({ deptNm: '전체', deptCd: '' });
   } catch (error) {
     console.error('Error fetching users:', error);
   }
 }
-// ***** 사용정보 선택된 자료 가져오기 부분  *****************************//
 
 // ***** DataBase 그룹자료 가져오기 부분 *****************************//
 const groupOptions = ref([]);
 const selectedGroup = ref(null);
 const getGroupData = async () => {
   try {
-    const response = await api.post('/api/sys/prog_group_list', { paramUserId: showDialogTitle.value.userId }, { headers: authHeader() });
+    const response = await api.post('/api/sys/prog_group_list', {});
     // 옵션 초기화
     groupOptions.value = [];
     groupOptions.value.push({ groupNm: '전체', groupCd: '' });

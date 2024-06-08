@@ -25,34 +25,29 @@
                   </div>
                   <div class="col-4">
                     <q-chip>
-                      <q-avatar color="orange" text-color="white">{{ viewStatus.status_1 }}</q-avatar>
-                      승인대기
+                      <q-avatar color="teal" text-color="white">{{ viewStatus.status_0 }}</q-avatar>
+                      목표진행중
                     </q-chip>
                   </div>
                   <div class="col-4">
                     <q-chip>
                       <q-avatar color="grey" text-color="white">{{ viewStatus.status_3 }}</q-avatar>
-                      승인완료
+                      자기평가진행
                     </q-chip>
                   </div>
                 </div>
                 <div class="row">
+                  <q-space />
                   <div class="col-4">
                     <q-chip>
-                      <q-avatar color="teal" text-color="white">{{ viewStatus.status_0 }}</q-avatar>
-                      진행중
+                      <q-avatar color="orange" text-color="white">{{ viewStatus.status_4 }}</q-avatar>
+                      평가대기
                     </q-chip>
                   </div>
                   <div class="col-4">
                     <q-chip>
-                      <q-avatar color="red" text-color="white">{{ viewStatus.status_2 }}</q-avatar>
-                      승인반려
-                    </q-chip>
-                  </div>
-                  <div class="col-4">
-                    <q-chip>
-                      <q-avatar color="grey" text-color="white">{{ viewStatus.status_9 }}</q-avatar>
-                      그외진행
+                      <q-avatar color="grey" text-color="white">{{ viewStatus.status_5 }}</q-avatar>
+                      성과평가완료
                     </q-chip>
                   </div>
                 </div>
@@ -60,18 +55,16 @@
             </div>
           </div>
         </div>
-        <div class="col-xs-12 col-sm-4 q-my-sm">
-          <q-card class="q-ml-sm-md q-pa-sm" :class="$q.screen.xs ? 'q-mt-xs' : 'row flex-center'" style="height: 100%">
-            <div class="row">
-              <q-space />
-              <span class="text-bold text-subtitle2 q-pr-sm text-orange">평가자<q-icon name="chevron_right" size="xs" /></span>
-              <q-breadcrumbs separator="|" class="text-orange text-bold" active-color="secondary">
-                <q-breadcrumbs-el icon="room_preferences" :label="storeUser.setDeptNm" style="width: 90px" />
-                <q-breadcrumbs-el icon="star" :label="storeUser.setTitlNm" style="width: 60px" />
-                <q-breadcrumbs-el icon="person" :label="storeUser.setEmpNm" style="width: 70px" />
-              </q-breadcrumbs>
-            </div>
-          </q-card>
+        <div class="col-xs-12 col-sm-4 q-pa-sm self-center">
+          <div class="row">
+            <q-space />
+            <span class="text-bold text-subtitle2 q-pr-sm text-orange">승인자<q-icon name="chevron_right" size="xs" /></span>
+            <q-breadcrumbs separator="|" class="text-orange text-bold" active-color="secondary">
+              <q-breadcrumbs-el icon="room_preferences" :label="storeUser.setDeptNm" style="width: 90px" />
+              <q-breadcrumbs-el icon="star" :label="storeUser.setTitlNm" style="width: 60px" />
+              <q-breadcrumbs-el icon="person" :label="storeUser.setEmpNm" style="width: 70px" />
+            </q-breadcrumbs>
+          </div>
         </div>
       </div>
     </q-card>
@@ -116,35 +109,28 @@
               <q-avatar color="red" text-color="white" size="md">2번</q-avatar>
               <q-space />
               <div class="row q-gutter-x-sm">
-                <q-btn
-                  v-if="sendCount.status_3 > 1"
-                  outline
-                  color="teal"
-                  dense
-                  class="q-pr-md"
-                  @click="saveDataSendAllSection('3', '전체승인취소하기', sendCount.status_3)"
-                >
-                  <q-badge color="orange" floating>{{ sendCount.status_3 }}</q-badge>
-                  <q-icon name="check" size="xs" class="q-mr-xs" />
-                  전체승인취소
-                </q-btn>
-                <q-btn
-                  v-if="sendCount.status_1 > 1"
-                  outline
-                  color="blue"
-                  dense
-                  class="q-pr-md"
-                  @click="saveDataSendAllSection('1', '전체승인하기', sendCount.status_1)"
-                >
-                  <q-badge color="orange" floating>{{ sendCount.status_1 }}</q-badge>
-                  <q-icon name="check" size="xs" class="q-mr-xs" />
-                  전체승인
-                </q-btn>
-                <q-btn v-if="sendCount.status_1 > 1" outline color="red" dense class="q-pr-md" @click="sendReturnAllDialog">
-                  <q-badge color="orange" floating>{{ sendCount.status_1 }}</q-badge>
-                  <q-icon name="reply" size="xs" class="q-mr-xs" />
-                  전체반려
-                </q-btn>
+                <q-field rounded filled label="자기누적 평균점수" stack-label style="width: 150px">
+                  <template v-slot:prepend>
+                    <q-icon name="check_circle_outline" />
+                  </template>
+
+                  <template v-slot:control>
+                    <div class="self-center full-width no-outline text-center text-subtitle1 text-bold text-orange" tabindex="0">
+                      {{ viewPoint.selfPoint }}
+                    </div>
+                  </template>
+                </q-field>
+                <q-field rounded filled label="평가누적 평균점수" stack-label style="width: 150px">
+                  <template v-slot:prepend>
+                    <q-icon name="task_alt" />
+                  </template>
+
+                  <template v-slot:control>
+                    <div class="self-center full-width no-outline text-center text-subtitle1 text-bold text-blue" tabindex="0">
+                      {{ viewPoint.markPoint }}
+                    </div>
+                  </template>
+                </q-field>
               </div>
             </q-toolbar>
             <div :key="gridKey" :style="{ height: gridHeightSelect + 'px' }">
@@ -165,148 +151,181 @@
       </div>
       <q-separator spaced />
       <q-card class="q-pa-xs">
-        <q-scroll-area :style="contentZoneStyle">
+        <q-scroll-area style="height: 350px; min-height: 300px">
           <div class="row">
-            <q-card flat bordered style="width: 100%" v-for="data in selectedRowsSel" :key="data.workNo" class="q-mb-sm">
+            <q-card flat bordered style="width: 100%" v-for="data in selectedRowsSel" :key="data.seq" class="q-mb-xs-lg q-mb-sm-none">
+              <div v-if="!$q.screen.lt.sm" class="row">
+                <q-card-section class="col-xs-12 col-sm-1 q-pa-none">
+                  <div class="row bg-grey-6 q-px-xs">
+                    <q-icon name="menu_book" color="primary" size="xs" />
+                    <span class="text-subtitle2 text-bold q-ml-sm"> 순번</span><br />
+                  </div>
+                </q-card-section>
+                <q-separator vertical />
+                <q-card-section class="col-xs-12 col-sm-3 q-pa-none">
+                  <div class="row bg-grey-6 q-px-xs">
+                    <q-icon name="menu_book" color="primary" size="xs" />
+                    <span class="text-subtitle2 text-bold q-ml-sm"> 목표설정</span><br />
+                  </div>
+                </q-card-section>
+                <q-separator vertical />
+                <q-card-section class="col-xs-12 col-sm-2 q-pa-none">
+                  <div class="row bg-grey-6 q-px-xs">
+                    <q-icon name="menu_book" color="primary" size="xs" />
+                    <span class="text-subtitle2 text-bold q-ml-sm">설정기준</span><br />
+                  </div>
+                </q-card-section>
+                <q-separator vertical />
+                <q-card-section class="col-xs-12 col-sm-3 q-pa-none">
+                  <div class="row bg-grey-6 q-px-xs">
+                    <q-icon name="menu_book" color="primary" size="xs" />
+                    <span class="text-subtitle2 text-bold q-ml-sm">성과/업적</span><br />
+                  </div>
+                </q-card-section>
+                <q-separator vertical />
+                <q-card-section class="col-xs-12 col-sm-1 q-pa-none">
+                  <div class="row bg-grey-6 q-px-xs">
+                    <q-icon name="menu_book" color="primary" size="xs" />
+                    <span class="text-subtitle2 text-bold q-ml-sm">가중치</span><br />
+                  </div>
+                </q-card-section>
+                <q-separator vertical />
+                <q-card-section class="col-xs-12 col-sm-1 q-pa-none">
+                  <div class="row bg-grey-6 q-px-xs">
+                    <q-icon name="menu_book" color="primary" size="xs" />
+                    <span class="text-subtitle2 text-bold q-ml-sm">자기점수</span><br />
+                  </div>
+                </q-card-section>
+                <q-separator vertical />
+                <q-card-actions v-if="$q.screen.xs" align="right">
+                  <div class="row bg-grey-6 q-px-xs">
+                    <q-icon name="menu_book" color="primary" size="xs" />
+                    <span class="text-subtitle2 text-bold q-ml-sm">자기점수</span><br />
+                  </div>
+                </q-card-actions>
+              </div>
+
               <div class="row">
-                <q-card class="col-xs-12 col-sm-1">
-                  <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">순번</div>
-                  <div class="text-center q-pa-xs" :class="$q.screen.xs ? '' : 'row flex-center'" style="height: 100%">
+                <q-card-section class="col-xs-12 col-sm-1 q-pa-none self-center">
+                  <div v-if="$q.screen.lt.sm" class="row bg-grey-6 q-px-xs">
+                    <q-icon name="menu_book" color="primary" size="xs" />
+                    <span class="text-subtitle2 text-bold q-ml-sm"> 순번</span><br />
+                  </div>
+
+                  <div class="q-px-sm text-center">
                     {{ data.seq }}
                   </div>
-                </q-card>
-                <q-card class="col-xs-12 col-sm-5">
-                  <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">목표설정</div>
-                  <div class="q-pa-xs" v-html="data.targetDoc"></div>
-                </q-card>
-                <q-card class="col-xs-12 col-sm-3">
-                  <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">기준설정</div>
-                  <div class="q-pa-xs">
-                    <span class="q-px-sm"> 1. {{ data.evaS }}<br /> </span>
-                    <span class="q-px-sm"> 2. {{ data.evaA }}<br /> </span>
-                    <span class="q-px-sm"> 3. {{ data.evaB }}<br /> </span>
-                    <span class="q-px-sm"> 4. {{ data.evaC }}<br /> </span>
-                    <span class="q-px-sm"> 5. {{ data.evaD }} </span>
+                </q-card-section>
+                <q-separator vertical />
+                <q-card-section class="col-xs-12 col-sm-3 q-pa-none">
+                  <div v-if="$q.screen.lt.sm" class="row bg-grey-6 q-px-xs">
+                    <q-icon name="menu_book" color="primary" size="xs" />
+                    <span class="text-subtitle2 text-bold q-ml-sm"> 목표설정</span><br />
                   </div>
-                </q-card>
-                <q-card class="col-xs-12 col-sm-1">
-                  <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">가중치</div>
-                  <div class="text-center q-pa-xs" :class="$q.screen.xs ? '' : 'row flex-center'" style="height: 100%">
+
+                  <span class="q-px-sm">
+                    {{ data.targetDoc }}
+                  </span>
+                </q-card-section>
+                <q-separator vertical />
+                <q-card-section class="col-xs-12 col-sm-2 q-pa-none">
+                  <div v-if="$q.screen.lt.sm" class="row bg-grey-6 q-px-xs">
+                    <q-icon name="menu_book" color="primary" size="xs" />
+                    <span class="text-subtitle2 text-bold q-ml-sm">설정기준</span><br />
+                  </div>
+                  <span class="q-px-sm"> 1. {{ data.evaS }}<br /> </span>
+                  <span class="q-px-sm"> 2. {{ data.evaA }}<br /> </span>
+                  <span class="q-px-sm"> 3. {{ data.evaB }}<br /> </span>
+                  <span class="q-px-sm"> 4. {{ data.evaC }}<br /> </span>
+                  <span class="q-px-sm"> 5. {{ data.evaD }} </span>
+                </q-card-section>
+                <q-separator vertical />
+                <q-card-section class="col-xs-12 col-sm-3 q-pa-none">
+                  <div v-if="$q.screen.lt.sm" class="row bg-grey-6 q-px-xs">
+                    <q-icon name="menu_book" color="primary" size="xs" />
+                    <span class="text-subtitle2 text-bold q-ml-sm">성과/업적</span><br />
+                  </div>
+
+                  <span class="q-px-sm">
+                    {{ data.workDoc }}
+                  </span>
+                </q-card-section>
+                <q-separator vertical />
+                <q-card-section class="col-xs-12 col-sm-1 q-pa-none self-center">
+                  <div v-if="$q.screen.lt.sm" class="row bg-grey-6 q-px-xs">
+                    <q-icon name="menu_book" color="primary" size="xs" />
+                    <span class="text-subtitle2 text-bold q-ml-sm">가중치</span><br />
+                  </div>
+
+                  <div class="q-px-sm self-center text-center">
                     {{ data.weight }}
                   </div>
-                </q-card>
-                <div class="col-xs-12 col-sm-2 q-pa-xs flex-center row">
-                  <q-card-section vertical>
-                    <div class="row q-gutter-y-sm" :class="$q.screen.xs ? '' : 'row flex-center'" style="height: 100%">
-                      <q-btn
-                        :color="data.status === '1' ? 'blue' : 'teal'"
-                        outline
-                        @click="saveDataSendSection(data.stdYear, data.evtEmpCd, data.workNo, data.status)"
-                      >
-                        <q-icon name="check" size="xs" class="q-mr-xs" />
-                        <span v-if="data.status === '1'">목표승인</span><span v-if="data.status === '3'">승인취소</span>
-                      </q-btn>
-                      <q-btn
-                        v-if="data.status !== '3'"
-                        outline
-                        color="red"
-                        class="q-ml-xs-xs q-ml-sm-none"
-                        @click="sendReturnDialog(data.stdYear, data.evtEmpCd, data.workNo)"
-                      >
-                        <q-icon name="reply" size="xs" class="q-mr-xs" />
-                        목표반려
-                      </q-btn>
-                    </div>
-                  </q-card-section>
-                </div>
+                </q-card-section>
+                <q-separator vertical />
+                <q-card-section class="col-xs-12 col-sm-1 q-pa-none self-center">
+                  <div v-if="$q.screen.lt.sm" class="row bg-grey-6 q-px-xs">
+                    <q-icon name="menu_book" color="primary" size="xs" />
+                    <span class="text-subtitle2 text-bold q-ml-sm">자기점수</span><br />
+                  </div>
+
+                  <div class="q-px-sm self-center text-center">
+                    {{ data.selfPoint }}
+                  </div>
+                </q-card-section>
+                <q-separator vertical />
+                <q-card-actions :vertical="!$q.screen.xs" class="q-pa-none">
+                  <q-radio
+                    keep-color
+                    v-model="data.markCh"
+                    val="S"
+                    label="S"
+                    color="deep-orange"
+                    :size="$q.screen.xs ? 'sm' : 'sm'"
+                    :style="{ fontSize: '1.4em' }"
+                  />
+                  <q-radio
+                    keep-color
+                    v-model="data.markCh"
+                    val="A"
+                    label="A"
+                    color="deep-orange"
+                    :size="$q.screen.xs ? 'sm' : 'sm'"
+                    :style="{ fontSize: '1.4em' }"
+                  />
+                  <q-radio
+                    keep-color
+                    v-model="data.markCh"
+                    val="B"
+                    label="B"
+                    color="deep-orange"
+                    :size="$q.screen.xs ? 'sm' : 'sm'"
+                    :style="{ fontSize: '1.4em' }"
+                  />
+                  <q-radio
+                    keep-color
+                    v-model="data.markCh"
+                    val="C"
+                    label="C"
+                    color="deep-orange"
+                    :size="$q.screen.xs ? 'sm' : 'sm'"
+                    :style="{ fontSize: '1.4em' }"
+                  />
+                  <q-radio
+                    keep-color
+                    v-model="data.markCh"
+                    val="D"
+                    label="D"
+                    color="deep-orange"
+                    :size="$q.screen.xs ? 'sm' : 'sm'"
+                    :style="{ fontSize: '1.4em' }"
+                  />
+                </q-card-actions>
               </div>
             </q-card>
           </div>
         </q-scroll-area>
       </q-card>
     </q-card>
-
-    <q-dialog persistent v-model="isDialogVisible">
-      <q-card flat bordered style="max-width: 450px; width: 100%">
-        <q-bar>
-          <q-icon name="list_alt" />
-          <div>목표반려사유 등록</div>
-
-          <q-space />
-          <q-btn dense flat icon="close" v-close-popup>
-            <q-tooltip> 닫기 </q-tooltip>
-          </q-btn>
-        </q-bar>
-
-        <q-form class="">
-          <q-card class="q-pa-md">
-            <q-card-section>
-              <q-input
-                autofocus
-                :input-style="{ minHeight: '150px' }"
-                outlined
-                type="textarea"
-                class="q-pt-sm"
-                v-model="formData.returnDoc"
-                :color="$q.dark.isActive ? 'orange' : 'teal'"
-                :label-color="$q.dark.isActive ? 'orange' : 'teal'"
-                label="반려사유"
-                :rows="5"
-                :autogrow="true"
-              />
-            </q-card-section>
-          </q-card>
-        </q-form>
-
-        <q-separator size="2px" color="grey" />
-
-        <q-card-actions align="right" class="q-pa-md">
-          <q-btn color="red" v-close-popup @click="saveDataReturnSection"><q-icon class="q-mr-xs" name="save" size="xs" /> 반려하기 </q-btn>
-          <q-btn color="grey" v-close-popup><q-icon class="q-mr-xs" name="close" size="xs" /> 닫기 </q-btn>
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-
-    <q-dialog persistent v-model="isDialogAllVisible">
-      <q-card flat bordered style="max-width: 450px; width: 100%">
-        <q-bar>
-          <q-icon name="list_alt" />
-          <div>목표반려사유 등록 (전체적용)</div>
-
-          <q-space />
-          <q-btn dense flat icon="close" v-close-popup>
-            <q-tooltip> 닫기 </q-tooltip>
-          </q-btn>
-        </q-bar>
-
-        <q-form class="">
-          <q-card class="q-pa-md">
-            <q-card-section>
-              <q-input
-                autofocus
-                :input-style="{ minHeight: '150px' }"
-                outlined
-                type="textarea"
-                class="q-pt-sm"
-                v-model="textReturnDoc"
-                :color="$q.dark.isActive ? 'orange' : 'teal'"
-                :label-color="$q.dark.isActive ? 'orange' : 'teal'"
-                label="반려사유"
-                :rows="5"
-                :autogrow="true"
-              />
-            </q-card-section>
-          </q-card>
-        </q-form>
-
-        <q-separator size="2px" color="grey" />
-
-        <q-card-actions align="right" class="q-pa-md">
-          <q-btn color="red" v-close-popup @click="saveDataReturnAllSection"><q-icon class="q-mr-xs" name="save" size="xs" /> 전체반려하기 </q-btn>
-          <q-btn color="grey" v-close-popup><q-icon class="q-mr-xs" name="close" size="xs" /> 닫기 </q-btn>
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
   </q-page>
 </template>
 
@@ -330,9 +349,7 @@ const storeYear = useYearInfoStore();
 const setEvsCd = ref('2011101'); // 성과평가 공통코드
 
 const isDialogVisible = ref(false);
-const isDialogAllVisible = ref(false);
-const textReturnDoc = ref(null);
-const sendReturnDialog = (resStdYear, resEmpCd, resWorkNo) => {
+const sendReturnDialog = (resStdYear, resEmpCd, resSeq) => {
   if (formData.value.returnDoc) {
     $q.dialog({
       dark: true,
@@ -352,7 +369,7 @@ const sendReturnDialog = (resStdYear, resEmpCd, resWorkNo) => {
       .onOk(() => {
         formData.value.returnDoc = null;
         formData.value.evtEmpCd = resEmpCd;
-        formData.value.workNo = resWorkNo;
+        formData.value.seq = resSeq;
         formData.value.stdYear = resStdYear;
       })
       .onCancel(() => {})
@@ -365,15 +382,10 @@ const sendReturnDialog = (resStdYear, resEmpCd, resWorkNo) => {
   }
 };
 
-const sendReturnAllDialog = () => {
-  formData.value.returnDoc = null;
-  isDialogVisible.value = true;
-};
-
 const rowData = reactive({ rows: [], rowsSel: [] });
 
 // grid Height 자동처리부분
-const gridHeight = ref(300); // 초기 높이
+const gridHeight = ref(200); // 초기 높이
 const gridHeightSelect = ref(135); // 초기 높이
 const rowHeight = 46; // 행당 높이 (예: 25px)
 const minHeight = ref(90); // 최소 높이 (예: 300px) rowHeight의 3배
@@ -460,70 +472,52 @@ const columnDefs = reactive({
       marryChildren: true,
       children: [
         {
-          headerName: '작성',
+          headerName: '목표진행',
           field: 'authCnt0',
-          minWidth: 80,
-          maxWidth: 80,
+          minWidth: 100,
+          maxWidth: 100,
           cellStyle: params => {
             if (params.data.authCnt0 > 0) {
-              // return $q.dark.isActive ? { color: 'teal', textAlign: 'center' } : { color: 'teal', textAlign: 'center' };
-              return { textAlign: 'center' };
+              return $q.dark.isActive ? { color: 'teal', textAlign: 'center' } : { color: 'teal', textAlign: 'center' };
             } else {
               return { textAlign: 'center' };
             }
           },
         },
         {
-          headerName: '대기',
-          field: 'authCnt1',
-          minWidth: 80,
-          maxWidth: 80,
-          cellStyle: params => {
-            if (params.data.authCnt1 > 0) {
-              // return $q.dark.isActive ? { color: 'orange', textAlign: 'center' } : { color: 'blue', textAlign: 'center' };
-              return { textAlign: 'center' };
-            } else {
-              return { textAlign: 'center' };
-            }
-          },
-        },
-        {
-          headerName: '반려',
-          field: 'authCnt2',
-          minWidth: 80,
-          maxWidth: 80,
-          cellStyle: params => {
-            if (params.data.authCnt2 > 0) {
-              // return $q.dark.isActive ? { color: 'red', textAlign: 'center' } : { color: 'red', textAlign: 'center' };
-              return { textAlign: 'center' };
-            } else {
-              return { textAlign: 'center' };
-            }
-          },
-        },
-        {
-          headerName: '승인',
+          headerName: '자기평가',
           field: 'authCnt3',
-          minWidth: 80,
-          maxWidth: 80,
+          minWidth: 100,
+          maxWidth: 100,
           cellStyle: params => {
             if (params.data.authCnt3 > 0) {
-              // return $q.dark.isActive ? { color: 'blue', textAlign: 'center' } : { color: 'blue', textAlign: 'center' };
-              return { textAlign: 'center' };
+              return $q.dark.isActive ? { color: 'grey', textAlign: 'center' } : { color: 'grey', textAlign: 'center' };
             } else {
               return { textAlign: 'center' };
             }
           },
         },
         {
-          headerName: '그외',
-          field: 'authCnt9',
-          minWidth: 80,
-          maxWidth: 80,
+          headerName: '평가대기',
+          field: 'authCnt4',
+          minWidth: 100,
+          maxWidth: 100,
           cellStyle: params => {
-            if (params.data.authCnt9 > 0) {
-              // return $q.dark.isActive ? { color: 'blue', textAlign: 'center' } : { color: 'blue', textAlign: 'center' };
+            if (params.data.authCnt4 > 0) {
+              return $q.dark.isActive ? { color: 'orange', textAlign: 'center' } : { color: 'orange', textAlign: 'center' };
+            } else {
               return { textAlign: 'center' };
+            }
+          },
+        },
+        {
+          headerName: '평가완료',
+          field: 'authCnt5',
+          minWidth: 100,
+          maxWidth: 100,
+          cellStyle: params => {
+            if (params.data.authCnt5 > 0) {
+              return $q.dark.isActive ? { color: 'blue', textAlign: 'center' } : { color: 'blue', textAlign: 'center' };
             } else {
               return { textAlign: 'center' };
             }
@@ -542,7 +536,7 @@ const columnDefs = reactive({
       minWidth: 60,
       pinned: 'left',
       cellStyle: { textAlign: 'center' },
-      checkboxSelection: params => params.data.status === '1' || params.data.status === '3',
+      checkboxSelection: params => params.data.status === '4',
       headerCheckboxSelection: true,
     },
     {
@@ -561,8 +555,25 @@ const columnDefs = reactive({
     {
       headerName: '가중치',
       field: 'weight',
-      minWidth: 95,
-      maxWidth: 95,
+      minWidth: 90,
+      maxWidth: 90,
+      cellStyle: { textAlign: 'center' },
+      resizable: true,
+    },
+    {
+      headerName: '자기점수',
+      field: 'selfPoint',
+      minWidth: 100,
+      maxWidth: 100,
+      cellStyle: { textAlign: 'center' },
+      resizable: true,
+    },
+    {
+      headerName: '평가점수',
+      field: 'markPoint',
+      minWidth: 100,
+      maxWidth: 100,
+      cellStyle: { textAlign: 'center' },
       resizable: true,
     },
     {
@@ -621,7 +632,7 @@ onMounted(() => {
 const formData = ref({
   stdYear: '',
   evtEmpCd: '',
-  workNo: 0,
+  seq: 0,
   returnDoc: '',
   status: '',
 });
@@ -630,37 +641,39 @@ const selectedRows = ref([]);
 const selectedRowsSel = ref([]);
 const onSelectionChanged = event => {
   selectedRows.value = event.api.getSelectedRows();
-  console.log('sel: ', JSON.stringify(selectedRows.value));
+  // console.log('sel: ', JSON.stringify(selectedRows.value));
   if (selectedRows.value.length > 0) {
     getDataSelectList(selectedRows.value[0].stdYear, selectedRows.value[0].evsEmpCd, selectedRows.value[0].evtEmpCd);
   } else {
     getDataSelectList();
   }
 };
-const sendCount = ref({
-  status_1: 0,
-  status_3: 0,
+const viewPoint = ref({
+  selfPoint: 0,
+  markPoint: 0,
 });
 const onSelectionChangedSel = event => {
   selectedRowsSel.value = event.api.getSelectedRows();
 
-  sendCount.value.status_1 = 0;
-  sendCount.value.status_3 = 0;
+  let tmpSelfAddPoint = 0;
+  let tmpSelfAddCnt = 0;
+  let tmpMarkAddPoint = 0;
+  let tmpMarkAddCnt = 0;
   event.api.forEachNodeAfterFilterAndSort(node => {
-    if (node.isSelected()) {
-      if (node.data.status === '1') {
-        sendCount.value.status_1++;
-      }
-      if (node.data.status === '3') {
-        sendCount.value.status_3++;
-      }
+    if (node.data.selfPoint > 0) {
+      tmpSelfAddCnt++;
+      tmpSelfAddPoint += node.data.selfPoint;
+    }
+    if (node.data.markPoint > 0) {
+      tmpMarkAddCnt++;
+      tmpMarkAddPoint += node.data.markPoint;
     }
   });
-  selectedRowsSel.value.forEach(item => {
-    item.targetDoc = item.targetDoc.replace(/\n/g, '<br>');
-    item.workDoc = item.workDoc.replace(/\n/g, '<br>');
-  });
-  console.log('select : ', JSON.stringify(selectedRowsSel.value));
+  // viewPoint.value.selfPoint = (tmpSelfAddPoint / tmpSelfAddCnt).toFixed(1);
+  // viewPoint.value.markPoint = (tmpMarkAddPoint / tmpMarkAddCnt).toFixed(1);
+  viewPoint.value.selfPoint = tmpSelfAddCnt !== 0 ? parseFloat((tmpSelfAddPoint / tmpSelfAddCnt).toFixed(1)) : 0.0;
+  viewPoint.value.markPoint = tmpMarkAddCnt !== 0 ? parseFloat((tmpMarkAddPoint / tmpMarkAddCnt).toFixed(1)) : 0.0;
+  console.log('aa : ', viewPoint.value.markPoint, tmpMarkAddPoint, ' / ', tmpMarkAddCnt);
 };
 // ======================================================
 const screenSizeHeight = ref(0);
@@ -669,11 +682,11 @@ const myTweak = offset => {
   return { minHeight: offset ? `calc(100vh - ${offset}px)` : '100vh' };
 };
 const handleResize = () => {
-  contentZoneHeight.value = window.innerHeight - screenSizeHeight.value - 730;
+  contentZoneHeight.value = window.innerHeight - screenSizeHeight.value - 520;
 };
 // ======================================================
 
-const saveDataSendSection = (resStdYear, resEmpCd, resWorkNo, resStatus) => {
+const saveDataSendSection = (resStdYear, resEmpCd, resSeq, resStatus) => {
   $q.dialog({
     dark: true,
     title: '승인하기',
@@ -688,7 +701,7 @@ const saveDataSendSection = (resStdYear, resEmpCd, resWorkNo, resStatus) => {
       }
       formData.value.stdYear = resStdYear;
       formData.value.evtEmpCd = resEmpCd;
-      formData.value.workNo = resWorkNo;
+      formData.value.seq = resSeq;
       saveDataAndHandleResult(jsonUtil.dataJsonParse('S', formData.value));
       console.log('form : ', JSON.stringify(formData.value));
     })
@@ -717,89 +730,6 @@ const saveDataReturnSection = () => {
   // console.log('save data::: ', JSON.stringify(formData.value));
 };
 
-const saveDataSendAllSection = (resStatus, resText, resCnt) => {
-  $q.dialog({
-    dark: true,
-    title: resText,
-    message: '선택된 ' + resCnt + '건 자료를 모두 승인 하시겠습니까? ',
-    ok: {
-      push: true,
-      color: 'orange',
-    },
-    cancel: {
-      push: true,
-      color: 'grey-7',
-    },
-    // persistent: true,
-  })
-    .onOk(() => {
-      // 승인요청 시
-      isSaveFg = 'S';
-
-      let iu = [];
-      let iuD = [];
-      for (let i = 0; i < selectedRowsSel.value.length; i++) {
-        // 모두 승인차리
-        if (selectedRowsSel.value[i].status === resStatus) {
-          if (resStatus === '1') {
-            selectedRowsSel.value[i].status = '3';
-            let tmpJson = '{"mode": "' + isSaveFg + '","data":' + JSON.stringify(selectedRowsSel.value[i]) + '}';
-            // console.log('update send : ', JSON.stringify(selectedRowsSel.value[i]));
-            iu.push(tmpJson);
-          } else if (resStatus === '3') {
-            selectedRowsSel.value[i].status = '1';
-            let tmpJson = '{"mode": "' + isSaveFg + '","data":' + JSON.stringify(selectedRowsSel.value[i]) + '}';
-            // console.log('update send : ', JSON.stringify(selectedRowsSel.value[i]));
-            iu.push(tmpJson);
-          }
-        }
-      }
-      saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
-    })
-    .onCancel(() => {})
-    .onDismiss(() => {
-      // 확인/취소 모두 실행되었을때
-    });
-};
-const saveDataReturnAllSection = () => {
-  $q.dialog({
-    dark: true,
-    title: '전체 반려하기',
-    message: '선택된 자료를 모두 반려 하시겠습니까? ',
-    ok: {
-      push: true,
-      color: 'orange',
-    },
-    cancel: {
-      push: true,
-      color: 'grey-7',
-    },
-    // persistent: true,
-  })
-    .onOk(() => {
-      // 승인요청 시
-      isSaveFg = 'S';
-
-      let iu = [];
-      let iuD = [];
-      for (let i = 0; i < selectedRowsSel.value.length; i++) {
-        // 모두 승인차리
-        if (selectedRowsSel.value[i].status === '1') {
-          selectedRowsSel.value[i].status = '2';
-          selectedRowsSel.value[i].returnDoc = textReturnDoc.value;
-          let tmpJson = '{"mode": "' + isSaveFg + '","data":' + JSON.stringify(selectedRowsSel.value[i]) + '}';
-          console.log('update send : ', JSON.stringify(selectedRowsSel.value[i]));
-          iu.push(tmpJson);
-        }
-      }
-      saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
-    })
-    .onCancel(() => {})
-    .onDismiss(() => {
-      // 확인/취소 모두 실행되었을때
-    });
-};
-
 // **************************************************************//
 // ***** DataBase 연결부분    *************************************//
 // **************************************************************//
@@ -808,14 +738,13 @@ const saveDataReturnAllSection = () => {
 const viewStatus = ref({
   totalCnt: 0,
   status_0: 0,
-  status_1: 0,
-  status_2: 0,
   status_3: 0,
-  status_9: 0,
+  status_4: 0,
+  status_5: 0,
 });
 const getData = async () => {
   try {
-    const response = await api.post('/api/hpe/hpe2010_list', { paramSetYear: storeYear.setYear, paramEmpCd: storeUser.setEmpCd });
+    const response = await api.post('/api/hpe/hpe2020_list', { paramSetYear: storeYear.setYear, paramEmpCd: storeUser.setEmpCd });
     rowData.rows = response.data.data;
     // console.log('aa : ', JSON.stringify(response.data.data));
     if (rowData.rows.length === 0) {
@@ -826,18 +755,15 @@ const getData = async () => {
 
     viewStatus.value.totalCnt = 0;
     viewStatus.value.status_0 = 0;
-    viewStatus.value.status_1 = 0;
-    viewStatus.value.status_2 = 0;
     viewStatus.value.status_3 = 0;
-    viewStatus.value.status_9 = 0;
+    viewStatus.value.status_4 = 0;
+    viewStatus.value.status_5 = 0;
     for (let i = 0; i < rowData.rows.length; i++) {
-      viewStatus.value.totalCnt +=
-        rowData.rows[i].authCnt0 + rowData.rows[i].authCnt1 + rowData.rows[i].authCnt2 + rowData.rows[i].authCnt3 + rowData.rows[i].authCnt9;
+      viewStatus.value.totalCnt += rowData.rows[i].authCnt0 + rowData.rows[i].authCnt3 + rowData.rows[i].authCnt4 + rowData.rows[i].authCnt5;
       viewStatus.value.status_0 += rowData.rows[i].authCnt0;
-      viewStatus.value.status_1 += rowData.rows[i].authCnt1;
-      viewStatus.value.status_2 += rowData.rows[i].authCnt2;
       viewStatus.value.status_3 += rowData.rows[i].authCnt3;
-      viewStatus.value.status_9 += rowData.rows[i].authCnt9;
+      viewStatus.value.status_4 += rowData.rows[i].authCnt4;
+      viewStatus.value.status_5 += rowData.rows[i].authCnt5;
     }
 
     // console.log('getData : ', JSON.stringify(rowData.rows));
@@ -849,7 +775,7 @@ const getData = async () => {
 // ***** 목표승인대상자 승인대상자료 목록 자료 가져오기 부분  *****************************//
 const getDataSelectList = async (resStdYear, resEvsEmpCd, resEvtEmpCd) => {
   try {
-    const response = await api.post('/api/hpe/hpe2010_select_list', {
+    const response = await api.post('/api/hpe/hpe2020_select_list', {
       paramSetYear: resStdYear,
       paramEvsEmpCd: resEvsEmpCd,
       paramEvtEmpCd: resEvtEmpCd,
@@ -907,7 +833,7 @@ const gridOptionsSel = {
   suppressRowClickSelection: true, // Disable row selection on click
   rowSelection: 'multiple',
   isRowSelectable: function (node) {
-    return node.data.status === '1' || node.data.status === '3'; // Only rows with status '1' are selectable
+    return node.data.status === '4';
   },
   getRowStyle: params => {
     if (params.node.rowPinned) {

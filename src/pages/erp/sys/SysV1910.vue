@@ -310,7 +310,6 @@ import { AgGridVue } from 'ag-grid-vue3';
 import { QBtn, QIcon, useQuasar } from 'quasar';
 import { computed, onBeforeMount, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 import { api } from '/src/boot/axios';
-import authHeader from 'boot/authHeader';
 import HelpPost from 'pages/help/HelpPost.vue';
 import { isEqual } from 'lodash';
 import jsonUtil from 'src/js_comm/json-util';
@@ -762,7 +761,7 @@ onMounted(() => {
 // saveStatus = 0=수정성공 1=신규성공 2=삭제성공 3=수정에러 4=시스템에러
 const saveDataAndHandleResult = resFormData => {
   api
-    .post('/api/sys/sys1910_save', resFormData, { headers: authHeader() })
+    .post('/api/sys/sys1910_save', resFormData)
     .then(res => {
       let saveStatus = {};
       if (res.data.rtn === '0') {
@@ -834,7 +833,7 @@ const saveDataAndHandleResult = resFormData => {
 // ***** 회사정보 목록 자료 가져오기 부분  *****************************//
 const getData = async () => {
   try {
-    const response = await api.post('/api/sys/sys1910_list', {}, { headers: authHeader() });
+    const response = await api.post('/api/sys/sys1910_list', {});
     rowData.rows = response.data.data;
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -845,7 +844,7 @@ const getData = async () => {
 // ***** 회사정보 선택된 자료 가져오기 부분  *****************************//
 const getSelectData = async resParamCompCd => {
   try {
-    const response = await api.post(+'/api/sys/sys1910_select', { paramCompCd: resParamCompCd }, { headers: authHeader() });
+    const response = await api.post(+'/api/sys/sys1910_select', { paramCompCd: resParamCompCd });
     formData.value = response.data.data[0];
     oldFormData.value = JSON.parse(JSON.stringify(formData.value)); // 초기자료 저장
     formData.value.tsDay = formatDate(response.data.data[0].tsDay);
