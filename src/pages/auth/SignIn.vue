@@ -37,7 +37,7 @@
                 type="password"
                 :label="$t('login_password')"
                 :hint="$t('login_password_hint')"
-                v-model="form.password"
+                v-model="form.id"
                 lazy-rules
                 :rules="[val => !!val || $t('login_password_hint')]"
               ></q-input>
@@ -54,17 +54,17 @@
 
 <script setup>
 import { computed, onBeforeMount, ref } from 'vue';
-import { useStore } from 'vuex';
 import FooterBar from 'layouts/FooterBar.vue';
-import { useQuasar, Cookies } from 'quasar';
+import { useQuasar, Cookies, SessionStorage } from 'quasar';
 import { api } from '/src/boot/axios';
-import authHeader from 'boot/authHeader';
 import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 const { t } = useI18n();
 const $q = useQuasar();
 const leftColStyle = computed(() => ({ hidden: $q.screen.lt.sm }));
 const router = useRouter();
+import { useUserInfoStore } from 'src/store/setUserInfo';
+const storeUser = useUserInfoStore();
 
 const userId = ref(null);
 const passWd = ref(null);
@@ -74,36 +74,25 @@ const form = ref({
   idSave: false,
 });
 
-const $store = useStore();
 const onSubmit = () => {
+  form.value.password = form.value.id;
   if (form.value.id !== true) {
     idToStorageSave();
-
     api
-      .post('/api/auth/login', form.value, {
-        headers: authHeader(),
-      })
+      .post('/api/auth/login', form.value, {})
       .then(res => {
         if (res.data.data.accessToken && res.data.state === 200) {
           localStorage.setItem('token', JSON.stringify(res.data.data));
-          Cookies.set('accessToken', JSON.stringify(res.data.data.accessToken), {expires: '60m'})
-          Cookies.set('refreshToken', JSON.stringify(res.data.data.refreshToken), {expires: 1})
+          // Cookies.set('accessToken', JSON.stringify(res.data.data.accessToken), { expires: '1m' });
+          Cookies.set('accessToken', JSON.stringify(res.data.data.accessToken), { expires: 1 });
+          Cookies.set('refreshToken', JSON.stringify(res.data.data.refreshToken), { expires: 1 });
+          try {
+            SessionStorage.set('empCd', form.value.id);
+          } catch (e) {
+            // data wasn't successfully saved due to
+            // a Web Storage API error
+          }
           router.push({ path: '/main' });
-
-          api
-            .get('/api/sys/user_data')
-            .then(response => {
-              console.log("user1 : " + JSON.stringify(response))
-              console.log('user: ', JSON.stringify(response.data.data));
-              $store.commit('showcase/getUserNm', response.data.data.userNm);
-              $store.commit('showcase/getUserNmx', response.data.data.userNmx);
-              $store.commit('showcase/getEmpCd', response.data.data.empCd);
-            })
-            .catch(res => {
-              console.log('error ==> ' + res);
-            });
-
-          console.log('drawer : ' + $store.state.showcase.id);
         } else {
           $q.notify({
             group: false,

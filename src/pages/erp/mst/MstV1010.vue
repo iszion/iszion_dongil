@@ -306,11 +306,13 @@ import { QBtn, QIcon, useQuasar } from 'quasar';
 import { computed, onBeforeMount, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
 import { api } from '/src/boot/axios';
 
-import authHeader from 'boot/authHeader';
 import { isEqual } from 'lodash';
 import jsonUtil from 'src/js_comm/json-util';
 import notifySave from 'src/js_comm/notify-save';
 import commUtil from 'src/js_comm/comm-util';
+
+import { useYearInfoStore } from 'src/store/setYearInfo';
+const storeYear = useYearInfoStore();
 
 const $q = useQuasar();
 
@@ -339,8 +341,6 @@ onBeforeUnmount(() => {
 });
 
 onBeforeMount(() => {
-  getStorgeSetYearGroup();
-
   rowSelection.value = 'multiple';
   getData();
   getDataDeptOption();
@@ -349,21 +349,6 @@ onBeforeMount(() => {
   getDataCatgOption();
   getDataEvtgOption();
 });
-
-// 기준평가기간 적용부분
-const setYearGroup = ref({
-  setYear: '',
-  setFg: '',
-  setLocCh: '',
-});
-const getStorgeSetYearGroup = () => {
-  const _value = $q.localStorage.getItem('setYearGroup').split('|');
-  setYearGroup.value.setYear = _value[0];
-  setYearGroup.value.setFg = _value[1];
-  setYearGroup.value.setLocCh = _value[2];
-  console.log('Sub SetYear Group :: ', setYearGroup.value.setYear, setYearGroup.value.setFg, setYearGroup.value.setLocCh);
-};
-// 기준평가기간 적용부분 끝
 
 onMounted(() => {
   window.addEventListener('resize', handleResize);
@@ -586,7 +571,7 @@ const addDataSection = () => {
   isShowSaveBtn.value = true;
   formDisableEmpCd.value = false;
   formDisable.value = true;
-  formData.value.stdYear = setYearGroup.value.setYear;
+  formData.value.stdYear = storeYear.setYear;
   formData.value.outDay = '9999-12-31';
   setTimeout(() => {
     empCdFocus.value.focus();
@@ -663,7 +648,7 @@ const handleResize = () => {
 const saveDataAndHandleResult = resFormData => {
   console.log('save::: ', JSON.stringify(resFormData));
   api
-    .post('/api/mst/mst1010_save', resFormData, { headers: authHeader() })
+    .post('/api/mst/mst1010_save', resFormData)
     .then(res => {
       let saveStatus = {};
       if (res.data.rtn === '0') {
@@ -724,11 +709,11 @@ const saveDataAndHandleResult = resFormData => {
 // ***** 인사정보 목록 자료 가져오기 부분  *****************************//
 const getData = async () => {
   try {
-    const response = await api.post(
-      '/api/mst/mst1010_list',
-      { paramSetYear: setYearGroup.value.setYear, paramDeptCd: searchParam.deptCd, paramSearchWord: searchParam.word },
-      { headers: authHeader() },
-    );
+    const response = await api.post('/api/mst/mst1010_list', {
+      paramSetYear: storeYear.setYear,
+      paramDeptCd: searchParam.deptCd,
+      paramSearchWord: searchParam.word,
+    });
     rowData.rows = response.data.data;
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -738,7 +723,7 @@ const getData = async () => {
 // ***** 인사정보 선택된 자료 가져오기 부분  *****************************//
 const getDataSelect = async (resStdYear, resEmpCd) => {
   try {
-    const response = await api.post('/api/mst/mst1010_select', { paramStdYear: resStdYear, paramEmpCd: resEmpCd }, { headers: authHeader() });
+    const response = await api.post('/api/mst/mst1010_select', { paramStdYear: resStdYear, paramEmpCd: resEmpCd });
     formData.value = response.data.data[0];
     oldFormData.value = JSON.parse(JSON.stringify(formData.value)); // 초기자료 저장
     formData.value.birthday = commUtil.formatDate(response.data.data[0].birthday);
@@ -752,11 +737,7 @@ const getDataSelect = async (resStdYear, resEmpCd) => {
 // ***** 사원번호 중복체크 부분  *****************************//
 const getDataEmpCdCheck = async () => {
   try {
-    const response = await api.post(
-      '/api/mst/mst1010_empCd_check',
-      { paramStdYear: setYearGroup.value.setYear, paramEmpCd: formData.value.empCd },
-      { headers: authHeader() },
-    );
+    const response = await api.post('/api/mst/mst1010_empCd_check', { paramStdYear: storeYear.setYear, paramEmpCd: formData.value.empCd });
     console.log('check :: ', response.data.data[0].ch);
     if (response.data.data[0].ch === 0) {
       formDisable.value = false;
@@ -782,7 +763,7 @@ const getDataEmpCdCheck = async () => {
 // ***** 소속팀정보 가져오기 부분  *****************************//
 async function getDataDeptOption() {
   try {
-    const response = await api.post('/api/mst/dept_option_list', { paramSetYear: setYearGroup.value.setYear }, { headers: authHeader() });
+    const response = await api.post('/api/mst/dept_option_list', { paramSetYear: storeYear.setYear });
     deptOptions.value = response.data.data;
     deptOptionsSearch.value = JSON.parse(JSON.stringify(deptOptions.value));
     deptOptionsSearch.value.push({ deptCd: '', deptNm: '전체' });
@@ -793,7 +774,7 @@ async function getDataDeptOption() {
 // ***** 직위정보 가져오기 부분  *****************************//
 async function getDataPstnOption() {
   try {
-    const response = await api.post('/api/mst/pstn_option_list', { paramSetYear: setYearGroup.value.setYear }, { headers: authHeader() });
+    const response = await api.post('/api/mst/pstn_option_list', { paramSetYear: storeYear.setYear });
     pstnOptions.value = response.data.data;
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -802,7 +783,7 @@ async function getDataPstnOption() {
 // ***** 직급정보 가져오기 부분  *****************************//
 async function getDataTitlOption() {
   try {
-    const response = await api.post('/api/mst/titl_option_list', { paramSetYear: setYearGroup.value.setYear }, { headers: authHeader() });
+    const response = await api.post('/api/mst/titl_option_list', { paramSetYear: storeYear.setYear });
     titlOptions.value = response.data.data;
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -811,7 +792,7 @@ async function getDataTitlOption() {
 // ***** 직분류정보 가져오기 부분  *****************************//
 async function getDataCatgOption() {
   try {
-    const response = await api.post('/api/mst/catg_option_list', { paramSetYear: setYearGroup.value.setYear }, { headers: authHeader() });
+    const response = await api.post('/api/mst/catg_option_list', { paramSetYear: storeYear.setYear });
     catgOptions.value = response.data.data;
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -820,7 +801,7 @@ async function getDataCatgOption() {
 // ***** 평가대상그룹정보 가져오기 부분  *****************************//
 async function getDataEvtgOption() {
   try {
-    const response = await api.post('/api/mst/evtg_option_list', { paramSetYear: setYearGroup.value.setYear }, { headers: authHeader() });
+    const response = await api.post('/api/mst/evtg_option_list', { paramSetYear: storeYear.setYear });
     evtgOptions.value = response.data.data;
   } catch (error) {
     console.error('Error fetching users:', error);

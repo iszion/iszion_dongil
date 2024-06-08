@@ -128,7 +128,6 @@ import { computed, onBeforeMount, onMounted, reactive, ref, watch } from 'vue';
 import { Notify, QBtn, QIcon, useQuasar } from 'quasar';
 import moment from 'moment';
 import { api } from '/src/boot/axios';
-import authHeader from 'boot/authHeader';
 import { isEqual } from 'lodash';
 import jsonUtil from 'src/js_comm/json-util';
 import 'pages/main/NoticeBoard.vue';
@@ -271,11 +270,11 @@ const boardData = ref(null);
 const getNoticeBoardData = async () => {
   console.log('aa: ', searchFg.value);
   try {
-    const response = await api.post(
-      '/api/sys/noticeBoard_list',
-      { paramSearchFg: searchFg.value, paramSearchValue: searchValue.value, paramDeptCd: paramDept.value.deptCd },
-      { headers: authHeader() },
-    );
+    const response = await api.post('/api/sys/noticeBoard_list', {
+      paramSearchFg: searchFg.value,
+      paramSearchValue: searchValue.value,
+      paramDeptCd: paramDept.value.deptCd,
+    });
     if (response.data.data.length === 0) {
       Notify.create({
         type: 'negative',
@@ -304,11 +303,7 @@ const getNoticeBoardData = async () => {
 // ***** 게시판 선택 목록 자료 가져오기 부분  *****************************//
 const getNoticeBoardSelectData = async () => {
   try {
-    const response = await api.post(
-      '/api/sys/noticeBoard_select',
-      { paramDeptCd: paramDept.value.deptCd, paramBoardNo: dataId.value },
-      { headers: authHeader() },
-    );
+    const response = await api.post('/api/sys/noticeBoard_select', { paramDeptCd: paramDept.value.deptCd, paramBoardNo: dataId.value });
     formData.value.boardNo = response.data.data[0].boardNo;
     formData.value.deptCd = response.data.data[0].deptCd;
     formData.value.title = response.data.data[0].title;
@@ -323,7 +318,7 @@ const getNoticeBoardSelectData = async () => {
 // saveStatus = 0=수정성공 1=신규성공 2=삭제성공 3=수정에러 4=시스템에러
 const saveDataAndHandleResult = resFormData => {
   api
-    .post('/api/sys/noticeBoard_save', resFormData, { headers: authHeader() })
+    .post('/api/sys/noticeBoard_save', resFormData)
     .then(res => {
       let saveStatus = {};
       if (res.data.rtn === '0') {

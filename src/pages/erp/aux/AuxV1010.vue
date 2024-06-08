@@ -185,7 +185,6 @@ import { AgGridVue } from 'ag-grid-vue3';
 import { Notify, QBtn, QIcon, useQuasar } from 'quasar';
 import { computed, onBeforeMount, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 import { api } from '/src/boot/axios';
-import authHeader from 'boot/authHeader';
 import { isEqual } from 'lodash';
 import jsonUtil from 'src/js_comm/json-util';
 import notifySave from 'src/js_comm/notify-save';
@@ -476,7 +475,7 @@ const formatDate = rawDate => {
 // ***** 사용자정보 목록 자료 가져오기 부분  *****************************//
 const getData = async () => {
   try {
-    const response = await api.post('/api/aux/aux1010_list', {}, { headers: authHeader() });
+    const response = await api.post('/api/aux/aux1010_list', {});
     rowData.rows = response.data.data;
     gridKey.value += 1;
   } catch (error) {
@@ -488,7 +487,7 @@ const getData = async () => {
 // ***** 사용자정보 선택된 자료 가져오기 부분  *****************************//
 const getDataSelect = async (resStdYear, resStdFg) => {
   try {
-    const response = await api.post('/api/aux/aux1010_select', { paramStdYear: resStdYear, paramStdFg: resStdFg }, { headers: authHeader() });
+    const response = await api.post('/api/aux/aux1010_select', { paramStdYear: resStdYear, paramStdFg: resStdFg });
     formData.value = response.data.data[0];
     // oldFormData.value = JSON.parse(JSON.stringify(formData.value)); // 초기자료 저장
     console.log(JSON.stringify(formData.value));
@@ -506,7 +505,7 @@ const getDataSelect = async (resStdYear, resStdFg) => {
 const saveDataAndHandleResult = resFormData => {
   console.log('del ::: ', JSON.stringify(resFormData));
   api
-    .post('/api/aux/aux1010_save', resFormData, { headers: authHeader() })
+    .post('/api/aux/aux1010_save', resFormData)
     .then(res => {
       let saveStatus = {};
       if (res.data.rtn === '0') {

@@ -84,7 +84,6 @@ import { QBtn, QIcon, useQuasar } from 'quasar';
 import moment from 'moment';
 import router from 'src/router';
 import { api } from '/src/boot/axios';
-import authHeader from 'boot/authHeader';
 import { isEqual } from 'lodash';
 import jsonUtil from 'src/js_comm/json-util';
 import notifySave from 'src/js_comm/notify-save';
@@ -188,11 +187,11 @@ const formData = ref({
 // ***** 게시판  목록 자료 가져오기 부분  *****************************//
 const getNoticeBoardData = async () => {
   try {
-    const response = await api.post(
-      '/api/sys/noticeBoard_list',
-      { paramSearchFg: searchFg.value, paramSearchValue: searchValue.value, paramDeptCd: paramDept.value.deptCd },
-      { headers: authHeader() },
-    );
+    const response = await api.post('/api/sys/noticeBoard_list', {
+      paramSearchFg: searchFg.value,
+      paramSearchValue: searchValue.value,
+      paramDeptCd: paramDept.value.deptCd,
+    });
     boardData.value = response.data.data;
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -202,11 +201,7 @@ const getNoticeBoardData = async () => {
 // ***** 게시판 선택 목록 자료 가져오기 부분  *****************************//
 const getNoticeBoardSelectData = async () => {
   try {
-    const response = await api.post(
-      '/api/sys/noticeBoard_select',
-      { paramDeptCd: paramDept.value.deptCd, paramBoardNo: dataId.value },
-      { headers: authHeader() },
-    );
+    const response = await api.post('/api/sys/noticeBoard_select', { paramDeptCd: paramDept.value.deptCd, paramBoardNo: dataId.value });
     formData.value.boardNo = response.data.data[0].boardNo;
     formData.value.deptCd = response.data.data[0].deptCd;
     formData.value.title = response.data.data[0].title;
@@ -222,7 +217,7 @@ const getNoticeBoardSelectData = async () => {
 const saveDataAndHandleResult = resFormData => {
   console.log('saveData: ', JSON.stringify(resFormData));
   api
-    .post('/api/sys/noticeBoard_save', resFormData, { headers: authHeader() })
+    .post('/api/sys/noticeBoard_save', resFormData)
     .then(res => {
       let saveStatus = {};
       if (res.data.rtn === '0') {

@@ -196,7 +196,6 @@ import { AgGridVue } from 'ag-grid-vue3';
 import { Notify, QBtn, QIcon, useQuasar } from 'quasar';
 import { computed, onBeforeMount, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 import { api } from '/src/boot/axios';
-import authHeader from 'boot/authHeader';
 import { isEmpty, isEqual } from 'lodash';
 import jsonUtil from 'src/js_comm/json-util';
 import notifySave from 'src/js_comm/notify-save';
@@ -499,11 +498,11 @@ const handleResize = () => {
 // ***** 사용자정보 목록 자료 가져오기 부분  *****************************//
 const getDataEmp = async () => {
   try {
-    const response = await api.post(
-      '/api/aux/aux2010_list',
-      { paramSetYear: setYearGroup.value.setYear, paramDeptCd: selectedDept.value, paramSearchValue: searchValue.value },
-      { headers: authHeader() },
-    );
+    const response = await api.post('/api/aux/aux2010_list', {
+      paramSetYear: setYearGroup.value.setYear,
+      paramDeptCd: selectedDept.value,
+      paramSearchValue: searchValue.value,
+    });
     rowDataEmp.rows = response.data.data;
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -513,17 +512,13 @@ const getDataEmp = async () => {
 // ***** 선택한 인사정보 소속사원 자료 가져오기 부분  *****************************//
 const getDataSelectEmp = async () => {
   try {
-    const response = await api.post(
-      '/api/aux/aux2010_select',
-      {
-        paramSetYear: setYearGroup.value.setYear,
-        paramDeptCd: selectedDept1.value,
-        paramTitlCd: selectedTitl.value,
-        paramEvsEmpCd: selectedRows.value[0].empCd,
-        paramEvsCd: selectedEvs.value,
-      },
-      { headers: authHeader() },
-    );
+    const response = await api.post('/api/aux/aux2010_select', {
+      paramSetYear: setYearGroup.value.setYear,
+      paramDeptCd: selectedDept1.value,
+      paramTitlCd: selectedTitl.value,
+      paramEvsEmpCd: selectedRows.value[0].empCd,
+      paramEvsCd: selectedEvs.value,
+    });
     rowData.rows = response.data.data;
     gridKey.value += 1;
   } catch (error) {
@@ -535,7 +530,7 @@ const getDataSelectEmp = async () => {
 // saveStatus = 0=수정성공 1=신규성공 2=삭제성공 3=수정에러 4=시스템에러
 const saveDataAndHandleResult = resFormData => {
   api
-    .post('/api/aux/aux2010_save', resFormData, { headers: authHeader() })
+    .post('/api/aux/aux2010_save', resFormData)
     .then(res => {
       let saveStatus = {};
       if (res.data.rtn === '0') {
@@ -561,7 +556,7 @@ const selectedDept = ref('');
 const selectedDept1 = ref('');
 async function getDataDeptOption(resParamCommCd1) {
   try {
-    const response = await api.post('/api/mst/dept_option_list', { paramSetYear: setYearGroup.value.setYear }, { headers: authHeader() });
+    const response = await api.post('/api/mst/dept_option_list', { paramSetYear: setYearGroup.value.setYear });
 
     deptOptions.value = response.data.data;
     deptOptions.value.push({ deptCd: '', deptNm: '전체' });
@@ -575,7 +570,7 @@ const titlOptions = ref([]);
 const selectedTitl = ref('');
 async function getDataTitlOption(resParamCommCd1) {
   try {
-    const response = await api.post('/api/mst/titl_option_list', { paramSetYear: setYearGroup.value.setYear }, { headers: authHeader() });
+    const response = await api.post('/api/mst/titl_option_list', { paramSetYear: setYearGroup.value.setYear });
 
     titlOptions.value = response.data.data;
     titlOptions.value.push({ titlCd: '', titlNm: '전체' });
@@ -590,7 +585,7 @@ const selectedEvs = ref(null);
 // ***** 공통코드정보 가져오기 부분  *****************************//
 async function getDataCommOption(resParamCommCd1) {
   try {
-    const response = await api.post('/api/mst/comm_option_list', { paramCommCd1: resParamCommCd1 }, { headers: authHeader() });
+    const response = await api.post('/api/mst/comm_option_list', { paramCommCd1: resParamCommCd1 });
     evsOptions.value = response.data.data;
     selectedEvs.value = evsOptions.value[0].commCd;
     // deptOptions.value.push({ commCd: '', commNm: '전체' });

@@ -107,7 +107,6 @@ import { AgGridVue } from 'ag-grid-vue3';
 import { QBtn, QIcon, QToggle, useQuasar } from 'quasar';
 import { computed, h, onBeforeMount, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 import { api } from '/src/boot/axios';
-import authHeader from 'boot/authHeader';
 import { isEmpty, isEqual } from 'lodash';
 import jsonUtil from 'src/js_comm/json-util';
 import notifySave from 'src/js_comm/notify-save';
@@ -609,7 +608,7 @@ onMounted(() => {
 const saveDataAndHandleResultGroup = resFormData => {
   console.log('aaa::: ', JSON.stringify(resFormData));
   api
-    .post('/api/mst/mst5090_group_save', resFormData, { headers: authHeader() })
+    .post('/api/mst/mst5090_group_save', resFormData)
     .then(res => {
       let saveStatus = {};
       if (res.data.rtn === '0') {
@@ -631,7 +630,7 @@ const saveDataAndHandleResultGroup = resFormData => {
 
 const saveDataAndHandleResult = resFormData => {
   api
-    .post('/api/mst/mst5090_save', resFormData, { headers: authHeader() })
+    .post('/api/mst/mst5090_save', resFormData)
     .then(res => {
       let saveStatus = {};
       if (res.data.rtn === '0') {
@@ -654,7 +653,7 @@ const saveDataAndHandleResult = resFormData => {
 // ***** 공통코드정보 목록 자료 가져오기 부분  *****************************//
 const getGroupData = async () => {
   try {
-    const response = await api.post('/api/mst/mst5090_list', {}, { headers: authHeader() });
+    const response = await api.post('/api/mst/mst5090_list', {});
     rowDataGroup.rows = response.data.data;
     rowDataGroupBack.value = JSON.parse(JSON.stringify(response.data.data));
     updateData.value = [];
@@ -667,7 +666,7 @@ const getGroupData = async () => {
 // ***** 공통코드정보 선택된 자료 가져오기 부분  *****************************//
 const getSelectData = async () => {
   try {
-    const response = await api.post('/api/mst/mst5090_select', { paramCommCd1: paramComm.value.commCd1 }, { headers: authHeader() });
+    const response = await api.post('/api/mst/mst5090_select', { paramCommCd1: paramComm.value.commCd1 });
     rowData.rows = response.data.data;
     rowDataBack.value = JSON.parse(JSON.stringify(response.data.data));
     updateData.value = [];

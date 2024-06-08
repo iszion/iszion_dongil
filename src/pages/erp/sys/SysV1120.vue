@@ -130,11 +130,12 @@ import { AgGridVue } from 'ag-grid-vue3';
 import { Notify, QBtn, QIcon, useQuasar } from 'quasar';
 import { computed, onBeforeMount, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 import { api } from '/src/boot/axios';
-import authHeader from 'boot/authHeader';
 import { isEmpty, isEqual } from 'lodash';
 import jsonUtil from 'src/js_comm/json-util';
 import notifySave from 'src/js_comm/notify-save';
 import CompToggleAuth from 'components/CompToggleAuth.vue';
+import { useYearInfoStore } from 'src/store/setYearInfo';
+const storeYear = useYearInfoStore();
 
 const $q = useQuasar();
 
@@ -158,8 +159,6 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', handleResize);
 });
 onBeforeMount(() => {
-  getStorgeSetYearGroup();
-
   rowSelectionUser.value = 'single';
   getDataUser();
 });
@@ -169,21 +168,6 @@ onMounted(() => {
   handleResize();
   getDataDeptOption();
 });
-
-// 기준평가기간 적용부분
-const setYearGroup = ref({
-  setYear: '',
-  setFg: '',
-  setLocCh: '',
-});
-const getStorgeSetYearGroup = () => {
-  const _value = $q.localStorage.getItem('setYearGroup').split('|');
-  setYearGroup.value.setYear = _value[0];
-  setYearGroup.value.setFg = _value[1];
-  setYearGroup.value.setLocCh = _value[2];
-  console.log('Sub SetYear Group :: ', setYearGroup.value.setYear, setYearGroup.value.setFg, setYearGroup.value.setLocCh);
-};
-// 기준평가기간 적용부분 끝
 
 const onGridReadyUser = params => {
   gridApiUser.value = params.api;
@@ -465,11 +449,11 @@ const handleResize = () => {
 // ***** 사용자정보 목록 자료 가져오기 부분  *****************************//
 const getDataUser = async () => {
   try {
-    const response = await api.post(
-      '/api/sys/sys1120_list',
-      { paramSetYear: setYearGroup.value.setYear, paramDeptCd: selectedDept.value, paramSearchValue: searchValue.value },
-      { headers: authHeader() },
-    );
+    const response = await api.post('/api/sys/sys1120_list', {
+      paramSetYear: storeYear.setYear,
+      paramDeptCd: selectedDept.value,
+      paramSearchValue: searchValue.value,
+    });
     rowDataUser.rows = response.data.data;
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -481,7 +465,7 @@ const getDataUser = async () => {
 // saveStatus = 0=수정성공 1=신규성공 2=삭제성공 3=수정에러 4=시스템에러
 const saveDataAndHandleResult = resFormData => {
   api
-    .post('/api/sys/sys1120_save', resFormData, { headers: authHeader() })
+    .post('/api/sys/sys1120_save', resFormData)
     .then(res => {
       let saveStatus = {};
       if (res.data.rtn === '0') {
@@ -507,8 +491,7 @@ const selectedDept = ref('');
 // ***** 공통코드정보 가져오기 부분  *****************************//
 async function getDataDeptOption(resParamCommCd1) {
   try {
-    console.log('year :: ', setYearGroup.value.setYear);
-    const response = await api.post('/api/mst/dept_option_list', { paramSetYear: setYearGroup.value.setYear }, { headers: authHeader() });
+    const response = await api.post('/api/mst/dept_option_list', { paramSetYear: storeYear.setYear });
 
     deptOptions.value = response.data.data;
     deptOptions.value.push({ deptCd: '', deptNm: '전체' });

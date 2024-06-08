@@ -72,7 +72,6 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue';
 import { QIcon, useQuasar } from 'quasar';
-import authHeader from 'boot/authHeader';
 import { api } from '/src/boot/axios';
 import { isEmpty, isEqual } from 'lodash';
 import jsonUtil from 'src/js_comm/json-util';
@@ -187,7 +186,7 @@ const eventData = ref(null);
 // ***** 이벤트  목록 자료 가져오기 부분  *****************************//
 const getEventData = async () => {
   try {
-    const response = await api.post('/api/sys/event_list', { paramUserId: 'admin', paramMonth: '03' }, { headers: authHeader() });
+    const response = await api.post('/api/sys/event_list', { paramUserId: 'admin', paramMonth: '03' });
     eventData.value = response.data.data;
     eventDays.value = [];
     for (let i = 0; i < eventData.value.length; i++) {
@@ -204,7 +203,7 @@ const getEventData = async () => {
 const saveEventDataAndHandleResult = resFormData => {
   console.log('saveData: ', JSON.stringify(resFormData));
   api
-    .post('/api/sys/event_save', resFormData, { headers: authHeader() })
+    .post('/api/sys/event_save', resFormData)
     .then(res => {
       let saveStatus = {};
       if (res.data.rtn === '0') {

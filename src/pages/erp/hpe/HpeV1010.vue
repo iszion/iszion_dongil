@@ -12,26 +12,27 @@
             2. 목표자료는 여러건을 입력 수 있으나 가중치는 합이 100을 넘어설수는 없습니다.<br />
           </q-banner>
         </div>
-        <div class="col-xs-12 col-sm-6 q-pa-sm">
-          <div class="row">
-            <q-space />
-            <span class="text-bold text-subtitle2 q-pr-sm text-blue">작성자<q-icon name="chevron_right" size="xs" /> </span>
-            <q-breadcrumbs separator="|" class="text-blue text-bold" active-color="secondary">
-              <q-breadcrumbs-el icon="room_preferences" :label="setEvGroup.evtGroup.deptNm" style="width: 90px" />
-              <q-breadcrumbs-el icon="star_half" :label="setEvGroup.evtGroup.titlNm" style="width: 60px" />
-              <q-breadcrumbs-el icon="person" :label="setEvGroup.evtGroup.empNm" style="width: 70px" />
-            </q-breadcrumbs>
-          </div>
-          <q-separator spaced />
-          <div class="row">
-            <q-space />
-            <span class="text-bold text-subtitle2 q-pr-sm text-orange">승인자<q-icon name="chevron_right" size="xs" /></span>
-            <q-breadcrumbs separator="|" class="text-orange text-bold" active-color="secondary">
-              <q-breadcrumbs-el icon="room_preferences" :label="setEvGroup.evsGroup.deptNm" style="width: 90px" />
-              <q-breadcrumbs-el icon="star" :label="setEvGroup.evsGroup.titlNm" style="width: 60px" />
-              <q-breadcrumbs-el icon="person" :label="setEvGroup.evsGroup.empNm" style="width: 70px" />
-            </q-breadcrumbs>
-          </div>
+        <q-space />
+        <div class="col-xs-12 col-sm-4 q-my-sm">
+          <q-card class="q-ml-sm-md q-pa-sm" :class="$q.screen.xs ? 'q-mt-xs' : 'row flex-center'" style="height: 100%">
+            <q-card-section class="row q-pa-none justify-center">
+              <span class="text-bold text-subtitle2 q-pr-sm text-blue">작성자<q-icon name="chevron_right" size="xs" /> </span>
+              <q-breadcrumbs separator="|" class="text-blue text-bold" active-color="secondary">
+                <q-breadcrumbs-el icon="room_preferences" :label="setEvGroup.evtGroup.deptNm" style="width: 90px" />
+                <q-breadcrumbs-el icon="star_half" :label="setEvGroup.evtGroup.titlNm" style="width: 60px" />
+                <q-breadcrumbs-el icon="person" :label="setEvGroup.evtGroup.empNm" style="width: 70px" />
+              </q-breadcrumbs>
+            </q-card-section>
+            <q-separator color="grey-4" spaced />
+            <q-card-section class="row q-pa-none justify-center">
+              <span class="text-bold text-subtitle2 q-pr-sm text-orange">승인자<q-icon name="chevron_right" size="xs" /></span>
+              <q-breadcrumbs separator="|" class="text-orange text-bold" active-color="secondary">
+                <q-breadcrumbs-el icon="room_preferences" :label="setEvGroup.evsGroup.deptNm" style="width: 90px" />
+                <q-breadcrumbs-el icon="star" :label="setEvGroup.evsGroup.titlNm" style="width: 60px" />
+                <q-breadcrumbs-el icon="person" :label="setEvGroup.evsGroup.empNm" style="width: 70px" />
+              </q-breadcrumbs>
+            </q-card-section>
+          </q-card>
         </div>
       </div>
     </q-card>
@@ -45,22 +46,22 @@
       <q-separator size="3px" class="q-mb-xs" />
 
       <div class="row">
-        <div class="col-xs-12 col-lg-7">
+        <div class="col-xs-12 col-md-7">
           <q-card-section>
             <q-toolbar class="row q-pa-none">
               <div class="q-gutter-xs">
-                <q-btn outline color="grey" dense @click="getData"
-                  ><q-icon name="refresh" size="xs" class="q-mr-xs" />
+                <q-btn outline color="grey" dense @click="getData">
+                  <q-icon name="refresh" size="xs" class="q-mr-xs" />
                   다시 불러오기
                 </q-btn>
               </div>
               <q-space />
-              <q-btn v-if="sendCountCancel > 0" outline color="indigo-7" dense @click="sendAuthRequestCancel" class="q-pr-md">
-                <q-badge color="orange" floating>{{ sendCountCancel }}</q-badge>
+              <q-btn v-if="viewStatusCount.sendCancel > 0" outline color="indigo-7" dense @click="sendAuthRequestCancel" class="q-pr-md">
+                <q-badge color="orange" floating>{{ viewStatusCount.sendCancel }}</q-badge>
                 <q-icon name="replay" size="xs" class="q-pr-xs" /> 승인대기취소
               </q-btn>
-              <q-btn v-if="sendCount > 0" outline color="indigo-12" dense @click="sendAuthRequest" class="q-pr-md q-ml-md">
-                <q-badge color="orange" floating>{{ sendCount }}</q-badge>
+              <q-btn v-if="viewStatusCount.sendCount > 0" outline color="indigo-12" dense @click="sendAuthRequest" class="q-pr-md q-ml-md">
+                <q-badge color="orange" floating>{{ viewStatusCount.sendCount }}</q-badge>
                 <q-icon name="send" size="xs" class="q-pr-xs" /> 승인요청
               </q-btn>
             </q-toolbar>
@@ -75,10 +76,16 @@
                 @selection-changed="onSelectionChanged"
                 @grid-ready="onGridReady"
                 :grid-options="gridOptions"
+                :rowDragManaged="true"
+                :animateRows="true"
+                @row-drag-move="onRowDragMove"
+                @row-drag-end="onRowDragEnd"
+                @row-drag-enter="onRowDragEnter"
+                @row-drag-leave="onRowDragLeave"
               >
               </ag-grid-vue>
             </div>
-            <q-card v-if="(selectedRows.length === 1 && formData.status === '4') || formData.returnDoc" class="q-pa-lg q-mt-md">
+            <q-card v-if="(selectedRows.length === 1 && formData.status === '2') || formData.returnDoc" class="q-pa-lg q-mt-md">
               <q-banner rounded :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-2'">
                 <template v-slot:avatar>
                   <q-icon name="reply" style="width: 50px" />
@@ -90,18 +97,19 @@
             </q-card>
           </q-card-section>
         </div>
-        <div class="col-xs-12 col-lg-5">
+        <div class="col-xs-12 col-md-5">
           <q-card-section>
             <q-toolbar class="row q-pa-none">
-              <q-breadcrumbs v-if="formData.status !== '4'" gutter="none" class="text-orange" active-color="grey">
+              <q-breadcrumbs v-if="formData.status !== '2'" gutter="none" class="text-orange" active-color="grey">
                 <q-breadcrumbs-el label="진행중" v-if="formData.status >= 0 && selectedRows.length === 1" />
                 <q-breadcrumbs-el label="승인대기" v-if="formData.status >= 1 && selectedRows.length === 1" />
-                <q-breadcrumbs-el label="승인완료" v-if="formData.status >= 2 && selectedRows.length === 1" />
-                <q-breadcrumbs-el label="평가대기" v-if="formData.status >= 3 && selectedRows.length === 1" />
-                <q-breadcrumbs-el label="평가완료" v-if="formData.status >= 5 && selectedRows.length === 1" />
+                <q-breadcrumbs-el label="승인완료" v-if="formData.status >= 3 && selectedRows.length === 1" />
+                <q-breadcrumbs-el label="평가대기" v-if="formData.status >= 4 && selectedRows.length === 1" />
+                <q-breadcrumbs-el label="1차평가완료" v-if="formData.status >= 5 && selectedRows.length === 1" />
+                <q-breadcrumbs-el label="2차평가완료" v-if="formData.status >= 6 && selectedRows.length === 1" />
               </q-breadcrumbs>
               <q-breadcrumbs gutter="none" class="text-orange" active-color="grey">
-                <q-breadcrumbs-el label="승인반려" v-if="formData.status === '4' && selectedRows.length === 1" />
+                <q-breadcrumbs-el label="승인반려" v-if="formData.status === '2' && selectedRows.length === 1" />
               </q-breadcrumbs>
               <q-space />
               <div class="q-gutter-xs">
@@ -111,27 +119,10 @@
                 <q-btn v-if="totalWeight < 100" outline color="grey" dense @click="addDataSection">
                   <q-icon name="add" size="xs" /><span v-if="!$q.screen.xs" class="q-ml-xs"> 신규 </span>
                 </q-btn>
-                <q-btn
-                  v-if="
-                    (formData.status === '0' || formData.status === '4') &&
-                    formData.targetDoc &&
-                    totalWeight - oldWeight + parseInt(formData.weight) <= 100
-                  "
-                  outline
-                  color="blue-12"
-                  dense
-                  @click="saveDataSection"
-                >
+                <q-btn v-if="formData.status === '0' || formData.status === '2'" outline color="blue-12" dense @click="saveDataSection">
                   <q-icon name="save" size="xs" /><span v-if="!$q.screen.xs" class="q-ml-xs">저장</span>
                 </q-btn>
-                <q-btn
-                  v-if="(formData.status === '0' || formData.status === '4') && selectedRows.length > 0"
-                  outline
-                  color="red-12"
-                  dense
-                  @click="deleteDataSection"
-                  class="q-pr-md"
-                >
+                <q-btn v-if="viewStatusCount.sendDelete > 0" outline color="red-12" dense @click="deleteDataSection" class="q-pr-md">
                   <q-badge color="orange" floating>{{ selectedRows.length }}</q-badge>
                   <q-icon name="delete" size="xs" /> <span v-if="!$q.screen.xs" class="q-ml-xs">삭제</span>
                 </q-btn>
@@ -220,17 +211,7 @@
                     label-color="pink-12"
                     label="가중치"
                     hint="가중치를 설정하세요"
-                  />
-                  <q-input
-                    :readonly="formReadonly"
-                    :disable="formDisable"
-                    v-model="formData.seq"
-                    type="number"
-                    color="pink-12"
-                    label-color="pink-12"
-                    label="순번"
-                    hint="처리순번입니다"
-                    @update:model-value="handleInput"
+                    :rules="[val => totalWeight - oldWeight + parseInt(val) <= 100 || '가중치합이 100이 넘을 수 없습니다.']"
                   />
                 </div>
               </div>
@@ -251,55 +232,39 @@ import { AgGridVue } from 'ag-grid-vue3';
 import { computed, onBeforeMount, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 import { isEmpty, isEqual } from 'lodash';
 import { api } from 'boot/axios';
-import authHeader from 'boot/authHeader';
 import notifySave from 'src/js_comm/notify-save';
 import { QBtn, QIcon, useQuasar } from 'quasar';
 import jsonUtil from 'src/js_comm/json-util';
-import commUtil from 'src/js_comm/comm-util';
-import CompSelectLevel from 'components/CompSelectLevel.vue';
+import { useUserInfoStore } from 'src/store/setUserInfo';
+import { useYearInfoStore } from 'src/store/setYearInfo';
+import { viewDepthKey } from 'vue-router';
+const storeUser = useUserInfoStore();
+const storeYear = useYearInfoStore();
 
 const setEvsCd = ref('2011101'); // 성과평가 공통코드
-const setEmpCd = ref('2195159'); // 기준 피평가자 사번
-// const setEmpCd = ref('2206004'); // 기준 피평가자 사번
 
 const rowData = reactive({ rows: [] });
 
 // grid Height 자동처리부분
 const gridHeight = ref(300); // 초기 높이
-const rowHeight = 45; // 행당 높이 (예: 25px)
+const rowHeight = 46; // 행당 높이 (예: 25px)
 const minHeight = ref(135); // 최소 높이 (예: 300px)
 watch(
   () => rowData.rows,
   newRows => {
     const calculatedHeight = newRows.length * rowHeight;
-    console.log('newRows : ', newRows.length);
-    console.log('calculatedHeight : ', calculatedHeight);
+    // console.log('newRows : ', newRows.length);
+    // console.log('calculatedHeight : ', calculatedHeight);
     gridHeight.value = minHeight.value + calculatedHeight;
     // gridHeight.value = Math.max(minHeight.value, calculatedHeight);
-    console.log('gridHeight : ', gridHeight.value);
+    // console.log('gridHeight : ', gridHeight.value);
   },
   { immediate: true },
 );
 // grid Height 자동처리부분 끝
 
-const handleInput = newValue => {
-  // newValue에는 변경된 값이 전달됩니다.
-  console.log('입력 값 변경: ', newValue);
-  // 이 곳에 상하 버튼 클릭 이벤트를 처리하는 코드를 추가합니다.
-  let _seq = parseInt(newValue);
-  rowData.rows.forEach(row => {
-    if (row.seq === _seq) {
-      _seq++;
-      console.log('입력 값 변경111: ', row.seq, _seq);
-    }
-  });
-  console.log('입력 값 변경: ', newValue);
-  setTimeout(() => {
-    formData.value.seq = _seq;
-  }, 100);
-};
 const $q = useQuasar();
-let isSaveFg = null;
+const isSaveFg = ref(null);
 const gridKey = ref(0);
 
 const contentZoneHeight = ref(300);
@@ -344,8 +309,9 @@ const columnDefs = reactive({
     {
       headerName: 'No',
       field: 'seq',
-      maxWidth: 70,
-      minWidth: 70,
+      rowDrag: true,
+      maxWidth: 80,
+      minWidth: 80,
     },
     {
       headerName: '세부목표',
@@ -356,8 +322,8 @@ const columnDefs = reactive({
     {
       headerName: '가중치',
       field: 'weight',
-      maxWidth: 90,
-      minWidth: 90,
+      maxWidth: 95,
+      minWidth: 95,
       resizable: false,
       cellStyle: params => {
         return $q.dark.isActive ? { color: 'cyan', fontWeight: '700' } : { color: 'blue', fontWeight: '700' };
@@ -366,8 +332,8 @@ const columnDefs = reactive({
     {
       headerName: '진행상태',
       field: 'statusNm',
-      minWidth: 100,
-      maxWidth: 100,
+      minWidth: 120,
+      maxWidth: 120,
       cellStyle: params => {
         switch (params.data.status) {
           case '0':
@@ -375,11 +341,11 @@ const columnDefs = reactive({
           case '1':
             return $q.dark.isActive ? { color: 'orange' } : { color: 'orange' };
           case '2':
-            return $q.dark.isActive ? { color: 'lime' } : { color: 'teal' };
-          case '3':
-            return $q.dark.isActive ? { color: 'pink' } : { color: 'purple' };
-          case '4':
             return $q.dark.isActive ? { color: 'red' } : { color: 'red' };
+          case '3':
+            return $q.dark.isActive ? { color: 'lime' } : { color: 'teal' };
+          case '4':
+            return $q.dark.isActive ? { color: 'pink' } : { color: 'purple' };
           case '5':
             return $q.dark.isActive ? { color: 'cyan' } : { color: 'blue' };
           default:
@@ -392,14 +358,18 @@ const columnDefs = reactive({
 let totalWeight = 0;
 const totalComputeWeight = () => {
   totalWeight = 0;
-  totalWeight = rowData.rows.reduce((sum, item) => sum + item.weight, 0);
+  rowData.rows.forEach(item => {
+    totalWeight += item.weight;
+  });
+
   const pinnedBottomRowData = [
     {
-      targetDoc: '가중치 합계',
+      targetDoc: '합계',
       weight: totalWeight,
     },
   ];
-  gridApi.value.setPinnedBottomRowData(pinnedBottomRowData);
+
+  gridApi.value.updateGridOptions({ pinnedBottomRowData });
 };
 // 기준평가자연결정보
 const setEvGroup = reactive({
@@ -420,20 +390,6 @@ const setEvGroup = reactive({
     titlNm: '',
   },
 });
-// 기준평가기간 적용부분
-const setYearGroup = ref({
-  setYear: '',
-  setFg: '',
-  setLocCh: '',
-});
-const getStorgeSetYearGroup = () => {
-  const _value = $q.localStorage.getItem('setYearGroup').split('|');
-  setYearGroup.value.setYear = _value[0];
-  setYearGroup.value.setFg = _value[1];
-  setYearGroup.value.setLocCh = _value[2];
-  // console.log('Sub SetYear Group :: ', setYearGroup.value.setYear, setYearGroup.value.setFg, setYearGroup.value.setLocCh);
-};
-// 기준평가기간 적용부분 끝
 
 onBeforeUnmount(() => {
   // Remove the resize event listener when the component is destroyed
@@ -441,8 +397,7 @@ onBeforeUnmount(() => {
 });
 onBeforeMount(() => {
   rowSelection.value = 'multiple';
-  getStorgeSetYearGroup();
-  getDataEvsn(setEmpCd.value, setEvsCd.value);
+  getDataEvsn(storeUser.setEmpCd, setEvsCd.value);
   getData();
 });
 
@@ -455,6 +410,7 @@ const oldFormData = ref(null);
 const formData = ref({
   stdYear: '',
   empCd: '',
+  workNo: 0,
   seq: 0,
   targetDoc: '',
   evaS: '',
@@ -465,8 +421,8 @@ const formData = ref({
   weight: 0,
   workDoc: '',
   workPer: 0,
-  markCh: '',
-  markPoint: 0,
+  selfCh: '',
+  selfPoint: 0,
   status: '',
   statusDate: '00000000',
   returnDoc: '',
@@ -474,8 +430,9 @@ const formData = ref({
 });
 
 const formDataInitialize = () => {
-  formData.value.stdYear = setYearGroup.value.setYear;
-  formData.value.empCd = setEmpCd.value;
+  formData.value.stdYear = storeYear.setYear;
+  formData.value.empCd = storeUser.setEmpCd;
+  formData.value.workNo = 1;
   formData.value.seq = 1;
   formData.value.targetDoc = '';
   formData.value.evaS = '';
@@ -486,8 +443,8 @@ const formDataInitialize = () => {
   formData.value.weight = 0;
   formData.value.workDoc = '';
   formData.value.workPer = 0;
-  formData.value.markCh = '';
-  formData.value.markPoint = 0;
+  formData.value.selfCh = '';
+  formData.value.selfPoint = 0;
   formData.value.status = '';
   formData.value.statusDate = '00000000';
   formData.value.returnDoc = '';
@@ -500,11 +457,12 @@ const addDataSection = () => {
     formDataInitialize();
     oldFormData.value = formData;
     formData.value.weight = 100 - totalWeight;
-    formData.value.seq = maxSeq + 1;
-    isSaveFg = 'I';
+    formData.value.status = '0';
+    isSaveFg.value = 'I';
 
+    formReadonly.value = false;
     formDisable.value = false;
-    formData.value.stdYear = setYearGroup.value.setYear;
+    formData.value.stdYear = storeYear.setYear;
     setTimeout(() => {
       focusStart.value.focus();
     }, 100);
@@ -514,18 +472,17 @@ const addDataSection = () => {
 const addDataSectionCopy = () => {
   formData.value.status = '0';
   formData.value.workDoc = '';
-  formData.value.markCh = '';
-  formData.value.markPoint = 0;
+  formData.value.selfCh = '';
+  formData.value.selfPoint = 0;
   formData.value.statusDate = '00000000';
   formData.value.returnDoc = '';
 
   oldFormData.value = formData;
   formData.value.weight = 100 - totalWeight;
-  formData.value.seq = maxSeq + 1;
-  isSaveFg = 'I';
+  isSaveFg.value = 'I';
 
   formDisable.value = false;
-  formData.value.stdYear = setYearGroup.value.setYear;
+  formData.value.stdYear = storeYear.setYear;
   setTimeout(() => {
     focusStart.value.focus();
   }, 100);
@@ -534,42 +491,64 @@ const addDataSectionCopy = () => {
 const selectedRows = ref([]);
 const formReadonly = ref(true);
 const formDisable = ref(true);
-const sendCount = ref(0);
-const sendCountCancel = ref(0);
+const viewStatusCount = ref({
+  sendCount: 0,
+  sendCancel: 0,
+  sendDelete: 0,
+});
 let oldWeight = 0;
 const onSelectionChanged = event => {
   selectedRows.value = event.api.getSelectedRows();
   console.log('row:: ', selectedRows.value.length);
-
-  sendCount.value = 0;
-  sendCountCancel.value = 0;
+  viewStatusCount.value.sendCancel = 0;
+  viewStatusCount.value.sendCount = 0;
+  viewStatusCount.value.sendDelete = 0;
   selectedRows.value.forEach(row => {
-    if (row.status === '0' || row.status === '4') {
-      sendCount.value++;
+    if ((row.status === '0' || row.status === '2') && row.targetDoc !== '') {
+      viewStatusCount.value.sendCount++;
+    }
+    if (row.status === '0') {
+      viewStatusCount.value.sendDelete++;
     }
     if (row.status === '1') {
-      sendCountCancel.value++;
+      viewStatusCount.value.sendCancel++;
     }
   });
 
   formReadonly.value = true;
   if (selectedRows.value.length === 1) {
-    if (selectedRows.value[0].status === '0' || selectedRows.value[0].status === '4') {
+    if (selectedRows.value[0].status === '0' || selectedRows.value[0].status === '2') {
       formReadonly.value = false;
     }
-    getDataSelect(selectedRows.value[0].stdYear, selectedRows.value[0].empCd, selectedRows.value[0].seq);
+    getDataSelect(selectedRows.value[0].stdYear, selectedRows.value[0].empCd, selectedRows.value[0].workNo);
     oldWeight = selectedRows.value[0].weight;
-    isSaveFg = 'U';
+    isSaveFg.value = 'U';
     formDisable.value = false;
-  } else if (selectedRows.value.length > 1) {
-    isSaveFg = 'D';
-    formDisable.value = true;
-    formDataInitialize();
   } else {
     formData.value = {};
-    isSaveFg = '';
+    isSaveFg.value = '';
     formDisable.value = true;
   }
+};
+const onRowDragMove = event => {};
+const onRowDragEnter = event => {};
+const onRowDragEnd = event => {
+  const allRowData = [];
+  gridApi.value.forEachNode(node => allRowData.push(node.data));
+
+  let iu = [];
+  let iuD = [];
+  for (let i = 0; i < allRowData.length; i++) {
+    // 순번처리저장
+    allRowData[i].seq = i + 1;
+    let tmpJson = '{"mode": "N", "data":' + JSON.stringify(allRowData[i]) + '}';
+    iu.push(tmpJson);
+  }
+  saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
+};
+
+const onRowDragLeave = event => {
+  console.log('onRowDragLeave...');
 };
 // ======================================================
 const screenSizeHeight = ref(0);
@@ -597,7 +576,7 @@ const saveDataSection = () => {
       });
   } else {
     console.log('save data::: ', JSON.stringify(formData.value));
-    saveDataAndHandleResult(jsonUtil.dataJsonParse(isSaveFg, formData.value));
+    saveDataAndHandleResult(jsonUtil.dataJsonParse(isSaveFg.value, formData.value));
   }
 };
 
@@ -617,16 +596,13 @@ const sendAuthRequest = () => {
     // persistent: true,
   })
     .onOk(() => {
-      // 승인요청 시
-      isSaveFg = 'S';
-
       let iu = [];
       let iuD = [];
       for (let i = 0; i < selectedRows.value.length; i++) {
         // 작성중 또는 반려자료 승인요청 체크
-        if (selectedRows.value[i].status === '0' || selectedRows.value[i].status === '4') {
+        if (selectedRows.value[i].status === '0' || selectedRows.value[i].status === '2') {
           selectedRows.value[i].status = '1';
-          let tmpJson = '{"mode": "' + isSaveFg + '","data":' + JSON.stringify(selectedRows.value[i]) + '}';
+          let tmpJson = '{"mode": "S","data":' + JSON.stringify(selectedRows.value[i]) + '}';
           console.log('update send : ', JSON.stringify(selectedRows.value[i]));
           iu.push(tmpJson);
         }
@@ -655,20 +631,17 @@ const sendAuthRequestCancel = () => {
     // persistent: true,
   })
     .onOk(() => {
-      // 승인요청 시
-      isSaveFg = 'S';
-
       let iu = [];
       let iuD = [];
       for (let i = 0; i < selectedRows.value.length; i++) {
         // 작성중 또는 반려자료 승인요청 체크
         if (selectedRows.value[i].status === '1') {
           if (selectedRows.value[i].returnDoc) {
-            selectedRows.value[i].status = '4';
+            selectedRows.value[i].status = '2'; // 반려
           } else {
-            selectedRows.value[i].status = '0';
+            selectedRows.value[i].status = '0'; // 작성중
           }
-          let tmpJson = '{"mode": "' + isSaveFg + '","data":' + JSON.stringify(selectedRows.value[i]) + '}';
+          let tmpJson = '{"mode": "S","data":' + JSON.stringify(selectedRows.value[i]) + '}';
           console.log('update send : ', JSON.stringify(selectedRows.value[i]));
           iu.push(tmpJson);
         }
@@ -697,12 +670,10 @@ const deleteDataSection = () => {
     // persistent: true,
   })
     .onOk(() => {
-      isSaveFg = 'D';
-
       let iu = [];
       let iuD = [];
       for (let i = 0; i < selectedRows.value.length; i++) {
-        let tmpJson = '{"mode":"' + isSaveFg + '","data":' + JSON.stringify(selectedRows.value[i]) + '}';
+        let tmpJson = '{"mode":"D","data":' + JSON.stringify(selectedRows.value[i]) + '}';
         console.log('delete : ', JSON.stringify(selectedRows.value[i]));
         iuD.push(tmpJson);
       }
@@ -719,13 +690,13 @@ const deleteDataSection = () => {
 
 // ***** 사원정보 가져오기 부분  *****************************//
 const getDataEvsn = async (resEmpCd, resEvsCd) => {
-  console.log('param: ', resEmpCd, resEvsCd);
+  // console.log('param: ', resEmpCd, resEvsCd);
   try {
-    const response = await api.post(
-      '/api/aux/aux_emp_evsn_list',
-      { paramSetYear: setYearGroup.value.setYear, paramEmpCd: resEmpCd, paramEvsCd: resEvsCd },
-      { headers: authHeader() },
-    );
+    const response = await api.post('/api/aux/aux_emp_evsn_list', {
+      paramSetYear: storeYear.setYear,
+      paramEmpCd: resEmpCd,
+      paramEvsCd: resEvsCd,
+    });
     setEvGroup.evsGroup.empCd = response.data.data[0].evsEmpCd;
     setEvGroup.evsGroup.empNm = response.data.data[0].evsEmpNm;
     setEvGroup.evsGroup.deptCd = response.data.data[0].evsDeptCd;
@@ -745,26 +716,17 @@ const getDataEvsn = async (resEmpCd, resEvsCd) => {
 };
 
 // ***** 성과/목표정보 목록 자료 가져오기 부분  *****************************//
-let maxSeq = 0;
 const getData = async () => {
   try {
-    const response = await api.post(
-      '/api/hpe/hpe1010_list',
-      { paramSetYear: setYearGroup.value.setYear, paramEmpCd: setEmpCd.value },
-      { headers: authHeader() },
-    );
+    const response = await api.post('/api/hpe/hpe1010_list', { paramSetYear: storeYear.setYear, paramEmpCd: storeUser.setEmpCd });
     rowData.rows = response.data.data;
     if (rowData.rows.length > 0) {
       minHeight.value = 90;
     }
-    rowData.rows.forEach(row => {
-      if (row.seq > maxSeq) {
-        maxSeq = row.seq;
-      }
-    });
-    sendCount.value = 0;
+
+    viewStatusCount.value.sendCount = 0;
     gridKey.value += 1;
-    console.log('getData : ', JSON.stringify(rowData.rows));
+    // console.log('getData : ', JSON.stringify(rowData.rows));
   } catch (error) {
     console.error('Error fetching users:', error);
   }
@@ -773,19 +735,13 @@ const getData = async () => {
 // ***** 선택한 성과/목표정보 목록 자료 가져오기 부분  *****************************//
 const getDataSelect = async () => {
   try {
-    const response = await api.post(
-      '/api/hpe/hpe1010_select',
-      {
-        paramSetYear: setYearGroup.value.setYear,
-        paramEmpCd: selectedRows.value[0].empCd,
-        paramSeq: selectedRows.value[0].seq,
-      },
-      { headers: authHeader() },
-    );
+    const response = await api.post('/api/hpe/hpe1010_select', {
+      paramSetYear: storeYear.setYear,
+      paramEmpCd: selectedRows.value[0].empCd,
+      paramWorkNo: selectedRows.value[0].workNo,
+    });
     formData.value = response.data.data[0];
-    console.log('getSelect1 : ', JSON.stringify(response.data.data[0]));
     oldFormData.value = JSON.parse(JSON.stringify(formData.value)); // 초기자료 저장
-    console.log('getSelect2 : ', JSON.stringify(formData.value));
   } catch (error) {
     console.error('Error fetching users:', error);
   }
@@ -794,9 +750,9 @@ const getDataSelect = async () => {
 // ***** 자료저장 및 삭제 처리부분 *****************************//
 // saveStatus = 0=수정성공 1=신규성공 2=삭제성공 3=수정에러 4=시스템에러
 const saveDataAndHandleResult = resFormData => {
-  console.log('form data : ', JSON.stringify(resFormData));
+  // console.log('form data : ', JSON.stringify(resFormData));
   api
-    .post('/api/hpe/hpe1010_save', resFormData, { headers: authHeader() })
+    .post('/api/hpe/hpe1010_save', resFormData)
     .then(res => {
       let saveStatus = {};
       if (res.data.rtn === '0') {
@@ -827,6 +783,11 @@ const updateByteCount = () => {
 };
 
 const gridOptions = {
+  getRowStyle: params => {
+    if (params.node.rowPinned) {
+      return { backgroundColor: 'lightblue' };
+    }
+  },
   localeText: { noRowsToShow: '조회 결과가 없습니다.' },
 };
 </script>

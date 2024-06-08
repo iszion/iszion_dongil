@@ -9,6 +9,7 @@ const routes = [
       { path: 'hpe1010', component: () => import('pages/erp/hpe/HpeV1010.vue') },
       { path: 'hpe1020', component: () => import('pages/erp/hpe/HpeV1020.vue') },
       { path: 'hpe2010', component: () => import('pages/erp/hpe/HpeV2010.vue') },
+      { path: 'hpe2020', component: () => import('pages/erp/hpe/HpeV2020.vue') },
 
       { path: 'aux1010', component: () => import('pages/erp/aux/AuxV1010.vue') },
       { path: 'aux2010', component: () => import('pages/erp/aux/AuxV2010.vue') },

@@ -228,7 +228,6 @@ import { AgGridVue } from 'ag-grid-vue3';
 import { QBtn, QIcon, useQuasar } from 'quasar';
 import { computed, h, onBeforeMount, onBeforeUnmount, onMounted, onUpdated, reactive, ref, watch } from 'vue';
 import { api } from '/src/boot/axios';
-import authHeader from 'boot/authHeader';
 
 import { isEmpty, isEqual } from 'lodash';
 import jsonUtil from 'src/js_comm/json-util';
@@ -433,7 +432,7 @@ function buildTreeMenuData(data) {
 const getSubMenuData = async () => {
   const paramData = { paramGroupCd: selectedGroup.value };
   try {
-    const response = await api.post('/api/sys/menu_sub_list', paramData, { headers: authHeader() });
+    const response = await api.post('/api/sys/menu_sub_list', paramData);
 
     menuList.value = buildTreeMenuData(response.data.data);
   } catch (error) {
@@ -445,7 +444,7 @@ const getSubMenuData = async () => {
 const getDataDoc = async resProgId => {
   const paramData = { paramProgId: resProgId };
   try {
-    const response = await api.post('/api/sys/sys4010_docA_select', paramData, { headers: authHeader() });
+    const response = await api.post('/api/sys/sys4010_docA_select', paramData);
     if (isEmpty(response.data.data)) {
       isSaveFg = 'I';
       formData.value.progId = selectedProgId.value;
@@ -474,7 +473,7 @@ const getDataDoc = async resProgId => {
 // saveStatus = 0=수정성공 1=신규성공 2=삭제성공 3=수정에러 4=시스템에러
 const saveDataDocAndHandleResult = resFormData => {
   api
-    .post('/api/sys/sys4010_docA_save', resFormData, { headers: authHeader() })
+    .post('/api/sys/sys4010_docA_save', resFormData)
     .then(res => {
       let saveStatus = {};
       if (res.data.rtn === '0') {
@@ -510,7 +509,7 @@ const groupOptions = ref([]);
 
 const getGroupData = async () => {
   try {
-    const response = await api.post('/api/sys/prog_group_list', { paramUserId: '' }, { headers: authHeader() });
+    const response = await api.post('/api/sys/prog_group_list', { paramUserId: '' });
     // 옵션 초기화
     groupOptions.value = [];
 

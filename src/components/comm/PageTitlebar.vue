@@ -271,7 +271,6 @@ import { ref } from 'vue';
 import { api } from '/src/boot/axios';
 import notifySave from 'src/js_comm/notify-save';
 import jsonUtil from 'src/js_comm/json-util';
-import authHeader from 'boot/authHeader';
 import { isEmpty, isEqual } from 'lodash';
 
 const resMsgProp = defineProps(['message']);
@@ -465,7 +464,7 @@ function findValueById(data, id) {
 // saveStatus = 0=수정성공 1=신규성공 2=삭제성공 3=수정에러 4=시스템에러
 const saveDataAndHandleResult = resFormData => {
   api
-    .post('/api/sys/fav_save', resFormData, { headers: authHeader() })
+    .post('/api/sys/fav_save', resFormData)
     .then(res => {
       let saveStatus = {};
       if (res.data.rtn === '0') {
@@ -488,7 +487,7 @@ const saveDataAndHandleResult = resFormData => {
 const getSubMenuData = async () => {
   const paramData = { paramGroupCd: selectedGroup.value };
   try {
-    const response = await api.post('/api/sys/menu_sub_list', paramData, { headers: authHeader() });
+    const response = await api.post('/api/sys/menu_sub_list', paramData);
 
     menuList.value = buildTreeMenuData(response.data.data);
   } catch (error) {
@@ -500,7 +499,7 @@ const getSubMenuData = async () => {
 const getDataDocA = async resProgId => {
   const paramData = { paramProgId: resProgId };
   try {
-    const response = await api.post('/api/sys/sys4010_docA_select', paramData, { headers: authHeader() });
+    const response = await api.post('/api/sys/sys4010_docA_select', paramData);
     if (isEmpty(response.data.data)) {
       menualDocA.value = '메뉴얼자료가 없습니다';
     } else {
@@ -513,7 +512,7 @@ const getDataDocA = async resProgId => {
 const getDataDocU = async resProgId => {
   const paramData = { paramProgId: resProgId };
   try {
-    const response = await api.post('/api/sys/sys4020_docU_select', paramData, { headers: authHeader() });
+    const response = await api.post('/api/sys/sys4020_docU_select', paramData);
     if (isEmpty(response.data.data)) {
       menualDocU.value.progId = selectedProgId.value;
       menualDocU.value.contents = '메뉴얼자료가 없습니다';
@@ -533,7 +532,7 @@ const groupOptions = ref([]);
 
 const getGroupData = async () => {
   try {
-    const response = await api.post('/api/sys/prog_group_list', { paramUserId: '' }, { headers: authHeader() });
+    const response = await api.post('/api/sys/prog_group_list', { paramUserId: '' });
     // 옵션 초기화
     groupOptions.value = [];
 
@@ -552,7 +551,7 @@ const getGroupData = async () => {
 // saveStatus = 0=수정성공 1=신규성공 2=삭제성공 3=수정에러 4=시스템에러
 const saveDataDocUndHandleResult = resFormData => {
   api
-    .post('/api/sys/sys4020_docU_save', resFormData, { headers: authHeader() })
+    .post('/api/sys/sys4020_docU_save', resFormData)
     .then(res => {
       let saveStatus = {};
       if (res.data.rtn === '0') {
