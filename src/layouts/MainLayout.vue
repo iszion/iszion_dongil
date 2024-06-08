@@ -361,24 +361,11 @@ function findValueById(data, id) {
 /* ******    token 처리 부분   ****************************************************** */
 /* ******************************************************************************** */
 
-/*const token = localStorage.getItem('token');
-const accessObject = JSON.parse(token);
-
-const form = ref({
-  accessToken: accessObject.accessToken,
-  refreshToken: accessObject.refreshToken,
-});*/
-
-const access_token = Cookies.get('accessToken');
-const refresh_token = Cookies.get('refreshToken');
-
+const access_token = sessionStorage.getItem('accessToken');
 const logout = () => {
   api
     .post('/api/auth/logout', access_token)
     .then(res => {
-      localStorage.removeItem('token');
-      Cookies.remove('accessToken');
-      Cookies.remove('refreshToken');
       router.push({ path: '/' });
     })
     .catch(res => {

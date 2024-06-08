@@ -82,10 +82,9 @@ const onSubmit = () => {
       .post('/api/auth/login', form.value, {})
       .then(res => {
         if (res.data.data.accessToken && res.data.state === 200) {
-          localStorage.setItem('token', JSON.stringify(res.data.data));
-          // Cookies.set('accessToken', JSON.stringify(res.data.data.accessToken), { expires: '1m' });
-          Cookies.set('accessToken', JSON.stringify(res.data.data.accessToken), { expires: 1 });
-          Cookies.set('refreshToken', JSON.stringify(res.data.data.refreshToken), { expires: 1 });
+          sessionStorage.setItem('accessToken', JSON.stringify(res.data.data.accessToken));
+          sessionStorage.setItem('refreshToken', JSON.stringify(res.data.data.refreshToken));
+          router.push({ path: '/main' });
           try {
             SessionStorage.set('empCd', form.value.id);
           } catch (e) {
