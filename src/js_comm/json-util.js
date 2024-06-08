@@ -38,12 +38,25 @@ export default {
       for (let i = 0; i < resObj.length; i++) {
         let objTmp = JSON.parse(resObj[i]);
         if (objTmp.mode === 'I') {
+          // Check if key value is null and replace with empty string
+          Object.keys(objTmp.data).forEach(key => {
+            objTmp.data[key] = objTmp.data[key] === null ? "" : objTmp.data[key];
+          });
           tmpDataI.push(objTmp.data);
         } else if (objTmp.mode === 'U') {
+          Object.keys(objTmp.data).forEach(key => {
+            objTmp.data[key] = objTmp.data[key] === null ? "" : objTmp.data[key];
+          });
           tmpDataU.push(objTmp.data);
         } else if (objTmp.mode === 'N') {
+          Object.keys(objTmp.data).forEach(key => {
+            objTmp.data[key] = objTmp.data[key] === null ? "" : objTmp.data[key];
+          });
           tmpDataN.push(objTmp.data);
         } else if (objTmp.mode === 'S') {
+          Object.keys(objTmp.data).forEach(key => {
+            objTmp.data[key] = objTmp.data[key] === null ? "" : objTmp.data[key];
+          });
           tmpDataS.push(objTmp.data);
         } else {
         }
@@ -64,6 +77,9 @@ export default {
     if (resObjDel.length > 0) {
       for (let i = 0; i < resObjDel.length; i++) {
         let objTmp = JSON.parse(resObjDel[i]);
+        Object.keys(objTmp.data).forEach(key => {
+          objTmp.data[key] = objTmp.data[key] === null ? "" : objTmp.data[key];
+        });
         tmpDataD.push(objTmp.data);
       }
       jsonData.D = tmpDataD;
