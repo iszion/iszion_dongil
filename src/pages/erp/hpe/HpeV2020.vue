@@ -2,7 +2,7 @@
   <q-page class="q-pa-xs-xs q-pa-sm-md" :style-fn="myTweak">
     <q-card class="q-pa-sm">
       <div class="row">
-        <div class="col-xs-12 col-sm-8">
+        <div class="col-xs-12 col-sm-12 col-lg-8">
           <div class="row q-col-gutter-x-sm">
             <div class="col-xs-12 col-sm-6">
               <q-banner rounded :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-3'" style="height: 100%">
@@ -55,7 +55,7 @@
             </div>
           </div>
         </div>
-        <div class="col-xs-12 col-sm-4 q-my-sm">
+        <div class="col-xs-12 col-sm-12 col-lg-4 q-my-sm">
           <q-card class="q-ml-sm-md q-pa-sm" :class="$q.screen.xs ? 'q-mt-xs' : 'row flex-center'" style="height: 100%">
             <div class="row">
               <q-space />
@@ -78,8 +78,8 @@
         <q-item-label class="text-h6">성과,업적 / 평가하기</q-item-label>
       </q-card-section>
 
-      <div class="row q-col-gutter-x-lg">
-        <div class="col-xs-12 col-md-6">
+      <div ref="gridZone" class="row q-col-gutter-x-lg">
+        <div class="col-xs-12 col-md-12 col-lg-6">
           <q-card class="q-pa-sm">
             <q-toolbar class="row q-pa-none">
               <q-avatar color="red" text-color="white" size="md">1번</q-avatar>
@@ -88,8 +88,20 @@
                 ><q-icon name="refresh" size="xs" class="q-mr-xs" />
                 다시 불러오기
               </q-btn>
+              <q-btn
+                v-if="sendCount.cancel > 0"
+                outline
+                color="deep-orange"
+                dense
+                class="q-pr-md q-ml-sm"
+                @click="deleteDataSection(sendCount.cancel)"
+              >
+                <q-badge color="orange" floating>{{ sendCount.cancel }}</q-badge>
+                <q-icon name="delete" size="xs" class="q-mr-xs" />
+                평가취소하기
+              </q-btn>
             </q-toolbar>
-            <div :style="{ height: gridHeight + 'px' }">
+            <div :style="{ height: gridHeight + 30 + 'px' }">
               <ag-grid-vue
                 style="width: 100%; height: 100%"
                 :class="$q.dark.isActive ? 'ag-theme-alpine-dark' : 'ag-theme-alpine'"
@@ -105,7 +117,7 @@
             </div>
           </q-card>
         </div>
-        <div class="col-xs-12 col-md-6">
+        <div class="col-xs-12 col-md-12 col-lg-6">
           <q-card class="q-pa-sm">
             <q-toolbar class="row q-pa-none">
               <q-avatar color="red" text-color="white" size="md">2번</q-avatar>
@@ -171,114 +183,111 @@
         </div>
       </div>
       <q-separator spaced />
+      <!--      {{ contentZoneHeight }} = {{ state.height }}-->
       <q-card class="q-pa-xs">
-        <q-scroll-area :style="contentZoneStyle">
-          <div class="row">
-            <q-card flat bordered style="width: 100%" v-for="data in selectedRowsSel" :key="data.seq" class="q-mb-sm">
-              <div class="row">
-                <q-card class="col-xs-12 col-sm-1">
-                  <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">순번</div>
-                  <div class="text-center q-pa-xs" :class="$q.screen.xs ? '' : 'row flex-center'" style="height: 100%">
-                    {{ data.seq }}
-                  </div>
-                </q-card>
-                <q-card class="col-xs-12 col-sm-4">
-                  <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">목표설정</div>
-                  <div class="q-pa-xs" v-html="data.targetDoc"></div>
-                </q-card>
-                <q-card class="col-xs-12 col-sm-2">
-                  <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">기준설정</div>
-                  <div class="q-pa-xs">
-                    <span class="q-px-sm"> 1. {{ data.evaS }}<br /> </span>
-                    <span class="q-px-sm"> 2. {{ data.evaA }}<br /> </span>
-                    <span class="q-px-sm"> 3. {{ data.evaB }}<br /> </span>
-                    <span class="q-px-sm"> 4. {{ data.evaC }}<br /> </span>
-                    <span class="q-px-sm"> 5. {{ data.evaD }} </span>
-                  </div>
-                </q-card>
-                <q-card class="col-xs-12 col-sm-3">
-                  <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">성과/업적</div>
-                  <div class="q-pa-xs" v-html="data.workDoc"></div>
-                </q-card>
-                <q-card class="col-xs-12 col-sm-1">
-                  <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">가중치</div>
-                  <div class="text-center q-pa-xs" :class="$q.screen.xs ? '' : 'row flex-center'" style="height: 100%">
-                    {{ data.weight }}
-                  </div>
-                </q-card>
-                <q-card class="col-xs-12 col-sm-1">
-                  <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">자기평가점수</div>
-                  <div class="text-center q-pa-xs" :class="$q.screen.xs ? '' : 'row flex-center'" style="height: 100%">
-                    {{ data.selfPoint }}
-                  </div>
-                </q-card>
-              </div>
-              <q-card bordered class="bg-blue-grey-2 q-mt-xs">
-                <div class="row">
-                  <div
-                    class="col-xs-12 col-sm-5 text-center self-center text-subtitle1 text-bold"
-                    :class="$q.screen.xs ? '' : 'row flex-center'"
-                    style="height: 100%"
-                  >
-                    평가하기
-                    <q-btn v-if="data.markPoint" outline color="red" dense @click="deleteDataSection(data)" class="q-ml-md"
-                      ><q-icon name="delete" size="xs" class="q-mr-xs" />
-                      평가 취소하기
-                    </q-btn>
-                  </div>
-                  <div class="col-xs-12 col-sm-5 text-center">
-                    <q-radio
-                      keep-color
-                      v-model="data.markCh"
-                      val="S"
-                      label="S"
-                      color="deep-orange"
-                      class="text-subtitle1 text-bold"
-                      @update:model-value="val => handlePointClick(val, data)"
-                    />
-                    <q-radio
-                      keep-color
-                      v-model="data.markCh"
-                      val="A"
-                      label="A"
-                      color="blue"
-                      class="text-subtitle1 text-bold"
-                      @update:model-value="val => handlePointClick(val, data)"
-                    />
-                    <q-radio
-                      keep-color
-                      v-model="data.markCh"
-                      val="B"
-                      label="B"
-                      color="cyan"
-                      class="text-subtitle1 text-bold"
-                      @update:model-value="val => handlePointClick(val, data)"
-                    />
-                    <q-radio
-                      keep-color
-                      v-model="data.markCh"
-                      val="C"
-                      label="C"
-                      color="teal"
-                      class="text-subtitle1 text-bold"
-                      @update:model-value="val => handlePointClick(val, data)"
-                    />
-                    <q-radio
-                      keep-color
-                      v-model="data.markCh"
-                      val="D"
-                      label="D"
-                      color="green"
-                      class="text-subtitle1 text-bold"
-                      @update:model-value="val => handlePointClick(val, data)"
-                    />
-                  </div>
-                  <div class="col-xs-12 col-sm-2 text-center self-center text-subtitle1 text-bold">평가점수 : {{ data.markPoint }}</div>
+        <!--        <q-scroll-area :style="contentZoneStyle">-->
+        <div class="row">
+          <q-card flat bordered style="width: 100%" v-for="data in selectedRowsSel" :key="data.seq" class="q-mb-sm">
+            <div class="row">
+              <q-card class="col-xs-12 col-sm-1">
+                <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">순번</div>
+                <div class="text-center q-pa-xs" :class="$q.screen.xs ? '' : 'row flex-center'" style="height: 100%">
+                  {{ data.seq }}
                 </div>
               </q-card>
+              <q-card class="col-xs-12 col-sm-4">
+                <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">목표설정</div>
+                <div class="q-pa-xs" v-html="data.targetDoc"></div>
+              </q-card>
+              <q-card class="col-xs-12 col-sm-2">
+                <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">기준설정</div>
+                <div class="q-pa-xs">
+                  <span class="q-px-sm"> 1. {{ data.evaS }}<br /> </span>
+                  <span class="q-px-sm"> 2. {{ data.evaA }}<br /> </span>
+                  <span class="q-px-sm"> 3. {{ data.evaB }}<br /> </span>
+                  <span class="q-px-sm"> 4. {{ data.evaC }}<br /> </span>
+                  <span class="q-px-sm"> 5. {{ data.evaD }} </span>
+                </div>
+              </q-card>
+              <q-card class="col-xs-12 col-sm-3">
+                <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">성과/업적</div>
+                <div class="q-pa-xs" v-html="data.workDoc"></div>
+              </q-card>
+              <q-card class="col-xs-12 col-sm-1">
+                <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">가중치</div>
+                <div class="text-center q-pa-xs" :class="$q.screen.xs ? '' : 'row flex-center'" style="height: 100%">
+                  {{ data.weight }}
+                </div>
+              </q-card>
+              <q-card class="col-xs-12 col-sm-1">
+                <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">자기평가</div>
+                <div class="text-center q-pa-xs" :class="$q.screen.xs ? '' : 'row flex-center'" style="height: 100%">
+                  {{ data.selfPoint }}
+                </div>
+              </q-card>
+            </div>
+            <q-card bordered class="bg-blue-grey-2 q-mt-xs">
+              <div class="row">
+                <div
+                  class="col-xs-12 col-sm-5 text-center self-center text-subtitle1 text-bold"
+                  :class="$q.screen.xs ? '' : 'row flex-center'"
+                  style="height: 100%"
+                >
+                  평가하기
+                </div>
+                <div class="col-xs-12 col-sm-5 text-center">
+                  <q-radio
+                    keep-color
+                    v-model="data.markCh"
+                    val="S"
+                    label="S"
+                    color="deep-orange"
+                    class="text-subtitle1 text-bold"
+                    @update:model-value="val => handlePointClick(val, data)"
+                  />
+                  <q-radio
+                    keep-color
+                    v-model="data.markCh"
+                    val="A"
+                    label="A"
+                    color="blue"
+                    class="text-subtitle1 text-bold"
+                    @update:model-value="val => handlePointClick(val, data)"
+                  />
+                  <q-radio
+                    keep-color
+                    v-model="data.markCh"
+                    val="B"
+                    label="B"
+                    color="cyan"
+                    class="text-subtitle1 text-bold"
+                    @update:model-value="val => handlePointClick(val, data)"
+                  />
+                  <q-radio
+                    keep-color
+                    v-model="data.markCh"
+                    val="C"
+                    label="C"
+                    color="teal"
+                    class="text-subtitle1 text-bold"
+                    @update:model-value="val => handlePointClick(val, data)"
+                  />
+                  <q-radio
+                    keep-color
+                    v-model="data.markCh"
+                    val="D"
+                    label="D"
+                    color="green"
+                    class="text-subtitle1 text-bold"
+                    @update:model-value="val => handlePointClick(val, data)"
+                  />
+                </div>
+                <div class="col-xs-12 col-sm-2 text-center self-center text-subtitle1 text-bold">평가점수 : {{ data.markPoint }}</div>
+              </div>
             </q-card>
-          </div>
-        </q-scroll-area>
+          </q-card>
+        </div>
+        <!--        </q-scroll-area>-->
       </q-card>
     </q-card>
   </q-page>
@@ -290,7 +299,7 @@ import 'ag-grid-community/styles/ag-theme-quartz.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import 'ag-grid-community/styles/ag-theme-balham.css';
 import { AgGridVue } from 'ag-grid-vue3';
-import { computed, onBeforeMount, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
+import { computed, onBeforeMount, onBeforeUnmount, onMounted, onUpdated, reactive, ref, watch } from 'vue';
 import { isEmpty, isEqual } from 'lodash';
 import { api } from 'boot/axios';
 import notifySave from 'src/js_comm/notify-save';
@@ -300,8 +309,6 @@ import { useUserInfoStore } from 'src/store/setUserInfo';
 import { useYearInfoStore } from 'src/store/setYearInfo';
 const storeUser = useUserInfoStore();
 const storeYear = useYearInfoStore();
-
-const setEvsCd = ref('2011101'); // 성과평가 공통코드
 
 const isDialogVisible = ref(false);
 const sendReturnDialog = (resStdYear, resEmpCd, resSeq) => {
@@ -609,16 +616,35 @@ const totalComputeWeight = () => {
 };
 
 onBeforeUnmount(() => {
+  console.log('onBeforeUnmount....');
   // Remove the resize event listener when the component is destroyed
   window.removeEventListener('resize', handleResize);
 });
 onBeforeMount(() => {
+  console.log('onBeforeMount....');
   getData();
 });
 
+const gridZone = ref(null);
+const state = reactive({
+  height: 0,
+});
 onMounted(() => {
+  console.log('onMounted....');
   window.addEventListener('resize', handleResize);
   handleResize();
+  if (gridZone.value) {
+    state.height = gridZone.value.clientHeight;
+    console.log('size 1 : ', state.height);
+  }
+});
+
+onUpdated(() => {
+  console.log('onUpdated....');
+  if (gridZone.value) {
+    state.height = gridZone.value.clientHeight;
+    console.log('size 2 : ', state.height);
+  }
 });
 
 const formData = ref({
@@ -641,13 +667,21 @@ const onSelectionChanged = event => {
   }
 };
 
+const sendCount = ref({
+  cancel: 0,
+});
 const onSelectionChangedSel = event => {
   selectedRowsSel.value = event.api.getSelectedRows();
+  sendCount.value.cancel = 0;
   selectedRowsSel.value.forEach(item => {
     item.targetDoc = item.targetDoc.replace(/\n/g, '<br>');
     item.workDoc = item.workDoc.replace(/\n/g, '<br>');
+    if (item.status === '4' && item.markPoint > 0) {
+      sendCount.value.cancel++;
+    }
   });
 };
+
 // ======================================================
 const screenSizeHeight = ref(0);
 const myTweak = offset => {
@@ -656,6 +690,7 @@ const myTweak = offset => {
 };
 const handleResize = () => {
   contentZoneHeight.value = window.innerHeight - screenSizeHeight.value - 730;
+  // contentZoneHeight.value = window.innerHeight - state.height - 680;
 };
 // ======================================================
 
@@ -685,11 +720,11 @@ const handlePointClick = (val, resData) => {
   saveDataAndHandleResult(jsonUtil.dataJsonParse('I', resData));
 };
 
-const deleteDataSection = resData => {
+const deleteDataSection = resCnt => {
   $q.dialog({
     dark: true,
     title: '평가취소',
-    message: '선택된 자료의 평가를 취소 하시겠습니까? ',
+    message: '선택된 ' + resCnt + '건 평가자료를 모두 취소 하시겠습니까? ',
     ok: {
       push: true,
       color: 'negative',
@@ -701,7 +736,18 @@ const deleteDataSection = resData => {
     // persistent: true,
   })
     .onOk(() => {
-      saveDataAndHandleResult(jsonUtil.dataJsonParse('D', resData));
+      isSaveFg = 'D';
+
+      let iu = [];
+      let iuD = [];
+      for (let i = 0; i < selectedRowsSel.value.length; i++) {
+        let tmpJson = '{"mode": "' + isSaveFg + '","data":' + JSON.stringify(selectedRowsSel.value[i]) + '}';
+        iuD.push(tmpJson);
+      }
+      saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
+      setTimeout(() => {
+        getDataSelectList(selectedRows.value[0].stdYear, selectedRows.value[0].evsEmpCd, selectedRows.value[0].evtEmpCd);
+      }, 500);
     })
     .onCancel(() => {})
     .onDismiss(() => {
@@ -817,20 +863,23 @@ const getDataSelectList = async (resStdYear, resEvsEmpCd, resEvtEmpCd) => {
 // ***** 자료저장 및 삭제 처리부분 *****************************//
 // saveStatus = 평가점수 저장
 const saveDataAndHandleResult = resFormData => {
-  console.log('form data : ', JSON.stringify(resFormData));
   api
     .post('/api/hpe/hpe2020_save', resFormData)
     .then(res => {
+      // for (let i = 0; i < selectedRowsSel.value.length; i++) {
+      //   if (selectedRowsSel.value[i].workNo === res.data.data[0].workNo) {
+      //     console.log('row1 :: ', res.data.data[0].markPoint);
+      //     selectedRowsSel.value[i].markPoint = res.data.data[0].markPoint;
+      //     console.log('row2 :: ', selectedRowsSel.value[i].markPoint);
+      //   }
+      // }
+      // gridKey.value += 1;
+      // const rowNode = gridApiSel.value.getRowNode(res.data.data[0].workNo);
+      // console.log('node :: ', JSON.stringify(rowNode));
+      // rowNode.setDataValue('markPoint', res.data.data[0].markPoint);
       let saveStatus = {};
-      if (res.data.rtn === '0') {
-        saveStatus.rtn = 1;
-        saveStatus.rtn1 = res.data.rtnMsg1;
-        saveStatus.rtn2 = '자료저장 완료';
-      } else {
-        saveStatus.rtn = res.data.rtn;
-        saveStatus.rtn1 = res.data.rtnMsg1;
-        saveStatus.rtn2 = res.data.rtnMsg2;
-      }
+      saveStatus.rtn = res.data.rtn;
+      saveStatus.rtnMsg = res.data.rtnMsg;
       notifySave.notifyView(saveStatus);
     })
     .catch(error => {

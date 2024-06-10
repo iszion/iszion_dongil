@@ -650,12 +650,8 @@ const saveDataAndHandleResult = resFormData => {
   api
     .post('/api/mst/mst1010_save', resFormData)
     .then(res => {
-      let saveStatus = {};
       if (res.data.rtn === '0') {
         if (isSaveFg === 'I') {
-          saveStatus.rtn = 1;
-          saveStatus.rtn1 = res.data.rtnMsg1;
-          saveStatus.rtn2 = '신규추가 완료';
           formData.value.oldUserId = formData.value.empCd;
 
           let newData = [formData.value];
@@ -664,10 +660,6 @@ const saveDataAndHandleResult = resFormData => {
             addIndex: 0,
           });
         } else if (isSaveFg === 'U') {
-          saveStatus.rtn = 0;
-          saveStatus.rtn1 = res.data.rtnMsg1;
-          saveStatus.rtn2 = '수정 완료';
-
           const selectedData = gridApi.value.getSelectedRows();
 
           // selectedData[0] = { ...formData.value };
@@ -689,17 +681,13 @@ const saveDataAndHandleResult = resFormData => {
             update: selectedData,
           });
         } else if (isSaveFg === 'D') {
-          saveStatus.rtn = 2;
-          saveStatus.rtn1 = res.data.rtnMsg1;
-          saveStatus.rtn2 = '삭제 완료';
           const selectedData = gridApi.value.getSelectedRows();
           gridApi.value.applyTransaction({ remove: selectedData });
         }
-      } else {
-        saveStatus.rtn = res.data.rtn;
-        saveStatus.rtn1 = res.data.rtnMsg1;
-        saveStatus.rtn2 = res.data.rtnMsg2;
       }
+      let saveStatus = {};
+      saveStatus.rtn = res.data.rtn;
+      saveStatus.rtnMsg = res.data.rtnMsg;
       notifySave.notifyView(saveStatus);
     })
     .catch(error => {
@@ -709,11 +697,11 @@ const saveDataAndHandleResult = resFormData => {
 // ***** 인사정보 목록 자료 가져오기 부분  *****************************//
 const getData = async () => {
   try {
-    const response = await api.post(
-      '/api/mst/mst1010_list',
-      { paramSetYear: setYearGroup.value.setYear, paramDeptCd: searchParam.deptCd, paramSearchWord: searchParam.word },
-      { headers: authHeader() },
-    );
+    const response = await api.post('/api/mst/mst1010_list', {
+      paramSetYear: storeYear.setYear,
+      paramDeptCd: searchParam.deptCd,
+      paramSearchWord: searchParam.word,
+    });
     rowData.rows = response.data.data;
   } catch (error) {
     console.error('Error fetching users:', error);

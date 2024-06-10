@@ -610,17 +610,10 @@ const saveDataAndHandleResultGroup = resFormData => {
   api
     .post('/api/mst/mst5090_group_save', resFormData)
     .then(res => {
-      let saveStatus = {};
-      if (res.data.rtn === '0') {
-        saveStatus.rtn = 1;
-        saveStatus.rtn1 = res.data.rtnMsg1;
-        saveStatus.rtn2 = '자료저장 완료';
-      } else {
-        saveStatus.rtn = res.data.rtn;
-        saveStatus.rtn1 = res.data.rtnMsg1;
-        saveStatus.rtn2 = res.data.rtnMsg2;
-      }
       showSaveBtnGroup.value = false;
+      let saveStatus = {};
+      saveStatus.rtn = res.data.rtn;
+      saveStatus.rtnMsg = res.data.rtnMsg;
       notifySave.notifyView(saveStatus);
     })
     .catch(error => {
@@ -632,17 +625,10 @@ const saveDataAndHandleResult = resFormData => {
   api
     .post('/api/mst/mst5090_save', resFormData)
     .then(res => {
-      let saveStatus = {};
-      if (res.data.rtn === '0') {
-        saveStatus.rtn = 1;
-        saveStatus.rtn1 = res.data.rtnMsg1;
-        saveStatus.rtn2 = '자료저장 완료';
-      } else {
-        saveStatus.rtn = res.data.rtn;
-        saveStatus.rtn1 = res.data.rtnMsg1;
-        saveStatus.rtn2 = res.data.rtnMsg2;
-      }
       showSaveBtn.value = false;
+      let saveStatus = {};
+      saveStatus.rtn = res.data.rtn;
+      saveStatus.rtnMsg = res.data.rtnMsg;
       notifySave.notifyView(saveStatus);
     })
     .catch(error => {

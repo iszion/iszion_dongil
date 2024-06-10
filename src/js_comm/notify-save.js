@@ -12,15 +12,15 @@ const notifyAlerts = [
   {
     color: 'positive',
     message: '자료를 저장하였습니다',
-    caption: '자료수정',
+    caption: '자료저장',
     icon: 'thumb_up',
     type: 'positive',
     textColor: 'dark',
   },
   {
-    color: 'primary',
-    message: '자료를 저장하였습니다',
-    caption: '신규자료 추가',
+    color: 'negative',
+    message: '비정상 처리되었습니다',
+    caption: '처리실패',
     icon: 'thumb_up',
     type: 'positive',
     textColor: 'white',
@@ -50,8 +50,8 @@ export default {
       position: 'top-right',
       color: notifyAlerts[res.rtn].color,
       textColor: notifyAlerts[res.rtn].textColor,
-      caption: res.rtn2,
-      message: res.rtn1,
+      caption: notifyAlerts[res.rtn].caption,
+      message: res.rtnMsg,
       group: false,
       actions: [
         {

@@ -75,6 +75,10 @@ import { QIcon, useQuasar } from 'quasar';
 import { api } from '/src/boot/axios';
 import { isEmpty, isEqual } from 'lodash';
 import jsonUtil from 'src/js_comm/json-util';
+import commUtil from 'src/js_comm/comm-util';
+import notifySave from 'src/js_comm/notify-save';
+import { useUserInfoStore } from 'src/store/setUserInfo';
+const storeUser = useUserInfoStore();
 
 const $q = useQuasar();
 const isDialogView = ref(false);
@@ -98,7 +102,7 @@ const formatRegDay = resDay => {
   return day + ' (' + week + ')';
 };
 const isEventInsert = tabName => {
-  formData.value.userId = 'admin';
+  formData.value.userId = storeUser.setEmpCd;
   formData.value.regDay = date.value;
   formData.value.oldRegDay = date.value;
   formData.value.contents = '';
@@ -185,8 +189,9 @@ const formData = ref({
 const eventData = ref(null);
 // ***** 이벤트  목록 자료 가져오기 부분  *****************************//
 const getEventData = async () => {
+  const today_month = commUtil.getTodayMonth();
   try {
-    const response = await api.post('/api/sys/event_list', { paramUserId: 'admin', paramMonth: '03' });
+    const response = await api.post('/api/sys/event_list', { paramUserId: storeUser.setEmpCd, paramMonth: today_month });
     eventData.value = response.data.data;
     eventDays.value = [];
     for (let i = 0; i < eventData.value.length; i++) {
@@ -201,32 +206,14 @@ const getEventData = async () => {
 // ***** 자료저장 및 삭제 처리부분 *****************************//
 // saveStatus = 0=수정성공 1=신규성공 2=삭제성공 3=수정에러 4=시스템에러
 const saveEventDataAndHandleResult = resFormData => {
-  console.log('saveData: ', JSON.stringify(resFormData));
   api
     .post('/api/sys/event_save', resFormData)
     .then(res => {
       let saveStatus = {};
-      if (res.data.rtn === '0') {
-        if (isSaveFg === 'I') {
-          saveStatus.rtn = 1;
-          saveStatus.rtn1 = res.data.rtnMsg1;
-          saveStatus.rtn2 = '신규추가 완료';
-        } else if (isSaveFg === 'U') {
-          saveStatus.rtn = 0;
-          saveStatus.rtn1 = res.data.rtnMsg1;
-          saveStatus.rtn2 = '수정 완료';
-        } else if (isSaveFg === 'D') {
-          saveStatus.rtn = 2;
-          saveStatus.rtn1 = res.data.rtnMsg1;
-          saveStatus.rtn2 = '삭제 완료';
-        }
-        getEventData();
-      } else {
-        saveStatus.rtn = res.data.rtn;
-        saveStatus.rtn1 = res.data.rtnMsg1;
-        saveStatus.rtn2 = res.data.rtnMsg2;
-      }
+      saveStatus.rtn = res.data.rtn;
+      saveStatus.rtnMsg = res.data.rtnMsg;
       notifySave.notifyView(saveStatus);
+      getEventData();
     })
     .catch(error => {
       console.log('error: ', error);

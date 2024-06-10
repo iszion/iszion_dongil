@@ -2,7 +2,7 @@
   <q-page class="q-pa-xs-xs q-pa-sm-md" :style-fn="myTweak">
     <q-card class="q-pa-sm">
       <div class="row">
-        <div class="col-xs-12 col-sm-8">
+        <div class="col-xs-12 col-md-12 col-lg-8">
           <div class="row q-col-gutter-x-sm">
             <div class="col-xs-12 col-sm-6">
               <q-banner rounded :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-3'">
@@ -34,8 +34,9 @@
             </div>
           </div>
         </div>
-        <div class="col-xs-12 col-sm-4 q-my-sm">
-          <q-card class="q-ml-sm-md q-pa-sm" :class="$q.screen.xs ? 'q-mt-xs' : 'row flex-center'" style="height: 100%">
+        <div class="col-xs-12 col-md-12 col-lg-4 q-my-sm">
+          <q-card class="q-ml-lg-md q-pa-sm" :class="$q.screen.xs ? 'q-mt-xs' : 'row flex-center'" style="height: 100%">
+            <q-space />
             <q-card-section class="row q-pa-none justify-center">
               <span class="text-bold text-subtitle2 q-pr-sm text-blue">작성자<q-icon name="chevron_right" size="xs" /> </span>
               <q-breadcrumbs separator="|" class="text-blue text-bold" active-color="secondary">
@@ -44,7 +45,7 @@
                 <q-breadcrumbs-el icon="person" :label="setEvGroup.evtGroup.empNm" style="width: 70px" />
               </q-breadcrumbs>
             </q-card-section>
-            <q-separator color="grey-4" spaced />
+            <q-space />
             <q-card-section class="row q-pa-none justify-center">
               <span class="text-bold text-subtitle2 q-pr-sm text-orange">승인자<q-icon name="chevron_right" size="xs" /></span>
               <q-breadcrumbs separator="|" class="text-orange text-bold" active-color="secondary">
@@ -285,11 +286,8 @@ watch(
   () => rowData.rows,
   newRows => {
     const calculatedHeight = newRows.length * rowHeight;
-    console.log('newRows : ', newRows.length);
-    console.log('calculatedHeight : ', calculatedHeight);
     gridHeight.value = minHeight.value + calculatedHeight;
     // gridHeight.value = Math.max(minHeight.value, calculatedHeight);
-    console.log('gridHeight : ', gridHeight.value);
   },
   { immediate: true },
 );
@@ -515,7 +513,6 @@ const selectedRows = ref([]);
 const formDisable = ref(true);
 const sendCount = ref(0);
 const sendCountCancel = ref(0);
-let oldWeight = 0;
 const onSelectionChanged = event => {
   selectedRows.value = event.api.getSelectedRows();
 
@@ -532,13 +529,7 @@ const onSelectionChanged = event => {
 
   formReadonly.value = true;
   if (selectedRows.value.length === 1) {
-    if (selectedRows.value[0].status === '3') {
-      formReadonly.value = false;
-    }
     getDataSelect(selectedRows.value[0].stdYear, selectedRows.value[0].empCd, selectedRows.value[0].workNo);
-    oldWeight = selectedRows.value[0].weight;
-    isSaveFg = 'U';
-    formDisable.value = false;
   } else if (selectedRows.value.length > 1) {
     isSaveFg = 'D';
     formDisable.value = true;
@@ -574,7 +565,6 @@ const saveDataSection = () => {
         // 확인/취소 모두 실행되었을때
       });
   } else {
-    console.log('save data::: ', JSON.stringify(formData.value));
     saveDataAndHandleResult(jsonUtil.dataJsonParse(isSaveFg, formData.value));
   }
 };
@@ -605,7 +595,6 @@ const sendAuthRequest = () => {
         if (selectedRows.value[i].status === '3') {
           selectedRows.value[i].status = '4'; // 평가대기 코드
           let tmpJson = '{"mode": "' + isSaveFg + '","data":' + JSON.stringify(selectedRows.value[i]) + '}';
-          console.log('update send : ', JSON.stringify(selectedRows.value[i]));
           iu.push(tmpJson);
         }
       }
@@ -643,7 +632,6 @@ const sendAuthRequestCancel = () => {
         if (selectedRows.value[i].status === '4') {
           selectedRows.value[i].status = '3';
           let tmpJson = '{"mode": "' + isSaveFg + '","data":' + JSON.stringify(selectedRows.value[i]) + '}';
-          console.log('update send : ', JSON.stringify(selectedRows.value[i]));
           iu.push(tmpJson);
         }
       }
@@ -689,7 +677,6 @@ const clearFieldSection = () => {
 
 // ***** 사원정보 가져오기 부분  *****************************//
 const getDataEvsn = async (resEmpCd, resEvsCd) => {
-  console.log('param: ', resEmpCd, resEvsCd);
   try {
     const response = await api.post('/api/aux/aux_emp_evsn_list', {
       paramSetYear: storeYear.setYear,
@@ -725,7 +712,6 @@ const getData = async () => {
     }
     sendCount.value = 0;
     gridKey.value += 1;
-    console.log('getData : ', JSON.stringify(rowData.rows));
   } catch (error) {
     console.error('Error fetching users:', error);
   }
@@ -741,10 +727,31 @@ const getDataSelect = async () => {
     });
     formData.value = response.data.data[0];
     formData.value.targetDoc = formData.value.targetDoc.replace(/\n/g, '<br>');
-
-    console.log('getSelect1 : ', JSON.stringify(response.data.data[0]));
     oldFormData.value = JSON.parse(JSON.stringify(formData.value)); // 초기자료 저장
-    console.log('getSelect2 : ', JSON.stringify(formData.value));
+
+    if (formData.value.status === '3') {
+      formReadonly.value = false;
+      formDisable.value = false;
+    }
+    isSaveFg = 'U';
+
+    if (formData.value.status !== selectedRows.value[0].status) {
+      $q.dialog({
+        dark: true,
+        title: '안내',
+        html: true,
+        message: '<em>자료가 변경되었습니다.</em> <br /><span class="text-red">다시 불러오기</span> <strong> 실행 후 작업을 진행하십시요.</strong>',
+      })
+        .onOk(() => {
+          // console.log('OK')
+        })
+        .onCancel(() => {
+          // console.log('Cancel')
+        })
+        .onDismiss(() => {
+          // console.log('I am triggered on both OK and Cancel')
+        });
+    }
   } catch (error) {
     console.error('Error fetching users:', error);
   }
@@ -753,22 +760,15 @@ const getDataSelect = async () => {
 // ***** 자료저장 및 삭제 처리부분 *****************************//
 // saveStatus = 0=수정성공 1=신규성공 2=삭제성공 3=수정에러 4=시스템에러
 const saveDataAndHandleResult = resFormData => {
-  console.log('form data : ', JSON.stringify(resFormData));
   api
     .post('/api/hpe/hpe1020_save', resFormData)
     .then(res => {
-      let saveStatus = {};
-      if (res.data.rtn === '0') {
-        saveStatus.rtn = 1;
-        saveStatus.rtn1 = res.data.rtnMsg1;
-        saveStatus.rtn2 = '자료저장 완료';
-      } else {
-        saveStatus.rtn = res.data.rtn;
-        saveStatus.rtn1 = res.data.rtnMsg1;
-        saveStatus.rtn2 = res.data.rtnMsg2;
-      }
-      notifySave.notifyView(saveStatus);
       getData();
+
+      let saveStatus = {};
+      saveStatus.rtn = res.data.rtn;
+      saveStatus.rtnMsg = res.data.rtnMsg;
+      notifySave.notifyView(saveStatus);
     })
     .catch(error => {
       console.log('error: ', error);

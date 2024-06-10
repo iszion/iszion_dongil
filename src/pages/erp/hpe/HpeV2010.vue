@@ -2,7 +2,7 @@
   <q-page class="q-pa-xs-xs q-pa-sm-md" :style-fn="myTweak">
     <q-card class="q-pa-sm">
       <div class="row">
-        <div class="col-xs-12 col-sm-8">
+        <div class="col-xs-12 col-sm-12 col-lg-8">
           <div class="row q-col-gutter-x-sm">
             <div class="col-xs-12 col-sm-6">
               <q-banner rounded :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-3'" style="height: 100%">
@@ -60,7 +60,7 @@
             </div>
           </div>
         </div>
-        <div class="col-xs-12 col-sm-4 q-my-sm">
+        <div class="col-xs-12 col-sm-12 col-lg-4 q-my-sm">
           <q-card class="q-ml-sm-md q-pa-sm" :class="$q.screen.xs ? 'q-mt-xs' : 'row flex-center'" style="height: 100%">
             <div class="row">
               <q-space />
@@ -84,7 +84,7 @@
       </q-card-section>
 
       <div class="row q-col-gutter-x-lg">
-        <div class="col-xs-12 col-md-6">
+        <div class="col-xs-12 col-md-12 col-lg-6">
           <q-card class="q-pa-sm">
             <q-toolbar class="row q-pa-none">
               <q-avatar color="red" text-color="white" size="md">1번</q-avatar>
@@ -94,7 +94,7 @@
                 다시 불러오기
               </q-btn>
             </q-toolbar>
-            <div :style="{ height: gridHeight + 'px' }">
+            <div :style="{ height: gridHeight + 30 + 'px' }">
               <ag-grid-vue
                 style="width: 100%; height: 100%"
                 :class="$q.dark.isActive ? 'ag-theme-alpine-dark' : 'ag-theme-alpine'"
@@ -110,7 +110,7 @@
             </div>
           </q-card>
         </div>
-        <div class="col-xs-12 col-md-6">
+        <div class="col-xs-12 col-md-12 col-lg-6">
           <q-card class="q-pa-sm">
             <q-toolbar class="row q-pa-none">
               <q-avatar color="red" text-color="white" size="md">2번</q-avatar>
@@ -165,64 +165,65 @@
       </div>
       <q-separator spaced />
       <q-card class="q-pa-xs">
-        <q-scroll-area :style="contentZoneStyle">
-          <div class="row">
-            <q-card flat bordered style="width: 100%" v-for="data in selectedRowsSel" :key="data.workNo" class="q-mb-sm">
-              <div class="row">
-                <q-card class="col-xs-12 col-sm-1">
-                  <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">순번</div>
-                  <div class="text-center q-pa-xs" :class="$q.screen.xs ? '' : 'row flex-center'" style="height: 100%">
-                    {{ data.seq }}
-                  </div>
-                </q-card>
-                <q-card class="col-xs-12 col-sm-5">
-                  <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">목표설정</div>
-                  <div class="q-pa-xs" v-html="data.targetDoc"></div>
-                </q-card>
-                <q-card class="col-xs-12 col-sm-3">
-                  <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">기준설정</div>
-                  <div class="q-pa-xs">
-                    <span class="q-px-sm"> 1. {{ data.evaS }}<br /> </span>
-                    <span class="q-px-sm"> 2. {{ data.evaA }}<br /> </span>
-                    <span class="q-px-sm"> 3. {{ data.evaB }}<br /> </span>
-                    <span class="q-px-sm"> 4. {{ data.evaC }}<br /> </span>
-                    <span class="q-px-sm"> 5. {{ data.evaD }} </span>
-                  </div>
-                </q-card>
-                <q-card class="col-xs-12 col-sm-1">
-                  <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">가중치</div>
-                  <div class="text-center q-pa-xs" :class="$q.screen.xs ? '' : 'row flex-center'" style="height: 100%">
-                    {{ data.weight }}
-                  </div>
-                </q-card>
-                <div class="col-xs-12 col-sm-2 q-pa-xs flex-center row">
-                  <q-card-section vertical>
-                    <div class="row q-gutter-y-sm" :class="$q.screen.xs ? '' : 'row flex-center'" style="height: 100%">
-                      <q-btn
-                        :color="data.status === '1' ? 'blue' : 'teal'"
-                        outline
-                        @click="saveDataSendSection(data.stdYear, data.evtEmpCd, data.workNo, data.status)"
-                      >
-                        <q-icon name="check" size="xs" class="q-mr-xs" />
-                        <span v-if="data.status === '1'">목표승인</span><span v-if="data.status === '3'">승인취소</span>
-                      </q-btn>
-                      <q-btn
-                        v-if="data.status !== '3'"
-                        outline
-                        color="red"
-                        class="q-ml-xs-xs q-ml-sm-none"
-                        @click="sendReturnDialog(data.stdYear, data.evtEmpCd, data.workNo)"
-                      >
-                        <q-icon name="reply" size="xs" class="q-mr-xs" />
-                        목표반려
-                      </q-btn>
-                    </div>
-                  </q-card-section>
+        <!--        <q-scroll-area :style="contentZoneStyle">-->
+        <div class="row">
+          <q-card flat bordered style="width: 100%" v-for="data in selectedRowsSel" :key="data.workNo" class="q-mb-sm">
+            <div class="row">
+              <q-card class="col-xs-12 col-sm-1">
+                <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">순번</div>
+                <div class="text-center q-pa-xs" :class="$q.screen.xs ? '' : 'row flex-center'" style="height: 100%">
+                  {{ data.seq }}
                 </div>
+              </q-card>
+              <q-card class="col-xs-12 col-sm-5">
+                <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">목표설정</div>
+                <div class="q-pa-xs" v-html="data.targetDoc"></div>
+              </q-card>
+              <q-card class="col-xs-12 col-sm-3">
+                <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">기준설정</div>
+                <div class="q-pa-xs">
+                  <span class="q-px-sm"> 1. {{ data.evaS }}<br /> </span>
+                  <span class="q-px-sm"> 2. {{ data.evaA }}<br /> </span>
+                  <span class="q-px-sm"> 3. {{ data.evaB }}<br /> </span>
+                  <span class="q-px-sm"> 4. {{ data.evaC }}<br /> </span>
+                  <span class="q-px-sm"> 5. {{ data.evaD }} </span>
+                </div>
+              </q-card>
+              <q-card class="col-xs-12 col-sm-1">
+                <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">가중치</div>
+                <div class="text-center q-pa-xs" :class="$q.screen.xs ? '' : 'row flex-center'" style="height: 100%">
+                  {{ data.weight }}
+                </div>
+              </q-card>
+              <div class="col-xs-12 col-sm-2 q-pa-xs flex-center row">
+                <q-card-section vertical>
+                  <div class="row q-gutter-y-sm" :class="$q.screen.xs ? '' : 'row flex-center'" style="height: 100%">
+                    <q-btn
+                      :color="data.status === '1' ? 'blue' : 'teal'"
+                      outline
+                      @click="saveDataSendSection(data.stdYear, data.evtEmpCd, data.workNo, data.status)"
+                    >
+                      <q-icon name="check" size="xs" class="q-mr-xs" />
+                      <span v-if="data.status === '1'">목표승인</span><span v-if="data.status === '3'">승인취소</span>
+                    </q-btn>
+                    <!--                      {{ data.stdYear }} - {{ data.evtEmpCd }} - {{ data.workNo }}-->
+                    <q-btn
+                      v-if="data.status !== '3'"
+                      outline
+                      color="red"
+                      class="q-ml-xs-xs q-ml-sm-none"
+                      @click="sendReturnDialog(data.stdYear, data.evtEmpCd, data.workNo)"
+                    >
+                      <q-icon name="reply" size="xs" class="q-mr-xs" />
+                      목표반려
+                    </q-btn>
+                  </div>
+                </q-card-section>
               </div>
-            </q-card>
-          </div>
-        </q-scroll-area>
+            </div>
+          </q-card>
+        </div>
+        <!--        </q-scroll-area>-->
       </q-card>
     </q-card>
 
@@ -351,17 +352,20 @@ const sendReturnDialog = (resStdYear, resEmpCd, resWorkNo) => {
     })
       .onOk(() => {
         formData.value.returnDoc = null;
-        formData.value.evtEmpCd = resEmpCd;
-        formData.value.workNo = resWorkNo;
-        formData.value.stdYear = resStdYear;
       })
       .onCancel(() => {})
       .onDismiss(() => {
         // 확인/취소 모두 실행되었을때
         isDialogVisible.value = true;
+        formData.value.stdYear = resStdYear;
+        formData.value.workNo = resWorkNo;
+        formData.value.evtEmpCd = resEmpCd;
       });
   } else {
     isDialogVisible.value = true;
+    formData.value.stdYear = resStdYear;
+    formData.value.workNo = resWorkNo;
+    formData.value.evtEmpCd = resEmpCd;
   }
 };
 
@@ -375,7 +379,7 @@ const rowData = reactive({ rows: [], rowsSel: [] });
 // grid Height 자동처리부분
 const gridHeight = ref(300); // 초기 높이
 const gridHeightSelect = ref(135); // 초기 높이
-const rowHeight = 46; // 행당 높이 (예: 25px)
+const rowHeight = 45; // 행당 높이 (예: 25px)
 const minHeight = ref(90); // 최소 높이 (예: 300px) rowHeight의 3배
 const minHeightSel = ref(135); // 최소 높이 (예: 300px) rowHeight의 3배
 
@@ -670,6 +674,7 @@ const myTweak = offset => {
 };
 const handleResize = () => {
   contentZoneHeight.value = window.innerHeight - screenSizeHeight.value - 730;
+  // alert(contentZoneHeight.value + ' =  ' + window.innerHeight + '  -  ' + screenSizeHeight.value + ' - 730');
 };
 // ======================================================
 
@@ -690,7 +695,6 @@ const saveDataSendSection = (resStdYear, resEmpCd, resWorkNo, resStatus) => {
       formData.value.evtEmpCd = resEmpCd;
       formData.value.workNo = resWorkNo;
       saveDataAndHandleResult(jsonUtil.dataJsonParse('S', formData.value));
-      console.log('form : ', JSON.stringify(formData.value));
     })
     .onCancel(() => {})
     .onDismiss(() => {
@@ -708,7 +712,7 @@ const saveDataReturnSection = () => {
   })
     .onOk(() => {
       formData.value.status = '2';
-      saveDataAndHandleResult(jsonUtil.dataJsonParse('S', formData.value));
+      saveDataAndHandleResult(jsonUtil.dataJsonParse('R', formData.value));
     })
     .onCancel(() => {})
     .onDismiss(() => {
@@ -778,7 +782,7 @@ const saveDataReturnAllSection = () => {
   })
     .onOk(() => {
       // 승인요청 시
-      isSaveFg = 'S';
+      isSaveFg = 'R';
 
       let iu = [];
       let iuD = [];
@@ -879,15 +883,8 @@ const saveDataAndHandleResult = resFormData => {
     .post('/api/hpe/hpe2010_save', resFormData)
     .then(res => {
       let saveStatus = {};
-      if (res.data.rtn === '0') {
-        saveStatus.rtn = 1;
-        saveStatus.rtn1 = res.data.rtnMsg1;
-        saveStatus.rtn2 = '자료저장 완료';
-      } else {
-        saveStatus.rtn = res.data.rtn;
-        saveStatus.rtn1 = res.data.rtnMsg1;
-        saveStatus.rtn2 = res.data.rtnMsg2;
-      }
+      saveStatus.rtn = res.data.rtn;
+      saveStatus.rtnMsg = res.data.rtnMsg;
       notifySave.notifyView(saveStatus);
       getData();
     })

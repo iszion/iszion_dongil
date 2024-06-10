@@ -15,6 +15,8 @@ export default {
       data[0] = '{"mode":"U","data":' + jsonFormData + '}';
     } else if (resIud === 'S') {
       data[0] = '{"mode":"S","data":' + jsonFormData + '}';
+    } else if (resIud === 'R') {
+      data[0] = '{"mode":"R","data":' + jsonFormData + '}';
     } else if (resIud === 'N') {
       data[0] = '{"mode":"N","data":' + jsonFormData + '}';
     } else if (resIud === 'D') {
@@ -32,6 +34,7 @@ export default {
     let tmpDataU = [];
     let tmpDataN = [];
     let tmpDataS = [];
+    let tmpDataR = [];
     let tmpDataD = [];
 
     if (resObj.length > 0) {
@@ -40,22 +43,27 @@ export default {
         if (objTmp.mode === 'I') {
           // Check if key value is null and replace with empty string
           Object.keys(objTmp.data).forEach(key => {
-            objTmp.data[key] = objTmp.data[key] === null ? "" : objTmp.data[key];
+            objTmp.data[key] = objTmp.data[key] === null ? '' : objTmp.data[key];
           });
           tmpDataI.push(objTmp.data);
         } else if (objTmp.mode === 'U') {
           Object.keys(objTmp.data).forEach(key => {
-            objTmp.data[key] = objTmp.data[key] === null ? "" : objTmp.data[key];
+            objTmp.data[key] = objTmp.data[key] === null ? '' : objTmp.data[key];
           });
           tmpDataU.push(objTmp.data);
         } else if (objTmp.mode === 'N') {
           Object.keys(objTmp.data).forEach(key => {
-            objTmp.data[key] = objTmp.data[key] === null ? "" : objTmp.data[key];
+            objTmp.data[key] = objTmp.data[key] === null ? '' : objTmp.data[key];
           });
           tmpDataN.push(objTmp.data);
+        } else if (objTmp.mode === 'R') {
+          Object.keys(objTmp.data).forEach(key => {
+            objTmp.data[key] = objTmp.data[key] === null ? '' : objTmp.data[key];
+          });
+          tmpDataR.push(objTmp.data);
         } else if (objTmp.mode === 'S') {
           Object.keys(objTmp.data).forEach(key => {
-            objTmp.data[key] = objTmp.data[key] === null ? "" : objTmp.data[key];
+            objTmp.data[key] = objTmp.data[key] === null ? '' : objTmp.data[key];
           });
           tmpDataS.push(objTmp.data);
         } else {
@@ -65,11 +73,13 @@ export default {
       jsonData.U = tmpDataU;
       jsonData.N = tmpDataN;
       jsonData.S = tmpDataS;
+      jsonData.R = tmpDataR;
     } else {
       jsonData.I = [];
       jsonData.U = [];
       jsonData.N = [];
       jsonData.S = [];
+      jsonData.R = [];
     }
 
     // 삭제 자료 정리 부분
@@ -78,7 +88,7 @@ export default {
       for (let i = 0; i < resObjDel.length; i++) {
         let objTmp = JSON.parse(resObjDel[i]);
         Object.keys(objTmp.data).forEach(key => {
-          objTmp.data[key] = objTmp.data[key] === null ? "" : objTmp.data[key];
+          objTmp.data[key] = objTmp.data[key] === null ? '' : objTmp.data[key];
         });
         tmpDataD.push(objTmp.data);
       }

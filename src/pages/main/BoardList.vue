@@ -220,25 +220,8 @@ const saveDataAndHandleResult = resFormData => {
     .post('/api/sys/noticeBoard_save', resFormData)
     .then(res => {
       let saveStatus = {};
-      if (res.data.rtn === '0') {
-        if (isSaveFg === 'I') {
-          saveStatus.rtn = 1;
-          saveStatus.rtn1 = res.data.rtnMsg1;
-          saveStatus.rtn2 = '신규추가 완료';
-        } else if (isSaveFg === 'U') {
-          saveStatus.rtn = 0;
-          saveStatus.rtn1 = res.data.rtnMsg1;
-          saveStatus.rtn2 = '수정 완료';
-        } else if (isSaveFg === 'D') {
-          saveStatus.rtn = 2;
-          saveStatus.rtn1 = res.data.rtnMsg1;
-          saveStatus.rtn2 = '삭제 완료';
-        }
-      } else {
-        saveStatus.rtn = res.data.rtn;
-        saveStatus.rtn1 = res.data.rtnMsg1;
-        saveStatus.rtn2 = res.data.rtnMsg2;
-      }
+      saveStatus.rtn = res.data.rtn;
+      saveStatus.rtnMsg = res.data.rtnMsg;
       notifySave.notifyView(saveStatus);
     })
     .catch(error => {

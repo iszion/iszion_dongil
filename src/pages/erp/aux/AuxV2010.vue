@@ -199,7 +199,8 @@ import { api } from '/src/boot/axios';
 import { isEmpty, isEqual } from 'lodash';
 import jsonUtil from 'src/js_comm/json-util';
 import notifySave from 'src/js_comm/notify-save';
-import CompToggleAuth from 'components/CompToggleAuth.vue';
+import { useYearInfoStore } from 'src/store/setYearInfo';
+const storeYear = useYearInfoStore();
 
 const $q = useQuasar();
 
@@ -230,8 +231,6 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', handleResize);
 });
 onBeforeMount(() => {
-  getStorgeSetYearGroup();
-
   rowSelectionEmp.value = 'single';
   rowSelection.value = 'multiple';
   getDataEmp();
@@ -244,21 +243,6 @@ onMounted(() => {
   getDataTitlOption();
   getDataCommOption('201');
 });
-
-// 기준평가기간 적용부분
-const setYearGroup = ref({
-  setYear: '',
-  setFg: '',
-  setLocCh: '',
-});
-const getStorgeSetYearGroup = () => {
-  const _value = $q.localStorage.getItem('setYearGroup').split('|');
-  setYearGroup.value.setYear = _value[0];
-  setYearGroup.value.setFg = _value[1];
-  setYearGroup.value.setLocCh = _value[2];
-  // console.log('Sub SetYear Group :: ', setYearGroup.value.setYear, setYearGroup.value.setFg, setYearGroup.value.setLocCh);
-};
-// 기준평가기간 적용부분 끝
 
 const onGridReadyEmp = params => {
   gridApiUser.value = params.api;
@@ -499,7 +483,7 @@ const handleResize = () => {
 const getDataEmp = async () => {
   try {
     const response = await api.post('/api/aux/aux2010_list', {
-      paramSetYear: setYearGroup.value.setYear,
+      paramSetYear: storeYear.setYear,
       paramDeptCd: selectedDept.value,
       paramSearchValue: searchValue.value,
     });
@@ -513,7 +497,7 @@ const getDataEmp = async () => {
 const getDataSelectEmp = async () => {
   try {
     const response = await api.post('/api/aux/aux2010_select', {
-      paramSetYear: setYearGroup.value.setYear,
+      paramSetYear: storeYear.setYear,
       paramDeptCd: selectedDept1.value,
       paramTitlCd: selectedTitl.value,
       paramEvsEmpCd: selectedRows.value[0].empCd,
@@ -532,17 +516,10 @@ const saveDataAndHandleResult = resFormData => {
   api
     .post('/api/aux/aux2010_save', resFormData)
     .then(res => {
-      let saveStatus = {};
-      if (res.data.rtn === '0') {
-        saveStatus.rtn = 1;
-        saveStatus.rtn1 = res.data.rtnMsg1;
-        saveStatus.rtn2 = '자료저장 완료';
-      } else {
-        saveStatus.rtn = res.data.rtn;
-        saveStatus.rtn1 = res.data.rtnMsg1;
-        saveStatus.rtn2 = res.data.rtnMsg2;
-      }
       showSaveBtn.value = false;
+      let saveStatus = {};
+      saveStatus.rtn = res.data.rtn;
+      saveStatus.rtnMsg = res.data.rtnMsg;
       notifySave.notifyView(saveStatus);
     })
     .catch(error => {
@@ -556,7 +533,7 @@ const selectedDept = ref('');
 const selectedDept1 = ref('');
 async function getDataDeptOption(resParamCommCd1) {
   try {
-    const response = await api.post('/api/mst/dept_option_list', { paramSetYear: setYearGroup.value.setYear });
+    const response = await api.post('/api/mst/dept_option_list', { paramSetYear: storeYear.setYear });
 
     deptOptions.value = response.data.data;
     deptOptions.value.push({ deptCd: '', deptNm: '전체' });
@@ -570,7 +547,7 @@ const titlOptions = ref([]);
 const selectedTitl = ref('');
 async function getDataTitlOption(resParamCommCd1) {
   try {
-    const response = await api.post('/api/mst/titl_option_list', { paramSetYear: setYearGroup.value.setYear });
+    const response = await api.post('/api/mst/titl_option_list', { paramSetYear: storeYear.setYear });
 
     titlOptions.value = response.data.data;
     titlOptions.value.push({ titlCd: '', titlNm: '전체' });

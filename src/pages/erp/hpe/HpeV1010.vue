@@ -2,19 +2,21 @@
   <q-page class="q-pa-xs-xs q-pa-sm-md" :style-fn="myTweak">
     <q-card class="q-pa-sm">
       <div class="row">
-        <div class="col-xs-12 col-sm-6">
+        <div class="col-xs-12 col-lg-8">
           <q-banner rounded :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-3'">
             <template v-slot:avatar>
               <q-icon name="menu_book" color="primary" size="md" />
             </template>
             <span class="text-subtitle1 text-bold"> 목표설정등록 작업입니다.</span><br />
-            1. 각 항목별로 세부 업무목표 및 평가기준을 설정하고 등록합니다.<br />
+            1. 각 항목별로 세부 업무목표 및 평가기준을 설정하고 등록합니다. <span class="text-deep-orange"> '승인완료'된자료는 수정불가입니다.</span
+            ><br />
             2. 목표자료는 여러건을 입력 수 있으나 가중치는 합이 100을 넘어설수는 없습니다.<br />
           </q-banner>
         </div>
         <q-space />
-        <div class="col-xs-12 col-sm-4 q-my-sm">
-          <q-card class="q-ml-sm-md q-pa-sm" :class="$q.screen.xs ? 'q-mt-xs' : 'row flex-center'" style="height: 100%">
+        <div class="col-xs-12 col-md-12 col-lg-4 q-my-sm">
+          <q-card class="q-ml-lg-md q-pa-sm" :class="$q.screen.xs ? 'q-mt-xs' : 'row flex-center'" style="height: 100%">
+            <q-space />
             <q-card-section class="row q-pa-none justify-center">
               <span class="text-bold text-subtitle2 q-pr-sm text-blue">작성자<q-icon name="chevron_right" size="xs" /> </span>
               <q-breadcrumbs separator="|" class="text-blue text-bold" active-color="secondary">
@@ -23,7 +25,7 @@
                 <q-breadcrumbs-el icon="person" :label="setEvGroup.evtGroup.empNm" style="width: 70px" />
               </q-breadcrumbs>
             </q-card-section>
-            <q-separator color="grey-4" spaced />
+            <q-space />
             <q-card-section class="row q-pa-none justify-center">
               <span class="text-bold text-subtitle2 q-pr-sm text-orange">승인자<q-icon name="chevron_right" size="xs" /></span>
               <q-breadcrumbs separator="|" class="text-orange text-bold" active-color="secondary">
@@ -237,7 +239,6 @@ import { QBtn, QIcon, useQuasar } from 'quasar';
 import jsonUtil from 'src/js_comm/json-util';
 import { useUserInfoStore } from 'src/store/setUserInfo';
 import { useYearInfoStore } from 'src/store/setYearInfo';
-import { viewDepthKey } from 'vue-router';
 const storeUser = useUserInfoStore();
 const storeYear = useYearInfoStore();
 
@@ -435,11 +436,11 @@ const formDataInitialize = () => {
   formData.value.workNo = 1;
   formData.value.seq = 1;
   formData.value.targetDoc = '';
-  formData.value.evaS = '';
-  formData.value.evaA = '';
-  formData.value.evaB = '';
-  formData.value.evaC = '';
-  formData.value.evaD = '';
+  formData.value.evaS = 'S:100점';
+  formData.value.evaA = 'A:90점';
+  formData.value.evaB = 'B:80점';
+  formData.value.evaC = 'C:70점';
+  formData.value.evaD = 'D:60점';
   formData.value.weight = 0;
   formData.value.workDoc = '';
   formData.value.workPer = 0;
@@ -496,10 +497,9 @@ const viewStatusCount = ref({
   sendCancel: 0,
   sendDelete: 0,
 });
-let oldWeight = 0;
+
 const onSelectionChanged = event => {
   selectedRows.value = event.api.getSelectedRows();
-  console.log('row:: ', selectedRows.value.length);
   viewStatusCount.value.sendCancel = 0;
   viewStatusCount.value.sendCount = 0;
   viewStatusCount.value.sendDelete = 0;
@@ -517,13 +517,7 @@ const onSelectionChanged = event => {
 
   formReadonly.value = true;
   if (selectedRows.value.length === 1) {
-    if (selectedRows.value[0].status === '0' || selectedRows.value[0].status === '2') {
-      formReadonly.value = false;
-    }
     getDataSelect(selectedRows.value[0].stdYear, selectedRows.value[0].empCd, selectedRows.value[0].workNo);
-    oldWeight = selectedRows.value[0].weight;
-    isSaveFg.value = 'U';
-    formDisable.value = false;
   } else {
     formData.value = {};
     isSaveFg.value = '';
@@ -733,6 +727,7 @@ const getData = async () => {
 };
 
 // ***** 선택한 성과/목표정보 목록 자료 가져오기 부분  *****************************//
+let oldWeight = 0;
 const getDataSelect = async () => {
   try {
     const response = await api.post('/api/hpe/hpe1010_select', {
@@ -742,6 +737,31 @@ const getDataSelect = async () => {
     });
     formData.value = response.data.data[0];
     oldFormData.value = JSON.parse(JSON.stringify(formData.value)); // 초기자료 저장
+
+    if (formData.value.status === '0' || formData.value.status === '2') {
+      formReadonly.value = false;
+    }
+    oldWeight = formData.value.weight;
+    isSaveFg.value = 'U';
+    formDisable.value = false;
+
+    if (formData.value.status !== selectedRows.value[0].status) {
+      $q.dialog({
+        dark: true,
+        title: '안내',
+        html: true,
+        message: '<em>자료가 변경되었습니다.</em> <br /><span class="text-red">다시 불러오기</span> <strong> 실행 후 작업을 진행하십시요.</strong>',
+      })
+        .onOk(() => {
+          // console.log('OK')
+        })
+        .onCancel(() => {
+          // console.log('Cancel')
+        })
+        .onDismiss(() => {
+          // console.log('I am triggered on both OK and Cancel')
+        });
+    }
   } catch (error) {
     console.error('Error fetching users:', error);
   }
@@ -755,15 +775,8 @@ const saveDataAndHandleResult = resFormData => {
     .post('/api/hpe/hpe1010_save', resFormData)
     .then(res => {
       let saveStatus = {};
-      if (res.data.rtn === '0') {
-        saveStatus.rtn = 1;
-        saveStatus.rtn1 = res.data.rtnMsg1;
-        saveStatus.rtn2 = '자료저장 완료';
-      } else {
-        saveStatus.rtn = res.data.rtn;
-        saveStatus.rtn1 = res.data.rtnMsg1;
-        saveStatus.rtn2 = res.data.rtnMsg2;
-      }
+      saveStatus.rtn = res.data.rtn;
+      saveStatus.rtnMsg = res.data.rtnMsg;
       notifySave.notifyView(saveStatus);
       getData();
     })

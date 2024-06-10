@@ -2,6 +2,7 @@
   <q-layout view="hHh lpR fFf">
     <q-header class="shadow-1 bg-grey-8">
       <q-toolbar>
+        {{ $q.screen.name }}
         <q-avatar square size="sm" @click="rootView" class="cursor-pointer">
           <img src="../assets/images/dongil_logo.png" />
         </q-avatar>

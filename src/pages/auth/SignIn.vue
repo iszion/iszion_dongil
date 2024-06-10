@@ -79,7 +79,7 @@ const onSubmit = () => {
   if (form.value.id !== true) {
     idToStorageSave();
     api
-      .post('/api/auth/login', form.value, {})
+      .post('/api/auth/login', form.value)
       .then(res => {
         if (res.data.data.accessToken && res.data.state === 200) {
           sessionStorage.setItem('accessToken', JSON.stringify(res.data.data.accessToken));
@@ -105,7 +105,8 @@ const onSubmit = () => {
         return res.data.data;
       })
       .catch(res => {
-        console.log('error');
+        console.log(res);
+        console.log('error1');
       });
   }
 };

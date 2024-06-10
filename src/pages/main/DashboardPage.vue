@@ -2,7 +2,10 @@
   <q-page padding class="q-col-gutter-y-sm">
     <div class="row q-col-gutter-md">
       <div class="col-12 col-md-6 col-lg-4">
-        <hpe-main />
+        <hpe-page1 />
+      </div>
+      <div class="col-12 col-md-6 col-lg-4">
+        <hpe-page2 />
       </div>
       <div class="col-12 col-md-6 col-lg-4">
         <event-view />
@@ -23,7 +26,8 @@
 
 <script setup>
 import { reactive, ref } from 'vue';
-import HpeMain from 'pages/main/HpeMain.vue';
+import HpePage1 from 'pages/main/HpePage1.vue';
+import HpePage2 from 'pages/main/HpePage2.vue';
 import BoardList from 'pages/main/BoardList.vue';
 import EventView from 'pages/main/EventView.vue';
 

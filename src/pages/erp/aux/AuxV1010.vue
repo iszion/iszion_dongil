@@ -507,12 +507,8 @@ const saveDataAndHandleResult = resFormData => {
   api
     .post('/api/aux/aux1010_save', resFormData)
     .then(res => {
-      let saveStatus = {};
       if (res.data.rtn === '0') {
         if (isSaveFg === 'I') {
-          saveStatus.rtn = 1;
-          saveStatus.rtn1 = res.data.rtnMsg1;
-          saveStatus.rtn2 = '신규추가 완료';
           formData.value.oldStdYear = formData.value.stdYear;
           formData.value.oldStdFg = formData.value.stdFg;
           formData.value.sDay = reFormatDate(formData.value.sDay);
@@ -524,10 +520,6 @@ const saveDataAndHandleResult = resFormData => {
             addIndex: 0,
           });
         } else if (isSaveFg === 'U') {
-          saveStatus.rtn = 0;
-          saveStatus.rtn1 = res.data.rtnMsg1;
-          saveStatus.rtn2 = '수정 완료';
-
           const selectedData = gridApi.value.getSelectedRows();
 
           // selectedData[0] = { ...formData.value };
@@ -541,18 +533,15 @@ const saveDataAndHandleResult = resFormData => {
             update: selectedData,
           });
         } else if (isSaveFg === 'D') {
-          saveStatus.rtn = 2;
-          saveStatus.rtn1 = res.data.rtnMsg1;
-          saveStatus.rtn2 = '삭제 완료';
           const selectedData = gridApi.value.getSelectedRows();
           gridApi.value.applyTransaction({ remove: selectedData });
         }
-      } else {
-        saveStatus.rtn = res.data.rtn;
-        saveStatus.rtn1 = res.data.rtnMsg1;
-        saveStatus.rtn2 = res.data.rtnMsg2;
       }
       gridApi.value.deselectAll();
+      let saveStatus = {};
+      saveStatus.rtn = res.data.rtn;
+      saveStatus.rtnMsg = res.data.rtnMsg;
+
       notifySave.notifyView(saveStatus);
       getData();
     })
