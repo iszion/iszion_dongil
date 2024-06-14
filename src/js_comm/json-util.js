@@ -1,18 +1,17 @@
 export default {
   dataJsonParse(resIud, resFormData) {
-    // console.log('util : ', resIud, JSON.stringify(resFormData));
     // form json data 를 json data 파싱
     let jsonFormData = JSON.stringify(resFormData);
 
-    // 신규,수정 데이타 저장 변수
-    let data = [];
-    // 삭제 데이타 저장 변수
-    let dataDel = [];
+    let data = []; // 신규,수정 데이타 저장 변수
+    let dataDel = []; // 삭제 데이타 저장 변수
 
     if (resIud === 'I') {
       data[0] = '{"mode":"I","data":' + jsonFormData + '}';
     } else if (resIud === 'U') {
       data[0] = '{"mode":"U","data":' + jsonFormData + '}';
+    } else if (resIud === 'A') {
+      data[0] = '{"mode":"A","data":' + jsonFormData + '}';
     } else if (resIud === 'S') {
       data[0] = '{"mode":"S","data":' + jsonFormData + '}';
     } else if (resIud === 'R') {
@@ -33,6 +32,7 @@ export default {
     let tmpDataI = [];
     let tmpDataU = [];
     let tmpDataN = [];
+    let tmpDataA = [];
     let tmpDataS = [];
     let tmpDataR = [];
     let tmpDataD = [];
@@ -61,6 +61,11 @@ export default {
             objTmp.data[key] = objTmp.data[key] === null ? '' : objTmp.data[key];
           });
           tmpDataR.push(objTmp.data);
+        } else if (objTmp.mode === 'A') {
+          Object.keys(objTmp.data).forEach(key => {
+            objTmp.data[key] = objTmp.data[key] === null ? '' : objTmp.data[key];
+          });
+          tmpDataA.push(objTmp.data);
         } else if (objTmp.mode === 'S') {
           Object.keys(objTmp.data).forEach(key => {
             objTmp.data[key] = objTmp.data[key] === null ? '' : objTmp.data[key];
@@ -72,12 +77,14 @@ export default {
       jsonData.I = tmpDataI;
       jsonData.U = tmpDataU;
       jsonData.N = tmpDataN;
+      jsonData.A = tmpDataA;
       jsonData.S = tmpDataS;
       jsonData.R = tmpDataR;
     } else {
       jsonData.I = [];
       jsonData.U = [];
       jsonData.N = [];
+      jsonData.A = [];
       jsonData.S = [];
       jsonData.R = [];
     }

@@ -78,11 +78,11 @@
                 </q-btn>
               </div>
               <q-space />
-              <q-btn v-if="sendCountCancel > 0" outline color="indigo-7" dense @click="sendAuthRequestCancel" class="q-pr-md">
+              <q-btn v-if="statusCheck.cancelHide" outline color="indigo-7" dense @click="sendAuthRequestCancel" class="q-pr-md">
                 <q-badge color="orange" floating>{{ sendCountCancel }}</q-badge>
                 <q-icon name="replay" size="xs" class="q-pr-xs" /> 평가대기취소
               </q-btn>
-              <q-btn v-if="sendCount > 0" outline color="indigo-12" dense @click="sendAuthRequest" class="q-pr-md q-ml-md">
+              <q-btn v-if="statusCheck.sendHide" outline color="indigo-12" dense @click="sendAuthRequest" class="q-pr-md q-ml-md">
                 <q-badge color="orange" floating>{{ sendCount }}</q-badge>
                 <q-icon name="send" size="xs" class="q-pr-xs" /> 평가요청
               </q-btn>
@@ -121,8 +121,8 @@
                 <q-btn v-if="formData.status === '3'" outline color="blue-12" dense @click="saveDataSection">
                   <q-icon name="save" size="xs" /><span v-if="!$q.screen.xs" class="q-ml-xs">저장</span>
                 </q-btn>
-                <q-btn v-if="formData.status === '3' && formData.selfCh !== ''" outline color="grey" dense @click="clearFieldSection" class="q-pr-md">
-                  <q-icon name="backspace" size="xs" /> <span v-if="!$q.screen.xs" class="q-ml-xs">CLEAR</span>
+                <q-btn v-if="formData.status === '3' && formData.selfCh !== ''" outline color="grey" dense @click="clearFieldSection">
+                  <q-icon name="backspace" size="xs" /> <span v-if="!$q.screen.xs" class="q-ml-xs">초기화</span>
                 </q-btn>
               </div>
             </q-toolbar>
@@ -164,19 +164,9 @@
                   </q-field>
                 </div>
                 <div class="col">
-                  <!--                  <q-input-->
-                  <!--                    :readonly="formReadonly"-->
-                  <!--                    :disable="formDisable"-->
-                  <!--                    v-model="formData.workPer"-->
-                  <!--                    type="number"-->
-                  <!--                    color="pink-12"-->
-                  <!--                    label-color="pink-12"-->
-                  <!--                    label="목표실적율"-->
-                  <!--                    hint="0~100까지"-->
-                  <!--                  />-->
                   <q-field dense ref="fieldRef" :model-value="formData.workPer" :hint="'목표달성율' + formData.workPer + '%'" class="q-mt-md">
                     <template v-slot:control>
-                      <q-slider :disable="formReadonly" v-model="formData.workPer" :min="0" :max="100" label-always />
+                      <q-slider readonly v-model="formData.workPer" :min="0" :max="100" label-always />
                       <span></span>
                     </template>
                   </q-field>
@@ -314,6 +304,7 @@ const handlePointClick = val => {
       formData.value.selfPoint = 0;
       break;
   }
+  formData.value.workPer = formData.value.selfPoint;
 };
 
 const $q = useQuasar();
@@ -426,7 +417,8 @@ const totalComputeWeight = () => {
     },
   ];
 
-  gridApi.value.updateGridOptions({ pinnedBottomRowData });
+  // gridApi.value.updateGridOptions({ pinnedBottomRowData });
+  gridApi.value.setPinnedBottomRowData(pinnedBottomRowData);
 };
 // 기준평가자연결정보
 const setEvGroup = reactive({
@@ -529,6 +521,7 @@ const onSelectionChanged = event => {
 
   formReadonly.value = true;
   if (selectedRows.value.length === 1) {
+    isSaveFg = 'U';
     getDataSelect(selectedRows.value[0].stdYear, selectedRows.value[0].empCd, selectedRows.value[0].workNo);
   } else if (selectedRows.value.length > 1) {
     isSaveFg = 'D';
@@ -590,14 +583,13 @@ const sendAuthRequest = () => {
 
       let iu = [];
       let iuD = [];
-      for (let i = 0; i < selectedRows.value.length; i++) {
-        // 작성중 또는 반려자료 승인요청 체크
-        if (selectedRows.value[i].status === '3') {
-          selectedRows.value[i].status = '4'; // 평가대기 코드
-          let tmpJson = '{"mode": "' + isSaveFg + '","data":' + JSON.stringify(selectedRows.value[i]) + '}';
-          iu.push(tmpJson);
-        }
-      }
+      let formData = {};
+      formData.stdYear = storeYear.setYear;
+      formData.empCd = storeUser.setEmpCd;
+      formData.status = '4';
+      formData.acceptYn = 'N';
+      let tmpJson = '{"mode": "' + isSaveFg + '","data":' + JSON.stringify(formData) + '}';
+      iu.push(tmpJson);
       saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
     })
     .onCancel(() => {})
@@ -647,9 +639,7 @@ const clearFieldSection = () => {
   $q.dialog({
     dark: true,
     title: '자료 지우기',
-    message:
-      '선택된 자료의 입력항목을 모두 지우겠습니까? <br> 선택확인 하고 반드시 <span class="text-orange">저장</span> 버튼을 클릭해야 적용됩니다.',
-    html: true,
+    message: '선택된 자료의 입력항목을 모두 지우겠습니까?',
     ok: {
       push: true,
       color: 'negative',
@@ -665,6 +655,8 @@ const clearFieldSection = () => {
       formData.value.selfCh = '';
       formData.value.selfPoint = 0;
       formData.value.workPer = 0;
+      isSaveFg = 'U';
+      saveDataAndHandleResult(jsonUtil.dataJsonParse(isSaveFg, formData.value));
     })
     .onCancel(() => {})
     .onDismiss(() => {
@@ -702,16 +694,50 @@ const getDataEvsn = async (resEmpCd, resEvsCd) => {
 };
 
 // ***** 성과/목표정보 목록 자료 가져오기 부분  *****************************//
-let maxSeq = 0;
+const statusCheck = ref({
+  cancelHide: false, // 승인대기취소
+  sendHide: false, // 승인
+  sendCancelHide: false, // 승인취소
+  returnHide: false, // 반려상태
+  acceptUpdate: false, // 열람상태
+  sendCount: 0,
+});
 const getData = async () => {
   try {
-    const response = await api.post('/api/hpe/hpe1020_list', { paramSetYear: storeYear.setYear, paramEmpCd: storeUser.setEmpCd });
+    const response = await api.post('/api/hpe/hpe1020_list', {
+      paramSetYear: storeYear.setYear,
+      paramEmpCd: storeUser.setEmpCd,
+    });
     rowData.rows = response.data.data;
     if (rowData.rows.length > 0) {
       minHeight.value = 90;
     }
     sendCount.value = 0;
     gridKey.value += 1;
+
+    // 자료 열람확인 처리
+    statusCheck.value.cancelHide = false;
+    statusCheck.value.sendHide = false;
+    statusCheck.value.sendCancelHide = false;
+    statusCheck.value.returnHide = false;
+    statusCheck.value.acceptUpdate = false;
+    statusCheck.value.sendCount = 0;
+
+    for (let i = 0; i < rowData.rows.length; i++) {
+      if (rowData.rows[i].status === '3' && rowData.rows[i].acceptYn === 'Y' && rowData.rows[i].workDoc !== null && rowData.rows[i].selfPoint !== 0) {
+        statusCheck.value.sendCount++;
+      }
+      if (rowData.rows[i].status === '3' && rowData.rows[i].acceptYn !== 'Y') {
+        statusCheck.value.acceptUpdate = true;
+      }
+    }
+    if (rowData.rows.length === statusCheck.value.sendCount) {
+      // console.log(rowData.rows[i].status, ' = ', rowData.rows[i].acceptYn, ' = ', rowData.rows[i].workDoc, ' = ', rowData.rows[i].selfPoint);
+      statusCheck.value.sendHide = true;
+    }
+    if (statusCheck.value.acceptUpdate) {
+      acceptCheckSaveSection(storeYear.setYear, storeUser.setEmpCd);
+    }
   } catch (error) {
     console.error('Error fetching users:', error);
   }
@@ -733,7 +759,6 @@ const getDataSelect = async () => {
       formReadonly.value = false;
       formDisable.value = false;
     }
-    isSaveFg = 'U';
 
     if (formData.value.status !== selectedRows.value[0].status) {
       $q.dialog({
@@ -752,6 +777,8 @@ const getDataSelect = async () => {
           // console.log('I am triggered on both OK and Cancel')
         });
     }
+
+    isSaveFg = 'U';
   } catch (error) {
     console.error('Error fetching users:', error);
   }
@@ -763,16 +790,36 @@ const saveDataAndHandleResult = resFormData => {
   api
     .post('/api/hpe/hpe1020_save', resFormData)
     .then(res => {
-      getData();
-
-      let saveStatus = {};
-      saveStatus.rtn = res.data.rtn;
-      saveStatus.rtnMsg = res.data.rtnMsg;
-      notifySave.notifyView(saveStatus);
+      if (isSaveFg !== 'A') {
+        getData();
+        let saveStatus = {};
+        saveStatus.rtn = res.data.rtn;
+        saveStatus.rtnMsg = res.data.rtnMsg;
+        notifySave.notifyView(saveStatus);
+      }
     })
     .catch(error => {
       console.log('error: ', error);
     });
+};
+
+// **************************************************************//
+// ***** View Accept Check Save  ********************************//
+// **************************************************************//
+const acceptCheckSaveSection = (resStdYear, resEvtEmpCd) => {
+  isSaveFg = 'A';
+
+  let iu = [];
+  let iuD = [];
+
+  let formData = {};
+  formData.stdYear = resStdYear;
+  formData.empCd = resEvtEmpCd;
+  formData.acceptYn = 'Y';
+  let tmpJson = '{"mode": "' + isSaveFg + '","data":' + JSON.stringify(formData) + '}';
+  iu.push(tmpJson);
+
+  saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
 };
 
 // **************************************************************//

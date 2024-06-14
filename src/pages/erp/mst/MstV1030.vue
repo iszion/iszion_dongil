@@ -170,47 +170,115 @@
                   />
                 </div>
               </div>
-              <div class="row justify-between">
-                <q-radio
-                  keep-color
-                  :disable="formReadonly"
-                  v-model="formData.deptFg"
-                  val="1"
-                  label="본사용"
-                  color="deep-orange"
-                  :size="$q.screen.xs ? 'sm' : 'md'"
-                  :style="{ fontSize: '1.4em' }"
-                  @update:model-value="handlePointClick"
-                />
-                <q-radio
-                  keep-color
-                  :disable="formReadonly"
-                  v-model="formData.deptFg"
-                  val="2"
-                  label="충전소"
-                  color="blue"
-                  :size="$q.screen.xs ? 'sm' : 'md'"
-                  :style="{ fontSize: '1.4em' }"
-                  @update:model-value="handlePointClick"
-                />
-                <q-radio
-                  keep-color
-                  :disable="formReadonly"
-                  v-model="formData.deptFg"
-                  val="3"
-                  label="주유소"
-                  color="cyan"
-                  :size="$q.screen.xs ? 'sm' : 'md'"
-                  :style="{ fontSize: '1.4em' }"
-                  @update:model-value="handlePointClick"
-                />
-              </div>
+              <!--              <div class="row justify-between">-->
+              <!--                <q-radio-->
+              <!--                  keep-color-->
+              <!--                  :disable="formReadonly"-->
+              <!--                  v-model="formData.deptFg"-->
+              <!--                  val="1"-->
+              <!--                  label="본사용"-->
+              <!--                  color="deep-orange"-->
+              <!--                  :size="$q.screen.xs ? 'sm' : 'md'"-->
+              <!--                  :style="{ fontSize: '1.4em' }"-->
+              <!--                />-->
+              <!--                <q-radio-->
+              <!--                  keep-color-->
+              <!--                  :disable="formReadonly"-->
+              <!--                  v-model="formData.deptFg"-->
+              <!--                  val="2"-->
+              <!--                  label="충전소"-->
+              <!--                  color="blue"-->
+              <!--                  :size="$q.screen.xs ? 'sm' : 'md'"-->
+              <!--                  :style="{ fontSize: '1.4em' }"-->
+              <!--                />-->
+              <!--                <q-radio-->
+              <!--                  keep-color-->
+              <!--                  :disable="formReadonly"-->
+              <!--                  v-model="formData.deptFg"-->
+              <!--                  val="3"-->
+              <!--                  label="주유소"-->
+              <!--                  color="cyan"-->
+              <!--                  :size="$q.screen.xs ? 'sm' : 'md'"-->
+              <!--                  :style="{ fontSize: '1.4em' }"-->
+              <!--                />-->
+              <!--              </div>-->
             </div>
           </div>
         </q-card>
       </q-card-section>
     </q-card>
   </q-page>
+
+  <!-- ***************** -->
+  <!-- 연결코드 등록 화면    -->
+  <!-- ***************** -->
+  <q-dialog persistent v-model="isDialogVisible" @show="onDialogShow" @hide="onDialogHide">
+    <q-card flat bordered style="max-width: 520px; width: 100%">
+      <q-bar>
+        <q-icon name="list_alt" />
+        <div>권한조정 관리</div>
+        <q-space />
+        <span class="text-bold text-subtitle1"> 공통관리번호 [ {{ showDialogTitle.targetNo }} ] </span>
+        <q-space />
+        <q-btn dense flat icon="close" v-close-popup>
+          <q-tooltip> 닫기 </q-tooltip>
+        </q-btn>
+      </q-bar>
+      <q-card-actions>
+        <q-toolbar class="q-px-sm q-py-none">
+          <q-select
+            dense
+            stack-label
+            options-dense
+            class="q-pb-sm q-mr-lg"
+            label-color="orange"
+            v-model="searchParam.deptCd"
+            :options="deptOptionsSearch"
+            option-value="deptCd"
+            option-label="deptNm"
+            option-disable="inactive"
+            emit-value
+            map-options
+            style="min-width: 130px; max-width: 130px"
+            label="소속팀"
+            @update:model-value="getDataDialog"
+          />
+          <q-btn dense outline class="q-px-md" color="teal" @:click="getDataDialog()"
+            ><q-icon name="refresh" size="xs" class="q-pr-sm-sm" /><span v-if="$q.screen.gt.sm">다시불러오기</span></q-btn
+          >
+          <q-space />
+          <q-btn
+            v-if="selectedRowsDialog.length > 0"
+            outline
+            dense
+            color="primary"
+            @click="saveDataDialogSection"
+            v-close-popup
+            class="q-px-sm q-mr-sm"
+            ><q-icon class="q-mr-xs" name="save" size="xs" /> 저장하기
+          </q-btn>
+          <q-btn outline dense color="primary" v-close-popup class="q-px-sm"><q-icon class="q-mr-xs" name="close" size="xs" /> 닫기 </q-btn>
+        </q-toolbar>
+      </q-card-actions>
+      <q-card-section class="q-px-md q-pt-none">
+        <div :style="contentZoneStyle">
+          <ag-grid-vue
+            style="width: 100%; height: 100%"
+            :class="$q.dark.isActive ? 'ag-theme-alpine-dark' : 'ag-theme-alpine'"
+            :columnDefs="columnDefsDialog.columns"
+            :rowData="rowDataDialog.rows"
+            :defaultColDef="defaultColDefDialog.def"
+            :rowSelection="rowSelectionDialog"
+            @selection-changed="onSelectionChangedDialog"
+            :suppressRowClickSelection="true"
+            @grid-ready="onGridReadyDialog"
+            :grid-options="gridOptionsDialog"
+          >
+          </ag-grid-vue>
+        </div>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script setup>
@@ -227,13 +295,20 @@ import { QBtn, QIcon, QToggle, useQuasar } from 'quasar';
 import jsonUtil from 'src/js_comm/json-util';
 import { useUserInfoStore } from 'src/store/setUserInfo';
 import { useYearInfoStore } from 'src/store/setYearInfo';
+import CompButtonTargetNo from 'components/CompButtonTargetNo.vue';
 const storeUser = useUserInfoStore();
 const storeYear = useYearInfoStore();
 
+const isDialogVisible = ref(false);
+const showDialogTitle = ref({
+  targetNo: '',
+});
+
 const rowData = reactive({
   rows: [],
-  rowsSel: [],
 });
+const rowDataDialog = reactive({ rows: [] });
+const rowDataDialogBack = ref([]);
 
 // grid Height 자동처리부분
 const gridHeight = ref(300); // 초기 높이
@@ -262,12 +337,12 @@ const contentZoneStyle = computed(() => ({
   height: `${contentZoneHeight.value}px`,
 }));
 
+const rowSelectionDialog = ref(null);
 const rowSelection = ref(null);
-const rowSelectionSel = ref(null);
 const focusStart = ref(null);
 
-const gridApiSel = ref(null);
 const gridApi = ref(null);
+const gridApiDialog = ref(null);
 
 const onGridReady = params => {
   gridApi.value = params.api;
@@ -275,6 +350,22 @@ const onGridReady = params => {
   gridApi.value.setGridOption('rowHeight', 45);
   gridApi.value.deselectAll();
 };
+const onGridReadyDialog = params => {
+  gridApi_dialog = params.api;
+  gridApiDialog.value = params.api;
+  gridApiDialog.value.setGridOption('headerHeight', 45);
+  gridApiDialog.value.setGridOption('rowHeight', 45);
+  gridApiDialog.value.deselectAll();
+
+  params.api.forEachNode(node => {
+    // console.log('node : ', node.data);
+    // 타겟 평가자와 선택한 평가자가 같은면 체크
+    if (node.data.targetNo === showDialogTitle.value.targetNo) {
+      node.setSelected(true);
+    }
+  });
+};
+
 const defaultColDef = reactive({
   def: {
     flex: 1,
@@ -300,11 +391,26 @@ const columnDefs = reactive({
       headerCheckboxSelection: true,
     },
     {
-      headerName: 'No',
+      headerName: 'NO',
       field: 'seq',
       rowDrag: true,
       maxWidth: 80,
       minWidth: 80,
+    },
+    {
+      headerName: '사번연결',
+      field: 'targetNo',
+      minWidth: 120,
+      maxWidth: 120,
+      filter: true,
+      cellRenderer: CompButtonTargetNo,
+      cellRendererParams: {
+        updateSelectedValue: row => {
+          console.log('targetNo : ', row.value.targetNo);
+          showDialogTitle.value.targetNo = row.value.targetNo;
+          isDialogVisible.value = true;
+        },
+      },
     },
     {
       headerName: '공통목표설정',
@@ -335,15 +441,70 @@ const columnDefs = reactive({
   ],
 });
 
+const defaultColDefDialog = reactive({
+  def: {
+    flex: 1,
+    sortable: true,
+    filter: false,
+    floatingFilter: false,
+    editable: false,
+  },
+});
+const columnDefsDialog = reactive({
+  columns: [
+    {
+      headerName: '',
+      field: '',
+      sortable: false,
+      filter: false,
+      maxWidth: 60,
+      minWidth: 60,
+      pinned: 'left',
+      cellStyle: { textAlign: 'center' },
+      checkboxSelection: true,
+      headerCheckboxSelection: true,
+    },
+    {
+      headerName: '사번',
+      field: 'empCd',
+      maxWidth: 100,
+      minWidth: 100,
+    },
+    {
+      headerName: '성명',
+      field: 'empNm',
+      minWidth: 100,
+      maxWidth: 100,
+      resizable: true,
+    },
+    {
+      headerName: '소속팀',
+      field: 'deptNm',
+      minWidth: 150,
+      maxWidth: 150,
+      resizable: true,
+    },
+    {
+      headerName: '직급',
+      field: 'titlNm',
+      minWidth: 100,
+      resizable: false,
+    },
+  ],
+});
+
 onBeforeUnmount(() => {
   // Remove the resize event listener when the component is destroyed
   window.removeEventListener('resize', handleResize);
 });
 onBeforeMount(() => {
-  rowSelectionSel.value = 'single';
   rowSelection.value = 'multiple';
+  rowSelectionDialog.value = 'multiple';
 
-  getData();
+  getDataDeptOption();
+  setTimeout(() => {
+    getData();
+  }, 500);
 });
 
 onMounted(() => {
@@ -431,6 +592,12 @@ const onSelectionChanged = event => {
     formDisable.value = true;
   }
 };
+
+const selectedRowsDialog = ref([]);
+const onSelectionChangedDialog = event => {
+  selectedRowsDialog.value = event.api.getSelectedRows();
+};
+
 const onRowDragMove = event => {};
 const onRowDragEnter = event => {};
 const onRowDragEnd = event => {
@@ -461,6 +628,54 @@ const handleResize = () => {
   contentZoneHeight.value = window.innerHeight - screenSizeHeight.value - 520;
 };
 // ======================================================
+
+const saveDataDialogSection = () => {
+  // if (selectisEqual(formData.value, oldFormData.value)) {
+  //   $q.dialog({
+  //     dark: true,
+  //     title: '안내',
+  //     message: '변경된 자료가 없습니다. ',
+  //     // persistent: true,
+  //   })
+  //     .onOk(() => {})
+  //     .onCancel(() => {})
+  //     .onDismiss(() => {
+  //       // 확인/취소 모두 실행되었을때
+  //     });
+  // } else {
+  let iu = [];
+  let iuD = [];
+  let _tmpJson = {};
+
+  // 모든 empCd 값을 Set에 추가한 후 비교
+  for (let i = 0; i < rowDataDialog.rows.length; i++) {
+    let useCheck = true;
+    for (let k = 0; k < selectedRowsDialog.value.length; k++) {
+      if (rowDataDialog.rows[i].empCd === selectedRowsDialog.value[k].empCd) {
+        if (rowDataDialog.rows[i].iuD !== 'U') {
+          _tmpJson = rowDataDialog.rows[i];
+          _tmpJson.progId = 'mst1030';
+          _tmpJson.targetNo = showDialogTitle.value.targetNo;
+          let tmpJson = '{"mode": "I", "data":' + JSON.stringify(_tmpJson) + '}';
+          iu.push(tmpJson);
+
+          console.log('I : ', rowDataDialog.rows[i].empCd, rowDataDialog.rows[i].empNm);
+        }
+        useCheck = false;
+      }
+    }
+    if (useCheck && rowDataDialog.rows[i].iuD === 'U') {
+      _tmpJson = rowDataDialog.rows[i];
+      _tmpJson.progId = 'mst1030';
+      _tmpJson.targetNo = showDialogTitle.value.targetNo;
+      let tmpJson = '{"mode": "D", "data":' + JSON.stringify(_tmpJson) + '}';
+      iuD.push(tmpJson);
+      console.log('D : ', rowDataDialog.rows[i].empCd, rowDataDialog.rows[i].empNm);
+    }
+  }
+  // 사원연결자료 저장부분
+  saveDataDialogAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
+};
 
 const saveDataSection = () => {
   if (isEqual(formData.value, oldFormData.value)) {
@@ -512,19 +727,57 @@ const deleteDataSection = () => {
     });
 };
 // **************************************************************//
+// ***** Dialog처리부분       *************************************//
+// **************************************************************//
+let gridApi_dialog = null;
+const onDialogShow = () => {
+  // 대화 상자가 열린 후에 처리할 코드
+  searchParam.deptCd = '';
+  getDataDialog();
+  // gridKey.value += 1;
+  setTimeout(() => {
+    gridApi_dialog.forEachNode(node => {
+      if (node.data.iuD === 'U') {
+        node.setSelected(true);
+        console.log('node :: ', node.data.empCd);
+      }
+    });
+  }, 500);
+};
+const onDialogHide = () => {
+  // 대화 상자가 닫힐 때 처리할 코드
+  console.log('Dialog has closed');
+  gridApi_dialog.value.deselectAll();
+};
+
+// **************************************************************//
 // ***** DataBase 연결부분    *************************************//
 // **************************************************************//
+// ***** 소속팀정보 가져오기 부분  *****************************//
+const deptOptionsSearch = ref(null);
+const searchParam = reactive({
+  deptCd: '',
+});
+async function getDataDeptOption() {
+  try {
+    const response = await api.post('/api/mst/dept_option_list', { paramSetYear: storeYear.setYear });
+    deptOptionsSearch.value = JSON.parse(JSON.stringify(response.data.data));
+    deptOptionsSearch.value.push({ deptCd: '', deptNm: '전체' });
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+}
 
 // ***** 성과/목표정보 목록 자료 가져오기 부분  *****************************//
 const getData = async () => {
   try {
-    const response = await api.post('/api/mst/mst1030_list', { paramSetYear: storeYear.setYear });
+    const response = await api.post('/api/mst/mst1030_list', {
+      paramSetYear: storeYear.setYear,
+    });
     rowData.rows = response.data.data;
     if (rowData.rows.length > 0) {
       minHeight.value = 90;
     }
-
-    gridKey.value += 1;
   } catch (error) {
     console.error('Error fetching users:', error);
   }
@@ -565,6 +818,42 @@ const saveDataAndHandleResult = resFormData => {
     });
 };
 
+// ***** 사번선택 자료저장 및 삭제 처리부분 *****************************//
+// saveStatus = 0=수정성공 1=신규성공 2=삭제성공 3=수정에러 4=시스템에러
+const saveDataDialogAndHandleResult = resFormData => {
+  // console.log('form data : ', JSON.stringify(resFormData));
+  api
+    .post('/api/mst/mst1030_tset_save', resFormData)
+    .then(res => {
+      let saveStatus = {};
+      saveStatus.rtn = res.data.rtn;
+      saveStatus.rtnMsg = res.data.rtnMsg;
+      notifySave.notifyView(saveStatus);
+      isDialogVisible.value = false;
+    })
+    .catch(error => {
+      console.log('error: ', error);
+    });
+};
+
+// *****************************************************//
+// ***** 연결사번 가져오기 부분  *****************************//
+const getDataDialog = async () => {
+  try {
+    const response = await api.post('/api/mst/mst1030_tset_list', {
+      paramSetYear: storeYear.setYear,
+      paramDeptCd: searchParam.deptCd,
+      paramProgId: 'mst1030',
+      paramTargetNo: showDialogTitle.value.targetNo,
+    });
+    rowDataDialog.rows = response.data.data;
+
+    // rowDataDialogBack.value = JSON.parse(JSON.stringify(response.data.data));
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+};
+// ***** 프로그램 선택된 자료 가져오기 부분  *****************************//
 // **************************************************************//
 // ***** DataBase 연결부분 끝  *************************************//
 // **************************************************************//
@@ -575,9 +864,10 @@ const updateByteCount = () => {
   byteCount.value = encoder.encode(formData.value.targetDoc).length;
 };
 
-const gridOptionsSel = {
+const gridOptionsDialog = {
   localeText: { noRowsToShow: '조회 결과가 없습니다.' },
 };
+
 const gridOptions = {
   getRowStyle: params => {
     if (params.node.rowPinned) {

@@ -56,14 +56,29 @@
                   <q-icon name="refresh" size="xs" class="q-mr-xs" />
                   다시 불러오기
                 </q-btn>
+                <q-btn outline color="grey" dense @click="getData">
+                  <q-icon name="refresh" size="xs" class="q-mr-xs" />
+                  전년목표 가져오기
+                </q-btn>
+                <q-btn outline color="grey" dense @click="isCommonTargetLoad">
+                  <q-icon name="refresh" size="xs" class="q-mr-xs" />
+                  공통목표 가져오기
+                </q-btn>
               </div>
               <q-space />
-              <q-btn v-if="viewStatusCount.sendCancel > 0" outline color="indigo-7" dense @click="sendAuthRequestCancel" class="q-pr-md">
-                <q-badge color="orange" floating>{{ viewStatusCount.sendCancel }}</q-badge>
-                <q-icon name="replay" size="xs" class="q-pr-xs" /> 승인대기취소
+              <q-btn v-if="statusCheck.cancelHide" outline color="indigo-7" dense @click="sendAuthRequestCancel" @mouseover="getData" class="q-pr-md">
+                <q-badge color="orange" floating>{{ rowData.rows.length }}</q-badge>
+                <q-icon name="replay" size="xs" class="q-pr-xs" /> 승인요청취소
               </q-btn>
-              <q-btn v-if="viewStatusCount.sendCount > 0" outline color="indigo-12" dense @click="sendAuthRequest" class="q-pr-md q-ml-md">
-                <q-badge color="orange" floating>{{ viewStatusCount.sendCount }}</q-badge>
+              <q-btn
+                v-if="statusCheck.sendHide && totalWeight === 100"
+                outline
+                color="indigo-12"
+                dense
+                @click="sendAuthRequest"
+                class="q-pr-md q-ml-md"
+              >
+                <q-badge color="orange" floating>{{ rowData.rows.length }}</q-badge>
                 <q-icon name="send" size="xs" class="q-pr-xs" /> 승인요청
               </q-btn>
             </q-toolbar>
@@ -87,7 +102,7 @@
               >
               </ag-grid-vue>
             </div>
-            <q-card v-if="(selectedRows.length === 1 && formData.status === '2') || formData.returnDoc" class="q-pa-lg q-mt-md">
+            <q-card v-if="(selectedRows.length === 1 && formData.status === '2') || formData.returnDoc" class="q-pa-sm q-mt-md">
               <q-banner rounded :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-2'">
                 <template v-slot:avatar>
                   <q-icon name="reply" style="width: 50px" />
@@ -102,17 +117,6 @@
         <div class="col-xs-12 col-md-5">
           <q-card-section>
             <q-toolbar class="row q-pa-none">
-              <q-breadcrumbs v-if="formData.status !== '2'" gutter="none" class="text-orange" active-color="grey">
-                <q-breadcrumbs-el label="진행중" v-if="formData.status >= 0 && selectedRows.length === 1" />
-                <q-breadcrumbs-el label="승인대기" v-if="formData.status >= 1 && selectedRows.length === 1" />
-                <q-breadcrumbs-el label="승인완료" v-if="formData.status >= 3 && selectedRows.length === 1" />
-                <q-breadcrumbs-el label="평가대기" v-if="formData.status >= 4 && selectedRows.length === 1" />
-                <q-breadcrumbs-el label="1차평가완료" v-if="formData.status >= 5 && selectedRows.length === 1" />
-                <q-breadcrumbs-el label="2차평가완료" v-if="formData.status >= 6 && selectedRows.length === 1" />
-              </q-breadcrumbs>
-              <q-breadcrumbs gutter="none" class="text-orange" active-color="grey">
-                <q-breadcrumbs-el label="승인반려" v-if="formData.status === '2' && selectedRows.length === 1" />
-              </q-breadcrumbs>
               <q-space />
               <div class="q-gutter-xs">
                 <q-btn v-if="totalWeight < 100 && selectedRows.length === 1" outline color="grey" dense @click="addDataSectionCopy">
@@ -370,7 +374,8 @@ const totalComputeWeight = () => {
     },
   ];
 
-  gridApi.value.updateGridOptions({ pinnedBottomRowData });
+  // gridApi.value.updateGridOptions({ pinnedBottomRowData });
+  gridApi.value.setPinnedBottomRowData(pinnedBottomRowData);
 };
 // 기준평가자연결정보
 const setEvGroup = reactive({
@@ -426,6 +431,7 @@ const formData = ref({
   selfPoint: 0,
   status: '',
   statusDate: '00000000',
+  acceptYn: '',
   returnDoc: '',
   iuD: '',
 });
@@ -448,6 +454,7 @@ const formDataInitialize = () => {
   formData.value.selfPoint = 0;
   formData.value.status = '';
   formData.value.statusDate = '00000000';
+  formData.value.acceptYn = 'N';
   formData.value.returnDoc = '';
   formData.value.iuD = 'I';
 };
@@ -569,7 +576,7 @@ const saveDataSection = () => {
         // 확인/취소 모두 실행되었을때
       });
   } else {
-    console.log('save data::: ', JSON.stringify(formData.value));
+    // console.log('save data::: ', JSON.stringify(formData.value));
     saveDataAndHandleResult(jsonUtil.dataJsonParse(isSaveFg.value, formData.value));
   }
 };
@@ -592,15 +599,15 @@ const sendAuthRequest = () => {
     .onOk(() => {
       let iu = [];
       let iuD = [];
-      for (let i = 0; i < selectedRows.value.length; i++) {
-        // 작성중 또는 반려자료 승인요청 체크
-        if (selectedRows.value[i].status === '0' || selectedRows.value[i].status === '2') {
-          selectedRows.value[i].status = '1';
-          let tmpJson = '{"mode": "S","data":' + JSON.stringify(selectedRows.value[i]) + '}';
-          console.log('update send : ', JSON.stringify(selectedRows.value[i]));
-          iu.push(tmpJson);
-        }
-      }
+
+      let formData = {};
+      formData.stdYear = storeYear.setYear;
+      formData.empCd = storeUser.setEmpCd;
+      formData.status = '1';
+      formData.acceptYn = 'N';
+      let tmpJson = '{"mode": "S","data":' + JSON.stringify(formData) + '}';
+      iu.push(tmpJson);
+
       saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
     })
     .onCancel(() => {})
@@ -627,19 +634,14 @@ const sendAuthRequestCancel = () => {
     .onOk(() => {
       let iu = [];
       let iuD = [];
-      for (let i = 0; i < selectedRows.value.length; i++) {
-        // 작성중 또는 반려자료 승인요청 체크
-        if (selectedRows.value[i].status === '1') {
-          if (selectedRows.value[i].returnDoc) {
-            selectedRows.value[i].status = '2'; // 반려
-          } else {
-            selectedRows.value[i].status = '0'; // 작성중
-          }
-          let tmpJson = '{"mode": "S","data":' + JSON.stringify(selectedRows.value[i]) + '}';
-          console.log('update send : ', JSON.stringify(selectedRows.value[i]));
-          iu.push(tmpJson);
-        }
-      }
+      let formData = {};
+      formData.stdYear = storeYear.setYear;
+      formData.empCd = storeUser.setEmpCd;
+      formData.status = '0';
+      formData.acceptYn = 'N';
+      let tmpJson = '{"mode": "S","data":' + JSON.stringify(formData) + '}';
+      iu.push(tmpJson);
+
       saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
     })
     .onCancel(() => {})
@@ -668,7 +670,7 @@ const deleteDataSection = () => {
       let iuD = [];
       for (let i = 0; i < selectedRows.value.length; i++) {
         let tmpJson = '{"mode":"D","data":' + JSON.stringify(selectedRows.value[i]) + '}';
-        console.log('delete : ', JSON.stringify(selectedRows.value[i]));
+        // console.log('delete : ', JSON.stringify(selectedRows.value[i]));
         iuD.push(tmpJson);
       }
       saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
@@ -678,9 +680,58 @@ const deleteDataSection = () => {
       // 확인/취소 모두 실행되었을때
     });
 };
+
+const isCommonTargetLoad = () => {
+  $q.dialog({
+    dark: true,
+    title: '공통목표',
+    html: true,
+    message: '<em><span class="text-orange">공통목표설정자료</span></em>가 있습니다.<br />가져오기 버튼을 클릭하여 목표자료를 가져옵니다.',
+    ok: {
+      label: '가져오기',
+      push: true,
+      color: 'orange',
+    },
+    cancel: {
+      label: '닫기',
+      push: true,
+      color: 'grey-7',
+    },
+    // persistent: true,
+  })
+    .onOk(() => {
+      const formData = {
+        paramSetYear: storeYear.setYear,
+        paramEmpCd: storeUser.setEmpCd,
+        paramProgId: 'mst1030',
+      };
+      commonTargetLoading(jsonUtil.dataJsonParse('I', formData));
+    })
+    .onCancel(() => {})
+    .onDismiss(() => {
+      // 확인/취소 모두 실행되었을때
+    });
+};
 // **************************************************************//
 // ***** DataBase 연결부분    *************************************//
 // **************************************************************//
+
+// ***** 사원정보 가져오기 부분  *****************************//
+const commonTargetLoading = resFormData => {
+  // console.log('form data : ', JSON.stringify(resFormData));
+  api
+    .post('/api/hpe/hpe1010_tagt_loading', resFormData)
+    .then(res => {
+      let saveStatus = {};
+      saveStatus.rtn = res.data.rtn;
+      saveStatus.rtnMsg = res.data.rtnMsg;
+      notifySave.notifyView(saveStatus);
+      getData();
+    })
+    .catch(error => {
+      console.log('error: ', error);
+    });
+};
 
 // ***** 사원정보 가져오기 부분  *****************************//
 const getDataEvsn = async (resEmpCd, resEvsCd) => {
@@ -710,6 +761,10 @@ const getDataEvsn = async (resEmpCd, resEvsCd) => {
 };
 
 // ***** 성과/목표정보 목록 자료 가져오기 부분  *****************************//
+const statusCheck = ref({
+  cancelHide: false,
+  sendHide: false,
+});
 const getData = async () => {
   try {
     const response = await api.post('/api/hpe/hpe1010_list', { paramSetYear: storeYear.setYear, paramEmpCd: storeUser.setEmpCd });
@@ -718,7 +773,16 @@ const getData = async () => {
       minHeight.value = 90;
     }
 
-    viewStatusCount.value.sendCount = 0;
+    statusCheck.value.cancelHide = false;
+    statusCheck.value.sendHide = false;
+    for (let i = 0; i < rowData.rows.length; i++) {
+      if (rowData.rows[i].status === '1' && rowData.rows[i].acceptYn !== 'Y') {
+        statusCheck.value.cancelHide = true;
+      }
+      if (rowData.rows[i].status === '0' || rowData.rows[i].status === '2') {
+        statusCheck.value.sendHide = true;
+      }
+    }
     gridKey.value += 1;
     // console.log('getData : ', JSON.stringify(rowData.rows));
   } catch (error) {
