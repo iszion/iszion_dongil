@@ -16,7 +16,7 @@
             </div>
           </div>
         </div>
-        <div class="col-xs-12 col-sm-12 col-lg-4 q-my-sm">
+        <div class="col-xs-12 col-sm-12 col-lg-4">
           <q-card class="q-ml-sm-md q-pa-sm" :class="$q.screen.xs ? 'q-mt-xs' : 'row flex-center'" style="height: 100%">
             <div class="row">
               <q-space />
@@ -184,6 +184,8 @@
                 label="반려사유"
                 :rows="5"
                 :autogrow="true"
+                :hint="`${byteCount} / 200자 까지 입력하실 수 있습니다.`"
+                @update:model-value="updateByteCount"
               />
             </q-card-section>
           </q-card>
@@ -214,6 +216,7 @@ import { QBtn, QIcon, QToggle, useQuasar } from 'quasar';
 import jsonUtil from 'src/js_comm/json-util';
 import { useUserInfoStore } from 'src/store/setUserInfo';
 import { useYearInfoStore } from 'src/store/setYearInfo';
+import commUtil from 'src/js_comm/comm-util';
 const storeUser = useUserInfoStore();
 const storeYear = useYearInfoStore();
 
@@ -244,6 +247,7 @@ const sendReturnDialog = () => {
       .onCancel(() => {})
       .onDismiss(() => {
         // 확인/취소 모두 실행되었을때
+        updateByteCount(textReturnDoc);
         isDialogVisible.value = true;
       });
   } else {
@@ -366,7 +370,7 @@ const onSelectionChanged = event => {
   selectedRows.value = event.api.getSelectedRows();
   // console.log('sel: ', JSON.stringify(selectedRows.value));
   if (selectedRows.value.length === 1) {
-    getDataSelectList(selectedRows.value[0].stdYear, selectedRows.value[0].evsEmpCd, selectedRows.value[0].evtEmpCd);
+    getDataSelectList(selectedRows.value[0]);
   }
 };
 
@@ -496,7 +500,7 @@ const saveDataReturnAllSection = () => {
 // ***** 목표승인대상자 집계리스트 가져오기 부분  *****************************//
 const getData = async () => {
   try {
-    const response = await api.post('/api/hpe/hpe2010_list', { paramSetYear: storeYear.setYear, paramEmpCd: storeUser.setEmpCd });
+    const response = await api.post('/api/hpe/hpe2010_list', { paramSetYear: storeYear.setYear, paramEvsEmpCd: storeUser.setEmpCd });
     rowData.rows = response.data.data;
     // console.log('aa : ', JSON.stringify(response.data.data));
     if (rowData.rows.length === 0) {
@@ -519,12 +523,12 @@ const statusCheck = ref({
   returnHide: false, // 반려상태
   acceptUpdate: false, // 열람상태
 });
-const getDataSelectList = async (resStdYear, resEvsEmpCd, resEvtEmpCd) => {
+const getDataSelectList = async resRowSel => {
   try {
     const response = await api.post('/api/hpe/hpe2010_select_list', {
-      paramSetYear: resStdYear,
-      paramEvsEmpCd: resEvsEmpCd,
-      paramEvtEmpCd: resEvtEmpCd,
+      paramSetYear: resRowSel.stdYear,
+      paramEvsEmpCd: resRowSel.evsEmpCd,
+      paramEvtEmpCd: resRowSel.evtEmpCd,
     });
     rowData.rowsSel = response.data.data;
     // alert(rowData.rowsSel.length);
@@ -536,6 +540,7 @@ const getDataSelectList = async (resStdYear, resEvsEmpCd, resEvtEmpCd) => {
     statusCheck.value.sendCancelHide = false;
     statusCheck.value.returnHide = false;
     statusCheck.value.acceptUpdate = false;
+
     for (let i = 0; i < rowData.rowsSel.length; i++) {
       if (rowData.rowsSel[i].status === '1' && rowData.rowsSel[i].acceptYn !== 'Y') {
         statusCheck.value.acceptUpdate = true;
@@ -554,7 +559,9 @@ const getDataSelectList = async (resStdYear, resEvsEmpCd, resEvtEmpCd) => {
       }
     }
     if (statusCheck.value.acceptUpdate) {
-      acceptCheckSaveSection(resStdYear, resEvtEmpCd);
+      acceptCheckSaveSection(resRowSel.stdYear, resRowSel.evtEmpCd);
+      statusCheck.value.sendHide = true;
+      statusCheck.value.cancelHide = true;
     }
     // 자료 열람확인 처리 끝
   } catch (error) {
@@ -574,13 +581,13 @@ const saveDataAndHandleResult = resFormData => {
         saveStatus.rtn = res.data.rtn;
         saveStatus.rtnMsg = res.data.rtnMsg;
         notifySave.notifyView(saveStatus);
+        getData();
+        rowData.rowsSel = [];
+        statusCheck.value.cancelHide = false;
+        statusCheck.value.sendHide = false;
+        statusCheck.value.sendCancelHide = false;
+        statusCheck.value.acceptUpdate = false;
       }
-      rowData.rowsSel = [];
-      statusCheck.value.cancelHide = false;
-      statusCheck.value.sendHide = false;
-      statusCheck.value.sendCancelHide = false;
-      statusCheck.value.acceptUpdate = false;
-      getData();
     })
     .catch(error => {
       console.log('error: ', error);
@@ -608,6 +615,16 @@ const acceptCheckSaveSection = (resStdYear, resEvtEmpCd) => {
   iu.push(tmpJson);
 
   saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
+};
+
+const byteCount = ref(0);
+const updateByteCount = val => {
+  if (val) {
+    byteCount.value = commUtil.textByteLength(val);
+    if (byteCount.value > 200) {
+      alert('한글 200자 까지 가능합니다.');
+    }
+  }
 };
 
 const gridOptions = {

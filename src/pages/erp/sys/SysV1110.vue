@@ -160,6 +160,7 @@ import notifySave from 'src/js_comm/notify-save';
 
 import CompToggleHpe from 'components/CompToggleHpe.vue';
 import CompToggleHce from 'components/CompToggleHce.vue';
+import CompToggleHrt from 'components/CompToggleHrt.vue';
 import CompToggleHpr from 'components/CompToggleHpr.vue';
 import CompToggleAux from 'components/CompToggleAux.vue';
 import CompToggleMst from 'components/CompToggleMst.vue';
@@ -332,6 +333,26 @@ const columnDefs = reactive({
       minWidth: 110,
       cellStyle: { textAlign: 'center' },
       cellRenderer: CompToggleHce,
+      cellRendererParams: {
+        updateSelectedValue: row => {
+          onCellValueChanged();
+        },
+      },
+    },
+    {
+      headerName: '평가보고',
+      headerComponent: CompCheckHeader,
+      headerComponentParams: {
+        headerCheckYn: false,
+        updateSelectedValue: row => {
+          checkAll('gnHrt', row.value ? 'Y' : 'N');
+        },
+      },
+      field: 'gnHrt',
+      maxWidth: 110,
+      minWidth: 110,
+      cellStyle: { textAlign: 'center' },
+      cellRenderer: CompToggleHrt,
       cellRendererParams: {
         updateSelectedValue: row => {
           onCellValueChanged();

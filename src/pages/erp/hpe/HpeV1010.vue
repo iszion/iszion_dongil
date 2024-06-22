@@ -14,7 +14,7 @@
           </q-banner>
         </div>
         <q-space />
-        <div class="col-xs-12 col-md-12 col-lg-4 q-my-sm">
+        <div class="col-xs-12 col-md-12 col-lg-4">
           <q-card class="q-ml-lg-md q-pa-sm" :class="$q.screen.xs ? 'q-mt-xs' : 'row flex-center'" style="height: 100%">
             <q-space />
             <q-card-section class="row q-pa-none justify-center">
@@ -102,7 +102,7 @@
               >
               </ag-grid-vue>
             </div>
-            <q-card v-if="(selectedRows.length === 1 && formData.status === '2') || formData.returnDoc" class="q-pa-sm q-mt-md">
+            <q-card v-if="selectedRows.length === 1 && formData.status === '2'" class="q-pa-sm q-mt-md">
               <q-banner rounded :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-2'">
                 <template v-slot:avatar>
                   <q-icon name="reply" style="width: 50px" />
@@ -128,8 +128,7 @@
                 <q-btn v-if="formData.status === '0' || formData.status === '2'" outline color="blue-12" dense @click="saveDataSection">
                   <q-icon name="save" size="xs" /><span v-if="!$q.screen.xs" class="q-ml-xs">저장</span>
                 </q-btn>
-                <q-btn v-if="viewStatusCount.sendDelete > 0" outline color="red-12" dense @click="deleteDataSection" class="q-pr-md">
-                  <q-badge color="orange" floating>{{ selectedRows.length }}</q-badge>
+                <q-btn v-if="viewStatusCount.sendDelete > 0" outline color="red-12" dense @click="deleteDataSection">
                   <q-icon name="delete" size="xs" /> <span v-if="!$q.screen.xs" class="q-ml-xs">삭제</span>
                 </q-btn>
               </div>
@@ -140,12 +139,12 @@
                 :readonly="formReadonly"
                 :disable="formDisable"
                 v-model="formData.targetDoc"
+                autogrow
                 clearable
                 type="textarea"
                 color="orange-13"
                 label-color="orange-13"
                 label="세부목표"
-                rows="3"
                 :hint="`${byteCount} / 200자 까지 입력하실 수 있습니다.`"
                 @update:model-value="updateByteCount"
               />
@@ -243,6 +242,7 @@ import { QBtn, QIcon, useQuasar } from 'quasar';
 import jsonUtil from 'src/js_comm/json-util';
 import { useUserInfoStore } from 'src/store/setUserInfo';
 import { useYearInfoStore } from 'src/store/setYearInfo';
+import commUtil from 'src/js_comm/comm-util';
 const storeUser = useUserInfoStore();
 const storeYear = useYearInfoStore();
 
@@ -300,19 +300,7 @@ const defaultColDef = reactive({
 const columnDefs = reactive({
   columns: [
     {
-      headerName: '',
-      field: '',
-      sortable: false,
-      filter: false,
-      maxWidth: 60,
-      minWidth: 60,
-      pinned: 'left',
-      cellStyle: { textAlign: 'center' },
-      checkboxSelection: true,
-      headerCheckboxSelection: true,
-    },
-    {
-      headerName: 'No',
+      headerName: 'NO',
       field: 'seq',
       rowDrag: true,
       maxWidth: 80,
@@ -402,7 +390,7 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', handleResize);
 });
 onBeforeMount(() => {
-  rowSelection.value = 'multiple';
+  rowSelection.value = 'single';
   getDataEvsn(storeUser.setEmpCd, setEvsCd.value);
   getData();
 });
@@ -525,6 +513,7 @@ const onSelectionChanged = event => {
   formReadonly.value = true;
   if (selectedRows.value.length === 1) {
     getDataSelect(selectedRows.value[0].stdYear, selectedRows.value[0].empCd, selectedRows.value[0].workNo);
+    updateByteCount(selectedRows.value[0].targetDoc);
   } else {
     formData.value = {};
     isSaveFg.value = '';
@@ -854,9 +843,13 @@ const saveDataAndHandleResult = resFormData => {
 // **************************************************************//
 
 const byteCount = ref(0);
-const updateByteCount = () => {
-  const encoder = new TextEncoder();
-  byteCount.value = encoder.encode(formData.value.targetDoc).length;
+const updateByteCount = val => {
+  if (val) {
+    byteCount.value = commUtil.textByteLength(val);
+    if (byteCount.value > 200) {
+      alert('한글 200자 까지 가능합니다.');
+    }
+  }
 };
 
 const gridOptions = {

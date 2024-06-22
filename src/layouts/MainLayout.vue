@@ -430,7 +430,15 @@ const getDataSetUserInfo = async () => {
         '|' +
         response.data.data[0].pstnCd +
         '|' +
-        response.data.data[0].pstnNm,
+        response.data.data[0].pstnNm +
+        '|' +
+        response.data.data[0].catgCd +
+        '|' +
+        response.data.data[0].catgNm +
+        '|' +
+        response.data.data[0].evtgCd +
+        '|' +
+        response.data.data[0].evtgNm,
     );
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -552,6 +560,10 @@ const getStorgeSetUserInfoGroup = () => {
   storeUser.setTitlNm = _value[8];
   storeUser.setPstnCd = _value[9];
   storeUser.setPstnNm = _value[10];
+  storeUser.setCatgCd = _value[11];
+  storeUser.setCatgNm = _value[12];
+  storeUser.setEvtgCd = _value[13];
+  storeUser.setEvtgNm = _value[14];
   // console.log(
   //   'Main SetUser Info Group :: ',
   //   storeUser.setEmpCd,

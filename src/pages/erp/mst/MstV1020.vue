@@ -356,7 +356,7 @@ const oldFormData = ref(null);
 const formData = ref({
   stdYear: '',
   itemFg: '',
-  itemCd: '',
+  workNo: '',
   divCd: '',
   itemNm: '',
   seq: 0,
@@ -367,7 +367,7 @@ const formData = ref({
 const formDataInitialize = () => {
   formData.value.stdYear = storeYear.setYear;
   formData.value.itemFg = selectedRowsSel.value[0].commCd;
-  formData.value.itemCd = '';
+  formData.value.workNo = '';
   formData.value.divCd = '';
   formData.value.itemNm = '';
   formData.value.seq = 1;
@@ -426,7 +426,7 @@ const onSelectionChanged = event => {
   if (selectedRows.value.length === 1) {
     formReadonly.value = false;
     formDisable.value = false;
-    getDataSelect(selectedRows.value[0].stdYear, selectedRows.value[0].itemFg, selectedRows.value[0].itemCd);
+    getDataSelect(selectedRows.value[0].stdYear, selectedRows.value[0].itemFg, selectedRows.value[0].workNo);
   } else {
     formData.value = {};
     isSaveFg.value = '';
@@ -558,13 +558,13 @@ const getData = async resItemFg => {
 
 // ***** 선택한 성과/목표정보 목록 자료 가져오기 부분  *****************************//
 const oldWeight = ref(0);
-const getDataSelect = async (resYear, resItemFg, resItemCd) => {
-  console.log('aa ::: ', resYear, resItemFg, resItemCd);
+const getDataSelect = async (resYear, resItemFg, resWorkNo) => {
+  console.log('aa ::: ', resYear, resItemFg, resWorkNo);
   try {
     const response = await api.post('/api/mst/mst1020_select', {
       paramStdYear: resYear,
       paramItemFg: resItemFg,
-      paramItemCd: resItemCd,
+      paramWorkNo: resWorkNo,
     });
     formData.value = response.data.data[0];
     oldFormData.value = JSON.parse(JSON.stringify(formData.value)); // 초기자료 저장

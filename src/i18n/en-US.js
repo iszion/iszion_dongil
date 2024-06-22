@@ -26,6 +26,7 @@ export default {
   main_menu_aux: 'Operation',
   main_menu_man: 'DashBoard',
   main_menu_hpr: 'elevation of status',
+  main_menu_hrt: 'evaluate report',
   main_menu_hce: 'evaluate ability',
   main_menu_hpe: 'performance evaluation',
   main_menu_mst: 'Master',

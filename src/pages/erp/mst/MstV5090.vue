@@ -257,11 +257,13 @@ const columnDefs = reactive({
       headerName: '항목명',
       field: 'commNm',
       minWidth: 150,
+      maxWidth: 200,
     },
     {
       headerName: '보조항목',
       field: 'commEtc',
-      minWidth: 100,
+      minWidth: 150,
+      maxWidth: 250,
     },
     {
       headerName: '사용',
@@ -282,7 +284,6 @@ const columnDefs = reactive({
     {
       headerName: '참고사항',
       field: 'explains',
-      maxWidth: 100,
       minWidth: 100,
       cellStyle: { textAlign: 'center' },
     },

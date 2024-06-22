@@ -3,38 +3,16 @@
     <q-card class="q-pa-sm">
       <div class="row">
         <div class="col-xs-12 col-md-12 col-lg-8">
-          <div class="row q-col-gutter-x-sm">
-            <div class="col-xs-12 col-sm-6">
-              <q-banner rounded :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-3'">
-                <template v-slot:avatar>
-                  <q-icon name="menu_book" color="primary" size="md" />
-                </template>
-                <span class="text-subtitle1 text-bold"> 목표에 대한 성과를 등록 작업입니다.</span><br />
-                1. <span class="text-teal text-bold">승인완료</span> 자료만 등록하실 수 있습니다.<br />
-                2. 등록이 완료된 자료는 <span class="text-indigo text-bold">평가요청</span>을 진행합니다.<br />
-              </q-banner>
-            </div>
-            <div class="col-xs-12 col-sm-6">
-              <q-banner rounded :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-3'">
-                <template v-slot:avatar>
-                  <q-icon name="money" color="primary" size="md" />
-                </template>
-                <span class="text-subtitle1 text-bold"> 자기평가점수 Point설정</span><br />
-                <div class="row">
-                  <div class="col">1. <span class="text-teal text-bold">S</span> ( 100 )</div>
-                  <div class="col">2. <span class="text-teal text-bold">A</span> ( 90 )</div>
-                  <div class="col">3. <span class="text-teal text-bold">B</span> ( 80 )</div>
-                </div>
-                <div class="row">
-                  <div class="col"></div>
-                  <div class="col">4. <span class="text-teal text-bold">C</span> ( 70 )</div>
-                  <div class="col">5. <span class="text-teal text-bold">D</span> ( 60 )</div>
-                </div>
-              </q-banner>
-            </div>
-          </div>
+          <q-banner rounded :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-3'">
+            <template v-slot:avatar>
+              <q-icon name="menu_book" color="primary" size="md" />
+            </template>
+            <span class="text-subtitle1 text-bold"> 목표에 대한 성과를 등록 작업입니다.</span><br />
+            1. <span class="text-teal text-bold">승인완료</span> 자료만 등록하실 수 있습니다.<br />
+            2. 등록이 완료된 자료는 <span class="text-indigo text-bold">평가요청</span>을 진행합니다.<br />
+          </q-banner>
         </div>
-        <div class="col-xs-12 col-md-12 col-lg-4 q-my-sm">
+        <div class="col-xs-12 col-md-12 col-lg-4">
           <q-card class="q-ml-lg-md q-pa-sm" :class="$q.screen.xs ? 'q-mt-xs' : 'row flex-center'" style="height: 100%">
             <q-space />
             <q-card-section class="row q-pa-none justify-center">
@@ -83,11 +61,11 @@
                 <q-icon name="replay" size="xs" class="q-pr-xs" /> 평가대기취소
               </q-btn>
               <q-btn v-if="statusCheck.sendHide" outline color="indigo-12" dense @click="sendAuthRequest" class="q-pr-md q-ml-md">
-                <q-badge color="orange" floating>{{ sendCount }}</q-badge>
+                <q-badge color="orange" floating>{{ statusCheck.sendCount }}</q-badge>
                 <q-icon name="send" size="xs" class="q-pr-xs" /> 평가요청
               </q-btn>
             </q-toolbar>
-            <div :key="gridKey" :style="{ height: gridHeight + 'px' }">
+            <div :style="{ height: gridHeight + 'px' }">
               <ag-grid-vue
                 style="width: 100%; height: 100%"
                 :class="$q.dark.isActive ? 'ag-theme-alpine-dark' : 'ag-theme-alpine'"
@@ -143,12 +121,12 @@
                 :readonly="formReadonly"
                 :disable="formDisable"
                 v-model="formData.workDoc"
+                autogrow
                 clearable
                 type="textarea"
                 color="blue-13"
                 label-color="blue-13"
                 label="성과업적/실적"
-                rows="3"
                 :hint="`${byteCount} / 200자 까지 입력하실 수 있습니다.`"
                 @update:model-value="updateByteCount"
               />
@@ -160,7 +138,6 @@
                     <template v-slot:control>
                       <div class="self-center full-width no-outline" tabindex="0">{{ formData.weight }}</div>
                     </template>
-                    <template v-slot:hint>{{ formData.weight }} / {{ totalWeight }}</template>
                   </q-field>
                 </div>
                 <div class="col">
@@ -261,6 +238,7 @@ import { QBtn, QIcon, useQuasar } from 'quasar';
 import jsonUtil from 'src/js_comm/json-util';
 import { useUserInfoStore } from 'src/store/setUserInfo';
 import { useYearInfoStore } from 'src/store/setYearInfo';
+import commUtil from 'src/js_comm/comm-util';
 const storeUser = useUserInfoStore();
 const storeYear = useYearInfoStore();
 
@@ -309,7 +287,6 @@ const handlePointClick = val => {
 
 const $q = useQuasar();
 let isSaveFg = null;
-const gridKey = ref(0);
 
 const contentZoneHeight = ref(300);
 const contentZoneStyle = computed(() => ({
@@ -324,8 +301,8 @@ const onGridReady = params => {
   gridApi.value = params.api;
   gridApi.value.setGridOption('headerHeight', 45);
   gridApi.value.setGridOption('rowHeight', 45);
-  totalComputeWeight();
   gridApi.value.deselectAll();
+  // params.api.sizeColumnsToFit();
 };
 const defaultColDef = reactive({
   def: {
@@ -339,28 +316,23 @@ const defaultColDef = reactive({
 const columnDefs = reactive({
   columns: [
     {
-      headerName: '',
-      field: '',
+      headerName: '#',
+      minWidth: 50,
+      maxWidth: 50,
+      pinned: 'left',
       sortable: false,
       filter: false,
-      maxWidth: 60,
-      minWidth: 60,
-      pinned: 'left',
-      cellStyle: { textAlign: 'center' },
-      checkboxSelection: true,
-      headerCheckboxSelection: true,
-    },
-    {
-      headerName: 'No',
-      field: 'seq',
-      maxWidth: 70,
-      minWidth: 70,
+      valueGetter: function (params) {
+        return params.node.rowIndex + 1;
+      },
     },
     {
       headerName: '세부목표',
       field: 'targetDoc',
       minWidth: 200,
       resizable: true,
+      // cellClass: 'wrap-text', // Apply the custom CSS class
+      // autoHeight: true,
     },
     {
       headerName: '가중치',
@@ -368,7 +340,6 @@ const columnDefs = reactive({
       maxWidth: 95,
       minWidth: 95,
       resizable: false,
-      pinned: 'right',
       cellStyle: params => {
         return $q.dark.isActive ? { color: 'cyan', fontWeight: '300' } : { color: 'blue', fontWeight: '300' };
       },
@@ -376,9 +347,8 @@ const columnDefs = reactive({
     {
       headerName: '진행상태',
       field: 'statusNm',
-      minWidth: 120,
-      maxWidth: 120,
-      pinned: 'right',
+      minWidth: 110,
+      maxWidth: 110,
       cellStyle: params => {
         if (params.data.status === '0') {
           return null;
@@ -403,23 +373,7 @@ const columnDefs = reactive({
     },
   ],
 });
-let totalWeight = 0;
-const totalComputeWeight = () => {
-  totalWeight = 0;
-  rowData.rows.forEach(item => {
-    totalWeight += item.weight;
-  });
 
-  const pinnedBottomRowData = [
-    {
-      targetDoc: '합계',
-      weight: totalWeight,
-    },
-  ];
-
-  // gridApi.value.updateGridOptions({ pinnedBottomRowData });
-  gridApi.value.setPinnedBottomRowData(pinnedBottomRowData);
-};
 // 기준평가자연결정보
 const setEvGroup = reactive({
   evsGroup: {
@@ -445,7 +399,7 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', handleResize);
 });
 onBeforeMount(() => {
-  rowSelection.value = 'multiple';
+  rowSelection.value = 'single';
   getDataEvsn(storeUser.setEmpCd, setEvsCd.value);
   getData();
 });
@@ -503,26 +457,14 @@ const formDataInitialize = () => {
 
 const selectedRows = ref([]);
 const formDisable = ref(true);
-const sendCount = ref(0);
-const sendCountCancel = ref(0);
 const onSelectionChanged = event => {
   selectedRows.value = event.api.getSelectedRows();
-
-  sendCount.value = 0;
-  sendCountCancel.value = 0;
-  selectedRows.value.forEach(row => {
-    if (row.status === '3' && row.workDoc && row.selfPoint > 0 && row.workPer > 0) {
-      sendCount.value++;
-    }
-    if (row.status === '4' && row.markCh === '') {
-      sendCountCancel.value++;
-    }
-  });
 
   formReadonly.value = true;
   if (selectedRows.value.length === 1) {
     isSaveFg = 'U';
-    getDataSelect(selectedRows.value[0].stdYear, selectedRows.value[0].empCd, selectedRows.value[0].workNo);
+    getDataSelect(selectedRows.value[0]);
+    updateByteCount(selectedRows.value[0].workDoc);
   } else if (selectedRows.value.length > 1) {
     isSaveFg = 'D';
     formDisable.value = true;
@@ -710,10 +652,8 @@ const getData = async () => {
     });
     rowData.rows = response.data.data;
     if (rowData.rows.length > 0) {
-      minHeight.value = 90;
+      minHeight.value = 45;
     }
-    sendCount.value = 0;
-    gridKey.value += 1;
 
     // 자료 열람확인 처리
     statusCheck.value.cancelHide = false;
@@ -744,12 +684,12 @@ const getData = async () => {
 };
 
 // ***** 선택한 성과/목표정보 목록 자료 가져오기 부분  *****************************//
-const getDataSelect = async () => {
+const getDataSelect = async resRowSel => {
   try {
     const response = await api.post('/api/hpe/hpe1020_select', {
-      paramSetYear: storeYear.setYear,
-      paramEmpCd: selectedRows.value[0].empCd,
-      paramWorkNo: selectedRows.value[0].workNo,
+      paramSetYear: resRowSel.stdYear,
+      paramEmpCd: resRowSel.empCd,
+      paramWorkNo: resRowSel.workNo,
     });
     formData.value = response.data.data[0];
     formData.value.targetDoc = formData.value.targetDoc.replace(/\n/g, '<br>');
@@ -827,9 +767,13 @@ const acceptCheckSaveSection = (resStdYear, resEvtEmpCd) => {
 // **************************************************************//
 
 const byteCount = ref(0);
-const updateByteCount = () => {
-  const encoder = new TextEncoder();
-  byteCount.value = encoder.encode(formData.value.targetDoc).length;
+const updateByteCount = val => {
+  if (val) {
+    byteCount.value = commUtil.textByteLength(val);
+    if (byteCount.value > 200) {
+      alert('한글 200자 까지 가능합니다.');
+    }
+  }
 };
 
 const gridOptions = {
@@ -842,3 +786,16 @@ const gridOptions = {
 };
 </script>
 <style lang="scss" scoped></style>
+<style>
+.wrap-text {
+  white-space: normal !important;
+  word-wrap: break-word !important;
+  overflow: visible !important;
+  line-height: 1.5; /* Optional: Adjust line height for better readability */
+}
+/* Ensure the grid container and cells can grow vertically */
+.ag-theme-alpine .ag-cell {
+  display: inline-block;
+  vertical-align: top;
+}
+</style>

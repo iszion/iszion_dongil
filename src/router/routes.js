@@ -11,6 +11,13 @@ const routes = [
       { path: 'hpe2010', component: () => import('pages/erp/hpe/HpeV2010.vue') },
       { path: 'hpe2020', component: () => import('pages/erp/hpe/HpeV2020.vue') },
 
+      { path: 'hce1010', component: () => import('pages/erp/hce/HceV1010.vue') },
+      { path: 'hce1020', component: () => import('pages/erp/hce/HceV1020.vue') },
+      { path: 'hce2010', component: () => import('pages/erp/hce/HceV2010.vue') },
+      { path: 'hce2020', component: () => import('pages/erp/hce/HceV2020.vue') },
+
+      { path: 'hrt1010', component: () => import('pages/erp/hrt/HrtV1010.vue') },
+
       { path: 'aux1010', component: () => import('pages/erp/aux/AuxV1010.vue') },
       { path: 'aux2010', component: () => import('pages/erp/aux/AuxV2010.vue') },
 

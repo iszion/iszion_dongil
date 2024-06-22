@@ -27,6 +27,7 @@ export default {
   main_menu_man: '대시보드',
   main_menu_hpr: '승격심사',
   main_menu_hce: '역량평가',
+  main_menu_hrt: '평가보고',
   main_menu_hpe: '성과평가',
   main_menu_mst: '기준정보',
   main_menu_sys: '시스템',

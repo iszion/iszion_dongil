@@ -50,4 +50,22 @@ export default {
 
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   },
+
+  textByteLength(str) {
+    let strLength1 = 0;
+    let strLength2 = 0;
+    const koreanRegex = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/g;
+    const matches1 = str.match(koreanRegex);
+    const generalRegex = /[^\uAC00-\uD7A3\u1100-\u11FF\u3130-\u318F\uA960-\uA97F\uD7B0-\uD7FF]/g;
+    const matches2 = str.match(generalRegex);
+    if (matches1) {
+      strLength1 = matches1.length * 2;
+    }
+    if (matches2) {
+      strLength2 = matches2.length;
+    }
+    // console.log('matches1 : ', matches1);
+    // console.log('matches2 : ', matches2);
+    return strLength1 + strLength2;
+  },
 };
