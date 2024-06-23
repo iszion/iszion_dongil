@@ -18,7 +18,7 @@ export default {
 
   /* *****  Header 부분 *****  */
   project_name: 'Store Sale',
-  header_menu_profile: 'Profile',
+  header_menu_profile: 'Password Change',
   header_menu_logout: 'Logout',
 
   /* *****  Main Menu 부분  *****  */

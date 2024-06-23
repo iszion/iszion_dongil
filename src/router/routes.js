@@ -17,6 +17,7 @@ const routes = [
       { path: 'hce2020', component: () => import('pages/erp/hce/HceV2020.vue') },
 
       { path: 'hrt1010', component: () => import('pages/erp/hrt/HrtV1010.vue') },
+      { path: 'hrt9000', component: () => import('pages/erp/hrt/HrtV9000.vue') },
 
       { path: 'aux1010', component: () => import('pages/erp/aux/AuxV1010.vue') },
       { path: 'aux2010', component: () => import('pages/erp/aux/AuxV2010.vue') },
@@ -48,7 +49,7 @@ const routes = [
 
       {
         path: 'profile',
-        component: () => import('pages/profile/ProfilePage.vue'),
+        component: () => import('pages/profile/PasswordPage.vue'),
         children: [
           { path: '', component: () => import('pages/profile/ProfilePosts.vue') },
           { path: 'saved', component: () => import('pages/profile/ProfileSaved.vue') },

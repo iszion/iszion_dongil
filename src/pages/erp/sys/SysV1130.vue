@@ -73,10 +73,10 @@
                 options-dense
                 class="q-pb-sm q-pl-sm q-mr-lg"
                 label-color="orange"
-                v-model="selectedDept"
-                :options="deptOptions"
-                option-value="commCd"
-                option-label="commNm"
+                v-model="searchValue.deptCd"
+                :options="searchValue.deptOptions"
+                option-value="deptCd"
+                option-label="deptNm"
                 option-disable="inactive"
                 emit-value
                 map-options
@@ -85,8 +85,8 @@
                 @update:model-value="handleSelectedUser"
               />
 
-              <span v-if="selectedProg" class="text-subtitle1 text-bold shadow-5 q-px-lg q-py-xs bg-secondary rounded-borders">
-                {{ selectedProg.progNm }}
+              <span v-if="selectedProg" class="text-subtitle1 text-bold q-px-lg q-py-xs text-secondary rounded-borders">
+                [ {{ selectedProg.progNm }} ]
               </span>
               <q-space />
               <q-btn v-if="showSaveUserBtn" outline dense color="primary" @click="saveDataUserSection" v-close-popup class="q-px-sm q-mr-sm"
@@ -144,6 +144,8 @@ import CompToggleApp from 'components/CompToggleApp.vue';
 import { isEmpty } from 'lodash';
 import jsonUtil from 'src/js_comm/json-util';
 import notifySave from 'src/js_comm/notify-save';
+import { useYearInfoStore } from 'src/store/setYearInfo';
+const storeYear = useYearInfoStore();
 
 const $q = useQuasar();
 
@@ -163,6 +165,18 @@ const rowDataUser = reactive({ rows: [] });
 const rowDataUserBack = ref([]);
 const updateData = ref([]);
 const showSaveUserBtn = ref(false);
+
+const searchValue = ref({
+  textValue: '',
+  evsCd: null,
+  deptCd: null,
+  titlCd: null,
+  catgCd: null,
+  evsOptions: [],
+  deptOptions: [],
+  titlOptions: [],
+  catgOptions: [],
+});
 
 const onGridReadyProg = params => {
   gridApiProg.value = params.api;
@@ -441,7 +455,7 @@ const onSelectionChangedProg = event => {
   selectedRowsProg.value = event.api.getSelectedRows();
   if (!isEmpty(selectedRowsProg.value)) {
     selectedProg.value = selectedRowsProg.value[0];
-    getDataUser(selectedProg.value.progId);
+    getDataUser();
   }
 };
 const onSelectionChangedUser = event => {
@@ -490,7 +504,7 @@ onMounted(() => {
   handleResize();
   rowSelectionProg.value = 'single';
   reloadDataSection();
-  getDataCommOption('701');
+  getDataDeptOption();
 });
 
 const reloadDataSection = () => {
@@ -523,7 +537,7 @@ const saveDataUserSection = () => {
   } else {
     saveDataUserAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
     setTimeout(() => {
-      getDataUser(selectedProg.value.progId);
+      getDataUser();
     }, 500);
   }
 };
@@ -537,8 +551,8 @@ const handleSelectedGroup = resSelectedGroup => {
   getDataProg();
 };
 // ***** 검색 선택 자동 처리 부분 끝 *****************************//
-const handleSelectedUser = resSelectedGroup => {
-  getDataUser(selectedProg.value.progId);
+const handleSelectedUser = resDeptCd => {
+  getDataUser();
 };
 // ***** 검색 선택 자동 처리 부분 끝 *****************************//
 
@@ -555,9 +569,9 @@ const getDataProg = async () => {
 };
 
 // ***** 프로그램 권한정보 선택된 자료 가져오기 부분  *****************************//
-const getDataUser = async resProgId => {
+const getDataUser = async () => {
   try {
-    const response = await api.post('/api/sys/sys1130_user_list', { paramUserId: 'daon', paramDeptCd: selectedDept.value, paramProgId: resProgId });
+    const response = await api.post('/api/sys/sys1130_user_list', { paramDeptCd: searchValue.value.deptCd, paramProgId: selectedProg.value.progId });
     rowDataUser.rows = response.data.data;
     rowDataUserBack.value = JSON.parse(JSON.stringify(response.data.data));
     updateData.value = [];
@@ -590,10 +604,10 @@ const groupOptions = ref([]);
 const selectedGroup = ref('');
 const getDataGroup = async () => {
   try {
-    const response = await api.post('/api/sys/prog_group_list', { paramUserId: '' });
+    const response = await api.post('/api/sys/prog_group_list', {});
     // 옵션 초기화
     groupOptions.value = response.data.data;
-    groupOptions.value.push({ groupNm: '전체', groupCd: '' });
+    groupOptions.value.unshift({ groupNm: '전체', groupCd: '' });
     selectedGroup.value = '';
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -601,18 +615,19 @@ const getDataGroup = async () => {
 };
 
 // ***** DataBase 소속자료 가져오기 부분 *****************************//
-const deptOptions = ref([]);
-const selectedDept = ref(null);
-// ***** 공통코드정보 가져오기 부분  *****************************//
-async function getDataCommOption(resParamCommCd1) {
+
+async function getDataDeptOption() {
   try {
-    const response = await api.post('/api/mst/comm_option_list', { paramCommCd1: resParamCommCd1 });
-    deptOptions.value = response.data.data;
-    deptOptions.value.push({ commCd: '', commNm: '전체' });
+    const response = await api.post('/api/mst/dept_option_list', { paramSetYear: storeYear.setYear });
+
+    searchValue.value.deptOptions = response.data.data;
+    searchValue.value.deptOptions.unshift({ deptCd: '', deptNm: '전체' });
+    searchValue.value.deptCd = '';
   } catch (error) {
     console.error('Error fetching users:', error);
   }
 }
+
 // **************************************************************//
 // ***** DataBase 연결부분 끝  *************************************//
 // **************************************************************//

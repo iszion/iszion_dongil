@@ -4,6 +4,7 @@
 
 <script>
 import { defineComponent } from 'vue';
+import router from 'src/router';
 
 export default defineComponent({
   name: 'App',
@@ -30,6 +31,10 @@ export default defineComponent({
       // Show confirmation dialog to the user
       // event.preventDefault();
       // event.returnValue = ''; // Standard way to trigger a confirmation dialog
+      // const token = sessionStorage.getItem('accessToken');
+      // if (!token) {
+      //   router.push('/');
+      // }
     },
     handleUnload() {
       // Logic when the page unloads

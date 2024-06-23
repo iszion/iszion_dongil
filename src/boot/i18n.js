@@ -10,7 +10,7 @@ export default boot(async ({ app }) => {
   const locale = LocalStorage.getItem('lang') || Quasar.lang.isoName;
   const i18n = createI18n({
     legacy: false,
-    locale,
+    locale: 'ko-KR', // 기본 언어 설정
     messages,
   });
   app.use(i18n);

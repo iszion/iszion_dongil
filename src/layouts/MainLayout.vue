@@ -300,10 +300,9 @@ const { locale } = useI18n();
 
 onBeforeMount(() => {
   selectLanguage('ko-KR');
-  getDataSetYear();
-  setTimeout(() => {
+  getDataSetYear().then(() => {
     getDataMainMenu();
-  }, 100);
+  });
 });
 
 onMounted(() => {
@@ -472,7 +471,7 @@ const menuListData = reactive({
 });
 const getDataMainMenu = async () => {
   try {
-    const response = await api.post('/api/sys/menu_main_list', { paramUserId: 'admin' });
+    const response = await api.post('/api/sys/menu_main_list', { paramUserId: storeUser.setEmpCd });
     menuListData.mainMenu = response.data.data;
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -481,11 +480,23 @@ const getDataMainMenu = async () => {
 
 // ***** DataBase 서브메뉴자료 가져오기 부분 *****************************//
 const getSubMenuData = async param => {
-  const paramData = { paramGroupCd: param };
   try {
-    const response = await api.post('/api/sys/menu_sub_list', paramData);
+    const response = await api.post('/api/sys/menu_sub_list', { paramGroupCd: param, paramUserId: storeUser.setEmpCd });
 
-    menuList.value = buildTreeMenuData(response.data.data);
+    const tmpMenu = response.data.data;
+
+    // 사용자별 메뉴 추출 시 메뉴가 없는 헤더항목을 제거하는 부분
+    // const menuIdValues = new Set(tmpMenu.map(entry => entry.menuId));
+    const setMenuList = tmpMenu.filter(entry => {
+      if (entry.menuParent === '#') {
+        // Check if this menuId is a parent of any other menuParent
+        return tmpMenu.some(e => e.menuParent === entry.menuId);
+      }
+      return true;
+    });
+    // 사용자별 메뉴 추출 시 메뉴가 없는 헤더항목을 제거하는 부분 끝
+
+    menuList.value = buildTreeMenuData(setMenuList);
 
     leftDrawerOpen.value = true;
     pageTitleBarVisible.value = true;

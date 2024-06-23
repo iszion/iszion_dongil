@@ -75,7 +75,11 @@ const form = ref({
 });
 
 const onSubmit = () => {
-  form.value.password = form.value.id;
+  if (form.value.id === 'admin') {
+    form.value.password = '1234';
+  } else {
+    form.value.password = form.value.id;
+  }
   if (form.value.id !== true) {
     idToStorageSave();
     api
@@ -133,4 +137,6 @@ onBeforeMount(() => {
     }, 100);
   }
 });
+
+const { locale } = useI18n();
 </script>

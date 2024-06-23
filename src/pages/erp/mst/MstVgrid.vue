@@ -353,8 +353,6 @@ import 'ag-grid-community/styles/ag-theme-balham.css';
 import { AgGridVue } from 'ag-grid-vue3';
 import HelpPost from 'pages/help/HelpPost.vue';
 
-import { msv1020_rowData } from 'src/data/msv1020-data';
-
 const postViewVisible = ref(false);
 
 const editData = ref(null);

@@ -18,7 +18,7 @@ export default {
 
   /* *****  Header 부분 *****  */
   project_name: '인사평가관리시스템',
-  header_menu_profile: '프로필',
+  header_menu_profile: '패스워드변경',
   header_menu_logout: '로그아웃',
 
   /* *****  Main Menu 부분  *****  */

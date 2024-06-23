@@ -7,10 +7,9 @@
 
       <div class="">
         <q-card class="q-pa-sm">
-          <q-toolbar class="row q-px-none">
+          <q-toolbar class="row q-px-none q-pt-none">
             <div class="col-xs-12 col-sm-9 row">
               <q-select
-                dense
                 stack-label
                 options-dense
                 class="q-px-md"
@@ -22,12 +21,11 @@
                 option-disable="inactive"
                 emit-value
                 map-options
-                style="min-width: 120px; max-width: 120px"
+                style="min-width: 140px"
                 label="평가승인구분"
                 @update:model-value="getData"
               />
               <q-select
-                dense
                 stack-label
                 options-dense
                 class="q-px-md q-mr-xs"
@@ -39,12 +37,11 @@
                 option-disable="inactive"
                 emit-value
                 map-options
-                style="min-width: 150px; max-width: 160px"
+                style="min-width: 100px"
                 label="소속팀"
                 @update:model-value="getData"
               />
               <q-select
-                dense
                 stack-label
                 options-dense
                 class="q-px-md"
@@ -56,12 +53,11 @@
                 option-disable="inactive"
                 emit-value
                 map-options
-                style="min-width: 100px; max-width: 100px"
+                style="min-width: 90px"
                 label="직급"
                 @update:model-value="getData"
               />
               <q-select
-                dense
                 stack-label
                 options-dense
                 class="q-px-md"
@@ -73,7 +69,7 @@
                 option-disable="inactive"
                 emit-value
                 map-options
-                style="min-width: 120px; max-width: 120px"
+                style="min-width: 100px"
                 label="직분류"
                 @update:model-value="getData"
               />
@@ -82,26 +78,35 @@
                 label-color="orange"
                 bottom-slots
                 v-model="searchValue.textValue"
-                label="검색"
-                dense
+                label="검색(성명)"
                 class="q-pb-none"
                 style="width: 110px"
                 @update:model-value="getData"
               >
                 <template v-slot:append>
-                  <q-icon v-if="searchValue.textValue !== ''" name="close" @click="searchValue.textValue = ''" class="cursor-pointer" />
+                  <q-icon
+                    v-if="searchValue.textValue !== ''"
+                    name="close"
+                    @click="searchValue.textValue = ''"
+                    size="xs"
+                    class="cursor-pointer q-pt-md"
+                  />
                 </template>
               </q-input>
             </div>
             <q-space />
             <div class="row q-gutter-x-xs">
-              <q-btn outline color="grey" dense @click="getData" class="q-px-sm">
+              <q-btn outline color="grey" @click="getData" class="q-px-sm">
                 <q-icon name="refresh" size="xs" class="q-mr-xs" />
                 조회
               </q-btn>
+              <q-btn outline color="teal" @click="excelDownload" class="q-px-sm">
+                <q-icon name="refresh" size="xs" class="q-mr-xs" />
+                엑셀
+              </q-btn>
             </div>
           </q-toolbar>
-          <q-card class="">
+          <q-card class="q-mt-sm">
             <div :style="{ height: gridHeight + 'px' }">
               <ag-grid-vue
                 style="width: 100%; height: 100%"
@@ -126,7 +131,7 @@ import 'ag-grid-community/styles/ag-theme-balham.css';
 import { AgGridVue } from 'ag-grid-vue3';
 import { computed, onBeforeMount, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
 import { api } from 'boot/axios';
-import { QBtn, QIcon, QToggle, useQuasar } from 'quasar';
+import { QBtn, QIcon, QToggle, SessionStorage, useQuasar } from 'quasar';
 import { useYearInfoStore } from 'src/store/setYearInfo';
 const storeYear = useYearInfoStore();
 
@@ -145,7 +150,7 @@ const contentZoneStyle = computed(() => ({
 }));
 
 const searchValue = ref({
-  textValue: null,
+  textValue: '',
   evsCd: null,
   deptCd: null,
   titlCd: null,
@@ -327,36 +332,39 @@ const getData = async () => {
 };
 
 // ***** DataBase 소속자료 가져오기 부분 *****************************//
-async function getDataDeptOption(resParamCommCd1) {
+async function getDataDeptOption() {
   try {
     const response = await api.post('/api/mst/dept_option_list', { paramSetYear: storeYear.setYear });
 
     searchValue.value.deptOptions = response.data.data;
-    searchValue.value.deptOptions.push({ deptCd: '', deptNm: '전체' });
+    searchValue.value.deptOptions.unshift({ deptCd: '', deptNm: '전체' });
+    searchValue.value.deptCd = '';
   } catch (error) {
     console.error('Error fetching users:', error);
   }
 }
 
 // ***** DataBase 직급자료 가져오기 부분 *****************************//
-async function getDataTitlOption(resParamCommCd1) {
+async function getDataTitlOption() {
   try {
     const response = await api.post('/api/mst/titl_option_list', { paramSetYear: storeYear.setYear });
 
     searchValue.value.titlOptions = response.data.data;
-    searchValue.value.titlOptions.push({ titlCd: '', titlNm: '전체' });
+    searchValue.value.titlOptions.unshift({ titlCd: '', titlNm: '전체' });
+    searchValue.value.titlCd = '';
   } catch (error) {
     console.error('Error fetching users:', error);
   }
 }
 
 // ***** DataBase 직분류자료 가져오기 부분 *****************************//
-async function getDataCatgOption(resParamCommCd1) {
+async function getDataCatgOption() {
   try {
     const response = await api.post('/api/mst/catg_option_list', { paramSetYear: storeYear.setYear });
 
     searchValue.value.catgOptions = response.data.data;
-    searchValue.value.catgOptions.push({ catgCd: '', catgNm: '전체' });
+    searchValue.value.catgOptions.unshift({ catgCd: '', catgNm: '전체' });
+    searchValue.value.catgCd = '';
   } catch (error) {
     console.error('Error fetching users:', error);
   }
@@ -368,7 +376,8 @@ async function getDataCommOption(resParamCommCd1) {
   try {
     const response = await api.post('/api/mst/comm_option_list', { paramCommCd1: resParamCommCd1 });
     searchValue.value.evsOptions = response.data.data;
-    searchValue.value.evsOptions.push({ commCd: '', commNm: '전체' });
+    searchValue.value.evsOptions.unshift({ commCd: '', commNm: '전체' });
+    searchValue.value.evsCd = '';
   } catch (error) {
     console.error('Error fetching users:', error);
   }
@@ -376,6 +385,61 @@ async function getDataCommOption(resParamCommCd1) {
 // **************************************************************//
 // ***** DataBase 연결부분 끝  *************************************//
 // **************************************************************//
+
+/* ************************************************************************* *
+ ** Excel저장  처리부분
+ ** ************************************************************************* */
+const excelDownload = () => {
+  $q.dialog({
+    dark: true,
+    title: 'Excel 저장',
+    html: true,
+    message: '엑셀 파일로 저장 하시겠습니까?',
+    // persistent: true,
+    ok: {
+      label: '저장',
+      color: 'primary',
+    },
+    cancel: {
+      label: '닫기',
+      color: 'secondary',
+    },
+  })
+    .onOk(() => {
+      const paramData = {};
+
+      api
+        .post('/api/hrt/hrt1010_excel', paramData)
+        .then(response => {
+          const contentDisposition = response.headers['content-disposition'];
+          let fileName = 'download.xlsx';
+          if (contentDisposition) {
+            const fileNameMatch = contentDisposition.match(/filename="?(.+)"?/);
+            if (fileNameMatch.length === 2) {
+              fileName = fileNameMatch[1];
+            }
+          }
+
+          // 브라우저에서 파일 다운로드
+          const url = window.URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', fileName);
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        })
+        .catch(error => {
+          $q.notify({
+            type: 'negative',
+            message: '엑셀 파일을 다운로드하는 중 오류가 발생했습니다.',
+          });
+          console.error('Excel download error:', error);
+        });
+    })
+    .onCancel(() => {})
+    .onDismiss(() => {});
+};
 
 const gridOptions = {
   columnDefs: columnDefs.group,

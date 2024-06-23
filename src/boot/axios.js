@@ -9,7 +9,7 @@ export default boot(({ app, router }) => {
   api.interceptors.request.use(
     function (config) {
       const token = sessionStorage.getItem('accessToken');
-      if (!token) {
+      if (!token || token === 'undefined') {
         router.push('/');
       } else {
         console.log('!!!');
