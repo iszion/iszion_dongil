@@ -58,7 +58,8 @@ const onSubmit = () => {
     api
       .post('/api/sys/passwordCheck', { paramUserId: storeUser.setEmpCd, paramOldPassword: form.value.oldPassword })
       .then(res => {
-        if (res.data.data.check) {
+        console.log("res : " + JSON.stringify(res.data.data))
+        /*if (res.data.data.check) {
           alert('ok');
         } else {
           $q.notify({
@@ -68,7 +69,7 @@ const onSubmit = () => {
             color: 'negative',
             position: 'bottom-right',
           });
-        }
+        }*/
       })
       .catch(res => {
         console.log(res);
