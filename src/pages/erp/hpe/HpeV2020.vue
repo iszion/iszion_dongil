@@ -430,13 +430,15 @@ const onSelectionChanged = event => {
         }
       });
     } else {
-      rowData.rowsSel = [];
-      $q.dialog({
-        dark: true,
-        title: '목표성과',
-        html: true,
-        message: '목표성과 작성중입니다. <br />목표성과작업 완료 후 작업이 가능합니다.',
-      });
+      if (selectedRows.value[0].status !== '') {
+        rowData.rowsSel = [];
+        $q.dialog({
+          dark: true,
+          title: '목표성과',
+          html: true,
+          message: '목표성과 작성중입니다. <br />목표성과작업 완료 후 작업이 가능합니다.',
+        });
+      }
     }
   }
 };

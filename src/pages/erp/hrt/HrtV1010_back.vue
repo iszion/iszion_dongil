@@ -2,13 +2,29 @@
   <q-page class="q-pa-xs-xs q-pa-sm-md" :style-fn="myTweak">
     <q-card class="q-pa-sm">
       <q-card-section class="text-center q-pa-sm q-mb-sm" :class="$q.dark.isActive ? 'bg-teal-7' : 'bg-teal-3'">
-        <q-item-label class="text-h6">목표성과평가 현황 </q-item-label>
+        <q-item-label class="text-h6">1차 역량평가하기 (항목기준) </q-item-label>
       </q-card-section>
 
       <div class="">
         <q-card class="q-pa-sm">
           <q-toolbar class="row q-px-none q-pt-none">
             <div class="col-xs-12 col-sm-9 row">
+              <q-select
+                stack-label
+                options-dense
+                class="q-px-md"
+                label-color="orange"
+                v-model="searchValue.evsCd"
+                :options="searchValue.evsOptions"
+                option-value="commCd"
+                option-label="commNm"
+                option-disable="inactive"
+                emit-value
+                map-options
+                style="min-width: 140px"
+                label="평가승인구분"
+                @update:model-value="getData"
+              />
               <q-select
                 stack-label
                 options-dense
@@ -81,13 +97,12 @@
             <q-space />
             <div class="row q-gutter-x-xs">
               <q-btn outline color="grey" @click="getData" class="q-px-sm">
-                <q-icon name="search" size="xs" class="q-mr-xs" />
+                <q-icon name="refresh" size="xs" class="q-mr-xs" />
                 조회
               </q-btn>
-
-              <q-btn :disable="rowData.rows.length === 0" outline color="teal" @click="isDialogVisible = true" class="q-px-sm">
-                <q-icon name="download" size="xs" class="q-mr-xs" />
-                엑셀/출력
+              <q-btn outline color="teal" @click="isExcelDownload" class="q-px-sm">
+                <q-icon name="refresh" size="xs" class="q-mr-xs" />
+                엑셀
               </q-btn>
             </div>
           </q-toolbar>
@@ -105,44 +120,32 @@
         </q-card>
       </div>
     </q-card>
-    <q-dialog persistent full-height full-width v-model="isDialogVisible">
-      <q-card class="q-pa-none q-ma-none">
-        <q-card-section class="q-pa-none q-ma-none">
-          <hrt-v1010p :rowData="rowData.rows" @close="handleClose" />
-        </q-card-section>
-      </q-card>
-    </q-dialog>
   </q-page>
 </template>
-ㅌ
+
 <script setup>
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-quartz.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import 'ag-grid-community/styles/ag-theme-balham.css';
 import { AgGridVue } from 'ag-grid-vue3';
-import { computed, onBeforeMount, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
+import { computed, onBeforeMount, onBeforeUnmount, onMounted, reactive, ref, toRefs, defineProps } from 'vue';
 import { api } from 'boot/axios';
 import { QBtn, QIcon, QToggle, SessionStorage, useQuasar } from 'quasar';
 import { useYearInfoStore } from 'src/store/setYearInfo';
-import HrtV1010p from 'pages/erp/hrt/HrtV1010p.vue';
+import * as XLSX from 'xlsx';
 
 const storeYear = useYearInfoStore();
 
 const rowData = reactive({ rows: [] });
-const isDialogVisible = ref(false);
 
-// grid Height 자동처리부분1
-const gridHeight = ref(145); // 초기 높이
+// grid Height 자동처리부분
+const gridHeight = ref(90); // 초기 높이
 const rowHeight = 45; // 행당 높이 (예: 25px)
 const minHeight = ref(90); // 최소 높이 (예: 300px) rowHeight의 3배
 
 const $q = useQuasar();
 
-function handleClose() {
-  console.log('handleClose called');
-  isDialogVisible.value = false;
-}
 const contentZoneHeight = ref(300);
 const contentZoneStyle = computed(() => ({
   height: `${contentZoneHeight.value}px`,
@@ -150,12 +153,14 @@ const contentZoneStyle = computed(() => ({
 
 const searchValue = ref({
   textValue: '',
+  evsCd: null,
   deptCd: null,
   titlCd: null,
   catgCd: null,
-  deptOptions: null,
-  titlOptions: null,
-  catgOptions: null,
+  evsOptions: [],
+  deptOptions: [],
+  titlOptions: [],
+  catgOptions: [],
 });
 
 const columnDefs = reactive({
@@ -175,106 +180,73 @@ const columnDefs = reactive({
       },
     },
     {
+      headerName: '성명',
+      field: 'empNm',
+      minWidth: 120,
+      resizable: true,
+    },
+    {
       headerName: '소속',
       field: 'deptNm',
       minWidth: 105,
-      maxWidth: 105,
       cellStyle: params => {
-        return getStatusMessageStyle(params.data);
+        return getStatusMessageStyle(params.data.deptNm);
       },
     },
     {
       headerName: '직급',
       field: 'titlNm',
-      minWidth: 80,
-      maxWidth: 80,
+      minWidth: 105,
       cellStyle: params => {
-        return getStatusMessageStyle(params.data);
+        return getStatusMessageStyle(params.data.deptNm);
       },
-    },
-    {
-      headerName: '성명',
-      field: 'empNm',
-      minWidth: 90,
-      maxWidth: 90,
-      resizable: true,
     },
     {
       headerName: '평가구분',
       field: 'evsNm',
       minWidth: 105,
-      maxWidth: 105,
       cellStyle: params => {
-        return getStatusMessageStyle(params.data);
+        return getStatusMessageStyle(params.data.deptNm);
       },
     },
     {
-      headerName: '목표내용',
-      field: 'targetDoc',
-      minWidth: 150,
+      headerName: '평가항목',
+      field: 'itemNm',
+      minWidth: 105,
       cellStyle: params => {
-        return getStatusMessageStyle(params.data);
+        return getStatusMessageStyle(params.data.deptNm);
       },
     },
     {
-      headerName: '성과내용',
-      field: 'workDoc',
-      minWidth: 150,
+      headerName: '항목코드',
+      field: 'workNo',
+      minWidth: 105,
       cellStyle: params => {
-        return getStatusMessageStyle(params.data);
+        return getStatusMessageStyle(params.data.deptNm);
       },
     },
     {
-      headerName: '평가기준',
-      field: 'evaNm',
-      minWidth: 150,
+      headerName: '평가',
+      field: 'markCh',
+      minWidth: 105,
       cellStyle: params => {
-        return getStatusMessageStyle(params.data);
+        return getStatusMessageStyle(params.data.deptNm);
       },
     },
     {
-      headerName: '가중치',
-      field: 'weight',
-      minWidth: 90,
-      maxWidth: 90,
-      cellStyle: params => {
-        return getStatusMessageStyle(params.data);
-      },
-    },
-    {
-      headerName: '자기평가',
-      field: 'selfPoint',
-      minWidth: 100,
-      maxWidth: 100,
-      cellStyle: params => {
-        return getStatusMessageStyle(params.data);
-      },
-    },
-    {
-      headerName: '자기환산',
-      field: 'selfPointX',
-      minWidth: 100,
-      maxWidth: 100,
-      cellStyle: params => {
-        return getStatusMessageStyle(params.data);
-      },
-    },
-    {
-      headerName: '성과평가',
+      headerName: '평가점수',
       field: 'markPoint',
-      minWidth: 100,
-      maxWidth: 100,
+      minWidth: 105,
       cellStyle: params => {
-        return getStatusMessageStyle(params.data);
+        return getStatusMessageStyle(params.data.deptNm);
       },
     },
     {
-      headerName: '성과환산',
-      field: 'markPointX',
-      minWidth: 100,
-      maxWidth: 100,
+      headerName: '마감',
+      field: 'lockYn',
+      minWidth: 105,
       cellStyle: params => {
-        return getStatusMessageStyle(params.data);
+        return getStatusMessageStyle(params.data.deptNm);
       },
     },
   ],
@@ -304,8 +276,9 @@ onBeforeMount(() => {
   getDataDeptOption();
   getDataTitlOption();
   getDataCatgOption();
+  getDataCommOption('201');
 
-  // getData();
+  getData();
 });
 
 onMounted(() => {
@@ -337,6 +310,7 @@ const getData = async () => {
   try {
     const response = await api.post('/api/hrt/hrt1010_list', {
       paramSetYear: storeYear.setYear,
+      paramEvsCd: searchValue.value.evsCd,
       paramDeptCd: searchValue.value.deptCd,
       paramTitlCd: searchValue.value.titlCd,
       paramCatgCd: searchValue.value.catgCd,
@@ -398,9 +372,106 @@ async function getDataCatgOption() {
   }
 }
 
+// ***** DataBase 공통코드 가져오기 부분 *****************************//
+// ***** 공통코드정보 가져오기 부분  *****************************//
+async function getDataCommOption(resParamCommCd1) {
+  try {
+    const response = await api.post('/api/mst/comm_option_list', { paramCommCd1: resParamCommCd1 });
+    searchValue.value.evsOptions = response.data.data;
+    searchValue.value.evsOptions.unshift({ commCd: '', commNm: '전체' });
+    searchValue.value.evsCd = '';
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+}
 // **************************************************************//
 // ***** DataBase 연결부분 끝  *************************************//
 // **************************************************************//
+
+/* ************************************************************************* *
+ ** Excel저장  처리부분
+ ** ************************************************************************* */
+const isExcelDownload = () => {
+  $q.dialog({
+    dark: true,
+    title: 'Excel 저장',
+    html: true,
+    message: '엑셀 파일로 저장 하시겠습니까?',
+    // persistent: true,
+    ok: {
+      label: '저장',
+      color: 'primary',
+    },
+    cancel: {
+      label: '닫기',
+      color: 'secondary',
+    },
+  })
+    .onOk(() => {
+      excelDown();
+    })
+    .onCancel(() => {})
+    .onDismiss(() => {});
+};
+const props = defineProps({
+  title: {
+    type: String,
+    required: false,
+  },
+});
+
+const cList = rowData.rows;
+
+/** 엑셀 다운로드 시 키값 rename */
+const renameKeys = (mapping, objArr) => {
+  const renamedObjArr = [];
+  for (const obj of objArr) {
+    const renamedObj = {};
+    for (const [before, after] of Object.entries(mapping)) {
+      if (obj[before]) {
+        renamedObj[after] = obj[before];
+      }
+    }
+    renamedObjArr.push(renamedObj);
+  }
+  return renamedObjArr;
+};
+
+/** 엑셀 다운로드 시 rename될 mapping 양식 */
+const mapping = {
+  /** 회사 제품이기 때문에 상세한 내용들은 빼겠습니다.
+   modUserId: '수정자ID',
+   modeUserName: '수정자명',
+   modDate: '수정일자'
+   위의 형식들로 mapping 양식 작성해주시면 됩니다.
+   */
+};
+
+/** 일자별 데이터 엑셀 다운로드 */
+const excelDown = () => {
+  /** payload 복제하여 사용
+   * - payload(cList.data)를 직접적으로 수정하면 테이블 정보까지 변경됌
+   */
+  const excelData = cList;
+  /** 요소 지우기 */
+  for (var i = 0; i < excelData.length; i++) {
+    /** 만약 payload에 필요없는 내용이 있다면
+     delete excelData[i].칼럼명
+     */
+    /** 내용이 비어있으면 엑셀파일로 출력 시 빈 칸도 없이 아예 사라짐. 따라서 내용이 없는데 칼럼과 빈 칸이 필요한 경우 추가함
+     if (excelData[i].description === null) {
+     excelData[i].description = []
+     excelData[i].description.push(' ')
+     }
+     */
+  }
+  const dataWS = XLSX.utils.json_to_sheet(renameKeys(mapping, excelData));
+  /** rename이 필요없다면 */
+  // const dataWS = XLSX.utils.json_to_sheet(excelData)
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, dataWS, 'Sheet1');
+  XLSX.writeFile(wb, props.title + '.xlsx');
+};
 
 const gridOptions = {
   columnDefs: columnDefs.group,
@@ -424,14 +495,14 @@ const gridOptions = {
     if (param.node.rowPinned) {
       return { 'font-weight': 'bold', background: '#dddddd' };
     }
-    return { 'text-align': 'left' };
+    return { 'text-align': 'center' };
   },
   getRowHeight: function (param) {
     // 고정된 행의 높이
     if (param.node.rowPinned) {
       return 45;
     }
-    return 30;
+    return 25;
   },
   // GRID READY 이벤트, 사이즈 자동조정
   onGridReady: function (event) {
@@ -462,7 +533,7 @@ const gridOptions = {
     console.log('onCellClicked');
   },
   isRowSelectable: function (event) {
-    // console.log('isRowSelectable');
+    console.log('isRowSelectable');
     return true;
   },
   onSelectionChanged: function (event) {

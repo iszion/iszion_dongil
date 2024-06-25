@@ -2,7 +2,7 @@
   <q-page class="q-pa-xs-xs q-pa-sm-md" :style-fn="myTweak">
     <q-card class="q-pa-sm">
       <q-card-section class="text-center q-pa-sm q-mb-sm" :class="$q.dark.isActive ? 'bg-teal-7' : 'bg-teal-3'">
-        <q-item-label class="text-h6">목표성과평가 현황 </q-item-label>
+        <q-item-label class="text-h6">역량평가 현황 </q-item-label>
       </q-card-section>
 
       <div class="">
@@ -108,7 +108,7 @@
     <q-dialog persistent full-height full-width v-model="isDialogVisible">
       <q-card class="q-pa-none q-ma-none">
         <q-card-section class="q-pa-none q-ma-none">
-          <hrt-v1010p :rowData="rowData.rows" @close="handleClose" />
+          <hrt-v2030p :rowData="rowData.rows" @close="handleClose" />
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -125,7 +125,7 @@ import { computed, onBeforeMount, onBeforeUnmount, onMounted, reactive, ref } fr
 import { api } from 'boot/axios';
 import { QBtn, QIcon, QToggle, SessionStorage, useQuasar } from 'quasar';
 import { useYearInfoStore } from 'src/store/setYearInfo';
-import HrtV1010p from 'pages/erp/hrt/HrtV1010p.vue';
+import HrtV2030p from 'pages/erp/hrt/HrtV2030p.vue';
 
 const storeYear = useYearInfoStore();
 
@@ -178,7 +178,6 @@ const columnDefs = reactive({
       headerName: '소속',
       field: 'deptNm',
       minWidth: 105,
-      maxWidth: 105,
       cellStyle: params => {
         return getStatusMessageStyle(params.data);
       },
@@ -186,8 +185,7 @@ const columnDefs = reactive({
     {
       headerName: '직급',
       field: 'titlNm',
-      minWidth: 80,
-      maxWidth: 80,
+      minWidth: 90,
       cellStyle: params => {
         return getStatusMessageStyle(params.data);
       },
@@ -196,83 +194,32 @@ const columnDefs = reactive({
       headerName: '성명',
       field: 'empNm',
       minWidth: 90,
-      maxWidth: 90,
       resizable: true,
-    },
-    {
-      headerName: '평가구분',
-      field: 'evsNm',
-      minWidth: 105,
-      maxWidth: 105,
       cellStyle: params => {
         return getStatusMessageStyle(params.data);
       },
     },
+
     {
-      headerName: '목표내용',
-      field: 'targetDoc',
-      minWidth: 150,
-      cellStyle: params => {
-        return getStatusMessageStyle(params.data);
-      },
-    },
-    {
-      headerName: '성과내용',
-      field: 'workDoc',
-      minWidth: 150,
-      cellStyle: params => {
-        return getStatusMessageStyle(params.data);
-      },
-    },
-    {
-      headerName: '평가기준',
-      field: 'evaNm',
-      minWidth: 150,
-      cellStyle: params => {
-        return getStatusMessageStyle(params.data);
-      },
-    },
-    {
-      headerName: '가중치',
-      field: 'weight',
-      minWidth: 90,
-      maxWidth: 90,
-      cellStyle: params => {
-        return getStatusMessageStyle(params.data);
-      },
-    },
-    {
-      headerName: '자기평가',
-      field: 'selfPoint',
+      headerName: '1차환산점수',
+      field: 'ch1MarkPointX',
       minWidth: 100,
-      maxWidth: 100,
       cellStyle: params => {
         return getStatusMessageStyle(params.data);
       },
     },
     {
-      headerName: '자기환산',
-      field: 'selfPointX',
+      headerName: '2차환산점수',
+      field: 'ch2MarkPointX',
       minWidth: 100,
-      maxWidth: 100,
       cellStyle: params => {
         return getStatusMessageStyle(params.data);
       },
     },
     {
-      headerName: '성과평가',
-      field: 'markPoint',
+      headerName: '평균점수',
+      field: 'avgMarkPointX',
       minWidth: 100,
-      maxWidth: 100,
-      cellStyle: params => {
-        return getStatusMessageStyle(params.data);
-      },
-    },
-    {
-      headerName: '성과환산',
-      field: 'markPointX',
-      minWidth: 100,
-      maxWidth: 100,
       cellStyle: params => {
         return getStatusMessageStyle(params.data);
       },
@@ -335,7 +282,7 @@ const handleResize = () => {
 
 const getData = async () => {
   try {
-    const response = await api.post('/api/hrt/hrt1010_list', {
+    const response = await api.post('/api/hrt/hrt2030_list', {
       paramSetYear: storeYear.setYear,
       paramDeptCd: searchValue.value.deptCd,
       paramTitlCd: searchValue.value.titlCd,
@@ -421,6 +368,7 @@ const gridOptions = {
   suppressHorizontalScroll: true,
   localeText: { noRowsToShow: '조회 결과가 없습니다.' },
   getRowStyle: function (param) {
+    console.log('node : ', param);
     if (param.node.rowPinned) {
       return { 'font-weight': 'bold', background: '#dddddd' };
     }
@@ -431,7 +379,7 @@ const gridOptions = {
     if (param.node.rowPinned) {
       return 45;
     }
-    return 30;
+    return 25;
   },
   // GRID READY 이벤트, 사이즈 자동조정
   onGridReady: function (event) {

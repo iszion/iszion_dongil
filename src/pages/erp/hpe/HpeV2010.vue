@@ -331,7 +331,7 @@ const columnDefs = reactive({
           return $q.dark.isActive ? { color: 'orange' } : { color: 'orange' };
           // return { textAlign: 'center' };
         } else {
-          return $q.dark.isActive ? { color: 'teal' } : { color: 'teal' };
+          return {};
           // return { textAlign: 'center' };
         }
       },
@@ -370,7 +370,9 @@ const onSelectionChanged = event => {
   selectedRows.value = event.api.getSelectedRows();
   // console.log('sel: ', JSON.stringify(selectedRows.value));
   if (selectedRows.value.length === 1) {
-    getDataSelectList(selectedRows.value[0]);
+    if (selectedRows.value[0].status !== '') {
+      getDataSelectList(selectedRows.value[0]);
+    }
   }
 };
 

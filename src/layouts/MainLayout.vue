@@ -128,19 +128,53 @@
         <!-- 사용자 관리 ICON 끝  -->
       </q-toolbar>
 
-      <q-separator class="bg-grey" />
-      <div v-if="pageTitleBarVisible" class="row" :class="$q.dark.isActive ? 'bg-grey-8 text-white' : 'bg-grey-4 text-dark'">
-        <div v-if="!$q.screen.lt.md" style="width: 230px" class="text-center self-center bg-grey-5">
-          <q-icon :name="menuIcon" size="sm" class="q-pb-xs q-pr-sm" />
-          <span v-if="mainMenuTitle.titleName" class="text-h6 text-weight-bold">{{ $t(mainMenuTitle.titleName) }}</span>
-        </div>
-        <div class="col">
-          <page-titlebar v-if="pageTitleBarVisible" :message="nodeValue" />
-        </div>
-      </div>
+      <!--      <q-separator class="bg-grey" />-->
+      <!--      <div v-if="pageTitleBarVisible" class="row" :class="$q.dark.isActive ? 'bg-grey-8 text-white' : 'bg-grey-4 text-dark'">-->
+      <!--        <div v-if="!$q.screen.lt.md" style="width: 230px" class="text-center self-center bg-grey-5">-->
+      <!--          <q-icon :name="menuIcon" size="sm" class="q-pb-xs q-pr-sm" />-->
+      <!--          <span v-if="mainMenuTitle.titleName" class="text-h6 text-weight-bold">{{ $t(mainMenuTitle.titleName) }}</span>-->
+      <!--        </div>-->
+      <!--        <div class="col">-->
+      <!--          <page-titlebar v-if="pageTitleBarVisible" :message="nodeValue" />-->
+      <!--        </div>-->
+      <!--      </div>-->
     </q-header>
 
     <q-drawer v-model="leftDrawerOpen" show-if-above bordered :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-3'" :width="230">
+      <div v-if="mainMenuTitle.titleName" class="row q-pa-sm bg-green justify-between">
+        <div class="text-subtitle1 text-bold" :class="$q.dark.isActive ? 'text-white' : 'text-white'">
+          [ {{ $te(mainMenuTitle.titleName) ? $t(mainMenuTitle.titleName) : mainMenuTitle.titleName }} 관리 ]
+        </div>
+        <div>
+          <q-btn class="q-px-xs text-white" flat size="11px" icon="bookmark_add" @click="addFavorites">
+            <q-tooltip
+              class="bg-amber text-black shadow-4"
+              anchor="top middle"
+              self="bottom middle"
+              transition-show="rotate"
+              transition-hide="rotate"
+              :offset="[10, 10]"
+            >
+              <q-icon name="menu_book" size="0.8rem" />
+              <strong> 즐겨찾기 저장하기 </strong>
+            </q-tooltip>
+          </q-btn>
+
+          <q-btn class="q-px-xs text-white" flat size="11px" icon="menu_book" @click="handleDialogShow">
+            <q-tooltip
+              class="bg-amber text-black shadow-4"
+              anchor="top middle"
+              self="bottom middle"
+              transition-show="rotate"
+              transition-hide="rotate"
+              :offset="[10, 10]"
+            >
+              <q-icon name="menu_book" size="0.8rem" />
+              <strong> 사용설명서 </strong>
+            </q-tooltip>
+          </q-btn>
+        </div>
+      </div>
       <q-input class="q-mb-lg q-px-lg" dense ref="filterRef" v-model="filter" placeholder="Search" :hint="$t('searchWordMenu')">
         <template v-slot:append>
           <q-icon
@@ -192,7 +226,7 @@
 <script setup>
 import { onBeforeMount, onMounted, reactive, ref } from 'vue';
 import FooterBar from 'layouts/FooterBar.vue';
-import { QIcon, useQuasar, Cookies, SessionStorage } from 'quasar';
+import { QIcon, useQuasar, Cookies, SessionStorage, QBtn } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { api } from '/src/boot/axios';
