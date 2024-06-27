@@ -671,7 +671,7 @@ const getData = async () => {
         statusCheck.value.acceptUpdate = true;
       }
     }
-    if (rowData.rows.length === statusCheck.value.sendCount) {
+    if (rowData.rows.length === statusCheck.value.sendCount && rowData.rows.length !== 0) {
       // console.log(rowData.rows[i].status, ' = ', rowData.rows[i].acceptYn, ' = ', rowData.rows[i].workDoc, ' = ', rowData.rows[i].selfPoint);
       statusCheck.value.sendHide = true;
     }

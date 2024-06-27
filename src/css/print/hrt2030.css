@@ -34,11 +34,12 @@ td:nth-child(3) {
     text-align: center;
 } /* 소속 */
 td:nth-child(4) {
-  width: 8%;
+  width: 7%;
     text-align: center;
 } /* 직급 */
 td:nth-child(5) {
-    text-align: left;
+  width: 7%;
+    text-align: center;
 } /* 구분 */
 td:nth-child(6) {
     width: 7%;
@@ -52,11 +53,4 @@ td:nth-child(8) {
     width: 7%;
     text-align: center;
 } /* 포인트 */
-td:nth-child(9) {
-  width: 7%;
-  text-align: center;
-}
-td:nth-child(10) {
-  width: 7%;
-  text-align: center;
-}
+

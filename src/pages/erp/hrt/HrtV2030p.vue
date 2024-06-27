@@ -37,32 +37,27 @@
               <tr>
                 <th rowspan="1" colspan="2">소속</th>
                 <th rowspan="2" colspan="1">성명</th>
-                <th rowspan="1" colspan="3">평가기준</th>
                 <th rowspan="1" colspan="2">1차평가</th>
                 <th rowspan="1" colspan="2">2차평가</th>
+                <th rowspan="2" colspan="1">합산점수</th>
               </tr>
               <tr>
                 <th>소속</th>
                 <th>직급</th>
-                <th>항목구분</th>
-                <th>평가항목</th>
-                <th>가중치</th>
-                <th>평가점수</th>
                 <th>환산점수</th>
-                <th>평가점수</th>
+                <th>환산점수(70%)</th>
                 <th>환산점수</th>
+                <th>환산점수(30%)</th>
               </tr>
               <tr v-for="data in props.rowData" :key="data.empCd">
                 <td>{{ data.deptNm }}</td>
                 <td>{{ data.titlNm }}</td>
                 <td>{{ data.empNm }}</td>
-                <td>{{ data.itemFgNm }}</td>
-                <td>{{ data.itemNm }}</td>
-                <td>{{ data.weight }}</td>
-                <td>{{ data.ch1MarkPoint }}</td>
                 <td>{{ data.ch1MarkPointX }}</td>
-                <td>{{ data.ch2MarkPoint }}</td>
+                <td>{{ data.ch1MarkPointAvg }}</td>
                 <td>{{ data.ch2MarkPointX }}</td>
+                <td>{{ data.ch2MarkPointAvg }}</td>
+                <td>{{ data.avgMarkPointX }}</td>
               </tr>
             </table>
           </div>
@@ -137,20 +132,17 @@ const headerGroup = reactive({
   headRow1: [
     { name: '소속팀', rowspan: 1, colspan: 2 },
     { name: '성명', rowspan: 2, colspan: 1, key: 'empNm' },
-    { name: '평가기준', rowspan: 1, colspan: 3 },
     { name: '1차평가', rowspan: 1, colspan: 2 },
     { name: '2차평가', rowspan: 1, colspan: 2 },
+    { name: '합산점수', rowspan: 2, colspan: 1, key: 'avgMarkPointX' },
   ],
   headRow2: [
     { name: '소속', rowspan: 1, colspan: 1, key: 'deptNm' },
     { name: '직급', rowspan: 1, colspan: 1, key: 'titlNm' },
-    { name: '항목구분', rowspan: 1, colspan: 1, key: 'itemFgNm' },
-    { name: '평가항목', rowspan: 1, colspan: 1, key: 'itemNm' },
-    { name: '가중치', rowspan: 1, colspan: 1, key: 'weight' },
-    { name: '평가점수', rowspan: 1, colspan: 1, key: 'ch1MarkPoint' },
-    { name: '환산점수', rowspan: 1, colspan: 1, key: 'ch1MarkPointX' },
-    { name: '평가점수', rowspan: 1, colspan: 1, key: 'ch2MarkPoint' },
-    { name: '환산점수', rowspan: 1, colspan: 1, key: 'ch2MarkPointX' },
+    { name: '평가점수', rowspan: 1, colspan: 1, key: 'ch1MarkPointX' },
+    { name: '환산점수', rowspan: 1, colspan: 1, key: 'ch1MarkPointAvg' },
+    { name: '평가점수', rowspan: 1, colspan: 1, key: 'ch2MarkPointX' },
+    { name: '환산점수', rowspan: 1, colspan: 1, key: 'ch2MarkPointAvg' },
   ],
 });
 

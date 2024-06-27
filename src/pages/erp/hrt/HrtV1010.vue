@@ -348,7 +348,7 @@ const getData = async () => {
       gridHeight.value = 145;
     } else {
       gridHeight.value = minHeight.value + rowData.rows.length * rowHeight;
-      const maxHeight = contentZoneHeight.value - 165;
+      const maxHeight = contentZoneHeight.value - 180;
       if (gridHeight.value > maxHeight) {
         gridHeight.value = maxHeight;
       }
@@ -456,7 +456,7 @@ const gridOptions = {
   onRowClicked: function (event) {
     console.log('onRowClicked');
     selectedRows.value = event.api.getSelectedRows();
-    console.log('sel: ', JSON.stringify(selectedRows.value));
+    // console.log('sel: ', JSON.stringify(selectedRows.value));
   },
   onCellClicked: function (event) {
     console.log('onCellClicked');

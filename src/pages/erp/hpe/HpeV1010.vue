@@ -246,8 +246,6 @@ import commUtil from 'src/js_comm/comm-util';
 const storeUser = useUserInfoStore();
 const storeYear = useYearInfoStore();
 
-const setEvsCd = ref('2011101'); // 성과평가 공통코드
-
 const rowData = reactive({ rows: [] });
 
 // grid Height 자동처리부분
@@ -391,8 +389,9 @@ onBeforeUnmount(() => {
 });
 onBeforeMount(() => {
   rowSelection.value = 'single';
-  getDataEvsn(storeUser.setEmpCd, setEvsCd.value);
-  getData();
+  getDataEvsn().then(() => {
+    getData();
+  });
 });
 
 onMounted(() => {
@@ -711,6 +710,7 @@ const commonTargetLoading = resFormData => {
   api
     .post('/api/hpe/hpe1010_tagt_loading', resFormData)
     .then(res => {
+      console.log('status : ', res.data.rtn);
       let saveStatus = {};
       saveStatus.rtn = res.data.rtn;
       saveStatus.rtnMsg = res.data.rtnMsg;
@@ -723,13 +723,13 @@ const commonTargetLoading = resFormData => {
 };
 
 // ***** 사원정보 가져오기 부분  *****************************//
-const getDataEvsn = async (resEmpCd, resEvsCd) => {
+const getDataEvsn = async () => {
   // console.log('param: ', resEmpCd, resEvsCd);
   try {
     const response = await api.post('/api/aux/aux_emp_evsn_list', {
       paramSetYear: storeYear.setYear,
-      paramEmpCd: resEmpCd,
-      paramEvsCd: resEvsCd,
+      paramEmpCd: storeUser.setEmpCd,
+      paramEvsCd: '2011101',
     });
     setEvGroup.evsGroup.empCd = response.data.data[0].evsEmpCd;
     setEvGroup.evsGroup.empNm = response.data.data[0].evsEmpNm;

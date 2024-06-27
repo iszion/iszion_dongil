@@ -39,6 +39,7 @@
                 <th rowspan="2" colspan="1">성명</th>
                 <th rowspan="1" colspan="2">자기평가</th>
                 <th rowspan="1" colspan="2">목표성과평가</th>
+                <th rowspan="1" colspan="2">팀평가점수반영</th>
               </tr>
               <tr>
                 <th>소속팀</th>
@@ -47,6 +48,8 @@
                 <th>자기환산</th>
                 <th>성과평가</th>
                 <th>성꽈환산</th>
+                <th>합산점수</th>
+                <th>반영점수</th>
               </tr>
               <tr v-for="data in props.rowData" :key="data.empCd">
                 <td>{{ data.deptNm }}</td>
@@ -56,6 +59,8 @@
                 <td>{{ data.totalSelfPointX }}</td>
                 <td>{{ data.totalMarkPoint }}</td>
                 <td>{{ data.totalMarkPointX }}</td>
+                <td>{{ data.totalDeptSum }}</td>
+                <td>{{ data.totalResultAvg }}</td>
               </tr>
             </table>
           </div>
@@ -126,12 +131,23 @@ const isExcelDownload = () => {
 };
 const headerGroup = reactive({
   header: [],
-  headProps: ['deptNm', 'titlNm', 'empNm', 'totalSelfPoint', 'totalSelfPointX', 'totalMarkPoint', 'totalMarkPointX'],
+  headProps: [
+    'deptNm',
+    'titlNm',
+    'empNm',
+    'totalSelfPoint',
+    'totalSelfPointX',
+    'totalMarkPoint',
+    'totalMarkPointX',
+    'totalDeptSum',
+    'totalResultAvg',
+  ],
   headRow1: [
     { name: '소속팀', rowspan: 1, colspan: 2 },
     { name: '성명', rowspan: 2, colspan: 1, key: 'empNm' },
     { name: '자기평가', rowspan: 1, colspan: 2 },
     { name: '목표성과평가', rowspan: 1, colspan: 2 },
+    { name: '팀평가점수반영', rowspan: 1, colspan: 2 },
   ],
   headRow2: [
     { name: '소속', rowspan: 1, colspan: 1, key: 'deptNm' },
@@ -140,6 +156,8 @@ const headerGroup = reactive({
     { name: '환산점수', rowspan: 1, colspan: 1, key: 'totalSelfPointX' },
     { name: '평가점수', rowspan: 1, colspan: 1, key: 'totalMarkPoint' },
     { name: '환산점수', rowspan: 1, colspan: 1, key: 'totalMarkPointX' },
+    { name: '합산점수', rowspan: 1, colspan: 1, key: 'totalDeptSum' },
+    { name: '반영점수', rowspan: 1, colspan: 1, key: 'totalResultAvg' },
   ],
 });
 

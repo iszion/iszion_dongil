@@ -28,8 +28,10 @@ const routes = [
       { path: 'aux2010', component: () => import('pages/erp/aux/AuxV2010.vue') },
 
       { path: 'mst1010', component: () => import('pages/erp/mst/MstV1010.vue') },
-      { path: 'mst1020', component: () => import('pages/erp/mst/MstV1020.vue') },
-      { path: 'mst1030', component: () => import('pages/erp/mst/MstV1030.vue') },
+      { path: 'mst1210', component: () => import('pages/erp/mst/MstV1210.vue') },
+      { path: 'mst1220', component: () => import('pages/erp/mst/MstV1220.vue') },
+      { path: 'mst1510', component: () => import('pages/erp/mst/MstV1510.vue') },
+      { path: 'mst1520', component: () => import('pages/erp/mst/MstV1520.vue') },
       { path: 'mst2010', component: () => import('pages/erp/mst/MstV2010.vue') },
       { path: 'mst2020', component: () => import('pages/erp/mst/MstV2020.vue') },
       { path: 'mst2030', component: () => import('pages/erp/mst/MstV2030.vue') },

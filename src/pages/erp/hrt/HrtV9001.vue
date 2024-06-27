@@ -25,6 +25,7 @@ import * as XLSX from 'xlsx';
 const rowData = ref([]);
 const columnDefs = ref([]);
 const handleFileUpload = event => {
+  console.log('event : ', event.target.files[0]);
   const file = event.target.files[0];
   const reader = new FileReader();
 

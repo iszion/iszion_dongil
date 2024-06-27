@@ -42,3 +42,9 @@ td:nth-child(6) {
 td:nth-child(7) {
   text-align: center;
 }
+td:nth-child(8) {
+    text-align: center;
+} /* 항목 */
+td:nth-child(9) {
+  text-align: center;
+}

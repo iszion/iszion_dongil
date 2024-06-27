@@ -543,7 +543,7 @@ const getDataCommOption = async resCommCd1 => {
 // ***** 성과/목표정보 목록 자료 가져오기 부분  *****************************//
 const getData = async resItemFg => {
   try {
-    const response = await api.post('/api/mst/mst1020_list', { paramSetYear: storeYear.setYear, paramItemFg: resItemFg });
+    const response = await api.post('/api/mst/mst1520_list', { paramSetYear: storeYear.setYear, paramItemFg: resItemFg });
     rowData.rows = response.data.data;
     if (rowData.rows.length > 0) {
       minHeight.value = 90;
@@ -561,7 +561,7 @@ const oldWeight = ref(0);
 const getDataSelect = async (resYear, resItemFg, resWorkNo) => {
   console.log('aa ::: ', resYear, resItemFg, resWorkNo);
   try {
-    const response = await api.post('/api/mst/mst1020_select', {
+    const response = await api.post('/api/mst/mst1520_select', {
       paramStdYear: resYear,
       paramItemFg: resItemFg,
       paramWorkNo: resWorkNo,
@@ -582,7 +582,7 @@ const getDataSelect = async (resYear, resItemFg, resWorkNo) => {
 const saveDataAndHandleResult = resFormData => {
   // console.log('form data : ', JSON.stringify(resFormData));
   api
-    .post('/api/mst/mst1020_save', resFormData)
+    .post('/api/mst/mst1520_save', resFormData)
     .then(res => {
       let saveStatus = {};
       saveStatus.rtn = res.data.rtn;

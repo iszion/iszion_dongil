@@ -199,10 +199,17 @@ const columnDefs = reactive({
         return getStatusMessageStyle(params.data);
       },
     },
-
     {
       headerName: '1차환산점수',
       field: 'ch1MarkPointX',
+      minWidth: 100,
+      cellStyle: params => {
+        return getStatusMessageStyle(params.data);
+      },
+    },
+    {
+      headerName: '1차점수(70%)',
+      field: 'ch1MarkPointAvg',
       minWidth: 100,
       cellStyle: params => {
         return getStatusMessageStyle(params.data);
@@ -217,7 +224,15 @@ const columnDefs = reactive({
       },
     },
     {
-      headerName: '평균점수',
+      headerName: '2차점수(30%)',
+      field: 'ch2MarkPointAvg',
+      minWidth: 100,
+      cellStyle: params => {
+        return getStatusMessageStyle(params.data);
+      },
+    },
+    {
+      headerName: '합산점수',
       field: 'avgMarkPointX',
       minWidth: 100,
       cellStyle: params => {
@@ -295,7 +310,7 @@ const getData = async () => {
       gridHeight.value = 145;
     } else {
       gridHeight.value = minHeight.value + rowData.rows.length * rowHeight;
-      const maxHeight = contentZoneHeight.value - 165;
+      const maxHeight = contentZoneHeight.value - 180;
       if (gridHeight.value > maxHeight) {
         gridHeight.value = maxHeight;
       }
@@ -368,7 +383,7 @@ const gridOptions = {
   suppressHorizontalScroll: true,
   localeText: { noRowsToShow: '조회 결과가 없습니다.' },
   getRowStyle: function (param) {
-    console.log('node : ', param);
+    // console.log('node : ', param);
     if (param.node.rowPinned) {
       return { 'font-weight': 'bold', background: '#dddddd' };
     }
@@ -404,7 +419,7 @@ const gridOptions = {
   onRowClicked: function (event) {
     console.log('onRowClicked');
     selectedRows.value = event.api.getSelectedRows();
-    console.log('sel: ', JSON.stringify(selectedRows.value));
+    // console.log('sel: ', JSON.stringify(selectedRows.value));
   },
   onCellClicked: function (event) {
     console.log('onCellClicked');

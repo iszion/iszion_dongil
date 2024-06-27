@@ -11,6 +11,18 @@ export default {
     return rawDate ? rawDate.replace(/-/g, '') : '';
   },
 
+  formatTime(rawTime) {
+    if (rawTime) {
+      return `${rawTime.slice(0, 2)}:${rawTime.slice(2, 4)}:${rawTime.slice(4)}`;
+    } else {
+      return '';
+    }
+  },
+
+  unFormatTime(rawTime) {
+    return rawTime ? rawTime.replace(/-/g, '') : '';
+  },
+
   removeComma(value) {
     if (typeof value !== 'string') {
       // handle non-string values, maybe throw an error or return default value
@@ -37,6 +49,15 @@ export default {
   getTodayDay() {
     const today = new Date();
     return String(today.getDate()).padStart(2, '0');
+  },
+
+  getLastMonthDay(year, month) {
+    return new Date(year, month + 1, 0).getDate();
+  },
+
+  getDateWithZero(date) {
+    // Convert the date to a string and use padStart to ensure it has at least 2 digits
+    return date.toString().padStart(2, '0');
   },
 
   formatDatetime(datetime) {

@@ -135,18 +135,18 @@
       <!--          <span v-if="mainMenuTitle.titleName" class="text-h6 text-weight-bold">{{ $t(mainMenuTitle.titleName) }}</span>-->
       <!--        </div>-->
       <!--        <div class="col">-->
-      <!--          <page-titlebar v-if="pageTitleBarVisible" :message="nodeValue" />-->
+      <!--                <page-titlebar v-if="pageTitleBarVisible" :message="nodeValue" />-->
       <!--        </div>-->
       <!--      </div>-->
     </q-header>
 
     <q-drawer v-model="leftDrawerOpen" show-if-above bordered :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-3'" :width="230">
-      <div v-if="mainMenuTitle.titleName" class="row q-pa-sm bg-green justify-between">
-        <div class="text-subtitle1 text-bold" :class="$q.dark.isActive ? 'text-white' : 'text-white'">
+      <div v-if="mainMenuTitle.titleName" class="row q-px-sm q-pt-md q-pb-sm justify-between" :class="$q.dark.isActive ? 'bg-dark' : 'bg-grey-6'">
+        <div class="text-subtitle1 text-bold">
           [ {{ $te(mainMenuTitle.titleName) ? $t(mainMenuTitle.titleName) : mainMenuTitle.titleName }} 관리 ]
         </div>
         <div>
-          <q-btn class="q-px-xs text-white" flat size="11px" icon="bookmark_add" @click="addFavorites">
+          <q-btn :disable="!nodeValue.menuData.label" class="q-px-xs" flat size="11px" icon="bookmark_add" @click="addFavorites">
             <q-tooltip
               class="bg-amber text-black shadow-4"
               anchor="top middle"
@@ -160,7 +160,7 @@
             </q-tooltip>
           </q-btn>
 
-          <q-btn class="q-px-xs text-white" flat size="11px" icon="menu_book" @click="handleDialogShow">
+          <q-btn :disable="!nodeValue.menuData.label" class="q-px-xs" flat size="11px" icon="menu_book" @click="handleHelpDialog">
             <q-tooltip
               class="bg-amber text-black shadow-4"
               anchor="top middle"
@@ -175,6 +175,7 @@
           </q-btn>
         </div>
       </div>
+      <q-separator size="2px" />
       <q-input class="q-mb-lg q-px-lg" dense ref="filterRef" v-model="filter" placeholder="Search" :hint="$t('searchWordMenu')">
         <template v-slot:append>
           <q-icon
@@ -221,18 +222,23 @@
 
     <footer-bar />
   </q-layout>
+  <q-dialog maximized v-model="helpDialogVisible">
+    <page-manual :message="nodeValue" />
+  </q-dialog>
 </template>
 
 <script setup>
-import { onBeforeMount, onMounted, reactive, ref } from 'vue';
+import { onBeforeMount, onMounted, reactive, ref, watch } from 'vue';
 import FooterBar from 'layouts/FooterBar.vue';
 import { QIcon, useQuasar, Cookies, SessionStorage, QBtn } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { api } from '/src/boot/axios';
-import PageTitlebar from 'components/comm/PageTitlebar.vue';
+import PageManual from 'components/comm/PageManual.vue';
 import { useUserInfoStore } from 'src/store/setUserInfo';
 import { useYearInfoStore } from 'src/store/setYearInfo';
+import notifySave from 'src/js_comm/notify-save';
+import JsonUtil from 'src/js_comm/json-util';
 
 const storeUser = useUserInfoStore();
 const storeYear = useYearInfoStore();
@@ -244,7 +250,11 @@ const activeTab = ref(null);
 const filter = ref('');
 const filterRef = ref(null);
 const selected = ref(null);
+const helpDialogVisible = ref(false);
 
+const handleHelpDialog = () => {
+  helpDialogVisible.value = true;
+};
 /* ******************************************************************************* */
 /* ************   menu set  ****************************************************** */
 /* ******************************************************************************* */
@@ -263,6 +273,7 @@ const resetFilter = () => {
 };
 
 const selectMenu = m => {
+  console.log('m ; ', m);
   setTimeout(() => {
     selected.value = null;
     menuIcon.value = m.icon;
@@ -370,6 +381,7 @@ const handleNodeClick = () => {
   pageTitleBarVisible.value = true;
   nodeValue.value.menuData = findValueById(menuList.value, selected.value);
   if (nodeValue.value.menuData.children.length === 0) {
+    // console.log('node : ', JSON.stringify(nodeValue.value.menuData));
     router.push(nodeValue.value.menuData.url);
   }
 };
@@ -542,7 +554,7 @@ const getSubMenuData = async param => {
 
 // 즐겨찾기
 const getFavMenuData = async param => {
-  const paramData = { paramUserId: 'admin' };
+  const paramData = { paramUserId: storeUser.setEmpCd };
   try {
     const response = await api.post('/api/sys/menu_fav_list', paramData);
 
@@ -585,8 +597,65 @@ const handle_ev_set_color = val => {
 };
 // ***** 검색 선택 자동 처리 부분 끝 *****************************//
 
-// ***** 유저정보 설정 부분 *****************************//
+// ***** 즐겨찾기 정보저장 설정 부분 *****************************//
+const addFavorites = () => {
+  $q.dialog({
+    dark: true,
+    title: nodeValue.value.menuData.label,
+    message: '즐겨찾기에 저장 하시겠습니까?',
+    ok: {
+      flat: true,
+      push: true,
+    },
+    cancel: {
+      flat: true,
+      push: true,
+    },
+    // persistent: true,
+  })
+    .onOk(() => {
+      // console.log('>>>> OK')
+      // console.log(JSON.stringify(nodeValue.value.menuData));
+      // favoritesSaveSection(resMsgProp.message.menuData);
+      const resData = nodeValue.value.menuData;
+      console.log(JSON.stringify(resData));
 
+      let iu = [];
+      let iuD = [];
+      let jsonFormData = {
+        userId: storeUser.setEmpCd,
+        location: 'fav',
+        progNm: resData.label,
+        progId: resData.progId,
+        icon: resData.icon,
+        type: 'file',
+      };
+      let tmpJson = '{"mode":"I","data":' + JSON.stringify(jsonFormData) + '}';
+      iu.push(tmpJson);
+      const resFormData = JsonUtil.jsonFiller(iu, iuD);
+      api
+        .post('/api/sys/fav_save', resFormData)
+        .then(res => {
+          let saveStatus = {};
+          saveStatus.rtn = res.data.rtn;
+          saveStatus.rtnMsg = res.data.rtnMsg;
+          notifySave.notifyView(saveStatus);
+        })
+        .catch(error => {
+          let saveStatus = {};
+          saveStatus.rtn = '2';
+          saveStatus.rtnMsg = '처리되지 않았습니다.';
+          notifySave.notifyView(saveStatus);
+          console.log('error: ', error);
+        });
+    })
+    .onCancel(() => {})
+    .onDismiss(() => {
+      // 확인/취소 모두 실행되었을때
+    });
+};
+
+// ***** 유저정보 설정 부분 *****************************//
 const storgeUserInfoGroupSave = resSetUserInfoGroup => {
   SessionStorage.set('setUserInfoGroup', resSetUserInfoGroup);
   getStorgeSetUserInfoGroup();

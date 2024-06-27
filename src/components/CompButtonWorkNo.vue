@@ -2,7 +2,7 @@
   <div>
     <q-btn dense rounded outline color="secondary" @click="alertClick" class="text-bold text-subtitle2 q-px-md">
       <q-icon name="share" size="xs" class="q-pt-xs q-mr-sm" />
-      {{ value.targetNo }}
+      {{ value.workNo }}
     </q-btn>
   </div>
 </template>
