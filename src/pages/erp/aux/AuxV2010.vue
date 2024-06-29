@@ -21,7 +21,7 @@
                   options-dense
                   class="q-px-md q-mr-sm"
                   label-color="orange"
-                  v-model="selectedDept"
+                  v-model="selectedDeptH"
                   :options="deptOptions"
                   option-value="deptCd"
                   option-label="deptNm"
@@ -30,6 +30,23 @@
                   map-options
                   style="min-width: 150px; max-width: 150px"
                   label="소속팀"
+                  @update:model-value="getDataEmp"
+                />
+                <q-select
+                  dense
+                  stack-label
+                  options-dense
+                  class="q-px-md q-mr-sm"
+                  label-color="orange"
+                  v-model="selectedCatgH"
+                  :options="catgOptions"
+                  option-value="catgCd"
+                  option-label="catgNm"
+                  option-disable="inactive"
+                  emit-value
+                  map-options
+                  style="min-width: 150px; max-width: 150px"
+                  label="직분류"
                   @update:model-value="getDataEmp"
                 />
                 <q-input
@@ -123,7 +140,7 @@
                 options-dense
                 class="q-px-md q-mr-xs"
                 label-color="orange"
-                v-model="selectedDept1"
+                v-model="selectedDept"
                 :options="deptOptions"
                 option-value="deptCd"
                 option-label="deptNm"
@@ -302,19 +319,22 @@ const columnDefsEmp = reactive({
     {
       headerName: '사번',
       field: 'empCd',
-      maxWidth: 100,
-      minWidth: 100,
+      minWidth: 95,
     },
     {
       headerName: '성명',
       field: 'empNm',
       minWidth: 80,
-      maxWidth: 80,
+    },
+    {
+      headerName: '직분류',
+      field: 'catgNm',
+      minWidth: 90,
     },
     {
       headerName: '직급',
       field: 'titlNm',
-      minWidth: 80,
+      minWidth: 75,
     },
     {
       headerName: '소속팀',
@@ -495,6 +515,7 @@ const getDataEmp = async () => {
     const response = await api.post('/api/aux/aux2010_list', {
       paramSetYear: storeYear.setYear,
       paramDeptCd: selectedDept.value,
+      paramCatgCd: selectedCatgH.value,
       paramSearchValue: searchValue.value,
     });
     rowDataEmp.rows = response.data.data;
@@ -508,7 +529,7 @@ const getDataSelectEmp = async () => {
   try {
     const response = await api.post('/api/aux/aux2010_select', {
       paramSetYear: storeYear.setYear,
-      paramDeptCd: selectedDept1.value,
+      paramDeptCd: selectedDept.value,
       paramTitlCd: selectedTitl.value,
       paramCatgCd: selectedCatg.value,
       paramEvsEmpCd: selectedRows.value[0].empCd,
@@ -540,14 +561,29 @@ const saveDataAndHandleResult = resFormData => {
 
 // ***** DataBase 소속자료 가져오기 부분 *****************************//
 const deptOptions = ref([]);
+const catgOptions = ref([]);
+
 const selectedDept = ref('');
-const selectedDept1 = ref('');
+const selectedDeptH = ref('');
+const selectedCatg = ref('');
+const selectedCatgH = ref('');
 async function getDataDeptOption(resParamCommCd1) {
   try {
     const response = await api.post('/api/mst/dept_option_list', { paramSetYear: storeYear.setYear });
 
     deptOptions.value = response.data.data;
-    deptOptions.value.push({ deptCd: '', deptNm: '전체' });
+    deptOptions.value.unshift({ deptCd: '', deptNm: '전체' });
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+}
+
+async function getDataCatgOption(resParamCommCd1) {
+  try {
+    const response = await api.post('/api/mst/catg_option_list', { paramSetYear: storeYear.setYear });
+
+    catgOptions.value = response.data.data;
+    catgOptions.value.unshift({ catgCd: '', catgNm: '전체' });
   } catch (error) {
     console.error('Error fetching users:', error);
   }
@@ -561,21 +597,7 @@ async function getDataTitlOption(resParamCommCd1) {
     const response = await api.post('/api/mst/titl_option_list', { paramSetYear: storeYear.setYear });
 
     titlOptions.value = response.data.data;
-    titlOptions.value.push({ titlCd: '', titlNm: '전체' });
-  } catch (error) {
-    console.error('Error fetching users:', error);
-  }
-}
-
-// ***** DataBase 직분류자료 가져오기 부분 *****************************//
-const catgOptions = ref([]);
-const selectedCatg = ref('');
-async function getDataCatgOption(resParamCommCd1) {
-  try {
-    const response = await api.post('/api/mst/catg_option_list', { paramSetYear: storeYear.setYear });
-
-    catgOptions.value = response.data.data;
-    catgOptions.value.push({ catgCd: '', catgNm: '전체' });
+    titlOptions.value.unshift({ titlCd: '', titlNm: '전체' });
   } catch (error) {
     console.error('Error fetching users:', error);
   }

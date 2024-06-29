@@ -58,13 +58,14 @@ const onSubmit = () => {
     api
       .post('/api/sys/passwordCheck', { paramUserId: storeUser.setEmpCd, paramOldPassword: form.value.oldPassword })
       .then(res => {
-        if (res.data.data.check) {
-          alert('ok');
+        const check = res.data.data === 'true';
+        if (check) {
+          alert(check);
         } else {
           $q.notify({
             group: false,
             icon: 'report_problem',
-            message: t('login_check_message'),
+            message: 'aaaaaaaaa',
             color: 'negative',
             position: 'bottom-right',
           });

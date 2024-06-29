@@ -2,7 +2,7 @@
   <q-layout
     view="lHh lpr lFf"
     container
-    style="height: 800px; max-width: 800px"
+    style="height: 800px; max-width: 1000px"
     class="shadow-2"
     :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-3'"
   >
@@ -253,6 +253,7 @@ const handleSelectedGroup = () => {
   getSubMenuData();
 };
 
+const contentsFocus = ref(null);
 onMounted(() => {
   selectedGroup.value = resMsgProp.message.menuData.progId.substring(0, 3);
   getGroupData();
@@ -448,3 +449,10 @@ const saveDataDocUndHandleResult = resFormData => {
 // ***** DataBase 연결부분 끝  *************************************//
 // **************************************************************//
 </script>
+
+<style scoped>
+.q-editor__content {
+  max-height: 400px; /* 스크롤 영역의 최대 높이를 설정합니다. 필요에 따라 조절하세요. */
+  overflow-y: auto; /* 수직 스크롤바를 자동으로 표시합니다. */
+}
+</style>

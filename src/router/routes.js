@@ -23,6 +23,7 @@ const routes = [
       { path: 'hrt2030', component: () => import('pages/erp/hrt/HrtV2030.vue') },
       { path: 'hrt9000', component: () => import('pages/erp/hrt/HrtV9000.vue') },
       { path: 'hrt9001', component: () => import('pages/erp/hrt/HrtV9001.vue') },
+      { path: 'hrt9002', component: () => import('pages/erp/hrt/HrtV9002.vue') },
 
       { path: 'aux1010', component: () => import('pages/erp/aux/AuxV1010.vue') },
       { path: 'aux2010', component: () => import('pages/erp/aux/AuxV2010.vue') },

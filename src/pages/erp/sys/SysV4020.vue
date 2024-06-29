@@ -120,7 +120,7 @@
                 {{ selectedProgNm }} ( {{ selectedProgId }} )</span
               >
               <q-space />
-              <q-btn v-if="showSaveBtn" outline dense color="primary" @click="saveDataDocSection" class="q-px-sm q-mr-sm"
+              <q-btn v-if="selectedProgId" outline dense color="primary" @click="saveDataDocSection" class="q-px-sm q-mr-sm"
                 ><q-icon class="q-mr-xs" name="save" size="xs" /> 저장
               </q-btn>
               <q-btn v-if="showDeleteBtn" outline dense color="negative" @click="deleteDataDocSection" class="q-px-sm q-mr-sm"
@@ -134,7 +134,7 @@
           <q-card-section class="q-pa-xs">
             <q-card flat bordered class="q-ma-xs q-pa-none">
               <q-editor
-                :disable="!showSaveBtn"
+                :disable="!selectedProgId"
                 class="q-editor"
                 :style="contentZoneStyle"
                 ref="contentsFocus"
@@ -429,7 +429,7 @@ function buildTreeMenuData(data) {
 const getSubMenuData = async () => {
   const paramData = { paramGroupCd: selectedGroup.value };
   try {
-    const response = await api.post('/api/sys/menu_sub_list', paramData);
+    const response = await api.post('/api/sys/sys4020_list', paramData);
 
     menuList.value = buildTreeMenuData(response.data.data);
     selectedProgId.value = null;

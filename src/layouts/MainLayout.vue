@@ -191,6 +191,7 @@
         dense
         :nodes="menuList"
         node-key="id"
+        :icon-key="'icon'"
         :filter="filter"
         v-model:expanded="treeExpanded"
         no-connectors
@@ -273,7 +274,7 @@ const resetFilter = () => {
 };
 
 const selectMenu = m => {
-  console.log('m ; ', m);
+  // console.log('m ; ', m);
   setTimeout(() => {
     selected.value = null;
     menuIcon.value = m.icon;
