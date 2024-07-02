@@ -23,8 +23,8 @@ module.exports = configure(function (/* ctx */) {
         open: true,
         proxy: {
           '/api': {
-            target: 'https://125.250.69.237:8080',
-            //target: 'http://192.168.141.13:8080',
+            // target: 'http://125.250.69.237:8080',
+            target: 'http://192.168.141.13:8080',
             // target: 'http://localhost:8080',
             changeOrigin: true,
           },
@@ -56,6 +56,7 @@ module.exports = configure(function (/* ctx */) {
       // 'roboto-font', // optional, you are not bound to it
       'material-icons', // optional, you are not bound to it
     ],
+    publicPath: '/',
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#build
     build: {
@@ -71,13 +72,12 @@ module.exports = configure(function (/* ctx */) {
 
       // rebuildCache: true, // rebuilds Vite/linter/etc cache on startup
 
-      // publicPath: '/',
-      publicPath: process.env.NODE_ENV === 'production' ? '/feelkbtdongil.github.io' : '/',
+      publicPath: '/',
       // analyze: true,
       env: {
         // SERVER_URL: 'http://localhost:8080',
-        //SERVER_URL: 'http://192.168.141.13:8080',
-        SERVER_URL: 'https://125.250.69.237:8080',
+        SERVER_URL: 'http://192.168.141.13:8080',
+        // SERVER_URL: 'http://125.250.69.237:8080',
       },
       // rawDefine: {}
       // ignorePublicFolder: true,

@@ -67,6 +67,9 @@
           <q-card class="q-pa-xs">
             <q-toolbar class="row q-pa-none">
               <q-avatar color="red" text-color="white" size="md">2번</q-avatar>
+              <span v-if="rowData.rowsSel.length > 0" class="q-ml-md text-subtitle1 text-bold bg-green q-py-xs q-px-md rounded-borders">
+                평가환산점수 : {{ totalMarkPointX }}</span
+              >
               <q-space />
               <div class="row q-gutter-x-sm">
                 <q-btn
@@ -260,7 +263,7 @@ const sendReturnDialog = (resStdYear, resEmpCd, resSeq) => {
   }
 };
 
-const rowData = reactive({ rows: [] });
+const rowData = reactive({ rows: [], rowsSel: [] });
 const formReadonly = ref(false);
 
 // grid Height 자동처리부분
@@ -408,7 +411,7 @@ const onSelectionChanged = event => {
   sendCheck.value.initialize = false;
   formReadonly.value = false;
   sendCheck.value.cnt = 0;
-
+  rowData.rowsSel = [];
   if (selectedRows.value.length === 1) {
     if (selectedRows.value[0].status > '3') {
       getDataSelectList(selectedRows.value[0]).then(() => {
@@ -428,6 +431,7 @@ const onSelectionChanged = event => {
           sendCheck.value.lockBtn = true;
           sendCheck.value.cnt = evalCount;
         }
+        viewMarkPointSection();
       });
     } else {
       if (selectedRows.value[0].status !== '') {
@@ -439,6 +443,7 @@ const onSelectionChanged = event => {
           message: '목표성과 작성중입니다. <br />목표성과작업 완료 후 작업이 가능합니다.',
         });
       }
+      viewMarkPointSection();
     }
   }
 };
@@ -470,7 +475,17 @@ const handlePointClick = (val, resData) => {
   setTimeout(() => {
     const markPointCount = rowData.rowsSel.filter(item => item.markPoint > 0).length;
     statusMessageUpdate(markPointCount);
+    viewMarkPointSection();
   }, 500);
+};
+const totalMarkPointX = ref(0);
+const viewMarkPointSection = () => {
+  let _totalMarkPointX = 0;
+  totalMarkPointX.value = 0;
+  for (let i = 0; i < rowData.rowsSel.length; i++) {
+    _totalMarkPointX = (rowData.rowsSel[i].weight / 100) * rowData.rowsSel[i].markPoint;
+    totalMarkPointX.value += _totalMarkPointX;
+  }
 };
 const statusMessageUpdate = resEvalCount => {
   let selectedRow = gridApi.value.getSelectedNodes()[0];
@@ -639,6 +654,7 @@ const getDataSelectList = async resRow => {
     });
 
     rowData.rowsSel = response.data.data;
+    // console.log('selData : ', rowData.rowsSel.length);
 
     // viewPoint.value.selfPoint = 0;
     // viewPoint.value.markPoint = 0;

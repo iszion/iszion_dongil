@@ -10,7 +10,9 @@
             <span class="text-subtitle1 text-bold"> 목표설정등록 작업입니다.</span><br />
             1. 각 항목별로 세부 업무목표 및 평가기준을 설정하고 등록합니다. <span class="text-deep-orange"> '승인완료'된자료는 수정불가입니다.</span
             ><br />
-            2. 목표자료는 여러건을 입력 수 있으나 가중치는 합이 100을 넘어설수는 없습니다.<br />
+            2. 목표자료는 여러건을 입력 수 있으나 가중치는 합이 100을 넘어설수는 없습니다. (<span class="text-deep-orange">
+              입력시 가중치는 자동으로 남은 가중치가 표기됩니다.</span
+            >)
           </q-banner>
         </div>
         <q-space />
@@ -60,7 +62,8 @@
                   <q-icon name="refresh" size="xs" class="q-mr-xs" />
                   전년목표 가져오기
                 </q-btn>
-                <q-btn outline color="grey" dense @click="isCommonTargetLoad">
+                <q-btn v-if="tagtCnt > 0" outline color="grey" dense class="q-pr-md" @click="isCommonTargetLoad">
+                  <q-badge color="orange" floating>{{ tagtCnt }}</q-badge>
                   <q-icon name="refresh" size="xs" class="q-mr-xs" />
                   공통목표 가져오기
                 </q-btn>
@@ -390,7 +393,9 @@ onBeforeUnmount(() => {
 onBeforeMount(() => {
   rowSelection.value = 'single';
   getDataEvsn().then(() => {
-    getData();
+    commonTargetCountCheck().then(() => {
+      getData();
+    });
   });
 });
 
@@ -693,7 +698,11 @@ const isCommonTargetLoad = () => {
         paramEmpCd: storeUser.setEmpCd,
         paramProgId: 'mst1030',
       };
-      commonTargetLoading(jsonUtil.dataJsonParse('I', formData));
+      commonTargetLoading(jsonUtil.dataJsonParse('I', formData)).then(() => {
+        commonTargetCountCheck().then(() => {
+          getData();
+        });
+      });
     })
     .onCancel(() => {})
     .onDismiss(() => {
@@ -705,21 +714,32 @@ const isCommonTargetLoad = () => {
 // **************************************************************//
 
 // ***** 사원정보 가져오기 부분  *****************************//
-const commonTargetLoading = resFormData => {
-  // console.log('form data : ', JSON.stringify(resFormData));
-  api
-    .post('/api/hpe/hpe1010_tagt_loading', resFormData)
-    .then(res => {
-      console.log('status : ', res.data.rtn);
-      let saveStatus = {};
-      saveStatus.rtn = res.data.rtn;
-      saveStatus.rtnMsg = res.data.rtnMsg;
-      notifySave.notifyView(saveStatus);
-      getData();
-    })
-    .catch(error => {
-      console.log('error: ', error);
+const tagtCnt = ref(0);
+const commonTargetCountCheck = async () => {
+  try {
+    const response = await api.post('/api/hpe/hpe1010_tagt_count', {
+      paramSetYear: storeYear.setYear,
+      paramEmpCd: storeUser.setEmpCd,
     });
+    tagtCnt.value = response.data.data[0].tagtCnt;
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+};
+
+// ***** 사원정보 가져오기 부분  *****************************//
+const commonTargetLoading = async resFormData => {
+  try {
+    const response = await api.post('/api/hpe/hpe1010_tagt_loading', resFormData);
+
+    console.log('status : ', response.data.rtn);
+    let saveStatus = {};
+    saveStatus.rtn = response.data.rtn;
+    saveStatus.rtnMsg = response.data.rtnMsg;
+    notifySave.notifyView(saveStatus);
+  } catch (error) {
+    console.log('error: ', error);
+  }
 };
 
 // ***** 사원정보 가져오기 부분  *****************************//
@@ -831,6 +851,7 @@ const saveDataAndHandleResult = resFormData => {
       saveStatus.rtn = res.data.rtn;
       saveStatus.rtnMsg = res.data.rtnMsg;
       notifySave.notifyView(saveStatus);
+      commonTargetCountCheck();
       getData();
     })
     .catch(error => {

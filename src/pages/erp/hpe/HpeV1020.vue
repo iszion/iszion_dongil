@@ -8,8 +8,12 @@
               <q-icon name="menu_book" color="primary" size="md" />
             </template>
             <span class="text-subtitle1 text-bold"> 목표에 대한 성과를 등록 작업입니다.</span><br />
-            1. <span class="text-teal text-bold">승인완료</span> 자료만 등록하실 수 있습니다.<br />
-            2. 등록이 완료된 자료는 <span class="text-indigo text-bold">평가요청</span>을 진행합니다.<br />
+            <div class="row">
+              <div class="col-6">1. <span class="text-teal text-bold">승인완료</span> 자료만 등록하실 수 있습니다.</div>
+              <div class="col-6">2. <span class="text-indigo text-bold">성과업적/실적</span>항목은 반드시 입력합니다.</div>
+              <div class="col-6">3. <span class="text-indigo text-bold">목표달성율</span>은 자기평가점수로 대치합니다.</div>
+              <div class="col-6">4. 등록이 모두 완료되면 <span class="text-indigo text-bold">평가요청</span>을 진행합니다.</div>
+            </div>
           </q-banner>
         </div>
         <div class="col-xs-12 col-md-12 col-lg-4">
@@ -96,7 +100,7 @@
               </q-breadcrumbs>
               <q-space />
               <div class="q-gutter-xs">
-                <q-btn v-if="formData.status === '3'" outline color="blue-12" dense @click="saveDataSection">
+                <q-btn v-if="formData.status === '3' && formData.workDoc.trim().length > 1" outline color="blue-12" dense @click="saveDataSection">
                   <q-icon name="save" size="xs" /><span v-if="!$q.screen.xs" class="q-ml-xs">저장</span>
                 </q-btn>
                 <q-btn v-if="formData.status === '3' && formData.selfCh !== ''" outline color="grey" dense @click="clearFieldSection">
@@ -301,6 +305,7 @@ const onGridReady = params => {
   gridApi.value = params.api;
   gridApi.value.setGridOption('headerHeight', 45);
   gridApi.value.setGridOption('rowHeight', 45);
+  totalComputeWeight();
   gridApi.value.deselectAll();
   // params.api.sizeColumnsToFit();
 };
@@ -317,19 +322,19 @@ const columnDefs = reactive({
   columns: [
     {
       headerName: '#',
+      field: 'seq',
       minWidth: 50,
       maxWidth: 50,
       pinned: 'left',
       sortable: false,
       filter: false,
-      valueGetter: function (params) {
-        return params.node.rowIndex + 1;
-      },
+      // valueGetter: function (params) {
+      //   return params.node.rowIndex + 1;
+      // },
     },
     {
       headerName: '세부목표',
       field: 'targetDoc',
-      minWidth: 200,
       resizable: true,
       // cellClass: 'wrap-text', // Apply the custom CSS class
       // autoHeight: true,
@@ -339,6 +344,16 @@ const columnDefs = reactive({
       field: 'weight',
       maxWidth: 95,
       minWidth: 95,
+      resizable: false,
+      cellStyle: params => {
+        return $q.dark.isActive ? { color: 'cyan', fontWeight: '300' } : { color: 'blue', fontWeight: '300' };
+      },
+    },
+    {
+      headerName: '자기평가',
+      field: 'selfPointX',
+      maxWidth: 100,
+      minWidth: 100,
       resizable: false,
       cellStyle: params => {
         return $q.dark.isActive ? { color: 'cyan', fontWeight: '300' } : { color: 'blue', fontWeight: '300' };
@@ -374,6 +389,27 @@ const columnDefs = reactive({
   ],
 });
 
+let totalWeight = 0;
+let totalSelfPointX = 0;
+const totalComputeWeight = () => {
+  totalWeight = 0;
+  totalSelfPointX = 0;
+  rowData.rows.forEach(item => {
+    totalWeight += item.weight;
+    totalSelfPointX += item.selfPointX;
+  });
+
+  const pinnedBottomRowData = [
+    {
+      targetDoc: '합계',
+      weight: totalWeight,
+      selfPointX: totalSelfPointX,
+    },
+  ];
+
+  // gridApi.value.updateGridOptions({ pinnedBottomRowData });
+  gridApi.value.setPinnedBottomRowData(pinnedBottomRowData);
+};
 // 기준평가자연결정보
 const setEvGroup = reactive({
   evsGroup: {
@@ -652,9 +688,9 @@ const getData = async () => {
     });
     rowData.rows = response.data.data;
     if (rowData.rows.length > 0) {
-      minHeight.value = 45;
+      minHeight.value = 90;
     }
-
+    totalComputeWeight();
     // 자료 열람확인 처리
     statusCheck.value.cancelHide = false;
     statusCheck.value.sendHide = false;

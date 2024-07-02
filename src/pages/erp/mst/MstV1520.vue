@@ -8,7 +8,7 @@
               <q-icon name="menu_book" color="primary" size="md" />
             </template>
             <span class="text-subtitle1 text-bold"> 역량평가 기준 항목정의 설정 작업입니다.</span><br />
-            1. 먼저 평가대상항목을 선택하고 각 항목명을 등록하십시요.<br />
+            1. 분류항목을 선택하고 해당 평가항목을 등록하십시요.<br />
             2. 가중치는 합이 100을 넘어설수는 없습니다.<br />
           </q-banner>
         </div>

@@ -398,10 +398,10 @@ const columnDefs = reactive({
       minWidth: 80,
     },
     {
-      headerName: '사번연결',
+      headerName: '적용대상자설정',
       field: 'workNo',
-      minWidth: 120,
-      maxWidth: 120,
+      minWidth: 140,
+      maxWidth: 140,
       filter: true,
       cellRenderer: CompButtonWorkNo,
       cellRendererParams: {
@@ -424,7 +424,7 @@ const columnDefs = reactive({
       minWidth: 100,
     },
     {
-      headerName: '사용처',
+      headerName: '대상자(명)',
       field: 'useEmpCnt',
       minWidth: 120,
       maxWidth: 120,
