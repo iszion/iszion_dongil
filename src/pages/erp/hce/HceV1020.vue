@@ -142,7 +142,7 @@
                 <div class="col-xs-12 col-sm-12 col-md-5 q-mb-sm">
                   <q-card square class="bg-grey" style="height: 60px">
                     <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">평가하기</div>
-                    <div class="row">
+                    <div v-if="setTotEva" class="row">
                       <div class="col-md-9 text-center">
                         <q-radio
                           keep-color
@@ -425,7 +425,7 @@ onBeforeMount(() => {
   } else {
     setItemFg.value = null;
   }
-
+  getDataSetB();
   getData();
 });
 
@@ -484,7 +484,7 @@ const onSelectionChanged = event => {
       if (lockYnCount > 0) {
         sendCheck.value.lockBtn = false;
       } else {
-        sendCheck.value.lockBtn = evalCount === itemCount;
+        sendCheck.value.lockBtn = evalCount === itemCount && evalCount !== 0;
         sendCheck.value.initialize = evalCount > 0;
         sendCheck.value.cnt = rowData.rowsSel.filter(item => item.markPoint > 0).length;
       }
@@ -524,7 +524,7 @@ const statusMessageUpdate = resEvalCount => {
 
   const evalCount = rowData.rows.filter(item => item.evalCount > 0).length;
   const markPointCount = rowData.rows.filter(item => rowData.rows.length !== item.evalCount).length;
-  sendCheck.value.lockBtn = evalCount === markPointCount;
+  sendCheck.value.lockBtn = evalCount === markPointCount && evalCount !== 0;
 };
 
 // ======================================================
@@ -698,6 +698,20 @@ const saveDataEvalOkSendSection = resCnt => {
 // ***** DataBase 연결부분    *************************************//
 // **************************************************************//
 
+// ***** 기본설정자료 가져오기 부분  *****************************//
+const setTotEva = ref(false);
+const getDataSetB = async () => {
+  try {
+    const response = await api.post('/api/aux/aux1020_select', {
+      paramStdYear: storeYear.setYear,
+    });
+    setTotEva.value = response.data.data[0].eva2aYn === 'Y'; // 2차역량평가 팀원기준 체크유무
+    formReadonly.value = true;
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+};
+
 // ***** 목표승인대상자 집계리스트 가져오기 부분  *****************************//
 const viewStatus = ref({
   totalCnt: 0,
@@ -706,6 +720,7 @@ const viewStatus = ref({
   status_4: 0,
   status_5: 0,
 });
+
 const getData = async () => {
   try {
     const response = await api.post('/api/hce/hce1020_list', {
@@ -730,7 +745,7 @@ const getData = async () => {
       if (lockYnCount > 0) {
         sendCheck.value.lockBtn = false;
       } else {
-        sendCheck.value.lockBtn = evalCount === itemCount;
+        sendCheck.value.lockBtn = evalCount === itemCount && evalCount !== 0;
         sendCheck.value.initialize = evalCount > 0;
       }
     }

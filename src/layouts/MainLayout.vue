@@ -11,7 +11,7 @@
           {{ $t('project_name') }}
         </div>
 
-        <q-separator class="q-mx-xs-sm" dark vertical inset />
+        <q-separator class="q-mx-xs-sm q-mx-sm-md" dark vertical inset />
 
         <div style="max-width: 300px">
           <q-select
@@ -38,7 +38,7 @@
           </q-select>
         </div>
 
-        <q-separator class="q-mx-xs-sm" dark vertical inset />
+        <q-separator class="q-mx-xs-sm q-mx-sm-md" dark vertical inset />
 
         <q-btn rounded color="purple" dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
 
@@ -382,8 +382,11 @@ const handleNodeClick = () => {
   pageTitleBarVisible.value = true;
   nodeValue.value.menuData = findValueById(menuList.value, selected.value);
   if (nodeValue.value.menuData.children.length === 0) {
-    // console.log('node : ', JSON.stringify(nodeValue.value.menuData));
-    router.push(nodeValue.value.menuData.url);
+    console.log('node : ', JSON.stringify(nodeValue.value.menuData));
+    router.push({
+      path: nodeValue.value.menuData.url,
+      state: { label: nodeValue.value.menuData.label },
+    });
   }
 };
 function findValueById(data, id) {

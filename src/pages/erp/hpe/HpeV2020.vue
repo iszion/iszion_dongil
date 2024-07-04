@@ -103,7 +103,7 @@
                 <div class="row">
                   <q-card class="col-xs-12 col-sm-1">
                     <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">순번</div>
-                    <div class="text-center q-pa-xs" :class="$q.screen.xs ? '' : 'row flex-center'" style="height: 100%">
+                    <div class="text-center text-bold text-subtitle1 q-pa-xs" :class="$q.screen.xs ? '' : 'row flex-center'" style="height: 100%">
                       {{ data.seq }}
                     </div>
                   </q-card>
@@ -127,7 +127,7 @@
                   </q-card>
                   <q-card class="col-xs-12 col-sm-1">
                     <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">가중치</div>
-                    <div class="text-center q-pa-xs" :class="$q.screen.xs ? '' : 'row flex-center'" style="height: 100%">
+                    <div class="text-center text-bold text-subtitle1 q-pa-xs" :class="$q.screen.xs ? '' : 'row flex-center'" style="height: 100%">
                       {{ data.weight }}
                     </div>
                   </q-card>

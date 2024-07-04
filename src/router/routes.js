@@ -6,6 +6,10 @@ const routes = [
       { path: '', component: () => import('pages/main/DashboardPage.vue') },
       { path: 'noticeboard', name: 'noticeBoard', component: () => import('pages/main/NoticeBoard.vue'), props: true },
 
+      { path: 'aux1010', component: () => import('pages/erp/aux/AuxV1010.vue') },
+      { path: 'aux1020', component: () => import('pages/erp/aux/AuxV1020.vue') },
+      { path: 'aux2010', component: () => import('pages/erp/aux/AuxV2010.vue') },
+
       { path: 'hpe1010', component: () => import('pages/erp/hpe/HpeV1010.vue') },
       { path: 'hpe1020', component: () => import('pages/erp/hpe/HpeV1020.vue') },
       { path: 'hpe2010', component: () => import('pages/erp/hpe/HpeV2010.vue') },
@@ -24,9 +28,6 @@ const routes = [
       { path: 'hrt9000', component: () => import('pages/erp/hrt/HrtV9000.vue') },
       { path: 'hrt9001', component: () => import('pages/erp/hrt/HrtV9001.vue') },
       { path: 'hrt9002', component: () => import('pages/erp/hrt/HrtV9002.vue') },
-
-      { path: 'aux1010', component: () => import('pages/erp/aux/AuxV1010.vue') },
-      { path: 'aux2010', component: () => import('pages/erp/aux/AuxV2010.vue') },
 
       { path: 'mst1010', component: () => import('pages/erp/mst/MstV1010.vue') },
       { path: 'mst1210', component: () => import('pages/erp/mst/MstV1210.vue') },

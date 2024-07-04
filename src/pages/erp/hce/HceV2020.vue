@@ -127,68 +127,77 @@
             </q-toolbar>
             <div class="row">
               <div class="col-12 row">
-                <div class="col-xs-12 col-sm-12 col-md-5 q-mb-sm">
+                <div class="col-xs-12 col-sm-12 col-md-6 q-mb-sm">
                   <q-card square class="bg-grey" style="height: 60px">
                     <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">인사정보</div>
                     <div class="row">
                       <div class="col-md-2 text-center text-subtitle1 q-py-xs">No</div>
                       <div class="col-md-3 text-subtitle1 q-py-xs">성명</div>
-                      <div class="col-md-7 text-subtitle1 q-py-xs">소속/직급</div>
+                      <div class="col-md-6 text-subtitle1 q-py-xs">소속/직급</div>
+                      <div class="col-md-1 text-subtitle1 q-py-xs">1차</div>
                     </div>
                   </q-card>
                 </div>
-                <div class="col-xs-12 col-sm-12 col-md-7 q-mb-sm">
+                <div class="col-xs-12 col-sm-12 col-md-6 q-mb-sm">
                   <q-card square class="bg-grey" style="height: 60px">
-                    <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">평가하기</div>
-                    <div class="row">
-                      <div class="col-md-9 text-center">
+                    <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">
+                      평가하기 [ <span class="text-teal-8">()안은 평가대상인원수</span> ]
+                    </div>
+                    <div v-if="!setTotEva" class="q-pa-sm text-subtitle1 text-bold flex flex-center q-gutter-x-lg">
+                      <span class="text-deep-orange-9 q-mr-xs">S </span> ( {{ pointValue.cnt.S }} ) <span class="text-blue-9 q-mr-xs">A</span> (
+                      {{ pointValue.cnt.A }} ) <span class="text-cyan-9 q-mr-xs">B</span> ( {{ pointValue.cnt.B }} )
+                      <span class="text-teal-8 q-mr-xs">C</span> ( {{ pointValue.cnt.C }} ) <span class="text-green-8 q-mr-xs">D</span> (
+                      {{ pointValue.cnt.D }} )
+                    </div>
+                    <div v-if="setTotEva" class="row">
+                      <div class="col-md-12 text-center">
                         <q-radio
                           keep-color
-                          v-model="tmpMark.markCh"
+                          v-model="tmpMark.markCh2"
                           :disable="formReadonly"
                           val="S"
-                          label="S"
-                          color="deep-orange"
+                          :label="`S(${pointValue.cnt.S})`"
+                          color="deep-orange-8"
                           class="text-subtitle1 text-bold"
                           @update:model-value="val => handlePointClickAll(val)"
                         />
                         <q-radio
                           keep-color
-                          v-model="tmpMark.markCh"
+                          v-model="tmpMark.markCh2"
                           :disable="formReadonly"
                           val="A"
-                          label="A"
-                          color="blue"
+                          :label="`A(${pointValue.cnt.A})`"
+                          color="blue-9"
                           class="text-subtitle1 text-bold"
                           @update:model-value="val => handlePointClickAll(val)"
                         />
                         <q-radio
                           keep-color
-                          v-model="tmpMark.markCh"
+                          v-model="tmpMark.markCh2"
                           :disable="formReadonly"
                           val="B"
-                          label="B"
-                          color="cyan"
+                          :label="`B(${pointValue.cnt.B})`"
+                          color="cyan-9"
                           class="text-subtitle1 text-bold"
                           @update:model-value="val => handlePointClickAll(val)"
                         />
                         <q-radio
                           keep-color
-                          v-model="tmpMark.markCh"
+                          v-model="tmpMark.markCh2"
                           :disable="formReadonly"
                           val="C"
-                          label="C"
-                          color="teal"
+                          :label="`C(${pointValue.cnt.C})`"
+                          color="teal-9"
                           class="text-subtitle1 text-bold"
                           @update:model-value="val => handlePointClickAll(val)"
                         />
                         <q-radio
                           keep-color
-                          v-model="tmpMark.markCh"
+                          v-model="tmpMark.markCh2"
                           :disable="formReadonly"
                           val="D"
-                          label="D"
-                          color="green"
+                          :label="`D(${pointValue.cnt.D})`"
+                          color="green-9"
                           class="text-subtitle1 text-bold"
                           @update:model-value="val => handlePointClickAll(val)"
                         />
@@ -204,7 +213,7 @@
               </div>
               <div style="width: 100%" v-for="(data, index) in rowData.rowsSel" :key="data.seq" class="q-mb-sm">
                 <div class="row">
-                  <q-card class="col-xs-12 col-sm-12 col-md-5 shadow-3">
+                  <q-card class="col-xs-12 col-sm-12 col-md-6 shadow-3">
                     <div class="row">
                       <div class="col-xs-2 col-sm-2 col-md-2">
                         <div class="text-subtitle1 text-center q-pa-xs">
@@ -212,19 +221,22 @@
                         </div>
                       </div>
                       <div class="col-xs-3 col-sm-3 col-md-3">
-                        <div class="text-subtitle1 q-pa-xs" :class="data.markPoint > 0 ? 'text-blue' : ''">{{ data.evtEmpNm }}</div>
+                        <div class="text-subtitle1 q-pa-xs" :class="data.markPoint2 > 0 ? 'text-blue' : ''">{{ data.evtEmpNm }}</div>
                       </div>
-                      <div class="col-xs-2 col-sm-2 col-md-7">
+                      <div class="col-xs-2 col-sm-2 col-md-5">
                         <div class="text-subtitle2 q-py-sm q-pl-sm">{{ data.evtDeptNm }} / {{ data.evtTitlNm }}</div>
+                      </div>
+                      <div class="col-xs-2 col-sm-2 col-md-2 flex flex-center">
+                        <span v-if="data.markCh1" class="q-ml-lg text-center self-center text-subtitle1 text-bold">[ {{ data.markCh1 }} ]</span>
                       </div>
                     </div>
                   </q-card>
-                  <q-card class="col-xs-12 col-sm-12 col-md-7 shadow-3">
+                  <q-card class="col-xs-12 col-sm-12 col-md-6 shadow-3">
                     <div class="row">
                       <div class="col-md-9 text-center">
                         <q-radio
                           keep-color
-                          v-model="data.markCh"
+                          v-model="data.markCh2"
                           :disable="formReadonly"
                           val="S"
                           label="S"
@@ -234,7 +246,7 @@
                         />
                         <q-radio
                           keep-color
-                          v-model="data.markCh"
+                          v-model="data.markCh2"
                           :disable="formReadonly"
                           val="A"
                           label="A"
@@ -244,7 +256,7 @@
                         />
                         <q-radio
                           keep-color
-                          v-model="data.markCh"
+                          v-model="data.markCh2"
                           :disable="formReadonly"
                           val="B"
                           label="B"
@@ -254,7 +266,7 @@
                         />
                         <q-radio
                           keep-color
-                          v-model="data.markCh"
+                          v-model="data.markCh2"
                           :disable="formReadonly"
                           val="C"
                           label="C"
@@ -264,7 +276,7 @@
                         />
                         <q-radio
                           keep-color
-                          v-model="data.markCh"
+                          v-model="data.markCh2"
                           :disable="formReadonly"
                           val="D"
                           label="D"
@@ -274,7 +286,14 @@
                         />
                       </div>
                       <div class="col-md-3 flex flex-center">
-                        <span class="q-ml-lg text-center self-center text-subtitle1 text-bold">( {{ data.markPoint }} )</span>
+                        <span v-if="data.markPoint2" class="q-ml-lg text-center self-center text-subtitle1 text-bold">( {{ data.markPoint2 }} )</span>
+                      </div>
+                      <div v-if="data.markCh1 === 'S'" class="q-px-sm q-pb-xs" style="width: 100%">
+                        <q-field dense label-color="orange" label="1차 S포인트적용 사유" stack-label>
+                          <template v-slot:control>
+                            <div class="self-center full-width no-outline" tabindex="0">{{ data.sExplains1 }}</div>
+                          </template>
+                        </q-field>
                       </div>
                     </div>
                   </q-card>
@@ -325,8 +344,8 @@ const minHeight = ref(15); // 최소 높이 (예: 300px) rowHeight의 3배
 const $q = useQuasar();
 let isSaveFg = null;
 const tmpMark = ref({
-  markCh: null,
-  markPoint: 0,
+  markCh2: null,
+  markPoint2: 0,
 });
 
 const contentZoneHeight = ref(300);
@@ -410,6 +429,7 @@ onBeforeMount(() => {
   } else {
     setItemFg.value = null;
   }
+  getDataSetB();
   getData();
 });
 
@@ -441,14 +461,14 @@ const viewInfo = ref({
 const selectedRows = ref([]);
 const onSelectionChanged = event => {
   selectedRows.value = event.api.getSelectedRows();
-  // console.log('sel: ', JSON.stringify(selectedRows.value));
+  console.log('sel: ', JSON.stringify(selectedRows.value));
   sendCheck.value.initialize = false;
   viewInfo.value.itemNm = null;
   viewInfo.value.workNo = null;
 
   if (selectedRows.value.length === 1) {
-    tmpMark.value.markPoint = 0;
-    tmpMark.value.markCh = null;
+    tmpMark.value.markPoint2 = 0;
+    tmpMark.value.markCh2 = null;
 
     formReadonly.value = sendCheck.value.lock;
 
@@ -467,9 +487,9 @@ const onSelectionChanged = event => {
         sendCheck.value.lockBtn = false;
         formReadonly.value = true;
       } else {
-        sendCheck.value.lockBtn = evalCount === empCount;
+        sendCheck.value.lockBtn = evalCount === empCount && evalCount !== 0;
         sendCheck.value.initialize = evalCount > 0;
-        sendCheck.value.cnt = rowData.rowsSel.filter(item => item.markPoint > 0).length;
+        sendCheck.value.cnt = rowData.rowsSel.filter(item => item.markPoint2 > 0).length;
       }
     });
   }
@@ -497,80 +517,167 @@ const handleResize = () => {
 const handlePointClickAll = resMarkCh => {
   switch (resMarkCh) {
     case 'S':
-      tmpMark.value.markPoint = 100;
+      tmpMark.value.markPoint2 = 100;
       break;
     case 'A':
-      tmpMark.value.markPoint = 90;
+      tmpMark.value.markPoint2 = 90;
       break;
     case 'B':
-      tmpMark.value.markPoint = 80;
+      tmpMark.value.markPoint2 = 80;
       break;
     case 'C':
-      tmpMark.value.markPoint = 70;
+      tmpMark.value.markPoint2 = 70;
       break;
     case 'D':
-      tmpMark.value.markPoint = 60;
+      tmpMark.value.markPoint2 = 60;
       break;
     default:
-      tmpMark.value.markPoint = 0;
+      tmpMark.value.markPoint2 = 0;
       break;
   }
 
   let iu = [];
   let iuD = [];
   for (let i = 0; i < rowData.rowsSel.length; i++) {
-    rowData.rowsSel[i].markCh = resMarkCh;
-    rowData.rowsSel[i].markPoint = tmpMark.value.markPoint;
+    rowData.rowsSel[i].markCh2 = resMarkCh;
+    rowData.rowsSel[i].markPoint2 = tmpMark.value.markPoint2;
     let tmpJson = '{"mode":"I","data":' + JSON.stringify(rowData.rowsSel[i]) + '}';
     // console.log('all save : ', JSON.stringify(rowData.rowsSel));
     iu.push(tmpJson);
   }
   saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
   setTimeout(() => {
-    const markPointCount = rowData.rowsSel.filter(item => item.markPoint > 0).length;
-    statusMessageUpdate(markPointCount);
+    const markPoint2Count = rowData.rowsSel.filter(item => item.markPoint2 > 0).length;
+    statusMessageUpdate(markPoint2Count);
   }, 500);
 };
 
 const handlePointClick = (resMarkCh, resData) => {
+  const chS = rowData.rowsSel.filter(item => item.markCh2 === 'S').length;
+  const chA = rowData.rowsSel.filter(item => item.markCh2 === 'A').length;
+  const chB = rowData.rowsSel.filter(item => item.markCh2 === 'B').length;
+  const chC = rowData.rowsSel.filter(item => item.markCh2 === 'C').length;
+  const chD = rowData.rowsSel.filter(item => item.markCh2 === 'D').length;
+
   switch (resMarkCh) {
     case 'S':
-      resData.markPoint = 100;
+      if (chS > pointValue.value.cnt.S) {
+        resData.markPoint2 = 0;
+        resData.markCh2 = null;
+      } else {
+        resData.markPoint2 = 100;
+      }
       break;
     case 'A':
-      resData.markPoint = 90;
+      if (chA > pointValue.value.cnt.A) {
+        resData.markPoint2 = 0;
+        resData.markCh2 = null;
+      } else {
+        resData.markPoint2 = 90;
+      }
       break;
     case 'B':
-      resData.markPoint = 80;
+      if (chB > pointValue.value.cnt.B) {
+        resData.markPoint2 = 0;
+        resData.markCh2 = null;
+      } else {
+        resData.markPoint2 = 80;
+      }
       break;
     case 'C':
-      resData.markPoint = 70;
+      if (chC > pointValue.value.cnt.C) {
+        resData.markPoint2 = 0;
+        resData.markCh2 = null;
+      } else {
+        resData.markPoint2 = 70;
+      }
       break;
     case 'D':
-      resData.markPoint = 60;
+      if (chD > pointValue.value.cnt.D) {
+        resData.markPoint2 = 0;
+        resData.markCh2 = null;
+      } else {
+        resData.markPoint2 = 60;
+      }
       break;
     default:
-      resData.markPoint = 0;
+      resData.markPoint2 = 0;
       break;
   }
 
-  // console.log('rowData :: ', JSON.stringify(rowData.rows));
-  // console.log('rowDataSel :: ', JSON.stringify(rowData.rowsSel));
-  saveDataAndHandleResult(jsonUtil.dataJsonParse('I', resData));
+  if (resData.markPoint2 > 0) {
+    saveDataAndHandleResult(jsonUtil.dataJsonParse('I', resData));
 
-  // console.log('markPointCount : ', markPointCount, rowData.rowsSel.length);
-  // if (rowData.rowsSel.length === markPointCount) {
-  setTimeout(() => {
-    const markPointCount = rowData.rowsSel.filter(item => item.markPoint > 0).length;
-    statusMessageUpdate(markPointCount);
-  }, 500);
-  // }
-  // const totalPointCount = rowData.rows.filter(item => item.evalCount === rowData.rowsSel.length).length;
-  // if (totalPointCount === rowData.rows.length) {
-  //   setTimeout(() => {
-  //     getData();
-  //   }, 500);
-  // }
+    setTimeout(() => {
+      const checkS = chS === pointValue.value.cnt.S;
+      const checkA = chA === pointValue.value.cnt.A;
+      const checkB = chB === pointValue.value.cnt.B;
+      const checkC = chC === pointValue.value.cnt.C;
+      const checkD = chD === pointValue.value.cnt.D;
+      // false인 변수를 찾는 함수
+      const checks = { checkS, checkA, checkB, checkC, checkD };
+      const falseKeys = Object.keys(checks).filter(key => !checks[key]);
+
+      if (falseKeys.length === 1) {
+        const falseVariable = falseKeys[0];
+
+        for (let i = 0; i < rowData.rowsSel.length; i++) {
+          if (rowData.rowsSel[i].markPoint2 > 0) {
+          } else {
+            switch (falseVariable) {
+              case 'checkS':
+                rowData.rowsSel[i].markCh2 = 'S';
+                rowData.rowsSel[i].markPoint2 = '100';
+                break;
+              case 'checkA':
+                rowData.rowsSel[i].markCh2 = 'A';
+                rowData.rowsSel[i].markPoint2 = '90';
+                break;
+              case 'checkB':
+                rowData.rowsSel[i].markCh2 = 'B';
+                rowData.rowsSel[i].markPoint2 = '80';
+                break;
+              case 'checkC':
+                rowData.rowsSel[i].markCh2 = 'C';
+                rowData.rowsSel[i].markPoint2 = '70';
+                break;
+              case 'checkD':
+                rowData.rowsSel[i].markCh2 = 'D';
+                rowData.rowsSel[i].markPoint2 = '60';
+                break;
+              default:
+                rowData.rowsSel[i].markCh2 = '';
+                rowData.rowsSel[i].markPoint2 = '';
+                break;
+            }
+            if (rowData.rowsSel[i].markPoint2 > 0) {
+              saveDataAndHandleResult(jsonUtil.dataJsonParse('I', rowData.rowsSel[i]));
+            }
+          }
+        }
+      }
+      const markPoint2Count = rowData.rowsSel.filter(item => item.markPoint2 > 0).length;
+      statusMessageUpdate(markPoint2Count);
+    }, 500);
+  } else {
+    saveDataAndHandleResult(jsonUtil.dataJsonParse('D', resData));
+
+    setTimeout(() => {
+      const markPoint2Count = rowData.rowsSel.filter(item => item.markPoint2 > 0).length;
+
+      statusMessageUpdate(markPoint2Count);
+
+      $q.dialog({
+        dark: true,
+        title: '인원초과',
+        message: '평가대상점수 인원한도 초과입니다.',
+        ok: {
+          push: true,
+          color: 'negative',
+        },
+      });
+    }, 500);
+  }
 };
 
 const statusMessageUpdate = resEvalCount => {
@@ -595,9 +702,9 @@ const statusMessageUpdate = resEvalCount => {
   targetRowData.evalCount = resEvalCount;
 
   const evalCount = rowData.rows.filter(item => item.evalCount > 0).length;
-  const markPointCount = rowData.rows.filter(item => rowData.rows.length !== item.evalCount).length;
-  sendCheck.value.lockBtn = evalCount === markPointCount;
-  // console.log('ch :1: ', sendCheck.value.lock, evalCount, markPointCount);
+  const markPoint2Count = rowData.rows.filter(item => rowData.rows.length !== item.evalCount).length;
+  sendCheck.value.lockBtn = evalCount === markPoint2Count && evalCount !== 0;
+  // console.log('ch :1: ', sendCheck.value.lock, evalCount, markPoint2Count);
 
   if (resEvalCount > 0) {
     sendCheck.value.initialize = true;
@@ -630,6 +737,7 @@ const deleteDataSection = () => {
       let formData = {};
       formData.stdYear = selectedRows.value[0].stdYear;
       formData.evsEmpCd = storeUser.setEmpCd;
+      formData.evtEmpCd = '';
       formData.evsCd = selectedRows.value[0].evsCd;
       formData.itemFg = selectedRows.value[0].itemFg;
       formData.workNo = selectedRows.value[0].workNo;
@@ -639,6 +747,8 @@ const deleteDataSection = () => {
 
       setTimeout(() => {
         statusMessageUpdate(0);
+        gridApi.value.deselectAll();
+        rowData.rowsSel = [];
       }, 500);
     })
     .onCancel(() => {})
@@ -689,7 +799,67 @@ const saveDataLockSendSection = () => {
 // **************************************************************//
 // ***** DataBase 연결부분    *************************************//
 // **************************************************************//
-
+// ***** 기본설정자료 가져오기 부분  *****************************//
+const setTotEva = ref(false);
+const pointValue = ref({
+  per1: {
+    S: 0,
+    A: 0,
+    B: 0,
+    C: 0,
+    D: 0,
+  },
+  per2: {
+    S: 0,
+    A: 0,
+    B: 0,
+    C: 0,
+    D: 0,
+  },
+  cnt: {
+    S: 0,
+    A: 0,
+    B: 0,
+    C: 0,
+    D: 0,
+  },
+  cnt1: {
+    S: 0,
+    A: 0,
+    B: 0,
+    C: 0,
+    D: 0,
+  },
+  cnt2: {
+    S: 0,
+    A: 0,
+    B: 0,
+    C: 0,
+    D: 0,
+  },
+});
+const getDataSetB = async () => {
+  try {
+    const response = await api.post('/api/aux/aux1020_select', {
+      paramStdYear: storeYear.setYear,
+    });
+    setTotEva.value = response.data.data[0].eva2bYn === 'Y'; // 2차역량평가 항목기준 체크유무
+    pointValue.value.per1.S = response.data.data[0].team1PerPointS;
+    pointValue.value.per1.A = response.data.data[0].team1PerPointA;
+    pointValue.value.per1.B = response.data.data[0].team1PerPointB;
+    pointValue.value.per1.C = response.data.data[0].team1PerPointC;
+    pointValue.value.per1.D = response.data.data[0].team1PerPointD;
+    pointValue.value.per2.S = response.data.data[0].team2PerPointS;
+    pointValue.value.per2.A = response.data.data[0].team2PerPointA;
+    pointValue.value.per2.B = response.data.data[0].team2PerPointB;
+    pointValue.value.per2.C = response.data.data[0].team2PerPointC;
+    pointValue.value.per2.D = response.data.data[0].team2PerPointD;
+    console.log('point : ', JSON.stringify(response.data.data[0]));
+    formReadonly.value = true;
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+};
 // ***** 목표승인대상자 집계리스트 가져오기 부분  *****************************//
 const viewStatus = ref({
   totalCnt: 0,
@@ -698,6 +868,7 @@ const viewStatus = ref({
   status_4: 0,
   status_5: 0,
 });
+
 const getData = async () => {
   try {
     const response = await api.post('/api/hce/hce2020_list', {
@@ -724,9 +895,9 @@ const getData = async () => {
         sendCheck.value.lockBtn = false;
         formReadonly.value = true;
       } else {
-        sendCheck.value.lockBtn = evalCount === empCount;
+        sendCheck.value.lockBtn = evalCount === empCount && evalCount !== 0;
         sendCheck.value.initialize = evalCount > 0;
-        sendCheck.value.cnt = rowData.rowsSel.filter(item => item.markPoint > 0).length;
+        sendCheck.value.cnt = rowData.rowsSel.filter(item => item.markPoint2 > 0).length;
       }
     }
   } catch (error) {
@@ -735,6 +906,7 @@ const getData = async () => {
 };
 
 // ***** 목표승인대상자 승인대상자료 목록 자료 가져오기 부분  *****************************//
+
 const getDataSelectList = async resRow => {
   // console.log('resRow : ', JSON.stringify(resRow));
   try {
@@ -747,6 +919,21 @@ const getDataSelectList = async resRow => {
     });
 
     rowData.rowsSel = response.data.data;
+    if (resRow.itemFg === '2021101') {
+      pointValue.value.cnt.S = Math.round((rowData.rowsSel.length * pointValue.value.per1.S) / 100);
+      pointValue.value.cnt.A = Math.round((rowData.rowsSel.length * pointValue.value.per1.A) / 100);
+      pointValue.value.cnt.C = Math.round((rowData.rowsSel.length * pointValue.value.per1.C) / 100);
+      pointValue.value.cnt.D = Math.round((rowData.rowsSel.length * pointValue.value.per1.D) / 100);
+      pointValue.value.cnt.B =
+        rowData.rowsSel.length - (pointValue.value.cnt.S + pointValue.value.cnt.A + pointValue.value.cnt.C + pointValue.value.cnt.D);
+    } else {
+      pointValue.value.cnt.S = Math.round((rowData.rowsSel.length * pointValue.value.per2.S) / 100);
+      pointValue.value.cnt.A = Math.round((rowData.rowsSel.length * pointValue.value.per2.A) / 100);
+      pointValue.value.cnt.C = Math.round((rowData.rowsSel.length * pointValue.value.per2.C) / 100);
+      pointValue.value.cnt.D = Math.round((rowData.rowsSel.length * pointValue.value.per2.D) / 100);
+      pointValue.value.cnt.B =
+        rowData.rowsSel.length - (pointValue.value.cnt.S + pointValue.value.cnt.A + pointValue.value.cnt.C + pointValue.value.cnt.D);
+    }
 
     // console.log('getDataSel : ', JSON.stringify(rowData.rowsSel));
   } catch (error) {

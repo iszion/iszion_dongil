@@ -1,224 +1,232 @@
 <template>
   <q-page class="q-pa-xs-xs q-pa-sm-md" :style-fn="myTweak">
     <!-- contents zone -->
-    <div class="row q-col-gutter-md">
+    <q-card bordered>
+      <!-- contents list title bar -->
+      <q-bar class="q-px-sm">
+        <q-icon name="list_alt" />
+        <span class="q-px-sm text-bold text-subtitle1" :class="$q.dark.isActive ? 'text-orange' : 'text-primary'">{{ menuLabel }}</span>
+        <q-space />
+      </q-bar>
       <!-- contents List -->
-      <div class="col-12 col-lg-5">
-        <q-card bordered>
-          <!-- contents list title bar -->
-          <q-bar class="q-px-sm">
-            <q-icon name="list_alt" />
-            <span class="text-subtitle2 q-px-sm">평가자 선택</span>
-            <q-space />
-          </q-bar>
-          <!--  end of contents list title bar -->
-          <q-card-actions align="right" class="q-pa-none">
-            <q-toolbar class="row">
-              <div class="row q-col-gutter-md">
+      <div class="row q-pa-sm q-col-gutter-md">
+        <div class="col-12 col-lg-5">
+          <q-card bordered>
+            <!-- contents list title bar -->
+            <q-bar class="q-px-sm">
+              <q-icon name="list_alt" />
+              <span class="text-subtitle2 q-px-sm">평가자 선택</span>
+              <q-space />
+            </q-bar>
+            <!--  end of contents list title bar -->
+            <q-card-actions align="right" class="q-pa-none">
+              <q-toolbar class="row">
+                <div class="row q-col-gutter-md">
+                  <q-select
+                    dense
+                    stack-label
+                    options-dense
+                    class="q-px-md q-mr-sm"
+                    label-color="orange"
+                    v-model="selectedDeptH"
+                    :options="deptOptions"
+                    option-value="deptCd"
+                    option-label="deptNm"
+                    option-disable="inactive"
+                    emit-value
+                    map-options
+                    style="min-width: 150px; max-width: 150px"
+                    label="소속팀"
+                    @update:model-value="getDataEmp"
+                  />
+                  <q-select
+                    dense
+                    stack-label
+                    options-dense
+                    class="q-px-md q-mr-sm"
+                    label-color="orange"
+                    v-model="selectedCatgH"
+                    :options="catgOptions"
+                    option-value="catgCd"
+                    option-label="catgNm"
+                    option-disable="inactive"
+                    emit-value
+                    map-options
+                    style="min-width: 150px; max-width: 150px"
+                    label="직분류"
+                    @update:model-value="getDataEmp"
+                  />
+                  <q-input
+                    stack-label
+                    label-color="orange"
+                    bottom-slots
+                    v-model="searchValue"
+                    label="검색"
+                    dense
+                    class="q-pb-none"
+                    style="width: 120px"
+                  >
+                    <template v-slot:append>
+                      <q-icon v-if="searchValue !== ''" name="close" @click="searchValue = ''" class="cursor-pointer" />
+                    </template>
+                  </q-input>
+                </div>
+                <q-space />
+                <q-btn outline color="positive" dense @click="getDataEmp"><q-icon name="search" size="xs" /> 조회 </q-btn>
+                <q-btn v-if="isShowSaveBtn3" outline color="primary" dense class="q-ma-xs q-pr-lg" @click="saveDataSection3">
+                  <q-icon name="delete" size="xs" class="q-mr-sm" />
+                  삭제하기
+                </q-btn>
+              </q-toolbar>
+            </q-card-actions>
+
+            <q-separator size="3px" />
+
+            <q-card-section class="q-pa-xs">
+              <div :style="contentZoneStyle">
+                <ag-grid-vue
+                  style="width: 100%; height: 100%"
+                  :class="$q.dark.isActive ? 'ag-theme-alpine-dark' : 'ag-theme-alpine'"
+                  :columnDefs="columnDefsEmp.columns"
+                  :rowData="rowDataEmp.rows"
+                  :defaultColDef="defaultColDefEmp.def"
+                  :rowSelection="rowSelectionEmp"
+                  @selection-changed="onSelectionChangedEmp"
+                  @grid-ready="onGridReadyEmp"
+                >
+                </ag-grid-vue>
+              </div>
+            </q-card-section>
+          </q-card>
+        </div>
+        <!--  end of contents list -->
+        <!-- contents List -->
+        <div class="col-12 col-lg-7">
+          <q-card bordered>
+            <!-- contents list title bar -->
+            <q-bar class="q-px-sm">
+              <q-icon name="list_alt" />
+              <span class="text-subtitle2 q-px-sm">평가대상자 선택</span>
+            </q-bar>
+            <!--  end of contents list title bar -->
+            <div class="row q-pa-xs">
+              <div v-if="!isEmpty(selectedRows)" class="col-xs-12 col-sm-3 row">
+                <span class="text-subtitle1 text-bold q-mx-sm q-pt-sm">평가자 : </span>
+                <span class="text-subtitle1 text-bold q-pt-sm"> {{ selectedRows[0].empNm }}</span>
+                <q-space />
+                <q-btn v-if="$q.screen.xs && isShowSaveBtn1" outline color="primary" dense class="q-ma-xs q-pr-lg" @click="saveDataSection">
+                  <q-badge color="orange" floating>{{ selectedRowsTarget.length }}</q-badge>
+                  <q-icon name="save" size="xs" class="q-mr-sm" />
+                  저장
+                </q-btn>
+              </div>
+
+              <div class="col-xs-12 col-sm-9 row">
                 <q-select
                   dense
+                  :disable="isDesableEvs"
                   stack-label
                   options-dense
-                  class="q-px-md q-mr-sm"
+                  class="q-px-md"
                   label-color="orange"
-                  v-model="selectedDeptH"
+                  v-model="selectedEvs"
+                  :options="evsOptions"
+                  option-value="commCd"
+                  option-label="commNm"
+                  option-disable="inactive"
+                  emit-value
+                  map-options
+                  style="min-width: 120px; max-width: 120px"
+                  label="평가승인구분"
+                  @update:model-value="getDataSelectEmp"
+                />
+                <q-select
+                  dense
+                  :disable="isDesableEvs"
+                  stack-label
+                  options-dense
+                  class="q-px-md q-mr-xs"
+                  label-color="orange"
+                  v-model="selectedDept"
                   :options="deptOptions"
                   option-value="deptCd"
                   option-label="deptNm"
                   option-disable="inactive"
                   emit-value
                   map-options
-                  style="min-width: 150px; max-width: 150px"
+                  style="min-width: 120px; max-width: 120px"
                   label="소속팀"
-                  @update:model-value="getDataEmp"
+                  @update:model-value="getDataSelectEmp"
                 />
                 <q-select
                   dense
+                  :disable="isDesableEvs"
                   stack-label
                   options-dense
-                  class="q-px-md q-mr-sm"
+                  class="q-px-md"
                   label-color="orange"
-                  v-model="selectedCatgH"
+                  v-model="selectedTitl"
+                  :options="titlOptions"
+                  option-value="titlCd"
+                  option-label="titlNm"
+                  option-disable="inactive"
+                  emit-value
+                  map-options
+                  style="min-width: 90px; max-width: 90px"
+                  label="직급"
+                  @update:model-value="getDataSelectEmp"
+                />
+                <q-select
+                  dense
+                  :disable="isDesableEvs"
+                  stack-label
+                  options-dense
+                  class="q-px-md"
+                  label-color="orange"
+                  v-model="selectedCatg"
                   :options="catgOptions"
                   option-value="catgCd"
                   option-label="catgNm"
                   option-disable="inactive"
                   emit-value
                   map-options
-                  style="min-width: 150px; max-width: 150px"
+                  style="min-width: 90px; max-width: 90px"
                   label="직분류"
-                  @update:model-value="getDataEmp"
+                  @update:model-value="getDataSelectEmp"
                 />
-                <q-input
-                  stack-label
-                  label-color="orange"
-                  bottom-slots
-                  v-model="searchValue"
-                  label="검색"
-                  dense
-                  class="q-pb-none"
-                  style="width: 120px"
+                <q-space />
+                <div class="q-gutter-xs q-pa-xs">
+                  <q-btn v-if="!$q.screen.xs && isShowSaveBtn1" outline color="primary" dense class="q-ma-xs q-pr-lg" @click="saveDataSection">
+                    <q-badge color="orange" floating>{{ selectedRowsTarget.length }}</q-badge>
+                    <q-icon name="save" size="xs" class="q-mr-sm" />
+                    저장
+                  </q-btn>
+                </div>
+              </div>
+            </div>
+
+            <q-separator size="3px" />
+
+            <q-card-section class="q-pa-xs">
+              <div :key="gridKey" :style="contentZoneStyle">
+                <ag-grid-vue
+                  style="width: 100%; height: 100%"
+                  :class="$q.dark.isActive ? 'ag-theme-alpine-dark' : 'ag-theme-alpine'"
+                  :columnDefs="columnDefs.columns"
+                  :rowData="rowData.rows"
+                  :rowSelection="rowSelection"
+                  :defaultColDef="defaultColDef.def"
+                  @selection-changed="onSelectionTargetEmp"
+                  @grid-ready="onGridReady"
                 >
-                  <template v-slot:append>
-                    <q-icon v-if="searchValue !== ''" name="close" @click="searchValue = ''" class="cursor-pointer" />
-                  </template>
-                </q-input>
+                </ag-grid-vue>
               </div>
-              <q-space />
-              <q-btn outline color="positive" dense @click="getDataEmp"><q-icon name="search" size="xs" /> 조회 </q-btn>
-              <q-btn v-if="isShowSaveBtn3" outline color="primary" dense class="q-ma-xs q-pr-lg" @click="saveDataSection3">
-                <q-icon name="delete" size="xs" class="q-mr-sm" />
-                삭제하기
-              </q-btn>
-            </q-toolbar>
-          </q-card-actions>
-
-          <q-separator size="3px" />
-
-          <q-card-section class="q-pa-xs">
-            <div :style="contentZoneStyle">
-              <ag-grid-vue
-                style="width: 100%; height: 100%"
-                :class="$q.dark.isActive ? 'ag-theme-alpine-dark' : 'ag-theme-alpine'"
-                :columnDefs="columnDefsEmp.columns"
-                :rowData="rowDataEmp.rows"
-                :defaultColDef="defaultColDefEmp.def"
-                :rowSelection="rowSelectionEmp"
-                @selection-changed="onSelectionChangedEmp"
-                @grid-ready="onGridReadyEmp"
-              >
-              </ag-grid-vue>
-            </div>
-          </q-card-section>
-        </q-card>
+            </q-card-section>
+          </q-card>
+        </div>
       </div>
       <!--  end of contents list -->
-      <!-- contents List -->
-      <div class="col-12 col-lg-7">
-        <q-card bordered>
-          <!-- contents list title bar -->
-          <q-bar class="q-px-sm">
-            <q-icon name="list_alt" />
-            <span class="text-subtitle2 q-px-sm">평가대상자 선택</span>
-          </q-bar>
-          <!--  end of contents list title bar -->
-          <div class="row q-pa-xs">
-            <div v-if="!isEmpty(selectedRows)" class="col-xs-12 col-sm-3 row">
-              <span class="text-subtitle1 text-bold q-mx-sm q-pt-sm">평가자 : </span>
-              <span class="text-subtitle1 text-bold q-pt-sm"> {{ selectedRows[0].empNm }}</span>
-              <q-space />
-              <q-btn v-if="$q.screen.xs && isShowSaveBtn1" outline color="primary" dense class="q-ma-xs q-pr-lg" @click="saveDataSection">
-                <q-badge color="orange" floating>{{ selectedRowsTarget.length }}</q-badge>
-                <q-icon name="save" size="xs" class="q-mr-sm" />
-                저장
-              </q-btn>
-            </div>
-
-            <div class="col-xs-12 col-sm-9 row">
-              <q-select
-                dense
-                :disable="isDesableEvs"
-                stack-label
-                options-dense
-                class="q-px-md"
-                label-color="orange"
-                v-model="selectedEvs"
-                :options="evsOptions"
-                option-value="commCd"
-                option-label="commNm"
-                option-disable="inactive"
-                emit-value
-                map-options
-                style="min-width: 120px; max-width: 120px"
-                label="평가승인구분"
-                @update:model-value="getDataSelectEmp"
-              />
-              <q-select
-                dense
-                :disable="isDesableEvs"
-                stack-label
-                options-dense
-                class="q-px-md q-mr-xs"
-                label-color="orange"
-                v-model="selectedDept"
-                :options="deptOptions"
-                option-value="deptCd"
-                option-label="deptNm"
-                option-disable="inactive"
-                emit-value
-                map-options
-                style="min-width: 120px; max-width: 120px"
-                label="소속팀"
-                @update:model-value="getDataSelectEmp"
-              />
-              <q-select
-                dense
-                :disable="isDesableEvs"
-                stack-label
-                options-dense
-                class="q-px-md"
-                label-color="orange"
-                v-model="selectedTitl"
-                :options="titlOptions"
-                option-value="titlCd"
-                option-label="titlNm"
-                option-disable="inactive"
-                emit-value
-                map-options
-                style="min-width: 90px; max-width: 90px"
-                label="직급"
-                @update:model-value="getDataSelectEmp"
-              />
-              <q-select
-                dense
-                :disable="isDesableEvs"
-                stack-label
-                options-dense
-                class="q-px-md"
-                label-color="orange"
-                v-model="selectedCatg"
-                :options="catgOptions"
-                option-value="catgCd"
-                option-label="catgNm"
-                option-disable="inactive"
-                emit-value
-                map-options
-                style="min-width: 90px; max-width: 90px"
-                label="직분류"
-                @update:model-value="getDataSelectEmp"
-              />
-              <q-space />
-              <div class="q-gutter-xs q-pa-xs">
-                <q-btn v-if="!$q.screen.xs && isShowSaveBtn1" outline color="primary" dense class="q-ma-xs q-pr-lg" @click="saveDataSection">
-                  <q-badge color="orange" floating>{{ selectedRowsTarget.length }}</q-badge>
-                  <q-icon name="save" size="xs" class="q-mr-sm" />
-                  저장
-                </q-btn>
-              </div>
-            </div>
-          </div>
-
-          <q-separator size="3px" />
-
-          <q-card-section class="q-pa-xs">
-            <div :key="gridKey" :style="contentZoneStyle">
-              <ag-grid-vue
-                style="width: 100%; height: 100%"
-                :class="$q.dark.isActive ? 'ag-theme-alpine-dark' : 'ag-theme-alpine'"
-                :columnDefs="columnDefs.columns"
-                :rowData="rowData.rows"
-                :rowSelection="rowSelection"
-                :defaultColDef="defaultColDef.def"
-                @selection-changed="onSelectionTargetEmp"
-                @grid-ready="onGridReady"
-              >
-              </ag-grid-vue>
-            </div>
-          </q-card-section>
-        </q-card>
-      </div>
-      <!--  end of contents list -->
-    </div>
+    </q-card>
   </q-page>
 </template>
 
@@ -271,8 +279,10 @@ onBeforeMount(() => {
   getDataEmp();
 });
 
+const menuLabel = ref('');
 onMounted(() => {
   window.addEventListener('resize', handleResize);
+  menuLabel.value = window.history.state.label;
   handleResize();
   getDataDeptOption();
   getDataTitlOption();
