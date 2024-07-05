@@ -100,7 +100,13 @@
               </q-breadcrumbs>
               <q-space />
               <div class="q-gutter-xs">
-                <q-btn v-if="formData.status === '3' && formData.workDoc.trim().length > 1" outline color="blue-12" dense @click="saveDataSection">
+                <q-btn
+                  v-if="formData.status === '3' && formData.workDoc.trim().length > 1 && formData.selfPoint > 0"
+                  outline
+                  color="blue-12"
+                  dense
+                  @click="saveDataSection"
+                >
                   <q-icon name="save" size="xs" /><span v-if="!$q.screen.xs" class="q-ml-xs">저장</span>
                 </q-btn>
                 <q-btn v-if="formData.status === '3' && formData.selfCh !== ''" outline color="grey" dense @click="clearFieldSection">

@@ -112,7 +112,7 @@
                     label="항목분류"
                   />
                 </div>
-                <div class="col-8">
+                <div class="col-6">
                   <q-input
                     ref="focusStart"
                     :readonly="formReadonly"
@@ -140,6 +140,18 @@
                     :rules="[val => totalWeight - oldWeight + parseInt(val) <= 100 || '가중치합이 100이 넘을 수 없습니다.']"
                   />
                 </div>
+                <div class="col-2 q-pt-md">
+                  <q-toggle
+                    size="lg"
+                    v-model="formData.attenYn"
+                    true-value="Y"
+                    false-value="N"
+                    checked-icon="check"
+                    unchecked-icon="clear"
+                    color="primary"
+                    label="근태항목"
+                  />
+                </div>
               </div>
             </q-card>
           </q-card-section>
@@ -159,7 +171,7 @@ import { computed, onBeforeMount, onBeforeUnmount, onMounted, reactive, ref, wat
 import { isEmpty, isEqual } from 'lodash';
 import { api } from 'boot/axios';
 import notifySave from 'src/js_comm/notify-save';
-import { QBtn, QIcon, useQuasar } from 'quasar';
+import { QBtn, QIcon, QToggle, useQuasar } from 'quasar';
 import jsonUtil from 'src/js_comm/json-util';
 import { useUserInfoStore } from 'src/store/setUserInfo';
 import { useYearInfoStore } from 'src/store/setYearInfo';
@@ -295,6 +307,13 @@ const columnDefs = reactive({
         return $q.dark.isActive ? { color: 'cyan', fontWeight: '700' } : { color: 'blue', fontWeight: '700' };
       },
     },
+    {
+      headerName: '근태항목',
+      field: 'attenYn',
+      maxWidth: 100,
+      minWidth: 100,
+      resizable: false,
+    },
   ],
 });
 const totalWeight = ref(0);
@@ -361,6 +380,7 @@ const formData = ref({
   itemNm: '',
   seq: 0,
   weight: 0,
+  attenYn: '',
   iuD: '',
 });
 
@@ -372,6 +392,7 @@ const formDataInitialize = () => {
   formData.value.itemNm = '';
   formData.value.seq = 1;
   formData.value.weight = 0;
+  formData.value.attenYn = 'N';
   formData.value.iuD = 'I';
 };
 

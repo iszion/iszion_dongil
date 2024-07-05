@@ -84,14 +84,7 @@
                   <q-icon name="lock" size="xs" class="q-mr-xs" />
                   평가마감하기
                 </q-btn>
-                <q-btn
-                  v-if="sendCheck.initialize > 0"
-                  outline
-                  color="deep-orange"
-                  dense
-                  class="q-pr-md q-ml-sm"
-                  @click="deleteDataSection(sendCheck.cnt)"
-                >
+                <q-btn v-if="sendCheck.cnt > 0" outline color="deep-orange" dense class="q-pr-md q-ml-sm" @click="deleteDataSection(sendCheck.cnt)">
                   <q-badge color="orange" floating>{{ sendCheck.cnt }}</q-badge>
                   <q-icon name="delete" size="xs" class="q-mr-xs" />
                   평가초기화
@@ -416,6 +409,7 @@ const onSelectionChanged = event => {
     if (selectedRows.value[0].status > '3') {
       getDataSelectList(selectedRows.value[0]).then(() => {
         const evalCount = rowData.rowsSel.filter(item => item.markPoint > 0).length;
+        sendCheck.value.cnt = evalCount;
         // if (selectedRows.value[0].evalCount > 0) {
         //   sendCheck.value.initialize = true;
         //   sendCheck.value.cnt = selectedRows.value[0].evalCount;
@@ -654,6 +648,7 @@ const getDataSelectList = async resRow => {
     });
 
     rowData.rowsSel = response.data.data;
+
     // console.log('selData : ', rowData.rowsSel.length);
 
     // viewPoint.value.selfPoint = 0;

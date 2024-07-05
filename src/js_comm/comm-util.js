@@ -1,4 +1,12 @@
 export default {
+  formatDateYm(rawDate) {
+    if (rawDate) {
+      return `${rawDate.slice(0, 4)}-${rawDate.slice(4, 6)}`;
+    } else {
+      return '';
+    }
+  },
+
   formatDate(rawDate) {
     if (rawDate) {
       return `${rawDate.slice(0, 4)}-${rawDate.slice(4, 6)}-${rawDate.slice(6)}`;

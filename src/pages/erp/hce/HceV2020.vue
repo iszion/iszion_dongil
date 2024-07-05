@@ -8,10 +8,20 @@
               <q-icon name="menu_book" color="primary" size="md" />
             </template>
             <span class="text-subtitle1 text-bold"> 2차 역량평가 평가작업입니다.</span><br />
-            1. <span class="text-teal text-bold">진행상태</span>는 '평가완료', '진행중', '평가대기' 상태로 표기됩니다.
-            <span class="text-teal text-bold">자료정리</span>버튼을 클릭하여 진행상태를 재정리 하실 수 있습니다.<br />
-            2. 선택한 직원의 평가완료 시 <span class="text-blue text-bold">평가마감하기</span>버튼이 활성화됩니다.
-            <span class="text-blue text-bold">평가마감하기</span>버튼 클릭 시 <span class="text-red text-bold">평가마감완료</span><br />
+            <div class="row">
+              <div class="col-xs-12 col-sm-6">
+                1. <span class="text-teal text-bold">진행상태</span>는 '평가완료', '진행중', '평가대기' 상태로 표기됩니다.<br />
+                2. <span class="text-teal text-bold">자료정리</span>버튼을 클릭하여 진행상태를 재정리 하실 수 있습니다.<br />
+                3. <span class="text-teal text-bold">각 포인 체크건수</span>는 <span class="text-teal text-bold">정해진 인원 배정</span>에 한해
+                <span class="text-teal text-bold">선택</span> 하실 수 있습니다.<br />
+              </div>
+              <div class="col-xs-12 col-sm-6">
+                4. <span class="text-blue text-bold">적은 한도인원</span> 부터 선택하면
+                <span class="text-blue text-bold">남은 1개의 포인트 점수는 자동 체점</span>됩니다.<br />
+                5. 선택한 평가항목의 평가완료 시 <span class="text-blue text-bold">평가마감하기</span>버튼이 활성화됩니다.<br />
+                6. <span class="text-blue text-bold">평가마감하기</span>버튼 클릭 시 <span class="text-red text-bold">평가마감완료</span>
+              </div>
+            </div>
           </q-banner>
         </div>
         <div class="col-xs-12 col-sm-12 col-lg-4">
@@ -48,7 +58,14 @@
                   <q-icon name="refresh" size="xs" class="q-mr-xs" />
                   자료정리
                 </q-btn>
-                <q-btn v-if="!sendCheck.lock && sendCheck.initialize" outline color="deep-orange" dense class="q-pr-md" @click="deleteDataSection()">
+                <q-btn
+                  v-if="!sendCheck.lock && sendCheck.initialize && sendCheck.cnt > 0"
+                  outline
+                  color="deep-orange"
+                  dense
+                  class="q-pr-md"
+                  @click="deleteDataSection()"
+                >
                   <q-icon name="delete" size="xs" class="q-mr-xs" />
                   <q-badge color="orange" floating>{{ sendCheck.cnt }}</q-badge>
                   초기화
@@ -237,7 +254,7 @@
                         <q-radio
                           keep-color
                           v-model="data.markCh2"
-                          :disable="formReadonly"
+                          :disable="formReadonly || data.markCh1 === ''"
                           val="S"
                           label="S"
                           color="deep-orange"
@@ -247,7 +264,7 @@
                         <q-radio
                           keep-color
                           v-model="data.markCh2"
-                          :disable="formReadonly"
+                          :disable="formReadonly || data.markCh1 === ''"
                           val="A"
                           label="A"
                           color="blue"
@@ -257,7 +274,7 @@
                         <q-radio
                           keep-color
                           v-model="data.markCh2"
-                          :disable="formReadonly"
+                          :disable="formReadonly || data.markCh1 === ''"
                           val="B"
                           label="B"
                           color="cyan"
@@ -267,7 +284,7 @@
                         <q-radio
                           keep-color
                           v-model="data.markCh2"
-                          :disable="formReadonly"
+                          :disable="formReadonly || data.markCh1 === ''"
                           val="C"
                           label="C"
                           color="teal"
@@ -277,7 +294,7 @@
                         <q-radio
                           keep-color
                           v-model="data.markCh2"
-                          :disable="formReadonly"
+                          :disable="formReadonly || data.markCh1 === ''"
                           val="D"
                           label="D"
                           color="green"
@@ -605,78 +622,92 @@ const handlePointClick = (resMarkCh, resData) => {
       break;
   }
 
-  if (resData.markPoint2 > 0) {
-    saveDataAndHandleResult(jsonUtil.dataJsonParse('I', resData));
+  if (resData.markCh1 === '' || resData.markCh1 === null) {
+    resData.markPoint2 = 0;
+    resData.markCh2 = '';
+    $q.dialog({
+      dark: true,
+      title: '1차평가미확인',
+      message: '1차평가 진행 후 평가 하실 수 있습니다.',
+      ok: {
+        push: true,
+        color: 'negative',
+      },
+    });
+  } else {
+    if (resData.markPoint2 > 0) {
+      saveDataAndHandleResult(jsonUtil.dataJsonParse('I', resData));
 
-    setTimeout(() => {
-      const checkS = chS === pointValue.value.cnt.S;
-      const checkA = chA === pointValue.value.cnt.A;
-      const checkB = chB === pointValue.value.cnt.B;
-      const checkC = chC === pointValue.value.cnt.C;
-      const checkD = chD === pointValue.value.cnt.D;
-      // false인 변수를 찾는 함수
-      const checks = { checkS, checkA, checkB, checkC, checkD };
-      const falseKeys = Object.keys(checks).filter(key => !checks[key]);
+      setTimeout(() => {
+        const checkS = chS === pointValue.value.cnt.S;
+        const checkA = chA === pointValue.value.cnt.A;
+        const checkB = chB === pointValue.value.cnt.B;
+        const checkC = chC === pointValue.value.cnt.C;
+        const checkD = chD === pointValue.value.cnt.D;
+        // false인 변수를 찾는 함수
+        const checks = { checkS, checkA, checkB, checkC, checkD };
+        const falseKeys = Object.keys(checks).filter(key => !checks[key]);
 
-      if (falseKeys.length === 1) {
-        const falseVariable = falseKeys[0];
+        if (falseKeys.length === 1) {
+          const falseVariable = falseKeys[0];
 
-        for (let i = 0; i < rowData.rowsSel.length; i++) {
-          if (rowData.rowsSel[i].markPoint2 > 0) {
-          } else {
-            switch (falseVariable) {
-              case 'checkS':
-                rowData.rowsSel[i].markCh2 = 'S';
-                rowData.rowsSel[i].markPoint2 = '100';
-                break;
-              case 'checkA':
-                rowData.rowsSel[i].markCh2 = 'A';
-                rowData.rowsSel[i].markPoint2 = '90';
-                break;
-              case 'checkB':
-                rowData.rowsSel[i].markCh2 = 'B';
-                rowData.rowsSel[i].markPoint2 = '80';
-                break;
-              case 'checkC':
-                rowData.rowsSel[i].markCh2 = 'C';
-                rowData.rowsSel[i].markPoint2 = '70';
-                break;
-              case 'checkD':
-                rowData.rowsSel[i].markCh2 = 'D';
-                rowData.rowsSel[i].markPoint2 = '60';
-                break;
-              default:
-                rowData.rowsSel[i].markCh2 = '';
-                rowData.rowsSel[i].markPoint2 = '';
-                break;
-            }
+          for (let i = 0; i < rowData.rowsSel.length; i++) {
             if (rowData.rowsSel[i].markPoint2 > 0) {
-              saveDataAndHandleResult(jsonUtil.dataJsonParse('I', rowData.rowsSel[i]));
+            } else {
+              switch (falseVariable) {
+                case 'checkS':
+                  rowData.rowsSel[i].markCh2 = 'S';
+                  rowData.rowsSel[i].markPoint2 = '100';
+                  break;
+                case 'checkA':
+                  rowData.rowsSel[i].markCh2 = 'A';
+                  rowData.rowsSel[i].markPoint2 = '90';
+                  break;
+                case 'checkB':
+                  rowData.rowsSel[i].markCh2 = 'B';
+                  rowData.rowsSel[i].markPoint2 = '80';
+                  break;
+                case 'checkC':
+                  rowData.rowsSel[i].markCh2 = 'C';
+                  rowData.rowsSel[i].markPoint2 = '70';
+                  break;
+                case 'checkD':
+                  rowData.rowsSel[i].markCh2 = 'D';
+                  rowData.rowsSel[i].markPoint2 = '60';
+                  break;
+                default:
+                  rowData.rowsSel[i].markCh2 = '';
+                  rowData.rowsSel[i].markPoint2 = '';
+                  break;
+              }
+              if (rowData.rowsSel[i].markPoint2 > 0) {
+                saveDataAndHandleResult(jsonUtil.dataJsonParse('I', rowData.rowsSel[i]));
+              }
             }
           }
         }
-      }
-      const markPoint2Count = rowData.rowsSel.filter(item => item.markPoint2 > 0).length;
-      statusMessageUpdate(markPoint2Count);
-    }, 500);
-  } else {
-    saveDataAndHandleResult(jsonUtil.dataJsonParse('D', resData));
+        const markPoint2Count = rowData.rowsSel.filter(item => item.markPoint2 > 0).length;
+        statusMessageUpdate(markPoint2Count);
+      }, 500);
+    } else {
+      saveDataAndHandleResult(jsonUtil.dataJsonParse('D', resData));
 
-    setTimeout(() => {
-      const markPoint2Count = rowData.rowsSel.filter(item => item.markPoint2 > 0).length;
+      setTimeout(() => {
+        const markPoint2Count = rowData.rowsSel.filter(item => item.markPoint2 > 0).length;
 
-      statusMessageUpdate(markPoint2Count);
+        statusMessageUpdate(markPoint2Count);
 
-      $q.dialog({
-        dark: true,
-        title: '인원초과',
-        message: '평가대상점수 인원한도 초과입니다.',
-        ok: {
-          push: true,
-          color: 'negative',
-        },
-      });
-    }, 500);
+        $q.dialog({
+          dark: true,
+          title: '인원초과',
+          message: '평가대상점수 인원한도 초과입니다.',
+          ok: {
+            push: true,
+            color: 'negative',
+          },
+        });
+      }, 500);
+    }
   }
 };
 

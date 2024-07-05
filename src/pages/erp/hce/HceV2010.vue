@@ -8,10 +8,22 @@
               <q-icon name="menu_book" color="primary" size="md" />
             </template>
             <span class="text-subtitle1 text-bold"> 1차 역량평가 평가작업입니다.</span><br />
-            1. <span class="text-teal text-bold">진행상태</span>는 '평가완료', '진행중', '평가대기' 상태로 표기됩니다.
-            <span class="text-teal text-bold">자료정리</span>버튼을 클릭하여 진행상태를 재정리 하실 수 있습니다.<br />
-            2. 선택한 직원의 평가완료 시 <span class="text-blue text-bold">평가마감하기</span>버튼이 활성화됩니다.
-            <span class="text-blue text-bold">평가마감하기</span>버튼 클릭 시 <span class="text-red text-bold">평가마감완료</span><br />
+            <div class="row">
+              <div class="col-xs-12 col-sm-6">
+                1. <span class="text-teal text-bold">진행상태</span>는 '평가완료', '진행중', '평가대기' 상태로 표기됩니다.<br />
+                2. <span class="text-teal text-bold">자료정리</span>버튼을 클릭하여 진행상태를 재정리 하실 수 있습니다.<br />
+                3. <span class="text-red text-bold">S</span>포인트 선택시 반드시 <span class="text-blue text-bold">사유</span>를 등록해야
+                <span class="text-blue text-bold">저장</span>이 가능합니다.
+              </div>
+              <div class="col-xs-12 col-sm-6">
+                4. <span class="text-teal text-bold">각 포인 체크건수</span>는 <span class="text-teal text-bold">정해진 인원 배정</span>에 한해
+                <span class="text-teal text-bold">선택</span> 하실 수 있습니다.
+                <br />
+                5. 진행상태가 모두 <span class="text-blue text-bold">평가완료</span>이면 <span class="text-red text-bold">평가마감</span>버튼이
+                활성화됩니다.<br />
+                6. <span class="text-red text-bold">평가마감하기</span>버튼 클릭 시 <span class="text-red text-bold">평가마감완료</span><br />
+              </div>
+            </div>
           </q-banner>
         </div>
         <div class="col-xs-12 col-sm-12 col-lg-4">
@@ -147,7 +159,7 @@
                 <div class="col-xs-12 col-sm-12 col-md-7 q-mb-sm">
                   <q-card square class="bg-grey" style="height: 60px">
                     <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">
-                      평가하기 [ <span class="text-teal-8">()안은 평가대상인원수</span> ]
+                      평가하기 [ <span class="text-teal-8">(n)안은 평가대상인원수</span> ]
                     </div>
                     <div v-if="!setTotEva" class="q-pa-sm text-subtitle1 text-bold flex flex-center q-gutter-x-lg">
                       <span class="text-deep-orange-9 q-mr-xs">S </span> ( {{ pointValue.cnt.S }} ) <span class="text-blue-9 q-mr-xs">A</span> (
@@ -232,6 +244,17 @@
                       </div>
                       <div class="col-xs-2 col-sm-2 col-md-7">
                         <div class="text-subtitle2 q-py-sm q-pl-sm">{{ data.evtDeptNm }} / {{ data.evtTitlNm }}</div>
+                      </div>
+                    </div>
+                    <div v-if="viewInfo.attenYn" class="row q-gutter-x-lg flex-center">
+                      <div class="">
+                        지각: <span class="text-red text-bold">{{ data.attenCh1 }}</span>
+                      </div>
+                      <div class="">
+                        미체크: <span class="text-red text-bold">{{ data.attenCh2 }}</span>
+                      </div>
+                      <div class="">
+                        결근: <span class="text-red text-bold">{{ data.attenCh3 }}</span>
                       </div>
                     </div>
                   </q-card>
@@ -490,6 +513,7 @@ const formData = ref({
 const viewInfo = ref({
   itemNm: null,
   workNo: null,
+  attenYn: false,
 });
 const selectedRows = ref([]);
 const onSelectionChanged = event => {
@@ -503,6 +527,7 @@ const onSelectionChanged = event => {
     tmpMark.value.markPoint = 0;
     tmpMark.value.markCh = null;
 
+    viewInfo.value.attenYn = selectedRows.value[0].attenYn === 'Y';
     formReadonly.value = sendCheck.value.lock;
 
     viewInfo.value.itemNm = selectedRows.value[0].itemNm;

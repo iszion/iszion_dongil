@@ -47,16 +47,6 @@
                     map-options
                     options-dense
                     style="width: 75px"
-                  /><q-select
-                    dense
-                    v-model="searchParam.pDay"
-                    :options="optionsDate.day"
-                    label="일"
-                    label-color="orange"
-                    emit-value
-                    map-options
-                    options-dense
-                    style="width: 75px"
                   />
                   <q-input
                     stack-label
@@ -76,6 +66,8 @@
                 <q-space />
                 <div class="q-gutter-xs">
                   <q-btn outline color="positive" dense @click="getData"><q-icon name="search" size="xs" /> 조회 </q-btn>
+                  <q-btn outline color="primary" dense @click="addDataSection"> <q-icon name="add" size="xs" /> 신규</q-btn>
+                  <q-btn v-if="showSaveBtn" outline color="primary" dense @click="saveDataSection"> <q-icon name="save" size="xs" /> 저장</q-btn>
                   <q-btn v-if="selectedRows.length > 0" outline color="negative" dense @click="deleteDataSection">
                     <q-icon name="delete" size="xs" /> 삭제</q-btn
                   >
@@ -114,16 +106,25 @@
                 <template v-slot:avatar>
                   <q-icon name="menu_book" color="primary" size="md" />
                 </template>
-                <span class="text-subtitle1 text-bold">
-                  발령정보 Excel파일을 업로드하여 발령정보 자료를 생성합니다. (
-                  <span class="text-subtitle2 text-blue"> ▼ 아래 항목별로 엑셀자료를 준비해 주세요</span> )</span
-                >
-                <br />
+                <div class="row">
+                  <span class="col-xs-12 col-sm-6 text-subtitle1 text-bold">
+                    발령정보 Excel파일을 업로드하여 발령정보 자료를 생성합니다. (
+                    <span class="text-subtitle2 text-blue"> ▼ 아래 항목별로 엑셀자료를 준비해 주세요</span> )</span
+                  >
+                  <span class="col-xs-12 col-sm-6 text-subtitle1 text-bold">
+                    반드시 월별로 1개월씩 업로드 가능합니다. (
+                    <span class="text-subtitle2 text-red"> 해당 년월에 자료가 있으면 모두 지워지고 업로드 자료로 저장됩니다.</span> )</span
+                  >
+                </div>
+                <q-separator class="q-my-xs" />
                 <div class="row justify-between">
-                  <div>1. <span class="text-deep-orange">Cell 1</span> -> <span class="text-orange">사번</span></div>
-                  <div><span class="text-deep-orange">Cell 2</span> -> <span class="text-orange">소속코드</span></div>
-                  <div><span class="text-deep-orange">Cell 3</span> -> <span class="text-orange">직급코드</span></div>
-                  <div><span class="text-deep-orange">Cell 4</span> -> <span class="text-orange">발령일자</span></div>
+                  <div><span class="text-deep-orange">Field 1(년월)</span> : <span class="text-orange">202401</span></div>
+                  <div><span class="text-deep-orange">Field 2(성명)</span> : <span class="text-orange">홍길동</span></div>
+                  <div><span class="text-deep-orange">Field 3(사번)</span> : <span class="text-orange">2200001</span></div>
+                  <div><span class="text-deep-orange">Field 4(지각)</span> : <span class="text-orange">2</span></div>
+                  <div><span class="text-deep-orange">Field 5(미근태체크)</span> : <span class="text-orange">5</span></div>
+                  <div><span class="text-deep-orange">Field 6(결근)</span> : <span class="text-orange">0</span></div>
+                  <div><span class="text-deep-orange">Field 7(기타)</span> : <span class="text-orange">5, 10, 11, 15, 16, 20, 25</span></div>
                 </div>
               </q-banner>
             </q-card-section>
@@ -223,7 +224,6 @@ onBeforeMount(() => {
   searchParam.pMonth = commUtil.getTodayMonth();
   searchParam.pDay = commUtil.getTodayDay();
   optionYymmReset();
-  optionDayReset(searchParam.pYear, searchParam.pMonth);
   getDataAppoYearOption();
 });
 
@@ -294,6 +294,15 @@ const columnDefs = reactive({
       },
     },
     {
+      headerName: '근태년월',
+      field: 'makeYm',
+      valueFormatter: params => {
+        return commUtil.formatDateYm(params.data.makeYm);
+      },
+      minWidth: 120,
+      maxWidth: 120,
+    },
+    {
       headerName: '사번',
       field: 'empCd',
       minWidth: 100,
@@ -323,20 +332,20 @@ const columnDefs = reactive({
       editable: false,
     },
     {
-      headerName: '근태일',
-      field: 'makeDay',
-      valueFormatter: params => {
-        return commUtil.formatDate(params.data.makeDay);
-      },
+      headerName: '지각',
+      field: 'attenCh1',
       minWidth: 120,
       maxWidth: 120,
     },
     {
-      headerName: '근태시간',
-      field: 'makeTime',
-      valueFormatter: params => {
-        return commUtil.formatTime(params.data.makeTime);
-      },
+      headerName: '근태미체크',
+      field: 'attenCh2',
+      minWidth: 120,
+      maxWidth: 120,
+    },
+    {
+      headerName: '결근',
+      field: 'attenCh3',
       minWidth: 120,
       maxWidth: 120,
     },
@@ -348,39 +357,27 @@ const columnDefs = reactive({
   ],
 });
 
-const oldFormData = ref(null);
-const formData = ref({
-  empCd: '',
-  empNm: '',
-  deptCd: '',
-  catgCd: '',
-  pstnCd: '',
-  titlCd: '',
-  evtgCd: '',
-  gender: '',
-  birthday: '',
-  mobile: '',
-  email: '',
-  inDay: '',
-  outDay: '',
-  imageFileNm: '',
-});
-
 const selectedRows = ref([]);
-const isShowStatusEdit = ref(false);
-const isShowDeleteBtn = ref(false);
-const isShowSaveBtn = ref(false);
 
 const onSelectionChanged = event => {
   selectedRows.value = event.api.getSelectedRows();
 };
 
+const showSaveBtn = ref(false);
 const onCellValueChanged = () => {
   rowData.update = [];
   for (let i = 0; rowData.backup.length > i; i++) {
     if (JSON.stringify(rowData.backup[i]) !== JSON.stringify(rowData.rows[i])) {
       rowData.update.push(rowData.rows[i]);
     }
+  }
+  console.log('back :: ', JSON.stringify(rowData.backup));
+  console.log('update :: ', JSON.stringify(rowData.rows));
+  console.log('save :: ', JSON.stringify(rowData.update));
+  if (rowData.rows === rowData.backup) {
+    console.log('같음');
+  } else {
+    console.log('틀림');
   }
   showSaveBtn.value = rowData.update.length > 0;
 };
@@ -390,21 +387,25 @@ const rowSelection = ref(null);
 const empCdFocus = ref(null);
 const empNmFocus = ref(null);
 const addDataSection = () => {
-  formData.value = {};
-  oldFormData.value = {};
-  isShowStatusEdit.value = true;
-  statusEdit.icon = 'edit';
-  statusEdit.message = '신규입력모드 입니다';
-  statusEdit.color = 'primary';
-  isSaveFg = 'I';
-  isShowSaveBtn.value = true;
-  formDisableEmpCd.value = false;
-  formDisable.value = true;
-  formData.value.stdYear = storeYear.setYear;
-  formData.value.outDay = '9999-12-31';
-  setTimeout(() => {
-    empCdFocus.value.focus();
-  }, 100);
+  const newItem = {
+    makeYm: searchParam.pYear + searchParam.pMonth,
+    empCd: '',
+    empNm: '',
+    deptNm: '',
+    titlNm: '',
+    attenCh1: '',
+    attenCh2: '',
+    attenCh3: '',
+    explains: '',
+  };
+  const res = gridApi.value.applyTransaction({ add: [newItem] });
+  if (res.add) {
+    // 새로 추가된 행의 첫 번째 셀에 포커스 맞추기
+    gridApi.value.startEditingCell({
+      rowIndex: res.add[0].rowIndex,
+      colKey: 'empCd',
+    });
+  }
 };
 
 const uploadSaveSection = () => {
@@ -428,40 +429,20 @@ const uploadSaveSection = () => {
       let iu = [];
       let iuD = [];
       for (let i = 0; i < rowDataExcel.value.length; i++) {
-        // 출근일자 시간 포멧
-        const _dateTime = rowDataExcel.value[i].col0;
-        const _datetimeArr = _dateTime.split(' ');
-        const _date = _datetimeArr[0].split('-').join('');
-        const _ampm = _datetimeArr[1];
-        const _timeArr = _datetimeArr[2].split(':');
-        let _h = _timeArr[0];
-        const _m = _timeArr[1];
-        const _s = _timeArr[2];
-        if (_ampm === '오후') {
-          _h = parseInt(_h) + 12;
-        }
-        const _time = _h + '' + _m + '' + _s;
-
-        console.log('lastDate : ', _date, _time);
-        // 출근일자 시간 포멧 끝
-
-        // 사번
-        const _empCd = rowDataExcel.value[i].col3;
-        // 상태
-        let _status = '0';
-        if (_h + _m > '0900') {
-          _status = '1';
-        }
-
         const objJson = {
-          makeDay: _date,
-          makeTime: _time,
-          empCd: _empCd,
-          status: _status,
-          explains: 'upload data',
+          makeYm: rowDataExcel.value[i].col0, // 년월
+          oldMakeYm: rowDataExcel.value[i].col0, // 년월
+
+          empCd: rowDataExcel.value[i].col2, // 사번
+          oldEmpCd: rowDataExcel.value[i].col2, // 사번
+
+          attenCh1: rowDataExcel.value[i].col3, // 지각
+          attenCh2: rowDataExcel.value[i].col4, // 근태미체크
+          attenCh3: rowDataExcel.value[i].col5, // 결근
+          explains: rowDataExcel.value[i].col6, // 기타
         };
 
-        let tmpJson = '{"mode":"I","data":' + JSON.stringify(objJson) + '}';
+        let tmpJson = '{"mode":"C","data":' + JSON.stringify(objJson) + '}';
         iu.push(tmpJson);
       }
       saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
@@ -502,26 +483,32 @@ const deleteDataSection = () => {
       // 확인/취소 모두 실행되었을때
     });
 };
-const saveDataSection = () => {
-  formData.value.birthday = commUtil.unFormatDate(formData.value.birthday);
-  formData.value.inDay = commUtil.unFormatDate(formData.value.inDay);
-  formData.value.outDay = commUtil.unFormatDate(formData.value.outDay);
 
-  if (isEqual(formData.value, oldFormData.value)) {
-    $q.dialog({
-      dark: true,
-      title: '안내',
-      message: '변경된 자료가 없습니다. ',
-      // persistent: true,
+const saveDataSection = () => {
+  $q.dialog({
+    dark: true,
+    title: '자료저장',
+    message: '변경된 자료를 저장하시겠습니까?',
+    // persistent: true,
+  })
+    .onOk(() => {
+      let iu = [];
+      let iuD = [];
+      let tmpJson = '';
+      for (let i = 0; i < rowData.update.length; i++) {
+        if (rowData.update[i].iuD === 'U') {
+          tmpJson = '{"mode":"U","data":' + JSON.stringify(rowData.update[i]) + '}';
+        } else {
+          tmpJson = '{"mode":"I","data":' + JSON.stringify(rowData.update[i]) + '}';
+        }
+        iu.push(tmpJson);
+      }
+      saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
     })
-      .onOk(() => {})
-      .onCancel(() => {})
-      .onDismiss(() => {
-        // 확인/취소 모두 실행되었을때
-      });
-  } else {
-    saveDataAndHandleResult(jsonUtil.dataJsonParse(isSaveFg, formData.value));
-  }
+    .onCancel(() => {})
+    .onDismiss(() => {
+      // 확인/취소 모두 실행되었을때
+    });
 };
 
 const screenSizeHeight = ref(0);
@@ -556,11 +543,12 @@ const saveDataAndHandleResult = resFormData => {
 const getData = async () => {
   try {
     const response = await api.post('/api/mst/mst1220_list', {
-      paramSetYear: storeYear.setYear,
-      paramAppoYear: searchParam.appoYear,
+      paramMakeYear: searchParam.pYear,
+      paramMakeMonth: searchParam.pMonth,
       paramSearchWord: searchParam.word,
     });
     rowData.rows = response.data.data;
+    rowData.backup = JSON.parse(JSON.stringify(response.data.data));
   } catch (error) {
     console.error('Error fetching users:', error);
   }
@@ -684,15 +672,6 @@ const optionYymmReset = () => {
     { label: '11월', value: '11' },
     { label: '12월', value: '12' },
   ];
-};
-const optionDayReset = (year, month) => {
-  const lastDay = commUtil.getLastMonthDay(year, month);
-  optionsDate.value.day = Array.from({ length: lastDay }, (_, dd) => {
-    let _day = dd + 1;
-    let day = commUtil.getDateWithZero(_day);
-    return { label: day + '일', value: day };
-  });
-  optionsDate.value.day.unshift({ label: '전체', value: '' });
 };
 </script>
 
