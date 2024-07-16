@@ -29,7 +29,7 @@
                     class="q-px-md q-mr-sm"
                     label-color="orange"
                     v-model="selectedDeptH"
-                    :options="deptOptions"
+                    :options="deptOptionsX"
                     option-value="deptCd"
                     option-label="deptNm"
                     option-disable="inactive"
@@ -46,7 +46,7 @@
                     class="q-px-md q-mr-sm"
                     label-color="orange"
                     v-model="selectedCatgH"
-                    :options="catgOptions"
+                    :options="catgOptionsX"
                     option-value="catgCd"
                     option-label="catgNm"
                     option-disable="inactive"
@@ -73,10 +73,6 @@
                 </div>
                 <q-space />
                 <q-btn outline color="positive" dense @click="getDataEmp"><q-icon name="search" size="xs" /> 조회 </q-btn>
-                <q-btn v-if="isShowSaveBtn3" outline color="primary" dense class="q-ma-xs q-pr-lg" @click="saveDataSection3">
-                  <q-icon name="delete" size="xs" class="q-mr-sm" />
-                  삭제하기
-                </q-btn>
               </q-toolbar>
             </q-card-actions>
 
@@ -93,6 +89,7 @@
                   :rowSelection="rowSelectionEmp"
                   @selection-changed="onSelectionChangedEmp"
                   @grid-ready="onGridReadyEmp"
+                  suppressRowClickSelection="true"
                 >
                 </ag-grid-vue>
               </div>
@@ -138,7 +135,7 @@
                   map-options
                   style="min-width: 120px; max-width: 120px"
                   label="평가승인구분"
-                  @update:model-value="getDataSelectEmp"
+                  @update:model-value="getDataSelectEmpCall"
                 />
                 <q-select
                   dense
@@ -156,7 +153,7 @@
                   map-options
                   style="min-width: 120px; max-width: 120px"
                   label="소속팀"
-                  @update:model-value="getDataSelectEmp"
+                  @update:model-value="getDataSelectEmpCall"
                 />
                 <q-select
                   dense
@@ -172,9 +169,9 @@
                   option-disable="inactive"
                   emit-value
                   map-options
-                  style="min-width: 90px; max-width: 90px"
+                  style="min-width: 100px; max-width: 100px"
                   label="직급"
-                  @update:model-value="getDataSelectEmp"
+                  @update:model-value="getDataSelectEmpCall"
                 />
                 <q-select
                   dense
@@ -190,16 +187,25 @@
                   option-disable="inactive"
                   emit-value
                   map-options
-                  style="min-width: 90px; max-width: 90px"
+                  style="min-width: 100px; max-width: 100px"
                   label="직분류"
-                  @update:model-value="getDataSelectEmp"
+                  @update:model-value="getDataSelectEmpCall"
                 />
                 <q-space />
                 <div class="q-gutter-xs q-pa-xs">
-                  <q-btn v-if="!$q.screen.xs && isShowSaveBtn1" outline color="primary" dense class="q-ma-xs q-pr-lg" @click="saveDataSection">
-                    <q-badge color="orange" floating>{{ selectedRowsTarget.length }}</q-badge>
+                  <q-btn
+                    v-if="oldRowCount > 0 || selectedRowsTarget.length > 0"
+                    outline
+                    color="primary"
+                    dense
+                    class="q-ma-xs q-pr-lg"
+                    @click="saveDataSection"
+                  >
+                    <q-badge v-if="selectedRowsTarget.length === 0 && oldRowCount > 0" color="orange" floating>{{ oldRowCount }}</q-badge>
+                    <q-badge v-if="selectedRowsTarget.length > 0" color="orange" floating>{{ selectedRowsTarget.length }}</q-badge>
                     <q-icon name="save" size="xs" class="q-mr-sm" />
-                    저장
+                    <span v-if="selectedRowsTarget.length === 0 && oldRowCount > 0">삭제</span>
+                    <span v-if="selectedRowsTarget.length > 0">저장</span>
                   </q-btn>
                 </div>
               </div>
@@ -218,6 +224,7 @@
                   :defaultColDef="defaultColDef.def"
                   @selection-changed="onSelectionTargetEmp"
                   @grid-ready="onGridReady"
+                  suppressRowClickSelection="true"
                 >
                 </ag-grid-vue>
               </div>
@@ -260,7 +267,7 @@ const contentZoneStyle = computed(() => ({
 }));
 
 const gridApi = ref(null);
-const gridApiUser = ref(null);
+const gridApiEmp = ref(null);
 const rowData = reactive({ rows: [] });
 const rowDataEmp = reactive({ rows: [] });
 const rowSelectionEmp = ref(null);
@@ -291,7 +298,7 @@ onMounted(() => {
 });
 
 const onGridReadyEmp = params => {
-  gridApiUser.value = params.api;
+  gridApiEmp.value = params.api;
 };
 
 const defaultColDefEmp = reactive({
@@ -356,18 +363,6 @@ const columnDefsEmp = reactive({
 
 const onGridReady = params => {
   gridApi.value = params.api;
-  selectedRowsTarget.value = [];
-  params.api.forEachNode(node => {
-    // console.log('node : ', node.data);
-    // 타겟 평가자와 선택한 평가자가 같은면 체크
-    if (node.data.evsEmpCd === selectedRows.value[0].empCd) {
-      node.setSelected(true);
-    }
-  });
-  if (isEmpty(selectedRowsTarget.value)) {
-    isShowSaveBtn1.value = false;
-    isShowSaveBtn3.value = false;
-  }
 };
 
 const defaultColDef = reactive({
@@ -407,13 +402,13 @@ const columnDefs = reactive({
     },
     {
       headerName: '사번',
-      field: 'empCd',
+      field: 'evtEmpCd',
       minWidth: 100,
       maxWidth: 100,
     },
     {
       headerName: '성명',
-      field: 'empNm',
+      field: 'evtEmpNm',
       minWidth: 80,
       maxWidth: 80,
     },
@@ -444,20 +439,40 @@ const columnDefs = reactive({
 });
 
 const selectedRows = ref();
-const selectedRowsTarget = ref();
+const selectedRowsTarget = ref([]);
 const isShowSaveBtn1 = ref(false);
 const isShowSaveBtn3 = ref(false);
+const oldRowCount = ref();
 
 const onSelectionChangedEmp = event => {
   selectedRows.value = event.api.getSelectedRows();
   if (!isEmpty(selectedRows.value)) {
     // console.log('year : ', selectedRows.value[0].stdYear);
-    getDataSelectEmp();
+    getDataSelectEmpCall();
+
     isDesableEvs.value = false;
   } else {
     isDesableEvs.value = true;
     rowData.rows = [];
   }
+};
+const getDataSelectEmpCall = () => {
+  getDataSelectEmp().then(() => {
+    selectedRowsTarget.value = [];
+    gridApi.value.forEachNode(node => {
+      // console.log('node : ', node.data.iuD);
+      // 타겟 평가자와 선택한 평가자가 같은면 체크
+      if (node.data.iuD === 'U') {
+        node.setSelected(true);
+      }
+    });
+    if (isEmpty(selectedRowsTarget.value)) {
+      isShowSaveBtn1.value = false;
+      isShowSaveBtn3.value = false;
+    }
+
+    oldRowCount.value = rowData.rows.filter(item => item.iuD === 'U').length;
+  });
 };
 const onSelectionTargetEmp = event => {
   selectedRowsTarget.value = event.api.getSelectedRows();
@@ -473,35 +488,20 @@ const onSelectionTargetEmp = event => {
 const saveDataSection = () => {
   let iu = [];
   let iuD = [];
-  // 신규/수정 부분
 
-  for (let i = 0; i < selectedRowsTarget.value.length; i++) {
-    // selectedRows.value[0].empCd
-    let tmpJson1 = {};
-    tmpJson1['stdYear'] = selectedRows.value[0].stdYear; // 선택한 인사정보 기준년도
-    tmpJson1['evsEmpCd'] = selectedRows.value[0].empCd; // 선택한 인사정보 평가자
-    tmpJson1['evsCd'] = selectedEvs.value; // 선택한 평가승인구분
-    tmpJson1['evtEmpCd'] = selectedRowsTarget.value[i].empCd; // 선택한 타겟 인사정보 사번
-    let tmpJson = '{"mode": "I","data":' + JSON.stringify(tmpJson1) + '}';
-    // console.log('json Data : ', tmpJson);
-    iu.push(tmpJson);
+  for (let i = 0; i < rowData.rows.length; i++) {
+    if (rowData.rows[i].iuD === 'U') {
+      let tmpJson = '{"mode": "D","data":' + JSON.stringify(rowData.rows[i]) + '}';
+      // console.log('row : ', JSON.stringify(rowData.rows[i]));
+      iuD.push(tmpJson);
+    }
   }
 
-  saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
-};
-
-const saveDataSection3 = () => {
-  let iu = [];
-  let iuD = [];
-  // 신규/수정 부분
-
-  let tmpJson1 = {};
-  tmpJson1['stdYear'] = selectedRows.value[0].stdYear; // 선택한 인사정보 기준년도
-  tmpJson1['evsEmpCd'] = selectedRows.value[0].empCd; // 선택한 인사정보 평가자
-  tmpJson1['evsCd'] = selectedEvs.value; // 선택한 평가승인구분
-  let tmpJson = '{"mode": "D","data":' + JSON.stringify(tmpJson1) + '}';
-  console.log('json Data : ', tmpJson);
-  iuD.push(tmpJson);
+  for (let i = 0; i < selectedRowsTarget.value.length; i++) {
+    let tmpJson = '{"mode": "I","data":' + JSON.stringify(selectedRowsTarget.value[i]) + '}';
+    // console.log('row : ', JSON.stringify(selectedRowsTarget.value[i]));
+    iu.push(tmpJson);
+  }
 
   saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
 };
@@ -524,7 +524,7 @@ const getDataEmp = async () => {
   try {
     const response = await api.post('/api/aux/aux2010_list', {
       paramSetYear: storeYear.setYear,
-      paramDeptCd: selectedDept.value,
+      paramDeptCd: selectedDeptH.value,
       paramCatgCd: selectedCatgH.value,
       paramSearchValue: searchValue.value,
     });
@@ -546,7 +546,7 @@ const getDataSelectEmp = async () => {
       paramEvsCd: selectedEvs.value,
     });
     rowData.rows = response.data.data;
-    gridKey.value += 1;
+    // console.log('seleData : ', JSON.stringify(rowData.rows));
   } catch (error) {
     console.error('Error fetching users:', error);
   }
@@ -571,7 +571,9 @@ const saveDataAndHandleResult = resFormData => {
 
 // ***** DataBase 소속자료 가져오기 부분 *****************************//
 const deptOptions = ref([]);
+const deptOptionsX = ref([]);
 const catgOptions = ref([]);
+const catgOptionsX = ref([]);
 
 const selectedDept = ref('');
 const selectedDeptH = ref('');
@@ -582,7 +584,9 @@ async function getDataDeptOption(resParamCommCd1) {
     const response = await api.post('/api/mst/dept_option_list', { paramSetYear: storeYear.setYear });
 
     deptOptions.value = response.data.data;
+    deptOptionsX.value = JSON.parse(JSON.stringify(deptOptions.value));
     deptOptions.value.unshift({ deptCd: '', deptNm: '전체' });
+    deptOptionsX.value.unshift({ deptCd: '', deptNm: '전체' });
   } catch (error) {
     console.error('Error fetching users:', error);
   }
@@ -593,7 +597,9 @@ async function getDataCatgOption(resParamCommCd1) {
     const response = await api.post('/api/mst/catg_option_list', { paramSetYear: storeYear.setYear });
 
     catgOptions.value = response.data.data;
+    catgOptionsX.value = JSON.parse(JSON.stringify(catgOptions.value));
     catgOptions.value.unshift({ catgCd: '', catgNm: '전체' });
+    catgOptionsX.value.unshift({ catgCd: '', catgNm: '전체' });
   } catch (error) {
     console.error('Error fetching users:', error);
   }

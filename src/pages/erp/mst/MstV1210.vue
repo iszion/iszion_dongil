@@ -21,7 +21,7 @@
             <!-- contents list title bar -->
             <q-bar class="q-px-sm">
               <q-icon name="list_alt" />
-              <span class="text-subtitle2 q-px-sm">인사발령정보 관리</span>
+              <span class="q-px-sm text-bold text-subtitle1" :class="$q.dark.isActive ? 'text-orange' : 'text-primary'">{{ menuLabel }}</span>
             </q-bar>
             <!--  end of contents list title bar -->
             <q-card-actions align="right" class="q-pa-none">
@@ -62,6 +62,8 @@
                 <q-space />
                 <div class="q-gutter-xs">
                   <q-btn outline color="positive" dense @click="getData"><q-icon name="search" size="xs" /> 조회 </q-btn>
+                  <q-btn outline color="primary" dense @click="addDataSection"> <q-icon name="add" size="xs" /> 신규</q-btn>
+                  <q-btn v-if="showSaveBtn" outline color="primary" dense @click="saveDataSection"> <q-icon name="save" size="xs" /> 저장</q-btn>
                   <q-btn v-if="selectedRows.length > 0" outline color="negative" dense @click="deleteDataSection">
                     <q-icon name="delete" size="xs" /> 삭제</q-btn
                   >
@@ -205,8 +207,10 @@ onBeforeMount(() => {
   getDataAppoYearOption();
 });
 
+const menuLabel = ref('');
 onMounted(() => {
   window.addEventListener('resize', handleResize);
+  menuLabel.value = window.history.state.label;
   handleResize();
 });
 
@@ -350,6 +354,7 @@ const onSelectionChanged = event => {
   selectedRows.value = event.api.getSelectedRows();
 };
 
+const showSaveBtn = ref(false);
 const onCellValueChanged = () => {
   rowData.update = [];
   for (let i = 0; rowData.backup.length > i; i++) {
@@ -362,25 +367,25 @@ const onCellValueChanged = () => {
 
 const rowSelection = ref(null);
 
-const empCdFocus = ref(null);
-const empNmFocus = ref(null);
 const addDataSection = () => {
-  formData.value = {};
-  oldFormData.value = {};
-  isShowStatusEdit.value = true;
-  statusEdit.icon = 'edit';
-  statusEdit.message = '신규입력모드 입니다';
-  statusEdit.color = 'primary';
-  isSaveFg = 'I';
-  isShowSaveBtn.value = true;
-  formDisableEmpCd.value = false;
-  formDisable.value = true;
-  formData.value.stdYear = storeYear.setYear;
-  formData.value.outDay = '9999-12-31';
-  setTimeout(() => {
-    empCdFocus.value.focus();
-  }, 100);
+  const newItem = {
+    empCd: '',
+    empNm: '',
+    deptCd: '',
+    titlCd: '',
+    appoDay: '',
+    explains: '',
+  };
+  const res = gridApi.value.applyTransaction({ add: [newItem] });
+  if (res.add) {
+    // 새로 추가된 행의 첫 번째 셀에 포커스 맞추기
+    gridApi.value.startEditingCell({
+      rowIndex: res.add[0].rowIndex,
+      colKey: 'empCd',
+    });
+  }
 };
+
 const deleteDataSection = () => {
   $q.dialog({
     dark: true,
@@ -413,25 +418,30 @@ const deleteDataSection = () => {
     });
 };
 const saveDataSection = () => {
-  formData.value.birthday = commUtil.unFormatDate(formData.value.birthday);
-  formData.value.inDay = commUtil.unFormatDate(formData.value.inDay);
-  formData.value.outDay = commUtil.unFormatDate(formData.value.outDay);
-
-  if (isEqual(formData.value, oldFormData.value)) {
-    $q.dialog({
-      dark: true,
-      title: '안내',
-      message: '변경된 자료가 없습니다. ',
-      // persistent: true,
+  $q.dialog({
+    dark: true,
+    title: '자료저장',
+    message: '변경된 자료를 저장하시겠습니까?',
+    // persistent: true,
+  })
+    .onOk(() => {
+      let iu = [];
+      let iuD = [];
+      let tmpJson = '';
+      for (let i = 0; i < rowData.update.length; i++) {
+        if (rowData.update[i].iuD === 'U') {
+          tmpJson = '{"mode":"U","data":' + JSON.stringify(rowData.update[i]) + '}';
+        } else {
+          tmpJson = '{"mode":"I","data":' + JSON.stringify(rowData.update[i]) + '}';
+        }
+        iu.push(tmpJson);
+      }
+      saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
     })
-      .onOk(() => {})
-      .onCancel(() => {})
-      .onDismiss(() => {
-        // 확인/취소 모두 실행되었을때
-      });
-  } else {
-    saveDataAndHandleResult(jsonUtil.dataJsonParse(isSaveFg, formData.value));
-  }
+    .onCancel(() => {})
+    .onDismiss(() => {
+      // 확인/취소 모두 실행되었을때
+    });
 };
 
 const screenSizeHeight = ref(0);
@@ -507,6 +517,7 @@ const getData = async () => {
       paramSearchWord: searchParam.word,
     });
     rowData.rows = response.data.data;
+    rowData.backup = JSON.parse(JSON.stringify(response.data.data));
   } catch (error) {
     console.error('Error fetching users:', error);
   }

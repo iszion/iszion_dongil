@@ -137,8 +137,33 @@
               </div>
             </q-toolbar>
             <q-card class="q-pa-lg">
-              <q-input
+              <q-select
                 ref="focusStart"
+                :disable="formDisable"
+                v-model="formData.eidcCd"
+                :options="eidcOptions"
+                label="평가지표"
+                label-color="orange"
+                option-value="eidcCd"
+                option-label="eidcNm"
+                options-dense
+                emit-value
+                map-options
+                @focus="$refs.focusStart.showPopup()"
+              >
+                <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
+                  <q-item v-bind="itemProps">
+                    <q-item-section>
+                      <q-item-label v-html="opt.eidcNm" />
+                    </q-item-section>
+                    <q-item-section side>
+                      <q-toggle :model-value="selected" @update:model-value="toggleOption(opt)" />
+                    </q-item-section>
+                  </q-item>
+                </template>
+              </q-select>
+
+              <q-input
                 :readonly="formReadonly"
                 :disable="formDisable"
                 v-model="formData.targetDoc"
@@ -243,9 +268,12 @@ import { api } from 'boot/axios';
 import notifySave from 'src/js_comm/notify-save';
 import { QBtn, QIcon, useQuasar } from 'quasar';
 import jsonUtil from 'src/js_comm/json-util';
+import commUtil from 'src/js_comm/comm-util';
 import { useUserInfoStore } from 'src/store/setUserInfo';
 import { useYearInfoStore } from 'src/store/setYearInfo';
-import commUtil from 'src/js_comm/comm-util';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 const storeUser = useUserInfoStore();
 const storeYear = useYearInfoStore();
 
@@ -255,6 +283,7 @@ const rowData = reactive({ rows: [] });
 const gridHeight = ref(300); // 초기 높이
 const rowHeight = 46; // 행당 높이 (예: 25px)
 const minHeight = ref(135); // 최소 높이 (예: 300px)
+
 watch(
   () => rowData.rows,
   newRows => {
@@ -306,6 +335,13 @@ const columnDefs = reactive({
       rowDrag: true,
       maxWidth: 80,
       minWidth: 80,
+    },
+    {
+      headerName: '평가지표',
+      field: 'eidcNm',
+      minWidth: 150,
+      maxWidth: 180,
+      resizable: true,
     },
     {
       headerName: '세부목표',
@@ -390,11 +426,14 @@ onBeforeUnmount(() => {
   // Remove the resize event listener when the component is destroyed
   window.removeEventListener('resize', handleResize);
 });
+
 onBeforeMount(() => {
   rowSelection.value = 'single';
   getDataEvsn().then(() => {
     commonTargetCountCheck().then(() => {
-      getData();
+      getData().then(() => {
+        getDataEidcOption();
+      });
     });
   });
 });
@@ -410,6 +449,7 @@ const formData = ref({
   empCd: '',
   workNo: 0,
   seq: 0,
+  eidcCd: '',
   targetDoc: '',
   evaS: '',
   evaA: '',
@@ -433,6 +473,7 @@ const formDataInitialize = () => {
   formData.value.empCd = storeUser.setEmpCd;
   formData.value.workNo = 1;
   formData.value.seq = 1;
+  formData.value.eidcCd = '';
   formData.value.targetDoc = '';
   formData.value.evaS = 'S:100점';
   formData.value.evaA = 'A:90점';
@@ -679,7 +720,8 @@ const isCommonTargetLoad = () => {
     dark: true,
     title: '공통목표',
     html: true,
-    message: '<em><span class="text-orange">공통목표설정자료</span></em>가 있습니다.<br />가져오기 버튼을 클릭하여 목표자료를 가져옵니다.',
+    message:
+      '<em><span class="text-orange">공통목표설정자료</span></em>가 있습니다.<br />1. 가져오기 버튼을 클릭하여 목표자료를 가져옵니다.<br />2. 공통목표의 <em><span class="text-orange">평가지표</em></span>를 선택하고 <span class="text-orange">저장</span>합니다.',
     ok: {
       label: '가져오기',
       push: true,
@@ -859,6 +901,16 @@ const saveDataAndHandleResult = resFormData => {
     });
 };
 
+// ***** 평가지표정보 가져오기 부분  *****************************//
+const eidcOptions = ref(null);
+async function getDataEidcOption() {
+  try {
+    const response = await api.post('/api/aux/eidc_option_list', { paramSetYear: storeYear.setYear, paramEidcCd: storeUser.setDeptCd });
+    eidcOptions.value = response.data.data;
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+}
 // **************************************************************//
 // ***** DataBase 연결부분 끝  *************************************//
 // **************************************************************//

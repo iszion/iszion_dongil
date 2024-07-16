@@ -501,10 +501,9 @@ onBeforeMount(() => {
   rowSelection.value = 'multiple';
   rowSelectionDialog.value = 'multiple';
 
-  getDataDeptOption();
-  setTimeout(() => {
+  getDataDeptOption().then(() => {
     getData();
-  }, 500);
+  });
 });
 
 onMounted(() => {

@@ -110,7 +110,7 @@
             <q-card-actions align="right" class="q-pa-none">
               <q-toolbar class="row">
                 <q-icon name="info" size="xs" color="orange" class="q-mr-sm" />
-                <span class="text-blue text-bold">이미지</span>와 <span class="text-blue text-bold">닉네임, 참고사항</span>만 수정이 가능합니다
+                <span class="text-blue text-bold">닉네임, 보안레벨, 참고사항 </span> 만 수정이 가능합니다
                 <q-space />
                 <div class="q-gutter-xs">
                   <q-btn v-if="isShowSaveBtn" outline color="primary" dense @click="saveDataSection"><q-icon name="save" size="xs" /> 저장 </q-btn>
@@ -193,6 +193,29 @@
                           <div class="self-center full-width no-outline" tabindex="0">{{ formData.outDay }}</div>
                         </template>
                       </q-field>
+                      <q-select
+                        options-dense
+                        :disable="formDisable"
+                        v-model="formData.levelCd"
+                        :options="levelOptions"
+                        option-value="commCd"
+                        option-label="commNm"
+                        label="보안레벨"
+                        label-color="blue"
+                        emit-value
+                        map-options
+                      >
+                        <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
+                          <q-item v-bind="itemProps">
+                            <q-item-section>
+                              <q-item-label v-html="opt.commNm" />
+                            </q-item-section>
+                            <q-item-section side>
+                              <q-toggle :model-value="selected" @update:model-value="toggleOption(opt)" />
+                            </q-item-section>
+                          </q-item>
+                        </template>
+                      </q-select>
 
                       <q-input
                         :disable="formDisable"
@@ -244,6 +267,7 @@ const deptOptionsSearch = ref(null);
 const deptOptions = ref(null);
 const titlOptions = ref(null);
 const pstnOptions = ref(null);
+const levelOptions = ref(null);
 
 const searchParam = reactive({
   deptCd: '',
@@ -286,9 +310,10 @@ onBeforeUnmount(() => {
 onBeforeMount(() => {
   rowSelection.value = 'single';
   getData();
-  getDataDeptOption();
-  getDataPstnOption();
-  getDataTitlOption();
+  // getDataDeptOption();
+  // getDataPstnOption();
+  // getDataTitlOption();
+  getDataCommOption('901'); // 보안레벨
 });
 onMounted(() => {
   window.addEventListener('resize', handleResize);
@@ -368,6 +393,12 @@ const columnDefs = reactive({
       minWidth: 100,
     },
     {
+      headerName: '보안레벨',
+      field: 'levelNm',
+      maxWidth: 140,
+      minWidth: 140,
+    },
+    {
       headerName: 'Mobile',
       field: 'mobile',
       minWidth: 150,
@@ -423,6 +454,7 @@ const formData = ref({
   email: '',
   inDay: '',
   outDay: '',
+  levelCd: '',
   explains: '',
   filename: '',
   filenameX: '',
@@ -652,6 +684,16 @@ async function getDataTitlOption() {
   try {
     const response = await api.post('/api/mst/titl_option_list', { paramSetYear: storeYear.setYear });
     titlOptions.value = response.data.data;
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+}
+
+async function getDataCommOption(resCommCd1) {
+  try {
+    const response = await api.post('/api/mst/comm_option_list', { paramCommCd1: resCommCd1 });
+    levelOptions.value = response.data.data;
+    // console.log('getData1: ', JSON.stringify(response.data.data));
   } catch (error) {
     console.error('Error fetching users:', error);
   }

@@ -146,51 +146,56 @@
                       <div class="col-md-9 text-center">
                         <q-radio
                           keep-color
+                          left-label
                           v-model="tmpMark.markCh"
                           :disable="formReadonly"
                           val="S"
                           label="S"
-                          color="deep-orange"
-                          class="text-subtitle1 text-bold"
-                          @update:model-value="val => handlePointClickAll(val)"
-                        />
-                        <q-radio
-                          keep-color
-                          v-model="tmpMark.markCh"
-                          :disable="formReadonly"
-                          val="A"
-                          label="A"
                           color="blue"
                           class="text-subtitle1 text-bold"
                           @update:model-value="val => handlePointClickAll(val)"
                         />
                         <q-radio
                           keep-color
+                          left-label
                           v-model="tmpMark.markCh"
                           :disable="formReadonly"
-                          val="B"
-                          label="B"
+                          val="A"
+                          label="A"
                           color="cyan"
                           class="text-subtitle1 text-bold"
                           @update:model-value="val => handlePointClickAll(val)"
                         />
                         <q-radio
                           keep-color
+                          left-label
                           v-model="tmpMark.markCh"
                           :disable="formReadonly"
-                          val="C"
-                          label="C"
+                          val="B"
+                          label="B"
                           color="teal"
                           class="text-subtitle1 text-bold"
                           @update:model-value="val => handlePointClickAll(val)"
                         />
                         <q-radio
                           keep-color
+                          left-label
+                          v-model="tmpMark.markCh"
+                          :disable="formReadonly"
+                          val="C"
+                          label="C"
+                          color="green"
+                          class="text-subtitle1 text-bold"
+                          @update:model-value="val => handlePointClickAll(val)"
+                        />
+                        <q-radio
+                          keep-color
+                          left-label
                           v-model="tmpMark.markCh"
                           :disable="formReadonly"
                           val="D"
                           label="D"
-                          color="green"
+                          color="deep-orange"
                           class="text-subtitle1 text-bold"
                           @update:model-value="val => handlePointClickAll(val)"
                         />
@@ -226,51 +231,56 @@
                       <div class="col-md-9 text-center">
                         <q-radio
                           keep-color
+                          left-label
                           v-model="data.markCh"
                           :disable="formReadonly"
                           val="S"
                           label="S"
-                          color="deep-orange"
-                          class="text-subtitle1 text-bold"
-                          @update:model-value="val => handlePointClick(val, data)"
-                        />
-                        <q-radio
-                          keep-color
-                          v-model="data.markCh"
-                          :disable="formReadonly"
-                          val="A"
-                          label="A"
                           color="blue"
                           class="text-subtitle1 text-bold"
                           @update:model-value="val => handlePointClick(val, data)"
                         />
                         <q-radio
                           keep-color
+                          left-label
                           v-model="data.markCh"
                           :disable="formReadonly"
-                          val="B"
-                          label="B"
+                          val="A"
+                          label="A"
                           color="cyan"
                           class="text-subtitle1 text-bold"
                           @update:model-value="val => handlePointClick(val, data)"
                         />
                         <q-radio
                           keep-color
+                          left-label
                           v-model="data.markCh"
                           :disable="formReadonly"
-                          val="C"
-                          label="C"
+                          val="B"
+                          label="B"
                           color="teal"
                           class="text-subtitle1 text-bold"
                           @update:model-value="val => handlePointClick(val, data)"
                         />
                         <q-radio
                           keep-color
+                          left-label
+                          v-model="data.markCh"
+                          :disable="formReadonly"
+                          val="C"
+                          label="C"
+                          color="green"
+                          class="text-subtitle1 text-bold"
+                          @update:model-value="val => handlePointClick(val, data)"
+                        />
+                        <q-radio
+                          keep-color
+                          left-label
                           v-model="data.markCh"
                           :disable="formReadonly"
                           val="D"
                           label="D"
-                          color="green"
+                          color="deep-orange"
                           class="text-subtitle1 text-bold"
                           @update:model-value="val => handlePointClick(val, data)"
                         />
@@ -296,7 +306,7 @@
                           <q-icon v-if="data.sExplains !== '' && !formReadonly" name="close" @click="data.sExplains = ''" class="cursor-pointer" />
                           <q-icon
                             v-if="data.sExplains !== '' && data.sExplains.trim().length > 5 && !formReadonly"
-                            name="save_alt"
+                            name="save"
                             @click="handlePointClick('S', data)"
                             class="cursor-pointer"
                           />

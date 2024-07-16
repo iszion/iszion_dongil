@@ -2,7 +2,6 @@
   <q-layout view="hHh lpR fFf">
     <q-header class="shadow-1 bg-grey-8">
       <q-toolbar>
-        {{ $q.screen.name }}
         <q-avatar square size="sm" @click="rootView" class="cursor-pointer">
           <img src="../assets/images/dongil_logo.png" />
         </q-avatar>
@@ -297,10 +296,10 @@ function buildTreeMenuData(data) {
   data.forEach(item => {
     map[item.menuId] = { ...item, children: [] };
   });
-
   // Second pass: build the tree structure
   Object.values(map).forEach(item => {
     treeExpanded.value.push(item.id);
+    treeExpanded.value.push(item.disabled);
     if (item.menuParent === '#') {
       // Top-level menu
       tree.push(item);
@@ -317,6 +316,7 @@ function buildTreeMenuData(data) {
 
   return tree;
 }
+
 /* ******************************************************************************* */
 /* ************  end of menu set  ************************************************ */
 /* ******************************************************************************* */
@@ -458,6 +458,7 @@ const getDataSetUserInfo = async () => {
   storeUser.setEmpCd = SessionStorage.getItem('empCd');
   try {
     const response = await api.post('/api/sys/user_info', { paramSetYear: storeYear.setYear, paramUserId: storeUser.setEmpCd });
+    console.log('data: ', JSON.stringify(response.data.data));
     storgeUserInfoGroupSave(
       response.data.data[0].empCd +
         '|' +
@@ -487,7 +488,11 @@ const getDataSetUserInfo = async () => {
         '|' +
         response.data.data[0].evtgCd +
         '|' +
-        response.data.data[0].evtgNm,
+        response.data.data[0].evtgNm +
+        '|' +
+        response.data.data[0].levelCd.charAt(response.data.data[0].levelCd.length - 1) +
+        '|' +
+        response.data.data[0].levelNm,
     );
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -546,7 +551,21 @@ const getSubMenuData = async param => {
     });
     // 사용자별 메뉴 추출 시 메뉴가 없는 헤더항목을 제거하는 부분 끝
 
-    menuList.value = buildTreeMenuData(setMenuList);
+    // 평가기간 작업 유형에 따른 메뉴 셋팅부분
+    let _disable = false;
+    if (storeUser.setLevelCd > '2' || storeUser.setLevelCd === '') {
+      _disable = storeYear.setLocCh !== '1';
+    }
+    const _menuList = setMenuList.map(item => {
+      if (item.progId !== '') {
+        return { ...item, disabled: _disable };
+      } else {
+        return item;
+      }
+    });
+    // 평가기간 작업 유형에 따른 메뉴 셋팅부분  끝
+
+    menuList.value = buildTreeMenuData(_menuList);
 
     leftDrawerOpen.value = true;
     pageTitleBarVisible.value = true;
@@ -563,6 +582,8 @@ const getFavMenuData = async param => {
     const response = await api.post('/api/sys/menu_fav_list', paramData);
 
     menuList.value = buildTreeMenuData(response.data.data);
+    menuList.value.forEach(item => addDisabled(item));
+    console.log('get :: ', JSON.stringify(menuList.value));
 
     leftDrawerOpen.value = true;
     pageTitleBarVisible.value = true;
@@ -571,6 +592,18 @@ const getFavMenuData = async param => {
     console.error('Error fetching users:', error);
   }
 };
+function addDisabled(obj) {
+  let _disable = false;
+  if (storeUser.setLevelCd > '2' || storeUser.setLevelCd === '') {
+    _disable = storeYear.setLocCh !== '1';
+  }
+  if (obj.progId !== '') {
+    obj.disabled = _disable;
+  }
+  if (obj.children) {
+    obj.children.forEach(child => addDisabled(child));
+  }
+}
 // **************************************************************//
 // ***** DataBase 연결부분 끝  *************************************//
 // **************************************************************//
@@ -682,6 +715,8 @@ const getStorgeSetUserInfoGroup = () => {
   storeUser.setCatgNm = _value[12];
   storeUser.setEvtgCd = _value[13];
   storeUser.setEvtgNm = _value[14];
+  storeUser.setLevelCd = _value[15];
+  storeUser.setLevelNm = _value[16];
   // console.log(
   //   'Main SetUser Info Group :: ',
   //   storeUser.setEmpCd,

@@ -161,60 +161,65 @@
                       평가하기 [ <span class="text-teal-8">()안은 평가대상인원수</span> ]
                     </div>
                     <div v-if="!setTotEva" class="q-pa-sm text-subtitle1 text-bold flex flex-center q-gutter-x-lg">
-                      <span class="text-deep-orange-9 q-mr-xs">S </span> ( {{ pointValue.cnt.S }} ) <span class="text-blue-9 q-mr-xs">A</span> (
-                      {{ pointValue.cnt.A }} ) <span class="text-cyan-9 q-mr-xs">B</span> ( {{ pointValue.cnt.B }} )
-                      <span class="text-teal-8 q-mr-xs">C</span> ( {{ pointValue.cnt.C }} ) <span class="text-green-8 q-mr-xs">D</span> (
+                      <span class="text-blue-9 q-mr-xs">S </span> ( {{ pointValue.cnt.S }} ) <span class="text-cyan-9 q-mr-xs">A</span> (
+                      {{ pointValue.cnt.A }} ) <span class="text-teal-8 q-mr-xs">B</span> ( {{ pointValue.cnt.B }} )
+                      <span class="text-green-8 q-mr-xs">C</span> ( {{ pointValue.cnt.C }} ) <span class="text-deep-orange-9 q-mr-xs">D</span> (
                       {{ pointValue.cnt.D }} )
                     </div>
                     <div v-if="setTotEva" class="row">
                       <div class="col-md-12 text-center">
                         <q-radio
                           keep-color
+                          left-label
                           v-model="tmpMark.markCh2"
                           :disable="formReadonly"
                           val="S"
                           :label="`S(${pointValue.cnt.S})`"
-                          color="deep-orange-8"
-                          class="text-subtitle1 text-bold"
-                          @update:model-value="val => handlePointClickAll(val)"
-                        />
-                        <q-radio
-                          keep-color
-                          v-model="tmpMark.markCh2"
-                          :disable="formReadonly"
-                          val="A"
-                          :label="`A(${pointValue.cnt.A})`"
                           color="blue-9"
                           class="text-subtitle1 text-bold"
                           @update:model-value="val => handlePointClickAll(val)"
                         />
                         <q-radio
                           keep-color
+                          left-label
                           v-model="tmpMark.markCh2"
                           :disable="formReadonly"
-                          val="B"
-                          :label="`B(${pointValue.cnt.B})`"
+                          val="A"
+                          :label="`A(${pointValue.cnt.A})`"
                           color="cyan-9"
                           class="text-subtitle1 text-bold"
                           @update:model-value="val => handlePointClickAll(val)"
                         />
                         <q-radio
                           keep-color
+                          left-label
                           v-model="tmpMark.markCh2"
                           :disable="formReadonly"
-                          val="C"
-                          :label="`C(${pointValue.cnt.C})`"
+                          val="B"
+                          :label="`B(${pointValue.cnt.B})`"
                           color="teal-9"
                           class="text-subtitle1 text-bold"
                           @update:model-value="val => handlePointClickAll(val)"
                         />
                         <q-radio
                           keep-color
+                          left-label
+                          v-model="tmpMark.markCh2"
+                          :disable="formReadonly"
+                          val="C"
+                          :label="`C(${pointValue.cnt.C})`"
+                          color="green-9"
+                          class="text-subtitle1 text-bold"
+                          @update:model-value="val => handlePointClickAll(val)"
+                        />
+                        <q-radio
+                          keep-color
+                          left-label
                           v-model="tmpMark.markCh2"
                           :disable="formReadonly"
                           val="D"
                           :label="`D(${pointValue.cnt.D})`"
-                          color="green-9"
+                          color="deep-orange-8"
                           class="text-subtitle1 text-bold"
                           @update:model-value="val => handlePointClickAll(val)"
                         />
@@ -247,57 +252,73 @@
                         <span v-if="data.markCh1" class="q-ml-lg text-center self-center text-subtitle1 text-bold">[ {{ data.markCh1 }} ]</span>
                       </div>
                     </div>
+                    <div v-if="viewInfo.attenYn" class="row q-gutter-x-lg flex-center">
+                      <div class="">
+                        지각: <span class="text-red text-bold">{{ data.attenCh1 }}</span>
+                      </div>
+                      <div class="">
+                        미체크: <span class="text-red text-bold">{{ data.attenCh2 }}</span>
+                      </div>
+                      <div class="">
+                        결근: <span class="text-red text-bold">{{ data.attenCh3 }}</span>
+                      </div>
+                    </div>
                   </q-card>
                   <q-card class="col-xs-12 col-sm-12 col-md-6 shadow-3">
                     <div class="row">
                       <div class="col-md-9 text-center">
                         <q-radio
                           keep-color
+                          left-label
                           v-model="data.markCh2"
                           :disable="formReadonly || data.markCh1 === ''"
                           val="S"
                           label="S"
-                          color="deep-orange"
-                          class="text-subtitle1 text-bold"
-                          @update:model-value="val => handlePointClick(val, data)"
-                        />
-                        <q-radio
-                          keep-color
-                          v-model="data.markCh2"
-                          :disable="formReadonly || data.markCh1 === ''"
-                          val="A"
-                          label="A"
                           color="blue"
                           class="text-subtitle1 text-bold"
                           @update:model-value="val => handlePointClick(val, data)"
                         />
                         <q-radio
                           keep-color
+                          left-label
                           v-model="data.markCh2"
                           :disable="formReadonly || data.markCh1 === ''"
-                          val="B"
-                          label="B"
+                          val="A"
+                          label="A"
                           color="cyan"
                           class="text-subtitle1 text-bold"
                           @update:model-value="val => handlePointClick(val, data)"
                         />
                         <q-radio
                           keep-color
+                          left-label
                           v-model="data.markCh2"
                           :disable="formReadonly || data.markCh1 === ''"
-                          val="C"
-                          label="C"
+                          val="B"
+                          label="B"
                           color="teal"
                           class="text-subtitle1 text-bold"
                           @update:model-value="val => handlePointClick(val, data)"
                         />
                         <q-radio
                           keep-color
+                          left-label
+                          v-model="data.markCh2"
+                          :disable="formReadonly || data.markCh1 === ''"
+                          val="C"
+                          label="C"
+                          color="green"
+                          class="text-subtitle1 text-bold"
+                          @update:model-value="val => handlePointClick(val, data)"
+                        />
+                        <q-radio
+                          keep-color
+                          left-label
                           v-model="data.markCh2"
                           :disable="formReadonly || data.markCh1 === ''"
                           val="D"
                           label="D"
-                          color="green"
+                          color="deep-orange"
                           class="text-subtitle1 text-bold"
                           @update:model-value="val => handlePointClick(val, data)"
                         />
@@ -474,6 +495,7 @@ const formData = ref({
 const viewInfo = ref({
   itemNm: null,
   workNo: null,
+  attenYn: false,
 });
 const selectedRows = ref([]);
 const onSelectionChanged = event => {
@@ -487,6 +509,7 @@ const onSelectionChanged = event => {
     tmpMark.value.markPoint2 = 0;
     tmpMark.value.markCh2 = null;
 
+    viewInfo.value.attenYn = selectedRows.value[0].attenYn === 'Y';
     formReadonly.value = sendCheck.value.lock;
 
     viewInfo.value.itemNm = selectedRows.value[0].itemNm;
@@ -652,7 +675,7 @@ const handlePointClick = (resMarkCh, resData) => {
           const falseVariable = falseKeys[0];
 
           for (let i = 0; i < rowData.rowsSel.length; i++) {
-            if (rowData.rowsSel[i].markPoint2 > 0) {
+            if (rowData.rowsSel[i].markCh1 === '' || rowData.rowsSel[i].markPoint2 > 0) {
             } else {
               switch (falseVariable) {
                 case 'checkS':

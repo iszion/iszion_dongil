@@ -127,19 +127,19 @@
                         }}% )
                       </div>
                       <div class="row q-gutter-x-xl">
-                        <q-input v-model="formData.team1PerPointS" label="S 인원" style="width: 60px">
+                        <q-input v-model="formData.team1PerPointS" label="S 인원" label-color="orange" style="width: 60px">
                           <template v-slot:append><span class="text-subtitle2 q-pt-md">%</span> </template>
                         </q-input>
-                        <q-input v-model="formData.team1PerPointA" label="A 인원" style="width: 60px">
+                        <q-input v-model="formData.team1PerPointA" label="A 인원" label-color="orange" style="width: 60px">
                           <template v-slot:append><span class="text-subtitle2 q-pt-md">%</span> </template>
                         </q-input>
-                        <q-input v-model="formData.team1PerPointB" label="B 인원" style="width: 60px">
+                        <q-input v-model="formData.team1PerPointB" label="B 인원" label-color="orange" style="width: 60px">
                           <template v-slot:append><span class="text-subtitle2 q-pt-md">%</span> </template>
                         </q-input>
-                        <q-input v-model="formData.team1PerPointC" label="C 인원" style="width: 60px">
+                        <q-input v-model="formData.team1PerPointC" label="C 인원" label-color="orange" style="width: 60px">
                           <template v-slot:append><span class="text-subtitle2 q-pt-md">%</span> </template>
                         </q-input>
-                        <q-input v-model="formData.team1PerPointD" label="D 인원" style="width: 60px">
+                        <q-input v-model="formData.team1PerPointD" label="D 인원" label-color="orange" style="width: 60px">
                           <template v-slot:append><span class="text-subtitle2 q-pt-md">%</span> </template>
                         </q-input>
                       </div>
@@ -157,19 +157,19 @@
                         }}% )
                       </div>
                       <div class="row q-gutter-x-xl">
-                        <q-input v-model="formData.team2PerPointS" label="S 인원" style="width: 60px">
+                        <q-input v-model="formData.team2PerPointS" label="S 인원" label-color="orange" style="width: 60px">
                           <template v-slot:append><span class="text-subtitle2 q-pt-md">%</span> </template>
                         </q-input>
-                        <q-input v-model="formData.team2PerPointA" label="A 인원" style="width: 60px">
+                        <q-input v-model="formData.team2PerPointA" label="A 인원" label-color="orange" style="width: 60px">
                           <template v-slot:append><span class="text-subtitle2 q-pt-md">%</span> </template>
                         </q-input>
-                        <q-input v-model="formData.team2PerPointB" label="B 인원" style="width: 60px">
+                        <q-input v-model="formData.team2PerPointB" label="B 인원" label-color="orange" style="width: 60px">
                           <template v-slot:append><span class="text-subtitle2 q-pt-md">%</span> </template>
                         </q-input>
-                        <q-input v-model="formData.team2PerPointC" label="C 인원" style="width: 60px">
+                        <q-input v-model="formData.team2PerPointC" label="C 인원" label-color="orange" style="width: 60px">
                           <template v-slot:append><span class="text-subtitle2 q-pt-md">%</span> </template>
                         </q-input>
-                        <q-input v-model="formData.team2PerPointD" label="D 인원" style="width: 60px">
+                        <q-input v-model="formData.team2PerPointD" label="D 인원" label-color="orange" style="width: 60px">
                           <template v-slot:append><span class="text-subtitle2 q-pt-md">%</span> </template>
                         </q-input>
                       </div>

@@ -21,7 +21,7 @@
             <!-- contents list title bar -->
             <q-bar class="q-px-sm">
               <q-icon name="list_alt" />
-              <span class="text-subtitle2 q-px-sm">근태정보 관리</span>
+              <span class="q-px-sm text-bold text-subtitle1" :class="$q.dark.isActive ? 'text-orange' : 'text-primary'">{{ menuLabel }}</span>
             </q-bar>
             <!--  end of contents list title bar -->
             <q-card-actions align="right" class="q-pa-none">
@@ -36,7 +36,7 @@
                     emit-value
                     map-options
                     options-dense
-                    style="width: 90px"
+                    style="width: 100px"
                   /><q-select
                     dense
                     v-model="searchParam.pMonth"
@@ -46,7 +46,7 @@
                     emit-value
                     map-options
                     options-dense
-                    style="width: 75px"
+                    style="width: 90px"
                   />
                   <q-input
                     stack-label
@@ -227,8 +227,10 @@ onBeforeMount(() => {
   getDataAppoYearOption();
 });
 
+const menuLabel = ref('');
 onMounted(() => {
   window.addEventListener('resize', handleResize);
+  menuLabel.value = window.history.state.label;
   handleResize();
 });
 
@@ -370,14 +372,6 @@ const onCellValueChanged = () => {
     if (JSON.stringify(rowData.backup[i]) !== JSON.stringify(rowData.rows[i])) {
       rowData.update.push(rowData.rows[i]);
     }
-  }
-  console.log('back :: ', JSON.stringify(rowData.backup));
-  console.log('update :: ', JSON.stringify(rowData.rows));
-  console.log('save :: ', JSON.stringify(rowData.update));
-  if (rowData.rows === rowData.backup) {
-    console.log('같음');
-  } else {
-    console.log('틀림');
   }
   showSaveBtn.value = rowData.update.length > 0;
 };

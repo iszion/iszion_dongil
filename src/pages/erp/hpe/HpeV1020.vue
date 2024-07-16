@@ -115,6 +115,16 @@
               </div>
             </q-toolbar>
             <q-card class="q-pa-sm q-mb-md">
+              <q-banner rounded :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-2'" class="q-pa-sm q-mb-xs">
+                <template v-slot:avatar>
+                  <q-icon name="drag_indicator" style="width: 20px" size="sm" />
+                </template>
+                <span class="text-bold text-subtitle1">{{ formData.eidcNm }}</span>
+                <template v-slot:action>
+                  <span class="text-bold text-subtitle1 text-teal"> 평가지표 </span>
+                </template>
+              </q-banner>
+
               <q-banner rounded :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-2'" class="q-pa-sm">
                 <template v-slot:avatar>
                   <q-icon name="ads_click" style="width: 20px" size="sm" />
@@ -172,21 +182,11 @@
               <div class="row justify-between q-px-sm-lg">
                 <q-radio
                   keep-color
+                  left-label
                   :disable="formReadonly"
                   v-model="formData.selfCh"
                   val="S"
                   label="S"
-                  color="deep-orange"
-                  :size="$q.screen.xs ? 'sm' : 'md'"
-                  :style="{ fontSize: '1.4em' }"
-                  @update:model-value="handlePointClick"
-                />
-                <q-radio
-                  keep-color
-                  :disable="formReadonly"
-                  v-model="formData.selfCh"
-                  val="A"
-                  label="A"
                   color="blue"
                   :size="$q.screen.xs ? 'sm' : 'md'"
                   :style="{ fontSize: '1.4em' }"
@@ -194,10 +194,11 @@
                 />
                 <q-radio
                   keep-color
+                  left-label
                   :disable="formReadonly"
                   v-model="formData.selfCh"
-                  val="B"
-                  label="B"
+                  val="A"
+                  label="A"
                   color="cyan"
                   :size="$q.screen.xs ? 'sm' : 'md'"
                   :style="{ fontSize: '1.4em' }"
@@ -205,10 +206,11 @@
                 />
                 <q-radio
                   keep-color
+                  left-label
                   :disable="formReadonly"
                   v-model="formData.selfCh"
-                  val="C"
-                  label="C"
+                  val="B"
+                  label="B"
                   color="teal"
                   :size="$q.screen.xs ? 'sm' : 'md'"
                   :style="{ fontSize: '1.4em' }"
@@ -216,11 +218,24 @@
                 />
                 <q-radio
                   keep-color
+                  left-label
+                  :disable="formReadonly"
+                  v-model="formData.selfCh"
+                  val="C"
+                  label="C"
+                  color="green"
+                  :size="$q.screen.xs ? 'sm' : 'md'"
+                  :style="{ fontSize: '1.4em' }"
+                  @update:model-value="handlePointClick"
+                />
+                <q-radio
+                  keep-color
+                  left-label
                   :disable="formReadonly"
                   v-model="formData.selfCh"
                   val="D"
                   label="D"
-                  color="green"
+                  color="deep-orange"
                   :size="$q.screen.xs ? 'sm' : 'md'"
                   :style="{ fontSize: '1.5em' }"
                   @update:model-value="handlePointClick"
@@ -337,6 +352,13 @@ const columnDefs = reactive({
       // valueGetter: function (params) {
       //   return params.node.rowIndex + 1;
       // },
+    },
+    {
+      headerName: '평가지표',
+      field: 'eidcNm',
+      minWidth: 150,
+      maxWidth: 180,
+      resizable: true,
     },
     {
       headerName: '세부목표',

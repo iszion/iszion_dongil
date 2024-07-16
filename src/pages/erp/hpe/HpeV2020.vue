@@ -102,6 +102,10 @@
                   </q-card>
                   <q-card class="col-xs-12 col-sm-4">
                     <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">목표설정</div>
+                    <div :class="$q.dark.isActive ? 'q-pa-xs bg-grey-8' : 'q-pa-xs bg-grey-4'">
+                      <span :class="$q.dark.isActive ? 'text-orange' : 'text-deep-orange'"> 평가지표 : </span>
+                      <span class="text-bold"> {{ data.eidcNm }}</span>
+                    </div>
                     <div class="q-pa-xs" v-html="data.targetDoc"></div>
                   </q-card>
                   <q-card class="col-xs-12 col-sm-2">
@@ -143,51 +147,56 @@
                     <div class="col-xs-12 col-sm-5 text-center">
                       <q-radio
                         keep-color
+                        left-label
                         v-model="data.markCh"
                         :disable="formReadonly"
                         val="S"
                         label="S"
-                        color="deep-orange"
-                        class="text-subtitle1 text-bold"
-                        @update:model-value="val => handlePointClick(val, data)"
-                      />
-                      <q-radio
-                        keep-color
-                        v-model="data.markCh"
-                        :disable="formReadonly"
-                        val="A"
-                        label="A"
                         color="blue"
                         class="text-subtitle1 text-bold"
                         @update:model-value="val => handlePointClick(val, data)"
                       />
                       <q-radio
                         keep-color
+                        left-label
                         v-model="data.markCh"
                         :disable="formReadonly"
-                        val="B"
-                        label="B"
+                        val="A"
+                        label="A"
                         color="cyan"
                         class="text-subtitle1 text-bold"
                         @update:model-value="val => handlePointClick(val, data)"
                       />
                       <q-radio
                         keep-color
+                        left-label
                         v-model="data.markCh"
                         :disable="formReadonly"
-                        val="C"
-                        label="C"
+                        val="B"
+                        label="B"
                         color="teal"
                         class="text-subtitle1 text-bold"
                         @update:model-value="val => handlePointClick(val, data)"
                       />
                       <q-radio
                         keep-color
+                        left-label
+                        v-model="data.markCh"
+                        :disable="formReadonly"
+                        val="C"
+                        label="C"
+                        color="green"
+                        class="text-subtitle1 text-bold"
+                        @update:model-value="val => handlePointClick(val, data)"
+                      />
+                      <q-radio
+                        keep-color
+                        left-label
                         v-model="data.markCh"
                         :disable="formReadonly"
                         val="D"
                         label="D"
-                        color="green"
+                        color="deep-orange"
                         class="text-subtitle1 text-bold"
                         @update:model-value="val => handlePointClick(val, data)"
                       />

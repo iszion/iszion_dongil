@@ -55,11 +55,11 @@
                         </q-input>
                       </div>
 
-                      <div class="q-gutter-sm q-pt-lg">
-                        <q-radio dense v-model="formData.stdFg" val="0" label="년" :disable="formDisable" />
-                        <q-radio dense v-model="formData.stdFg" val="1" label="상반기" :disable="formDisable" />
-                        <q-radio dense v-model="formData.stdFg" val="2" label="하반기" :disable="formDisable" />
-                      </div>
+                      <!--                      <div class="q-gutter-sm q-pt-lg">-->
+                      <!--                        <q-radio dense v-model="formData.stdFg" val="0" label="년" :disable="formDisable" />-->
+                      <!--                        <q-radio dense v-model="formData.stdFg" val="1" label="상반기" :disable="formDisable" />-->
+                      <!--                        <q-radio dense v-model="formData.stdFg" val="2" label="하반기" :disable="formDisable" />-->
+                      <!--                      </div>-->
                     </div>
                     <div class="row q-gutter-xl">
                       <q-input v-model="formData.sDay" type="date" label="기준시작일" label-color="orange" :disable="formDisable" />
@@ -261,11 +261,7 @@ const columnDefs = reactive({
       field: 'stdYear',
       minWidth: 120,
     },
-    {
-      headerName: '평가기준구분',
-      field: 'stdFgNm',
-      minWidth: 120,
-    },
+
     {
       headerName: '기간시작일',
       field: 'sDay',
