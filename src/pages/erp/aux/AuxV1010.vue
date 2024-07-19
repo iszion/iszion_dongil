@@ -21,6 +21,15 @@
                 <q-btn outline color="positive" dense @click="getData"><q-icon name="refresh" size="xs" class="q-mr-xs" /> 다시 불러오기 </q-btn>
                 <q-space />
                 <div class="q-gutter-xs">
+                  <q-btn v-if="formData.locCh === '0'" outline color="primary" dense @click="handleProcYearCreate"
+                    ><q-icon name="library_add" size="xs" class="q-mr-xs" /> 당년자료 생성하기
+                  </q-btn>
+                  <q-btn v-if="formData.locCh === '0'" outline color="negative" dense @click="handleProcYearDelete">
+                    <q-icon name="replay" size="xs" class="q-mr-xs" /> 당년자료 초기화
+                  </q-btn>
+                </div>
+                <q-space />
+                <div class="q-gutter-xs">
                   <q-btn outline color="positive" dense @click="addDataSection"><q-icon name="add" size="xs" /> 신규 </q-btn>
                   <q-btn v-if="formData.stdYear" outline color="primary" dense @click="saveDataSection"><q-icon name="save" size="xs" /> 저장 </q-btn>
                   <q-btn v-if="selectedRows.length > 0" outline color="negative" dense @click="deleteDataSection">
@@ -111,7 +120,7 @@
                           <q-radio v-model="formData.locCh" val="3" color="orange" :disable="formDisable" />
                         </q-item-section>
                         <q-item-section>
-                          <q-item-label :style="{ color: 'orange' }">평가마감오픈</q-item-label>
+                          <q-item-label :style="{ color: 'orange' }">평가열람오픈</q-item-label>
                           <q-item-label caption>
                             모든 평가작업이 끝나고 각 평가에 대한 결과를 모든 직원들에게 오픈합니다.<br />
                             - 로그인 하면 본인의 결과를 대시보드에서 확인 하실 수 있습니다.
@@ -383,6 +392,52 @@ const addDataSection = () => {
     }, 100);
   }, 100);
 };
+const handleProcYearCreate = () => {
+  $q.dialog({
+    dark: true,
+    title: formData.value.stdYear + '년도 기준자료 생성',
+    message: '해당년도의 기준자료를 생성하시겠습니까? ',
+    ok: {
+      label: '확인',
+      push: true,
+      color: 'primary',
+    },
+    cancel: {
+      label: '닫기',
+      push: true,
+      color: 'grey-7',
+    },
+    // persistent: true,
+  })
+    .onOk(() => {
+      getProcYearCreate();
+    })
+    .onCancel(() => {})
+    .onDismiss(() => {});
+};
+const handleProcYearDelete = () => {
+  $q.dialog({
+    dark: true,
+    title: formData.value.stdYear + '년도 기준자료 초기화',
+    message: '해당년도의 기준자료를 초기화 하시겠습니까? ',
+    ok: {
+      label: '확인',
+      push: true,
+      color: 'primary',
+    },
+    cancel: {
+      label: '닫기',
+      push: true,
+      color: 'grey-7',
+    },
+    // persistent: true,
+  })
+    .onOk(() => {
+      getProcYearDelete();
+    })
+    .onCancel(() => {})
+    .onDismiss(() => {});
+};
 const deleteDataSection = () => {
   $q.dialog({
     dark: true,
@@ -550,6 +605,42 @@ const saveDataAndHandleResult = resFormData => {
 
 // **************************************************************//
 // ***** DataBase 연결부분 끝  *************************************//
+// **************************************************************//
+
+// **************************************************************//
+// ***** Procedure 호출      *************************************//
+// **************************************************************//
+
+const getProcYearCreate = async () => {
+  try {
+    const response = await api
+      .post('/api/aux/proc_next_year_create', {
+        paramSetYear: formData.value.stdYear,
+      })
+      .then(() => {
+        console.log('response : ', JSON.stringify(response));
+      });
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+};
+
+const getProcYearDelete = async () => {
+  try {
+    const response = await api
+      .post('/api/aux/proc_next_year_delete', {
+        paramSetYear: formData.value.stdYear,
+      })
+      .then(() => {
+        console.log('response : ', JSON.stringify(response));
+      });
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+};
+
+// **************************************************************//
+// ***** Procedure 호출  끝  *************************************//
 // **************************************************************//
 </script>
 <style lang="sass">

@@ -224,6 +224,7 @@
                       <q-input v-model="formData.mobile" label="Mobile" label-color="orange" :disable="formDisable" />
                       <q-input v-model="formData.inDay" type="date" label="입사일" label-color="orange" :disable="formDisable" />
                       <q-input v-model="formData.outDay" type="date" label="퇴사일" label-color="orange" :disable="formDisable" />
+                      <q-input v-model="formData.birthday" type="date" label="생년월일" label-color="orange" :disable="formDisable" />
                     </div>
                     <div class="col-12 col-md-6">
                       <q-select
@@ -280,9 +281,9 @@
                         <q-radio keep-color v-model="formData.gender" val="M" label="남자" color="teal" :disable="formDisable" />
                         <q-radio keep-color v-model="formData.gender" val="F" label="여자" color="orange" :disable="formDisable" />
                       </div>
+                      <q-input v-model="formData.eduLevel" label="최종학력" label-color="orange" :disable="formDisable" />
+                      <q-input v-model="formData.finalSchool" label="최종학교" label-color="orange" :disable="formDisable" />
                       <q-separator class="q-mb-xs" />
-
-                      <q-input v-model="formData.birthday" type="date" label="생년월일" label-color="orange" :disable="formDisable" />
                     </div>
                   </div>
                 </div>
@@ -484,6 +485,18 @@ const columnDefs = reactive({
       minWidth: 150,
     },
     {
+      headerName: '최종학력',
+      field: 'eduLevel',
+      maxWidth: 100,
+      minWidth: 100,
+    },
+    {
+      headerName: '최종학교',
+      field: 'finalSchool',
+      maxWidth: 150,
+      minWidth: 150,
+    },
+    {
       headerName: '입사일',
       field: 'inDay',
       valueFormatter: dateFormatter,
@@ -517,7 +530,10 @@ const formData = ref({
   email: '',
   inDay: '',
   outDay: '',
+  eduLevel: '',
+  finalSchool: '',
   imageFileNm: '',
+  imageFileNmFull: '',
 });
 
 const selectedRows = ref();
@@ -675,8 +691,12 @@ const saveDataAndHandleResult = resFormData => {
           selectedData[0].birthday = formData.value.birthday;
           selectedData[0].mobile = formData.value.mobile;
           selectedData[0].email = formData.value.email;
+          selectedData[0].eduLevel = formData.value.eduLevel;
+          selectedData[0].finalSchool = formData.value.finalSchool;
           selectedData[0].inDay = formData.value.inDay;
           selectedData[0].outDay = formData.value.outDay;
+          selectedData[0].imageFileNm = formData.value.imageFileNm;
+          selectedData[0].imageFileNmFull = formData.value.imageFileNmFull;
           gridApi.value.applyTransaction({
             update: selectedData,
           });

@@ -24,7 +24,7 @@ module.exports = configure(function (/* ctx */) {
         proxy: {
           '/api': {
             // target: 'http://192.168.141.254:8080',
-            // target: 'http://125.250.69.237:8282',
+            // target: 'https://125.250.69.237:8080',
             // target: 'http://192.168.141.13:8080',
             changeOrigin: true,
           },
@@ -72,11 +72,11 @@ module.exports = configure(function (/* ctx */) {
 
       // rebuildCache: true, // rebuilds Vite/linter/etc cache on startup
 
-      publicPath: '/',
+      //publicPath: '/',
       // analyze: true,
       env: {
         SERVER_URL: 'http://192.168.141.13:8080',
-        // SERVER_URL: 'http://125.250.69.237:8282',
+        // SERVER_URL: 'https://www.iszion.com:8080',
         // SERVER_URL: 'http://192.168.141.254:8080',
       },
       // rawDefine: {}iszion_erp_backend.war
@@ -98,7 +98,12 @@ module.exports = configure(function (/* ctx */) {
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#devServer
     devServer: {
       // https: true
-      open: true, // opens browser window automatically
+      //host: '192.168.141.13',
+      //port: 9000,
+      //open: true, // opens browser window automatically
+      // host: 'https://www.iszion.com', // 이 IP 주소를 원하는 주소로 변경
+      // port: 9000,
+      // open: false, // 서버 시작 시 브라우저를 자동으로 열지 않음
     },
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#framework
