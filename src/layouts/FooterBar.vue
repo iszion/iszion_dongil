@@ -1,5 +1,5 @@
 <template>
-  <q-footer class="bg-grey-9 text-white custom-footer q-px-sm text-center">
+  <q-footer class="custom-footer q-px-sm text-center" :class="$q.dark.isActive ? 'bg-grey-8' : 'bg-grey-9'">
     <div class="q-pa-xs">
       <q-avatar square size="xs" class="q-mb-sm">
         <img src="~assets/images/iszion_logo.png" />

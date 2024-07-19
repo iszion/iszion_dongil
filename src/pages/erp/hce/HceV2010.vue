@@ -8,10 +8,22 @@
               <q-icon name="menu_book" color="primary" size="md" />
             </template>
             <span class="text-subtitle1 text-bold"> 1차 역량평가 평가작업입니다.</span><br />
-            1. <span class="text-teal text-bold">진행상태</span>는 '평가완료', '진행중', '평가대기' 상태로 표기됩니다.
-            <span class="text-teal text-bold">자료정리</span>버튼을 클릭하여 진행상태를 재정리 하실 수 있습니다.<br />
-            2. 선택한 직원의 평가완료 시 <span class="text-blue text-bold">평가마감하기</span>버튼이 활성화됩니다.
-            <span class="text-blue text-bold">평가마감하기</span>버튼 클릭 시 <span class="text-red text-bold">평가마감완료</span><br />
+            <div class="row">
+              <div class="col-xs-12 col-sm-6">
+                1. <span class="text-teal text-bold">진행상태</span>는 '평가완료', '진행중', '평가대기' 상태로 표기됩니다.<br />
+                2. <span class="text-teal text-bold">자료정리</span>버튼을 클릭하여 진행상태를 재정리 하실 수 있습니다.<br />
+                3. <span class="text-red text-bold">S</span>포인트 선택시 반드시 <span class="text-blue text-bold">사유</span>를 등록해야
+                <span class="text-blue text-bold">저장</span>이 가능합니다.
+              </div>
+              <div class="col-xs-12 col-sm-6">
+                4. <span class="text-teal text-bold">각 포인 체크건수</span>는 <span class="text-teal text-bold">정해진 인원 배정</span>에 한해
+                <span class="text-teal text-bold">선택</span> 하실 수 있습니다.
+                <br />
+                5. 진행상태가 모두 <span class="text-blue text-bold">평가완료</span>이면 <span class="text-red text-bold">평가마감</span>버튼이
+                활성화됩니다.<br />
+                6. <span class="text-red text-bold">평가마감하기</span>버튼 클릭 시 <span class="text-red text-bold">평가마감완료</span><br />
+              </div>
+            </div>
           </q-banner>
         </div>
         <div class="col-xs-12 col-sm-12 col-lg-4">
@@ -48,7 +60,14 @@
                   <q-icon name="refresh" size="xs" class="q-mr-xs" />
                   자료정리
                 </q-btn>
-                <q-btn v-if="!sendCheck.lock && sendCheck.initialize" outline color="deep-orange" dense class="q-pr-md" @click="deleteDataSection()">
+                <q-btn
+                  v-if="!sendCheck.lock && sendCheck.initialize && sendCheck.cnt > 0"
+                  outline
+                  color="deep-orange"
+                  dense
+                  class="q-pr-md"
+                  @click="deleteDataSection()"
+                >
                   <q-icon name="delete" size="xs" class="q-mr-xs" />
                   <q-badge color="orange" floating>{{ sendCheck.cnt }}</q-badge>
                   초기화
@@ -139,56 +158,69 @@
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-7 q-mb-sm">
                   <q-card square class="bg-grey" style="height: 60px">
-                    <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">평가하기</div>
-                    <div class="row">
+                    <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">
+                      평가하기 [ <span class="text-teal-8">(n)안은 평가대상인원수</span> ]
+                    </div>
+                    <div v-if="!setTotEva" class="q-pa-sm text-subtitle1 text-bold flex flex-center q-gutter-x-lg">
+                      <span class="text-blue-9 q-mr-xs">S </span> ( {{ pointValue.cnt.S }} ) <span class="text-cyan-9 q-mr-xs">A</span> (
+                      {{ pointValue.cnt.A }} ) <span class="text-teal-8 q-mr-xs">B</span> ( {{ pointValue.cnt.B }} )
+                      <span class="text-green-8 q-mr-xs">C</span> ( {{ pointValue.cnt.C }} ) <span class="text-deep-orange-9 q-mr-xs">D</span> (
+                      {{ pointValue.cnt.D }} )
+                    </div>
+                    <div v-if="setTotEva" class="row">
                       <div class="col-md-9 text-center">
                         <q-radio
                           keep-color
+                          left-label
                           v-model="tmpMark.markCh"
                           :disable="formReadonly"
                           val="S"
-                          label="S"
-                          color="deep-orange"
-                          class="text-subtitle1 text-bold"
-                          @update:model-value="val => handlePointClickAll(val)"
-                        />
-                        <q-radio
-                          keep-color
-                          v-model="tmpMark.markCh"
-                          :disable="formReadonly"
-                          val="A"
-                          label="A"
+                          :label="`S(${pointValue.cnt.S})`"
                           color="blue"
                           class="text-subtitle1 text-bold"
                           @update:model-value="val => handlePointClickAll(val)"
                         />
                         <q-radio
                           keep-color
+                          left-label
                           v-model="tmpMark.markCh"
                           :disable="formReadonly"
-                          val="B"
-                          label="B"
+                          val="A"
+                          :label="`A(${pointValue.cnt.A})`"
                           color="cyan"
                           class="text-subtitle1 text-bold"
                           @update:model-value="val => handlePointClickAll(val)"
                         />
                         <q-radio
                           keep-color
+                          left-label
                           v-model="tmpMark.markCh"
                           :disable="formReadonly"
-                          val="C"
-                          label="C"
+                          val="B"
+                          :label="`B(${pointValue.cnt.B})`"
                           color="teal"
                           class="text-subtitle1 text-bold"
                           @update:model-value="val => handlePointClickAll(val)"
                         />
                         <q-radio
                           keep-color
+                          left-label
+                          v-model="tmpMark.markCh"
+                          :disable="formReadonly"
+                          val="C"
+                          :label="`C(${pointValue.cnt.C})`"
+                          color="green"
+                          class="text-subtitle1 text-bold"
+                          @update:model-value="val => handlePointClickAll(val)"
+                        />
+                        <q-radio
+                          keep-color
+                          left-label
                           v-model="tmpMark.markCh"
                           :disable="formReadonly"
                           val="D"
-                          label="D"
-                          color="green"
+                          :label="`D(${pointValue.cnt.D})`"
+                          color="deep-orange"
                           class="text-subtitle1 text-bold"
                           @update:model-value="val => handlePointClickAll(val)"
                         />
@@ -219,64 +251,117 @@
                         <div class="text-subtitle2 q-py-sm q-pl-sm">{{ data.evtDeptNm }} / {{ data.evtTitlNm }}</div>
                       </div>
                     </div>
+                    <div v-if="viewInfo.attenYn" class="row q-gutter-x-lg flex-center">
+                      <div class="">
+                        지각: <span class="text-red text-bold">{{ data.attenCh1 }}</span>
+                      </div>
+                      <div class="">
+                        미체크: <span class="text-red text-bold">{{ data.attenCh2 }}</span>
+                      </div>
+                      <div class="">
+                        결근: <span class="text-red text-bold">{{ data.attenCh3 }}</span>
+                      </div>
+                    </div>
                   </q-card>
                   <q-card class="col-xs-12 col-sm-12 col-md-7 shadow-3">
                     <div class="row">
                       <div class="col-md-9 text-center">
                         <q-radio
                           keep-color
+                          left-label
                           v-model="data.markCh"
                           :disable="formReadonly"
                           val="S"
                           label="S"
-                          color="deep-orange"
-                          class="text-subtitle1 text-bold"
-                          @update:model-value="val => handlePointClick(val, data)"
-                        />
-                        <q-radio
-                          keep-color
-                          v-model="data.markCh"
-                          :disable="formReadonly"
-                          val="A"
-                          label="A"
                           color="blue"
                           class="text-subtitle1 text-bold"
                           @update:model-value="val => handlePointClick(val, data)"
                         />
                         <q-radio
                           keep-color
+                          left-label
                           v-model="data.markCh"
                           :disable="formReadonly"
-                          val="B"
-                          label="B"
+                          val="A"
+                          label="A"
                           color="cyan"
                           class="text-subtitle1 text-bold"
                           @update:model-value="val => handlePointClick(val, data)"
                         />
                         <q-radio
                           keep-color
+                          left-label
                           v-model="data.markCh"
                           :disable="formReadonly"
-                          val="C"
-                          label="C"
+                          val="B"
+                          label="B"
                           color="teal"
                           class="text-subtitle1 text-bold"
                           @update:model-value="val => handlePointClick(val, data)"
                         />
                         <q-radio
                           keep-color
+                          left-label
+                          v-model="data.markCh"
+                          :disable="formReadonly"
+                          val="C"
+                          label="C"
+                          color="green"
+                          class="text-subtitle1 text-bold"
+                          @update:model-value="val => handlePointClick(val, data)"
+                        />
+                        <q-radio
+                          keep-color
+                          left-label
                           v-model="data.markCh"
                           :disable="formReadonly"
                           val="D"
                           label="D"
-                          color="green"
+                          color="deep-orange"
                           class="text-subtitle1 text-bold"
                           @update:model-value="val => handlePointClick(val, data)"
                         />
                       </div>
                       <div class="col-md-3 flex flex-center">
-                        <span class="q-ml-lg text-center self-center text-subtitle1 text-bold">( {{ data.markPoint }} )</span>
+                        <span class="q-ml-lg text-center self-center text-subtitle1 text-bold">
+                          ( <span class="text-blue">{{ data.markPoint }}</span> )
+                        </span>
                       </div>
+                    </div>
+                    <div class="q-pa-sm">
+                      <q-input
+                        dense
+                        v-if="data.markCh === 'S'"
+                        :readonly="formReadonly"
+                        label-color="red"
+                        v-model="data.sExplains"
+                        label="S포인트 사유"
+                        :hint="`${byteCount} / 한글기준(50자). (기본으로 문자5자이상 입력해야 등록가능)`"
+                        @update:model-value="updateByteCount"
+                      >
+                        <template v-slot:append>
+                          <q-icon v-if="data.sExplains !== '' && !formReadonly" name="close" @click="data.sExplains = ''" class="cursor-pointer">
+                          </q-icon>
+                          <q-icon
+                            v-if="data.sExplains !== '' && data.sExplains.trim().length > 5 && !formReadonly"
+                            name="save_alt"
+                            @click="handlePointClick('S', data)"
+                            class="cursor-pointer q-ml-sm"
+                          >
+                            <q-tooltip
+                              class="bg-amber text-black shadow-4"
+                              anchor="top middle"
+                              self="bottom middle"
+                              transition-show="rotate"
+                              transition-hide="rotate"
+                              :offset="[10, 10]"
+                            >
+                              <q-icon name="save" size="0.8rem" />
+                              <strong> 저장하기 </strong>
+                            </q-tooltip>
+                          </q-icon>
+                        </template>
+                      </q-input>
                     </div>
                   </q-card>
                 </div>
@@ -303,6 +388,7 @@ import { QBtn, QIcon, QToggle, useQuasar } from 'quasar';
 import jsonUtil from 'src/js_comm/json-util';
 import { useUserInfoStore } from 'src/store/setUserInfo';
 import { useYearInfoStore } from 'src/store/setYearInfo';
+import commUtil from 'src/js_comm/comm-util';
 const storeUser = useUserInfoStore();
 const storeYear = useYearInfoStore();
 const setItemFg = ref(null);
@@ -409,6 +495,7 @@ onBeforeMount(() => {
   } else {
     setItemFg.value = null;
   }
+  getDataSetB();
   getData();
 });
 
@@ -436,6 +523,7 @@ const formData = ref({
 const viewInfo = ref({
   itemNm: null,
   workNo: null,
+  attenYn: false,
 });
 const selectedRows = ref([]);
 const onSelectionChanged = event => {
@@ -449,6 +537,7 @@ const onSelectionChanged = event => {
     tmpMark.value.markPoint = 0;
     tmpMark.value.markCh = null;
 
+    viewInfo.value.attenYn = selectedRows.value[0].attenYn === 'Y';
     formReadonly.value = sendCheck.value.lock;
 
     viewInfo.value.itemNm = selectedRows.value[0].itemNm;
@@ -466,7 +555,7 @@ const onSelectionChanged = event => {
         sendCheck.value.lockBtn = false;
         formReadonly.value = true;
       } else {
-        sendCheck.value.lockBtn = evalCount === empCount;
+        sendCheck.value.lockBtn = evalCount === empCount && evalCount !== 0;
         sendCheck.value.initialize = evalCount > 0;
         sendCheck.value.cnt = rowData.rowsSel.filter(item => item.markPoint > 0).length;
       }
@@ -535,43 +624,57 @@ const handlePointClickAll = resMarkCh => {
 const handlePointClick = (resMarkCh, resData) => {
   switch (resMarkCh) {
     case 'S':
-      resData.markPoint = 100;
       break;
     case 'A':
       resData.markPoint = 90;
+      resData.sExplains = '';
       break;
     case 'B':
       resData.markPoint = 80;
+      resData.sExplains = '';
       break;
     case 'C':
       resData.markPoint = 70;
+      resData.sExplains = '';
       break;
     case 'D':
       resData.markPoint = 60;
+      resData.sExplains = '';
       break;
     default:
       resData.markPoint = 0;
+      resData.sExplains = '';
       break;
   }
 
-  // console.log('rowData :: ', JSON.stringify(rowData.rows));
-  // console.log('rowDataSel :: ', JSON.stringify(rowData.rowsSel));
-  saveDataAndHandleResult(jsonUtil.dataJsonParse('I', resData));
+  if (resMarkCh === 'S') {
+    if (resData.sExplains.length > 5) {
+      resData.markPoint = 100;
+      saveDataAndHandleResult(jsonUtil.dataJsonParse('I', resData));
+      setTimeout(() => {
+        const evalCount = rowData.rowsSel.filter(item => item.markPoint > 0).length;
+        statusMessageUpdate(evalCount);
+      }, 500);
+    } else {
+      $q.dialog({
+        dark: true,
+        title: '사유등록',
+        message: 'S평가점수에 대한 사유를 작성하고 저장버튼을 클릭하세요',
+      })
+        .onOk(() => {})
+        .onCancel(() => {})
+        .onDismiss(() => {});
+    }
+  } else {
+    // console.log('rowData :: ', JSON.stringify(rowData.rows));
+    // console.log('rowDataSel :: ', JSON.stringify(rowData.rowsSel));
+    saveDataAndHandleResult(jsonUtil.dataJsonParse('I', resData));
 
-  // console.log('markPointCount : ', markPointCount, rowData.rowsSel.length);
-  // if (rowData.rowsSel.length === markPointCount) {
-  setTimeout(() => {
-    const markPointCount = rowData.rowsSel.filter(item => item.markPoint > 0).length;
-    console.log('markPointCount : ', markPointCount);
-    statusMessageUpdate(markPointCount);
-  }, 500);
-  // }
-  // const totalPointCount = rowData.rows.filter(item => item.evalCount === rowData.rowsSel.length).length;
-  // if (totalPointCount === rowData.rows.length) {
-  //   setTimeout(() => {
-  //     getData();
-  //   }, 500);
-  // }
+    setTimeout(() => {
+      const evalCount = rowData.rowsSel.filter(item => item.markPoint > 0).length;
+      statusMessageUpdate(evalCount);
+    }, 500);
+  }
 };
 
 const statusMessageUpdate = resEvalCount => {
@@ -597,7 +700,7 @@ const statusMessageUpdate = resEvalCount => {
 
   const evalCount = rowData.rows.filter(item => item.evalCount > 0 && item.evalCount === item.empCount).length;
   const markPointCount = rowData.rows.filter(item => rowData.rows.length !== item.evalCount).length;
-  sendCheck.value.lockBtn = evalCount === markPointCount;
+  sendCheck.value.lockBtn = evalCount === markPointCount && evalCount !== 0;
   // console.log('ch :1: ', sendCheck.value.lock, evalCount, markPointCount);
 
   if (resEvalCount > 0) {
@@ -696,6 +799,67 @@ const saveDataLockSendSection = () => {
 // **************************************************************//
 // ***** DataBase 연결부분    *************************************//
 // **************************************************************//
+// ***** 기본설정자료 가져오기 부분  *****************************//
+const setTotEva = ref(false);
+const pointValue = ref({
+  per1: {
+    S: 0,
+    A: 0,
+    B: 0,
+    C: 0,
+    D: 0,
+  },
+  per2: {
+    S: 0,
+    A: 0,
+    B: 0,
+    C: 0,
+    D: 0,
+  },
+  cnt: {
+    S: 0,
+    A: 0,
+    B: 0,
+    C: 0,
+    D: 0,
+  },
+  cnt1: {
+    S: 0,
+    A: 0,
+    B: 0,
+    C: 0,
+    D: 0,
+  },
+  cnt2: {
+    S: 0,
+    A: 0,
+    B: 0,
+    C: 0,
+    D: 0,
+  },
+});
+const getDataSetB = async () => {
+  try {
+    const response = await api.post('/api/aux/aux1020_select', {
+      paramStdYear: storeYear.setYear,
+    });
+    setTotEva.value = response.data.data[0].eva1bYn === 'Y'; // 1차역량평가 항목기준 체크유무
+    pointValue.value.per1.S = response.data.data[0].team1PerPointS;
+    pointValue.value.per1.A = response.data.data[0].team1PerPointA;
+    pointValue.value.per1.B = response.data.data[0].team1PerPointB;
+    pointValue.value.per1.C = response.data.data[0].team1PerPointC;
+    pointValue.value.per1.D = response.data.data[0].team1PerPointD;
+    pointValue.value.per2.S = response.data.data[0].team2PerPointS;
+    pointValue.value.per2.A = response.data.data[0].team2PerPointA;
+    pointValue.value.per2.B = response.data.data[0].team2PerPointB;
+    pointValue.value.per2.C = response.data.data[0].team2PerPointC;
+    pointValue.value.per2.D = response.data.data[0].team2PerPointD;
+    console.log('point : ', JSON.stringify(response.data.data[0]));
+    formReadonly.value = true;
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+};
 
 // ***** 목표승인대상자 집계리스트 가져오기 부분  *****************************//
 const viewStatus = ref({
@@ -730,7 +894,7 @@ const getData = async () => {
       if (lockYnCount > 0) {
         sendCheck.value.lockBtn = false;
       } else {
-        sendCheck.value.lockBtn = evalCount === empCount;
+        sendCheck.value.lockBtn = evalCount === empCount && evalCount !== 0;
       }
     }
   } catch (error) {
@@ -751,6 +915,22 @@ const getDataSelectList = async resRow => {
     });
 
     rowData.rowsSel = response.data.data;
+
+    if (resRow.itemFg === '2021101') {
+      pointValue.value.cnt.S = Math.round((rowData.rowsSel.length * pointValue.value.per1.S) / 100);
+      pointValue.value.cnt.A = Math.round((rowData.rowsSel.length * pointValue.value.per1.A) / 100);
+      pointValue.value.cnt.C = Math.round((rowData.rowsSel.length * pointValue.value.per1.C) / 100);
+      pointValue.value.cnt.D = Math.round((rowData.rowsSel.length * pointValue.value.per1.D) / 100);
+      pointValue.value.cnt.B =
+        rowData.rowsSel.length - (pointValue.value.cnt.S + pointValue.value.cnt.A + pointValue.value.cnt.C + pointValue.value.cnt.D);
+    } else {
+      pointValue.value.cnt.S = Math.round((rowData.rowsSel.length * pointValue.value.per2.S) / 100);
+      pointValue.value.cnt.A = Math.round((rowData.rowsSel.length * pointValue.value.per2.A) / 100);
+      pointValue.value.cnt.C = Math.round((rowData.rowsSel.length * pointValue.value.per2.C) / 100);
+      pointValue.value.cnt.D = Math.round((rowData.rowsSel.length * pointValue.value.per2.D) / 100);
+      pointValue.value.cnt.B =
+        rowData.rowsSel.length - (pointValue.value.cnt.S + pointValue.value.cnt.A + pointValue.value.cnt.C + pointValue.value.cnt.D);
+    }
 
     // console.log('getDataSel : ', JSON.stringify(rowData.rowsSel));
   } catch (error) {
@@ -778,6 +958,15 @@ const saveDataAndHandleResult = resFormData => {
 // **************************************************************//
 // ***** DataBase 연결부분 끝  *************************************//
 // **************************************************************//
+const byteCount = ref(0);
+const updateByteCount = val => {
+  if (val) {
+    byteCount.value = commUtil.textByteLength(val);
+    if (byteCount.value > 100) {
+      alert('한글 50자 까지 가능합니다.');
+    }
+  }
+};
 
 const gridOptions = {
   localeText: { noRowsToShow: '조회 결과가 없습니다.' },

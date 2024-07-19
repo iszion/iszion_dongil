@@ -2,7 +2,6 @@
   <q-layout view="hHh lpR fFf">
     <q-header class="shadow-1 bg-grey-8">
       <q-toolbar>
-        {{ $q.screen.name }}
         <q-avatar square size="sm" @click="rootView" class="cursor-pointer">
           <img src="../assets/images/dongil_logo.png" />
         </q-avatar>
@@ -11,7 +10,7 @@
           {{ $t('project_name') }}
         </div>
 
-        <q-separator class="q-mx-xs-sm" dark vertical inset />
+        <q-separator class="q-mx-xs-sm q-mx-sm-md" dark vertical inset />
 
         <div style="max-width: 300px">
           <q-select
@@ -38,7 +37,7 @@
           </q-select>
         </div>
 
-        <q-separator class="q-mx-xs-sm" dark vertical inset />
+        <q-separator class="q-mx-xs-sm q-mx-sm-md" dark vertical inset />
 
         <q-btn rounded color="purple" dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
 
@@ -128,19 +127,54 @@
         <!-- 사용자 관리 ICON 끝  -->
       </q-toolbar>
 
-      <q-separator class="bg-grey" />
-      <div v-if="pageTitleBarVisible" class="row" :class="$q.dark.isActive ? 'bg-grey-8 text-white' : 'bg-grey-4 text-dark'">
-        <div v-if="!$q.screen.lt.md" style="width: 230px" class="text-center self-center bg-grey-5">
-          <q-icon :name="menuIcon" size="sm" class="q-pb-xs q-pr-sm" />
-          <span v-if="mainMenuTitle.titleName" class="text-h6 text-weight-bold">{{ $t(mainMenuTitle.titleName) }}</span>
-        </div>
-        <div class="col">
-          <page-titlebar v-if="pageTitleBarVisible" :message="nodeValue" />
-        </div>
-      </div>
+      <!--      <q-separator class="bg-grey" />-->
+      <!--      <div v-if="pageTitleBarVisible" class="row" :class="$q.dark.isActive ? 'bg-grey-8 text-white' : 'bg-grey-4 text-dark'">-->
+      <!--        <div v-if="!$q.screen.lt.md" style="width: 230px" class="text-center self-center bg-grey-5">-->
+      <!--          <q-icon :name="menuIcon" size="sm" class="q-pb-xs q-pr-sm" />-->
+      <!--          <span v-if="mainMenuTitle.titleName" class="text-h6 text-weight-bold">{{ $t(mainMenuTitle.titleName) }}</span>-->
+      <!--        </div>-->
+      <!--        <div class="col">-->
+      <!--                <page-titlebar v-if="pageTitleBarVisible" :message="nodeValue" />-->
+      <!--        </div>-->
+      <!--      </div>-->
     </q-header>
 
     <q-drawer v-model="leftDrawerOpen" show-if-above bordered :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-3'" :width="230">
+      <div v-if="mainMenuTitle.titleName" class="row q-px-sm q-pt-md q-pb-sm justify-between" :class="$q.dark.isActive ? 'bg-dark' : 'bg-grey-6'">
+        <div class="text-subtitle1 text-bold">
+          [ {{ $te(mainMenuTitle.titleName) ? $t(mainMenuTitle.titleName) : mainMenuTitle.titleName }} 관리 ]
+        </div>
+        <div>
+          <q-btn :disable="!nodeValue.menuData.label" class="q-px-xs" flat size="11px" icon="bookmark_add" @click="addFavorites">
+            <q-tooltip
+              class="bg-amber text-black shadow-4"
+              anchor="top middle"
+              self="bottom middle"
+              transition-show="rotate"
+              transition-hide="rotate"
+              :offset="[10, 10]"
+            >
+              <q-icon name="menu_book" size="0.8rem" />
+              <strong> 즐겨찾기 저장하기 </strong>
+            </q-tooltip>
+          </q-btn>
+
+          <q-btn :disable="!nodeValue.menuData.label" class="q-px-xs" flat size="11px" icon="menu_book" @click="handleHelpDialog">
+            <q-tooltip
+              class="bg-amber text-black shadow-4"
+              anchor="top middle"
+              self="bottom middle"
+              transition-show="rotate"
+              transition-hide="rotate"
+              :offset="[10, 10]"
+            >
+              <q-icon name="menu_book" size="0.8rem" />
+              <strong> 사용설명서 </strong>
+            </q-tooltip>
+          </q-btn>
+        </div>
+      </div>
+      <q-separator size="2px" />
       <q-input class="q-mb-lg q-px-lg" dense ref="filterRef" v-model="filter" placeholder="Search" :hint="$t('searchWordMenu')">
         <template v-slot:append>
           <q-icon
@@ -156,6 +190,7 @@
         dense
         :nodes="menuList"
         node-key="id"
+        :icon-key="'icon'"
         :filter="filter"
         v-model:expanded="treeExpanded"
         no-connectors
@@ -187,18 +222,23 @@
 
     <footer-bar />
   </q-layout>
+  <q-dialog maximized v-model="helpDialogVisible">
+    <page-manual :message="nodeValue" />
+  </q-dialog>
 </template>
 
 <script setup>
-import { onBeforeMount, onMounted, reactive, ref } from 'vue';
+import { onBeforeMount, onMounted, reactive, ref, watch } from 'vue';
 import FooterBar from 'layouts/FooterBar.vue';
-import { QIcon, useQuasar, Cookies, SessionStorage } from 'quasar';
+import { QIcon, useQuasar, Cookies, SessionStorage, QBtn } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { api } from '/src/boot/axios';
-import PageTitlebar from 'components/comm/PageTitlebar.vue';
+import PageManual from 'components/comm/PageManual.vue';
 import { useUserInfoStore } from 'src/store/setUserInfo';
 import { useYearInfoStore } from 'src/store/setYearInfo';
+import notifySave from 'src/js_comm/notify-save';
+import JsonUtil from 'src/js_comm/json-util';
 
 const storeUser = useUserInfoStore();
 const storeYear = useYearInfoStore();
@@ -210,7 +250,11 @@ const activeTab = ref(null);
 const filter = ref('');
 const filterRef = ref(null);
 const selected = ref(null);
+const helpDialogVisible = ref(false);
 
+const handleHelpDialog = () => {
+  helpDialogVisible.value = true;
+};
 /* ******************************************************************************* */
 /* ************   menu set  ****************************************************** */
 /* ******************************************************************************* */
@@ -229,6 +273,7 @@ const resetFilter = () => {
 };
 
 const selectMenu = m => {
+  // console.log('m ; ', m);
   setTimeout(() => {
     selected.value = null;
     menuIcon.value = m.icon;
@@ -251,10 +296,10 @@ function buildTreeMenuData(data) {
   data.forEach(item => {
     map[item.menuId] = { ...item, children: [] };
   });
-
   // Second pass: build the tree structure
   Object.values(map).forEach(item => {
     treeExpanded.value.push(item.id);
+    treeExpanded.value.push(item.disabled);
     if (item.menuParent === '#') {
       // Top-level menu
       tree.push(item);
@@ -271,6 +316,7 @@ function buildTreeMenuData(data) {
 
   return tree;
 }
+
 /* ******************************************************************************* */
 /* ************  end of menu set  ************************************************ */
 /* ******************************************************************************* */
@@ -336,7 +382,11 @@ const handleNodeClick = () => {
   pageTitleBarVisible.value = true;
   nodeValue.value.menuData = findValueById(menuList.value, selected.value);
   if (nodeValue.value.menuData.children.length === 0) {
-    router.push(nodeValue.value.menuData.url);
+    console.log('node : ', JSON.stringify(nodeValue.value.menuData));
+    router.push({
+      path: nodeValue.value.menuData.url,
+      state: { label: nodeValue.value.menuData.label },
+    });
   }
 };
 function findValueById(data, id) {
@@ -408,6 +458,7 @@ const getDataSetUserInfo = async () => {
   storeUser.setEmpCd = SessionStorage.getItem('empCd');
   try {
     const response = await api.post('/api/sys/user_info', { paramSetYear: storeYear.setYear, paramUserId: storeUser.setEmpCd });
+    console.log('data: ', JSON.stringify(response.data.data));
     storgeUserInfoGroupSave(
       response.data.data[0].empCd +
         '|' +
@@ -437,7 +488,11 @@ const getDataSetUserInfo = async () => {
         '|' +
         response.data.data[0].evtgCd +
         '|' +
-        response.data.data[0].evtgNm,
+        response.data.data[0].evtgNm +
+        '|' +
+        response.data.data[0].levelCd.charAt(response.data.data[0].levelCd.length - 1) +
+        '|' +
+        response.data.data[0].levelNm,
     );
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -496,7 +551,21 @@ const getSubMenuData = async param => {
     });
     // 사용자별 메뉴 추출 시 메뉴가 없는 헤더항목을 제거하는 부분 끝
 
-    menuList.value = buildTreeMenuData(setMenuList);
+    // 평가기간 작업 유형에 따른 메뉴 셋팅부분
+    let _disable = false;
+    if (storeUser.setLevelCd > '2' || storeUser.setLevelCd === '') {
+      _disable = storeYear.setLocCh !== '1';
+    }
+    const _menuList = setMenuList.map(item => {
+      if (item.progId !== '') {
+        return { ...item, disabled: _disable };
+      } else {
+        return item;
+      }
+    });
+    // 평가기간 작업 유형에 따른 메뉴 셋팅부분  끝
+
+    menuList.value = buildTreeMenuData(_menuList);
 
     leftDrawerOpen.value = true;
     pageTitleBarVisible.value = true;
@@ -508,11 +577,13 @@ const getSubMenuData = async param => {
 
 // 즐겨찾기
 const getFavMenuData = async param => {
-  const paramData = { paramUserId: 'admin' };
+  const paramData = { paramUserId: storeUser.setEmpCd };
   try {
     const response = await api.post('/api/sys/menu_fav_list', paramData);
 
     menuList.value = buildTreeMenuData(response.data.data);
+    menuList.value.forEach(item => addDisabled(item));
+    console.log('get :: ', JSON.stringify(menuList.value));
 
     leftDrawerOpen.value = true;
     pageTitleBarVisible.value = true;
@@ -521,6 +592,18 @@ const getFavMenuData = async param => {
     console.error('Error fetching users:', error);
   }
 };
+function addDisabled(obj) {
+  let _disable = false;
+  if (storeUser.setLevelCd > '2' || storeUser.setLevelCd === '') {
+    _disable = storeYear.setLocCh !== '1';
+  }
+  if (obj.progId !== '') {
+    obj.disabled = _disable;
+  }
+  if (obj.children) {
+    obj.children.forEach(child => addDisabled(child));
+  }
+}
 // **************************************************************//
 // ***** DataBase 연결부분 끝  *************************************//
 // **************************************************************//
@@ -551,8 +634,65 @@ const handle_ev_set_color = val => {
 };
 // ***** 검색 선택 자동 처리 부분 끝 *****************************//
 
-// ***** 유저정보 설정 부분 *****************************//
+// ***** 즐겨찾기 정보저장 설정 부분 *****************************//
+const addFavorites = () => {
+  $q.dialog({
+    dark: true,
+    title: nodeValue.value.menuData.label,
+    message: '즐겨찾기에 저장 하시겠습니까?',
+    ok: {
+      flat: true,
+      push: true,
+    },
+    cancel: {
+      flat: true,
+      push: true,
+    },
+    // persistent: true,
+  })
+    .onOk(() => {
+      // console.log('>>>> OK')
+      // console.log(JSON.stringify(nodeValue.value.menuData));
+      // favoritesSaveSection(resMsgProp.message.menuData);
+      const resData = nodeValue.value.menuData;
+      console.log(JSON.stringify(resData));
 
+      let iu = [];
+      let iuD = [];
+      let jsonFormData = {
+        userId: storeUser.setEmpCd,
+        location: 'fav',
+        progNm: resData.label,
+        progId: resData.progId,
+        icon: resData.icon,
+        type: 'file',
+      };
+      let tmpJson = '{"mode":"I","data":' + JSON.stringify(jsonFormData) + '}';
+      iu.push(tmpJson);
+      const resFormData = JsonUtil.jsonFiller(iu, iuD);
+      api
+        .post('/api/sys/fav_save', resFormData)
+        .then(res => {
+          let saveStatus = {};
+          saveStatus.rtn = res.data.rtn;
+          saveStatus.rtnMsg = res.data.rtnMsg;
+          notifySave.notifyView(saveStatus);
+        })
+        .catch(error => {
+          let saveStatus = {};
+          saveStatus.rtn = '2';
+          saveStatus.rtnMsg = '처리되지 않았습니다.';
+          notifySave.notifyView(saveStatus);
+          console.log('error: ', error);
+        });
+    })
+    .onCancel(() => {})
+    .onDismiss(() => {
+      // 확인/취소 모두 실행되었을때
+    });
+};
+
+// ***** 유저정보 설정 부분 *****************************//
 const storgeUserInfoGroupSave = resSetUserInfoGroup => {
   SessionStorage.set('setUserInfoGroup', resSetUserInfoGroup);
   getStorgeSetUserInfoGroup();
@@ -575,6 +715,8 @@ const getStorgeSetUserInfoGroup = () => {
   storeUser.setCatgNm = _value[12];
   storeUser.setEvtgCd = _value[13];
   storeUser.setEvtgNm = _value[14];
+  storeUser.setLevelCd = _value[15];
+  storeUser.setLevelNm = _value[16];
   // console.log(
   //   'Main SetUser Info Group :: ',
   //   storeUser.setEmpCd,

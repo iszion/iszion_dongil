@@ -1,54 +1,57 @@
 <template>
   <q-page>
-    <div class="row">
-      <div class="col-sm-6 col-md-8 col-lg-9" :class="leftColStyle">
-        <q-img height="100vh" src="~assets/images/bg_login.png" />
+    <q-layout view="hHh lpR fFf">
+      <div class="row">
+        <div class="col-sm-6 col-md-8 col-lg-9" :class="leftColStyle">
+          <q-img height="100vh" src="~assets/images/bg_login.png" />
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3 flex flex-center q-pt-xs-xl q-px-xl" :class="$q.dark.isActive ? 'bg-dark' : 'bg-white'">
+          <q-card flat :class="$q.dark.isActive ? 'bg-dark' : 'bg-white'">
+            <q-card-section class="q-mb-xl">
+              <q-item-label>
+                <div class="row">
+                  <q-avatar square class="q-mr-sm" size="md">
+                    <q-img src="/src/assets/images/dongil_logo.png" />
+                  </q-avatar>
+                  <div class="self-center"><span class="text-h5 text-weight-bold">동일석유주식회사</span></div>
+                </div>
+                <div class="text-weight-bold self-center q-mt-md" style="font-size: 1.92em">{{ $t('project_name') }}</div>
+              </q-item-label>
+            </q-card-section>
+            <q-card-section>
+              <q-form @submit="onSubmit" class="q-gutter-y-lg">
+                <q-input
+                  ref="userId"
+                  label-color="orange"
+                  color="orange"
+                  :label="$t('login_id')"
+                  :hint="$t('login_id_hint')"
+                  v-model="form.id"
+                  lazy-rules
+                  :rules="[val => !!val || $t('login_id_hint')]"
+                ></q-input>
+                <!--            class="q-mt-md"-->
+                <q-input
+                  ref="passWd"
+                  label-color="orange"
+                  color="orange"
+                  type="password"
+                  :label="$t('login_password')"
+                  :hint="$t('login_password_hint')"
+                  v-model="form.id"
+                  lazy-rules
+                  :rules="[val => !!val || $t('login_password_hint')]"
+                ></q-input>
+                <q-toggle v-model="form.idSave" :label="$t('login_id_save')" />
+                <q-btn type="submit" class="full-width q-mt-xl" unelevated color="primary" size="lg" :label="$t('login_button')" />
+              </q-form>
+            </q-card-section>
+          </q-card>
+        </div>
       </div>
-      <div class="col-12 col-sm-6 col-md-4 col-lg-3 flex flex-center q-pt-xs-xl q-px-xl" :class="$q.dark.isActive ? 'bg-dark' : 'bg-white'">
-        <q-card flat :class="$q.dark.isActive ? 'bg-dark' : 'bg-white'">
-          <q-card-section class="q-mb-xl">
-            <q-item-label>
-              <div class="row">
-                <q-avatar square class="q-mr-sm" size="md">
-                  <q-img src="/src/assets/images/dongil_logo.png" />
-                </q-avatar>
-                <div class="self-center"><span class="text-h5 text-weight-bold">동일석유주식회사</span><br /></div>
-                <span class="text-weight-bold self-center q-mt-md" style="font-size: 1.92em">{{ $t('project_name') }}</span>
-              </div>
-            </q-item-label>
-          </q-card-section>
-          <q-card-section>
-            <q-form @submit="onSubmit" class="q-gutter-y-lg">
-              <q-input
-                ref="userId"
-                label-color="orange"
-                color="orange"
-                :label="$t('login_id')"
-                :hint="$t('login_id_hint')"
-                v-model="form.id"
-                lazy-rules
-                :rules="[val => !!val || $t('login_id_hint')]"
-              ></q-input>
-              <!--            class="q-mt-md"-->
-              <q-input
-                ref="passWd"
-                label-color="orange"
-                color="orange"
-                type="password"
-                :label="$t('login_password')"
-                :hint="$t('login_password_hint')"
-                v-model="form.id"
-                lazy-rules
-                :rules="[val => !!val || $t('login_password_hint')]"
-              ></q-input>
-              <q-toggle v-model="form.idSave" :label="$t('login_id_save')" />
-              <q-btn type="submit" class="full-width q-mt-xl" unelevated color="primary" size="lg" :label="$t('login_button')" />
-            </q-form>
-          </q-card-section>
-        </q-card>
-      </div>
-    </div>
-    <footer-bar />
+      <footer-bar />
+    </q-layout>
   </q-page>
 </template>
 

@@ -16,7 +16,7 @@
               </q-chip>
             </q-bar>
             <!--  end of contents list title bar -->
-            <q-card-actions class="q-pa-none">
+            <q-card-actions align="right" class="q-pa-none">
               <q-toolbar>
                 <q-btn outline color="positive" dense @click="getData"><q-icon name="refresh" size="xs" class="q-mr-xs" /> 다시 불러오기 </q-btn>
                 <q-space />
@@ -33,92 +33,147 @@
             <q-separator size="3px" />
 
             <q-card-section class="q-pa-none">
-              <q-card flat bordered class="q-ma-xs">
+              <q-card flat bordered class="q-ma-xs q-pa-md">
                 <div class="row">
-                  <div class="col-12 col-sm-5 q-pa-md q-col-gutter-y-lg">
-                    <div class="row q-gutter-xl">
-                      <div style="max-width: 100px">
-                        <q-input
-                          ref="stdYearFocus"
-                          stack-label
-                          v-model="formData.stdYear"
-                          type="text"
-                          label="기준년도"
-                          label-color="orange"
-                          :disable="formDisable"
-                          :rules="[val => (val >= '2000' && val <= '2100') || '2000년 ~ 2100년']"
-                          class="custom-font-size"
-                        >
-                          <template v-slot:append>
-                            <q-avatar class="q-mt-md"> 년 </q-avatar>
-                          </template>
-                        </q-input>
-                      </div>
-
-                      <!--                      <div class="q-gutter-sm q-pt-lg">-->
-                      <!--                        <q-radio dense v-model="formData.stdFg" val="0" label="년" :disable="formDisable" />-->
-                      <!--                        <q-radio dense v-model="formData.stdFg" val="1" label="상반기" :disable="formDisable" />-->
-                      <!--                        <q-radio dense v-model="formData.stdFg" val="2" label="하반기" :disable="formDisable" />-->
-                      <!--                      </div>-->
-                    </div>
-                    <div class="row q-gutter-xl">
-                      <q-input v-model="formData.sDay" type="date" label="기준시작일" label-color="orange" :disable="formDisable" />
-                      <q-input v-model="formData.eDay" type="date" label="기준종료일" label-color="orange" :disable="formDisable" />
+                  <div class="col-2">
+                    <div style="max-width: 100px">
+                      <q-input
+                        ref="stdYearFocus"
+                        stack-label
+                        v-model="formData.stdYear"
+                        type="text"
+                        label="기준년도"
+                        label-color="orange"
+                        :disable="formDisable"
+                        :rules="[val => (val >= '2000' && val <= '2100') || '2000년 ~ 2100년']"
+                        class="custom-font-size"
+                      >
+                        <template v-slot:append>
+                          <q-avatar class="q-mt-md"> 년 </q-avatar>
+                        </template>
+                      </q-input>
                     </div>
                   </div>
-                  <q-space />
+                  <div class="row q-gutter-x-md">
+                    <div class="q-pt-md">
+                      <q-toggle
+                        size="lg"
+                        v-model="formData.eva1aYn"
+                        true-value="Y"
+                        false-value="N"
+                        checked-icon="check"
+                        unchecked-icon="clear"
+                        color="primary"
+                        label="1차역량평가 팀원기준 전체선택"
+                        left-label
+                      />
+                    </div>
 
-                  <div class="col-12 col-sm-6">
-                    <q-separator v-if="$q.screen.xs" />
-                    <q-list>
-                      <q-item tag="label" v-ripple>
-                        <q-item-section avatar>
-                          <q-radio v-model="formData.locCh" val="0" color="teal" :disable="formDisable" />
-                        </q-item-section>
-                        <q-item-section>
-                          <q-item-label :style="{ color: 'teal' }">평가진행오픈 준비중</q-item-label>
-                          <q-item-label caption>
-                            관리자가 평가작업을 진행 하기전 평가관련 자료를 준비하는 과정입니다.<br />
-                            해당 작업을 선택하시면 관리자먄 작업을 진행 하실 수 있습니다.
-                          </q-item-label>
-                        </q-item-section>
-                      </q-item>
+                    <div class="q-pt-md">
+                      <q-toggle
+                        size="lg"
+                        v-model="formData.eva1bYn"
+                        true-value="Y"
+                        false-value="N"
+                        checked-icon="check"
+                        unchecked-icon="clear"
+                        color="primary"
+                        label="1차역량평가 항목기준 전체선택"
+                        left-label
+                      />
+                    </div>
 
-                      <q-item tag="label" v-ripple>
-                        <q-item-section avatar>
-                          <q-radio v-model="formData.locCh" val="1" color="blue" :disable="formDisable" />
-                        </q-item-section>
-                        <q-item-section>
-                          <q-item-label :style="{ color: 'blue' }">평가진행오픈</q-item-label>
-                          <q-item-label caption> 모든 피평가자 또는 평가자의 작업을 진행 하실 수 있습니다.<br /> </q-item-label>
-                        </q-item-section>
-                      </q-item>
+                    <div class="q-pt-md">
+                      <q-toggle
+                        size="lg"
+                        v-model="formData.eva2aYn"
+                        true-value="Y"
+                        false-value="N"
+                        checked-icon="check"
+                        unchecked-icon="clear"
+                        color="primary"
+                        label="2차역량평가 팀원기준 전체선택"
+                        left-label
+                      />
+                    </div>
 
-                      <q-item tag="label" v-ripple>
-                        <q-item-section avatar>
-                          <q-radio v-model="formData.locCh" val="2" color="red" :disable="formDisable" />
-                        </q-item-section>
-                        <q-item-section>
-                          <q-item-label :style="{ color: 'red' }">평가마감진행</q-item-label>
-                          <q-item-label caption>
-                            평가진행을 종료하고 관리자가 마감작업을 진행합니다.<br />해당 작업을 선택 시 모든 자료는 조회만 가능합니다.
-                          </q-item-label>
-                        </q-item-section>
-                      </q-item>
-
-                      <q-item tag="label" v-ripple>
-                        <q-item-section avatar top>
-                          <q-radio v-model="formData.locCh" val="3" color="orange" :disable="formDisable" />
-                        </q-item-section>
-                        <q-item-section>
-                          <q-item-label :style="{ color: 'orange' }">평가마감오픈</q-item-label>
-                          <q-item-label caption>
-                            모든 평가작업이 끝나고 각 평가에 대한 결과를 모든 직원들에게 오픈합니다.<br />
-                            - 로그인 하면 본인의 결과를 대시보드에서 확인 하실 수 있습니다.
-                          </q-item-label>
-                        </q-item-section>
-                      </q-item>
-                    </q-list>
+                    <div class="q-pt-md">
+                      <q-toggle
+                        size="lg"
+                        v-model="formData.eva2bYn"
+                        true-value="Y"
+                        false-value="N"
+                        checked-icon="check"
+                        unchecked-icon="clear"
+                        color="primary"
+                        label="2차역량평가 항목기준 전체선택"
+                        left-label
+                      />
+                    </div>
+                  </div>
+                </div>
+                <q-separator spaced size="3px" />
+                <div class="row">
+                  <div class="col-6">
+                    <div class="row justify-between">
+                      <div class="col-2 text-subtitle1 text-bold">
+                        팀장 (
+                        {{
+                          parseInt(formData.team1PerPointS) +
+                          parseInt(formData.team1PerPointA) +
+                          parseInt(formData.team1PerPointB) +
+                          parseInt(formData.team1PerPointC) +
+                          parseInt(formData.team1PerPointD)
+                        }}% )
+                      </div>
+                      <div class="row q-gutter-x-xl">
+                        <q-input v-model="formData.team1PerPointS" label="S 인원" label-color="orange" style="width: 60px">
+                          <template v-slot:append><span class="text-subtitle2 q-pt-md">%</span> </template>
+                        </q-input>
+                        <q-input v-model="formData.team1PerPointA" label="A 인원" label-color="orange" style="width: 60px">
+                          <template v-slot:append><span class="text-subtitle2 q-pt-md">%</span> </template>
+                        </q-input>
+                        <q-input v-model="formData.team1PerPointB" label="B 인원" label-color="orange" style="width: 60px">
+                          <template v-slot:append><span class="text-subtitle2 q-pt-md">%</span> </template>
+                        </q-input>
+                        <q-input v-model="formData.team1PerPointC" label="C 인원" label-color="orange" style="width: 60px">
+                          <template v-slot:append><span class="text-subtitle2 q-pt-md">%</span> </template>
+                        </q-input>
+                        <q-input v-model="formData.team1PerPointD" label="D 인원" label-color="orange" style="width: 60px">
+                          <template v-slot:append><span class="text-subtitle2 q-pt-md">%</span> </template>
+                        </q-input>
+                      </div>
+                    </div>
+                    <q-separator class="q-my-md" />
+                    <div class="row justify-between">
+                      <div class="col-2 text-subtitle1 text-bold">
+                        팀원 (
+                        {{
+                          parseInt(formData.team2PerPointS) +
+                          parseInt(formData.team2PerPointA) +
+                          parseInt(formData.team2PerPointB) +
+                          parseInt(formData.team2PerPointC) +
+                          parseInt(formData.team2PerPointD)
+                        }}% )
+                      </div>
+                      <div class="row q-gutter-x-xl">
+                        <q-input v-model="formData.team2PerPointS" label="S 인원" label-color="orange" style="width: 60px">
+                          <template v-slot:append><span class="text-subtitle2 q-pt-md">%</span> </template>
+                        </q-input>
+                        <q-input v-model="formData.team2PerPointA" label="A 인원" label-color="orange" style="width: 60px">
+                          <template v-slot:append><span class="text-subtitle2 q-pt-md">%</span> </template>
+                        </q-input>
+                        <q-input v-model="formData.team2PerPointB" label="B 인원" label-color="orange" style="width: 60px">
+                          <template v-slot:append><span class="text-subtitle2 q-pt-md">%</span> </template>
+                        </q-input>
+                        <q-input v-model="formData.team2PerPointC" label="C 인원" label-color="orange" style="width: 60px">
+                          <template v-slot:append><span class="text-subtitle2 q-pt-md">%</span> </template>
+                        </q-input>
+                        <q-input v-model="formData.team2PerPointD" label="D 인원" label-color="orange" style="width: 60px">
+                          <template v-slot:append><span class="text-subtitle2 q-pt-md">%</span> </template>
+                        </q-input>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </q-card>
@@ -182,7 +237,7 @@ import 'ag-grid-community/styles/ag-theme-quartz.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import 'ag-grid-community/styles/ag-theme-balham.css';
 import { AgGridVue } from 'ag-grid-vue3';
-import { Notify, QBtn, QIcon, useQuasar } from 'quasar';
+import { Notify, QBtn, QIcon, QToggle, useQuasar } from 'quasar';
 import { computed, onBeforeMount, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 import { api } from '/src/boot/axios';
 import { isEqual } from 'lodash';
@@ -195,10 +250,6 @@ const $q = useQuasar();
 let isSaveFg = null;
 
 const gridKey = ref(0);
-
-window.dateFormatRendering = function dateFormatRendering(params) {
-  return formatDate(params.value);
-};
 
 const statusEdit = reactive({
   icon: '',
@@ -261,29 +312,30 @@ const columnDefs = reactive({
       field: 'stdYear',
       minWidth: 120,
     },
-
     {
-      headerName: '기간시작일',
-      field: 'sDay',
-      minWidth: 150,
-      valueFormatter: dateFormatRendering,
-    },
-    {
-      headerName: '기간종료일',
-      field: 'eDay',
-      minWidth: 150,
-      valueFormatter: dateFormatRendering,
-    },
-    {
-      headerName: '평가진행적용',
-      field: 'locChNm',
+      headerName: '1차역량평가(팀원)',
+      field: 'eva1aYn',
       minWidth: 120,
-      cellClassRules: {
-        'loc-ch-0-teal': params => params.data.locCh === '0',
-        'loc-ch-1-blue': params => params.data.locCh === '1',
-        'loc-ch-2-red': params => params.data.locCh === '2',
-        'loc-ch-3-orange': params => params.data.locCh === '3',
-      },
+    },
+    {
+      headerName: '1차역량평가(항목)',
+      field: 'eva1bYn',
+      minWidth: 120,
+    },
+    {
+      headerName: '2차역량평가(팀원)',
+      field: 'eva2aYn',
+      minWidth: 120,
+    },
+    {
+      headerName: '2차역량평가(항목)',
+      field: 'eva2bYn',
+      minWidth: 120,
+    },
+    {
+      headerName: '팀장S',
+      field: 'team1PerPointS',
+      minWidth: 120,
     },
   ],
 });
@@ -291,18 +343,38 @@ const columnDefs = reactive({
 const oldFormData = ref(null);
 const formData = ref({
   stdYear: '',
-  stdFg: '',
-  sDay: '',
-  eDay: '',
-  locCh: '',
+  eva1aYn: '',
+  eva1bYn: '',
+  eva2aYn: '',
+  eva2bYn: '',
+  team1PerPointS: 0,
+  team1PerPointA: 0,
+  team1PerPointB: 0,
+  team1PerPointC: 0,
+  team1PerPointD: 0,
+  team2PerPointS: 0,
+  team2PerPointA: 0,
+  team2PerPointB: 0,
+  team2PerPointC: 0,
+  team2PerPointD: 0,
 });
 
 const formDataInitialize = () => {
   formData.value.stdYear = '';
-  formData.value.stdFg = '';
-  formData.value.sDay = '';
-  formData.value.eDay = '';
-  formData.value.locCh = '';
+  formData.value.eva1aYn = '';
+  formData.value.eva1bYn = '';
+  formData.value.eva2aYn = '';
+  formData.value.eva2bYn = '';
+  formData.value.team1PerPointS = 0;
+  formData.value.team1PerPointA = 0;
+  formData.value.team1PerPointB = 0;
+  formData.value.team1PerPointC = 0;
+  formData.value.team1PerPointD = 0;
+  formData.value.team2PerPointS = 0;
+  formData.value.team2PerPointA = 0;
+  formData.value.team2PerPointB = 0;
+  formData.value.team2PerPointC = 0;
+  formData.value.team2PerPointD = 0;
 };
 
 const selectedRows = ref([]);
@@ -416,10 +488,12 @@ const deleteDataSection = () => {
     });
 };
 const saveDataSection = () => {
-  if (formData.value.locCh === null || formData.value.locCh === '') {
+  if (isEqual(formData.value, oldFormData.value)) {
     $q.dialog({
-      title: '오류',
-      message: '평가진행상태를 선택하세요. ',
+      dark: true,
+      title: '안내',
+      message: '변경된 자료가 없습니다. ',
+      // persistent: true,
     })
       .onOk(() => {})
       .onCancel(() => {})
@@ -427,42 +501,7 @@ const saveDataSection = () => {
         // 확인/취소 모두 실행되었을때
       });
   } else {
-    if (isEqual(formData.value, oldFormData.value)) {
-      $q.dialog({
-        dark: true,
-        title: '안내',
-        message: '변경된 자료가 없습니다. ',
-        // persistent: true,
-      })
-        .onOk(() => {})
-        .onCancel(() => {})
-        .onDismiss(() => {
-          // 확인/취소 모두 실행되었을때
-        });
-    } else {
-      formData.value.sDay = reFormatDate(formData.value.sDay);
-      formData.value.eDay = reFormatDate(formData.value.eDay);
-
-      saveDataAndHandleResult(jsonUtil.dataJsonParse(isSaveFg, formData.value));
-
-      formData.value.sDay = formatDate(formData.value.sDay);
-      formData.value.eDay = formatDate(formData.value.eDay);
-    }
-  }
-};
-
-const reFormatDate = rawDate => {
-  return rawDate ? rawDate.replace(/-/g, '') : null;
-};
-
-const formatDate = rawDate => {
-  if (rawDate) {
-    const year = rawDate.substring(0, 4);
-    const month = rawDate.substring(4, 6);
-    const day = rawDate.substring(6, 8);
-    return `${year}-${month}-${day}`;
-  } else {
-    return null;
+    saveDataAndHandleResult(jsonUtil.dataJsonParse(isSaveFg, formData.value));
   }
 };
 
@@ -473,7 +512,7 @@ const formatDate = rawDate => {
 // ***** 사용자정보 목록 자료 가져오기 부분  *****************************//
 const getData = async () => {
   try {
-    const response = await api.post('/api/aux/aux1010_list', {});
+    const response = await api.post('/api/aux/aux1020_list', {});
     rowData.rows = response.data.data;
     gridKey.value += 1;
   } catch (error) {
@@ -485,12 +524,9 @@ const getData = async () => {
 // ***** 사용자정보 선택된 자료 가져오기 부분  *****************************//
 const getDataSelect = async (resStdYear, resStdFg) => {
   try {
-    const response = await api.post('/api/aux/aux1010_select', { paramStdYear: resStdYear, paramStdFg: resStdFg });
+    const response = await api.post('/api/aux/aux1020_select', { paramStdYear: resStdYear, paramStdFg: resStdFg });
     formData.value = response.data.data[0];
     // oldFormData.value = JSON.parse(JSON.stringify(formData.value)); // 초기자료 저장
-    console.log(JSON.stringify(formData.value));
-    formData.value.sDay = formatDate(response.data.data[0].sDay);
-    formData.value.eDay = formatDate(response.data.data[0].eDay);
     oldFormData.value = JSON.parse(JSON.stringify(formData.value)); // 초기자료 저장
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -503,14 +539,11 @@ const getDataSelect = async (resStdYear, resStdFg) => {
 const saveDataAndHandleResult = resFormData => {
   console.log('del ::: ', JSON.stringify(resFormData));
   api
-    .post('/api/aux/aux1010_save', resFormData)
+    .post('/api/aux/aux1020_save', resFormData)
     .then(res => {
       if (res.data.rtn === '0') {
         if (isSaveFg === 'I') {
           formData.value.oldStdYear = formData.value.stdYear;
-          formData.value.oldStdFg = formData.value.stdFg;
-          formData.value.sDay = reFormatDate(formData.value.sDay);
-          formData.value.eDay = reFormatDate(formData.value.eDay);
 
           let newData = [formData.value];
           gridApi.value.applyTransaction({
@@ -522,11 +555,7 @@ const saveDataAndHandleResult = resFormData => {
 
           // selectedData[0] = { ...formData.value };
           selectedData[0].stdYear = formData.value.stdYear;
-          selectedData[0].stdFg = formData.value.stdFg;
           selectedData[0].oldStdYear = formData.value.stdYear;
-          selectedData[0].oldStdFg = formData.value.stdFg;
-          selectedData[0].sDay = reFormatDate(formData.value.sDay);
-          selectedData[0].eDay = reFormatDate(formData.value.eDay);
           gridApi.value.applyTransaction({
             update: selectedData,
           });
@@ -552,19 +581,4 @@ const saveDataAndHandleResult = resFormData => {
 // ***** DataBase 연결부분 끝  *************************************//
 // **************************************************************//
 </script>
-<style lang="sass">
-.loc-ch-0-teal
-  color: teal
-.loc-ch-1-blue
-  color: blue
-.loc-ch-2-red
-  color: red
-.loc-ch-3-orange
-  color: orange
-</style>
-<style scoped>
-.custom-font-size {
-  font-size: 18px;
-  font-weight: bold;
-}
-</style>
+<style scoped></style>

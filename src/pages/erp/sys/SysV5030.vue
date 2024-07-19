@@ -602,7 +602,7 @@ const menuReloadBtn = () => {
           menu_tree_data.value[i].a_attr = obj;
         }
       } else {
-        menu_tree_data.value = { id: 'j1_1', parent: '#', seq: 0, text: '새로운 그룹명', icon: 'fa fa-folder' };
+        menu_tree_data.value = { id: 'j1_1', parent: '#', seq: 0, text: '새로운 그룹명', icon: 'fa fa-folder-open' };
       }
       $('#menuTree').jstree(true).settings.core.data = menu_tree_data.value;
       $('#menuTree').jstree(true).refresh();
@@ -619,9 +619,17 @@ const getGroupData = async () => {
   try {
     const response = await api.post('/api/sys/sys1010_list', { paramDeptCd: '' });
     // 옵션 초기화
-    usersOptions.value = [];
-
-    response.data.data.forEach(user => {
+    usersOptions.value = response.data.data;
+    usersOptions.value.sort((a, b) => {
+      if (a.userNm < b.userNm) {
+        return -1;
+      }
+      if (a.userNm > b.userNm) {
+        return 1;
+      }
+      return 0;
+    });
+    usersOptions.value.forEach(user => {
       if (!selectedUserId.value) {
         selectedUserId.value = user.userId;
       }

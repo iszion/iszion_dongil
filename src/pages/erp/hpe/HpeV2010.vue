@@ -129,6 +129,10 @@
                   </q-card>
                   <q-card class="col-xs-12 col-sm-7">
                     <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">목표설정</div>
+                    <div :class="$q.dark.isActive ? 'q-pa-xs bg-grey-8' : 'q-pa-xs bg-grey-4'">
+                      <span :class="$q.dark.isActive ? 'text-orange' : 'text-deep-orange'"> 평가지표 : </span>
+                      <span class="text-bold"> {{ data.eidcNm }}</span>
+                    </div>
                     <div class="q-pa-xs" v-html="data.targetDoc"></div>
                   </q-card>
                   <q-card class="col-xs-12 col-sm-3">
@@ -331,7 +335,7 @@ const columnDefs = reactive({
           return $q.dark.isActive ? { color: 'orange' } : { color: 'orange' };
           // return { textAlign: 'center' };
         } else {
-          return $q.dark.isActive ? { color: 'teal' } : { color: 'teal' };
+          return {};
           // return { textAlign: 'center' };
         }
       },
@@ -370,7 +374,9 @@ const onSelectionChanged = event => {
   selectedRows.value = event.api.getSelectedRows();
   // console.log('sel: ', JSON.stringify(selectedRows.value));
   if (selectedRows.value.length === 1) {
-    getDataSelectList(selectedRows.value[0]);
+    if (selectedRows.value[0].status !== '') {
+      getDataSelectList(selectedRows.value[0]);
+    }
   }
 };
 

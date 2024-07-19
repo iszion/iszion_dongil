@@ -8,6 +8,8 @@ export default {
 
     if (resIud === 'I') {
       data[0] = '{"mode":"I","data":' + jsonFormData + '}';
+    } else if (resIud === 'C') {
+      data[0] = '{"mode":"C","data":' + jsonFormData + '}';
     } else if (resIud === 'U') {
       data[0] = '{"mode":"U","data":' + jsonFormData + '}';
     } else if (resIud === 'A') {
@@ -29,13 +31,14 @@ export default {
     let jsonData = {};
 
     // 신규, 수정 자료 정리 부분
-    let tmpDataI = [];
-    let tmpDataU = [];
-    let tmpDataN = [];
-    let tmpDataA = [];
-    let tmpDataS = [];
-    let tmpDataR = [];
-    let tmpDataD = [];
+    let tmpDataI = []; // 신규저장
+    let tmpDataC = []; // 업로드용
+    let tmpDataU = []; // 수정
+    let tmpDataN = []; //
+    let tmpDataA = []; //
+    let tmpDataS = []; // 승인
+    let tmpDataR = []; // 리턴
+    let tmpDataD = []; // 삭제
 
     if (resObj.length > 0) {
       for (let i = 0; i < resObj.length; i++) {
@@ -46,6 +49,11 @@ export default {
             objTmp.data[key] = objTmp.data[key] === null ? '' : objTmp.data[key];
           });
           tmpDataI.push(objTmp.data);
+        } else if (objTmp.mode === 'C') {
+          Object.keys(objTmp.data).forEach(key => {
+            objTmp.data[key] = objTmp.data[key] === null ? '' : objTmp.data[key];
+          });
+          tmpDataC.push(objTmp.data);
         } else if (objTmp.mode === 'U') {
           Object.keys(objTmp.data).forEach(key => {
             objTmp.data[key] = objTmp.data[key] === null ? '' : objTmp.data[key];
@@ -75,6 +83,7 @@ export default {
         }
       }
       jsonData.I = tmpDataI;
+      jsonData.C = tmpDataC;
       jsonData.U = tmpDataU;
       jsonData.N = tmpDataN;
       jsonData.A = tmpDataA;
@@ -82,6 +91,7 @@ export default {
       jsonData.R = tmpDataR;
     } else {
       jsonData.I = [];
+      jsonData.C = [];
       jsonData.U = [];
       jsonData.N = [];
       jsonData.A = [];

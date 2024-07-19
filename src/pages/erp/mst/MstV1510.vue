@@ -218,7 +218,7 @@
         <q-icon name="list_alt" />
         <div>권한조정 관리</div>
         <q-space />
-        <span class="text-bold text-subtitle1"> 공통관리번호 [ {{ showDialogTitle.targetNo }} ] </span>
+        <span class="text-bold text-subtitle1"> 공통관리번호 [ {{ showDialogTitle.workNo }} ] </span>
         <q-space />
         <q-btn dense flat icon="close" v-close-popup>
           <q-tooltip> 닫기 </q-tooltip>
@@ -295,13 +295,13 @@ import { QBtn, QIcon, QToggle, useQuasar } from 'quasar';
 import jsonUtil from 'src/js_comm/json-util';
 import { useUserInfoStore } from 'src/store/setUserInfo';
 import { useYearInfoStore } from 'src/store/setYearInfo';
-import CompButtonTargetNo from 'components/CompButtonTargetNo.vue';
+import CompButtonWorkNo from 'components/CompButtonWorkNo.vue';
 const storeUser = useUserInfoStore();
 const storeYear = useYearInfoStore();
 
 const isDialogVisible = ref(false);
 const showDialogTitle = ref({
-  targetNo: '',
+  workNo: '',
 });
 
 const rowData = reactive({
@@ -360,7 +360,7 @@ const onGridReadyDialog = params => {
   params.api.forEachNode(node => {
     // console.log('node : ', node.data);
     // 타겟 평가자와 선택한 평가자가 같은면 체크
-    if (node.data.targetNo === showDialogTitle.value.targetNo) {
+    if (node.data.workNo === showDialogTitle.value.workNo) {
       node.setSelected(true);
     }
   });
@@ -398,16 +398,16 @@ const columnDefs = reactive({
       minWidth: 80,
     },
     {
-      headerName: '사번연결',
-      field: 'targetNo',
-      minWidth: 120,
-      maxWidth: 120,
+      headerName: '적용대상자설정',
+      field: 'workNo',
+      minWidth: 140,
+      maxWidth: 140,
       filter: true,
-      cellRenderer: CompButtonTargetNo,
+      cellRenderer: CompButtonWorkNo,
       cellRendererParams: {
         updateSelectedValue: row => {
-          console.log('targetNo : ', row.value.targetNo);
-          showDialogTitle.value.targetNo = row.value.targetNo;
+          console.log('workNo : ', row.value.workNo);
+          showDialogTitle.value.workNo = row.value.workNo;
           isDialogVisible.value = true;
         },
       },
@@ -422,15 +422,15 @@ const columnDefs = reactive({
       field: 'weight',
       maxWidth: 100,
       minWidth: 100,
+    },
+    {
+      headerName: '대상자(명)',
+      field: 'useEmpCnt',
+      minWidth: 120,
+      maxWidth: 120,
       cellStyle: params => {
         return $q.dark.isActive ? { color: 'cyan', fontWeight: '700' } : { color: 'blue', fontWeight: '700' };
       },
-    },
-    {
-      headerName: '사용처',
-      field: 'weight',
-      minWidth: 120,
-      maxWidth: 120,
     },
     {
       headerName: '사용',
@@ -501,10 +501,9 @@ onBeforeMount(() => {
   rowSelection.value = 'multiple';
   rowSelectionDialog.value = 'multiple';
 
-  getDataDeptOption();
-  setTimeout(() => {
+  getDataDeptOption().then(() => {
     getData();
-  }, 500);
+  });
 });
 
 onMounted(() => {
@@ -515,7 +514,7 @@ onMounted(() => {
 const oldFormData = ref(null);
 const formData = ref({
   stdYear: '',
-  targetNo: '',
+  workNo: '',
   seq: 0,
   targetDoc: '',
   evaS: '',
@@ -531,7 +530,7 @@ const formData = ref({
 
 const formDataInitialize = () => {
   formData.value.stdYear = storeYear.setYear;
-  formData.value.targetNo = '';
+  formData.value.workNo = '';
   formData.value.seq = 1;
   formData.value.targetDoc = '';
   formData.value.evaS = 'S:100점';
@@ -585,7 +584,7 @@ const onSelectionChanged = event => {
   if (selectedRows.value.length === 1) {
     formReadonly.value = false;
     formDisable.value = false;
-    getDataSelect(selectedRows.value[0].stdYear, selectedRows.value[0].targetNo);
+    getDataSelect(selectedRows.value[0].stdYear, selectedRows.value[0].workNo);
   } else {
     formData.value = {};
     isSaveFg.value = '';
@@ -654,8 +653,8 @@ const saveDataDialogSection = () => {
       if (rowDataDialog.rows[i].empCd === selectedRowsDialog.value[k].empCd) {
         if (rowDataDialog.rows[i].iuD !== 'U') {
           _tmpJson = rowDataDialog.rows[i];
-          _tmpJson.progId = 'mst1030';
-          _tmpJson.targetNo = showDialogTitle.value.targetNo;
+          _tmpJson.progId = 'mst1510';
+          _tmpJson.workNo = showDialogTitle.value.workNo;
           let tmpJson = '{"mode": "I", "data":' + JSON.stringify(_tmpJson) + '}';
           iu.push(tmpJson);
 
@@ -666,8 +665,8 @@ const saveDataDialogSection = () => {
     }
     if (useCheck && rowDataDialog.rows[i].iuD === 'U') {
       _tmpJson = rowDataDialog.rows[i];
-      _tmpJson.progId = 'mst1030';
-      _tmpJson.targetNo = showDialogTitle.value.targetNo;
+      _tmpJson.progId = 'mst1510';
+      _tmpJson.workNo = showDialogTitle.value.workNo;
       let tmpJson = '{"mode": "D", "data":' + JSON.stringify(_tmpJson) + '}';
       iuD.push(tmpJson);
       console.log('D : ', rowDataDialog.rows[i].empCd, rowDataDialog.rows[i].empNm);
@@ -771,7 +770,7 @@ async function getDataDeptOption() {
 // ***** 성과/목표정보 목록 자료 가져오기 부분  *****************************//
 const getData = async () => {
   try {
-    const response = await api.post('/api/mst/mst1030_list', {
+    const response = await api.post('/api/mst/mst1510_list', {
       paramSetYear: storeYear.setYear,
     });
     rowData.rows = response.data.data;
@@ -784,11 +783,11 @@ const getData = async () => {
 };
 
 // ***** 선택한 성과/목표정보 목록 자료 가져오기 부분  *****************************//
-const getDataSelect = async (resYear, resTargetNo) => {
+const getDataSelect = async (resYear, resWorkNo) => {
   try {
-    const response = await api.post('/api/mst/mst1030_select', {
+    const response = await api.post('/api/mst/mst1510_select', {
       paramStdYear: resYear,
-      paramTargetNo: resTargetNo,
+      paramWorkNo: resWorkNo,
     });
     formData.value = response.data.data[0];
     oldFormData.value = JSON.parse(JSON.stringify(formData.value)); // 초기자료 저장
@@ -805,7 +804,7 @@ const getDataSelect = async (resYear, resTargetNo) => {
 const saveDataAndHandleResult = resFormData => {
   // console.log('form data : ', JSON.stringify(resFormData));
   api
-    .post('/api/mst/mst1030_save', resFormData)
+    .post('/api/mst/mst1510_save', resFormData)
     .then(res => {
       let saveStatus = {};
       saveStatus.rtn = res.data.rtn;
@@ -823,7 +822,7 @@ const saveDataAndHandleResult = resFormData => {
 const saveDataDialogAndHandleResult = resFormData => {
   // console.log('form data : ', JSON.stringify(resFormData));
   api
-    .post('/api/mst/mst1030_tset_save', resFormData)
+    .post('/api/mst/mst1510_tset_save', resFormData)
     .then(res => {
       let saveStatus = {};
       saveStatus.rtn = res.data.rtn;
@@ -840,11 +839,11 @@ const saveDataDialogAndHandleResult = resFormData => {
 // ***** 연결사번 가져오기 부분  *****************************//
 const getDataDialog = async () => {
   try {
-    const response = await api.post('/api/mst/mst1030_tset_list', {
+    const response = await api.post('/api/mst/mst1510_tset_list', {
       paramSetYear: storeYear.setYear,
       paramDeptCd: searchParam.deptCd,
-      paramProgId: 'mst1030',
-      paramTargetNo: showDialogTitle.value.targetNo,
+      paramProgId: 'mst1510',
+      paramWorkNo: showDialogTitle.value.workNo,
     });
     rowDataDialog.rows = response.data.data;
 

@@ -23,9 +23,9 @@ module.exports = configure(function (/* ctx */) {
         open: true,
         proxy: {
           '/api': {
-            // target: 'http://125.250.69.237:60080',
-            target: 'http://192.168.141.13:8080',
-            // target: 'http://localhost:8080',
+            // target: 'http://192.168.141.254:8080',
+            // target: 'http://125.250.69.237:8282',
+            // target: 'http://192.168.141.13:8080',
             changeOrigin: true,
           },
         },
@@ -56,6 +56,7 @@ module.exports = configure(function (/* ctx */) {
       // 'roboto-font', // optional, you are not bound to it
       'material-icons', // optional, you are not bound to it
     ],
+    publicPath: '/',
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#build
     build: {
@@ -64,21 +65,21 @@ module.exports = configure(function (/* ctx */) {
         node: 'node16',
       },
 
-      vueRouterMode: 'hash', // available values: 'hash', 'history'
+      vueRouterMode: 'history', // available values: 'hash', 'history'
       // vueRouterBase,
       // vueDevtools,
       // vueOptionsAPI: false,
 
       // rebuildCache: true, // rebuilds Vite/linter/etc cache on startup
 
-      // publicPath: '/',
+      publicPath: '/',
       // analyze: true,
       env: {
-        // SERVER_URL: 'http://localhost:8080',
         SERVER_URL: 'http://192.168.141.13:8080',
-        //SERVER_URL: 'http://125.250.69.237:60080',
+        // SERVER_URL: 'http://125.250.69.237:8282',
+        // SERVER_URL: 'http://192.168.141.254:8080',
       },
-      // rawDefine: {}
+      // rawDefine: {}iszion_erp_backend.war
       // ignorePublicFolder: true,
       // minify: false,
       // polyfillModulePreload: true,
@@ -122,7 +123,7 @@ module.exports = configure(function (/* ctx */) {
       // (like functional components as one of the examples),
       // you can manually specify Quasar components/directives to be available everywhere:
       //
-      // components: [],
+      components: ['QFile', 'QPage'],
       // directives: [],
 
       // Quasar plugins

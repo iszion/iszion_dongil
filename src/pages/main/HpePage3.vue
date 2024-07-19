@@ -1,36 +1,26 @@
 <template>
   <q-card bordered class="q-pa-xs">
     <q-bar class="q-py-xs text-subtitle1 text-bold">
-      성과평가 진행율
+      역량평가 진행율
       <q-space />
     </q-bar>
     <q-separator />
     <q-card-section class="q-py-sm q-px-none">
       <div class="row q-pa-xs">
         <apexchart
-          class="col-4"
+          class="col-6"
           type="radialBar"
           :height="$q.screen.xs ? '180' : '280'"
-          :options="getChartOptions('목표진행율', isXsScreen)"
+          :options="getChartOptions('1차역량 진행율', isXsScreen)"
           :series="series1"
-        >
-        </apexchart>
+        ></apexchart>
         <apexchart
-          class="col-4"
+          class="col-6"
           type="radialBar"
           :height="$q.screen.xs ? '180' : '280'"
-          :options="getChartOptions('성과진행율', isXsScreen)"
+          :options="getChartOptions('2차역량 진행율', isXsScreen)"
           :series="series2"
-        >
-        </apexchart>
-        <apexchart
-          class="col-4"
-          type="radialBar"
-          :height="$q.screen.xs ? '180' : '280'"
-          :options="getChartOptions('성과평가진행율', isXsScreen)"
-          :series="series3"
-        >
-        </apexchart>
+        ></apexchart>
       </div>
     </q-card-section>
   </q-card>
@@ -39,15 +29,10 @@
 <script setup>
 import { ref, watch } from 'vue';
 import { useQuasar } from 'quasar';
-import { useUserInfoStore } from 'src/store/setUserInfo';
-import { useYearInfoStore } from 'src/store/setYearInfo';
-const storeUser = useUserInfoStore();
-const storeYear = useYearInfoStore();
 
 const series1 = ref([60]);
 const series2 = ref([20]);
 const series3 = ref([0]);
-
 const $q = useQuasar();
 const isXsScreen = ref($q.screen.lt.sm);
 
