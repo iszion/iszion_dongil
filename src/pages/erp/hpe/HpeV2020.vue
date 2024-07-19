@@ -106,7 +106,7 @@
                       <span :class="$q.dark.isActive ? 'text-orange' : 'text-deep-orange'"> 평가지표 : </span>
                       <span class="text-bold"> {{ data.eidcNm }}</span>
                     </div>
-                    <div class="q-pa-xs" v-html="data.targetDoc"></div>
+                    <div class="q-pa-xs" v-html="data.targetDoc.replace(/\n/g, '<br>')"></div>
                   </q-card>
                   <q-card class="col-xs-12 col-sm-2">
                     <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">기준설정</div>
@@ -120,7 +120,7 @@
                   </q-card>
                   <q-card class="col-xs-12 col-sm-3">
                     <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">성과/업적</div>
-                    <div class="q-pa-xs" v-html="data.workDoc"></div>
+                    <div class="q-pa-xs" v-html="data.workDoc.replace(/\n/g, '<br>')"></div>
                   </q-card>
                   <q-card class="col-xs-12 col-sm-1">
                     <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">가중치</div>

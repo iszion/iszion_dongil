@@ -125,13 +125,32 @@
                 </template>
               </q-banner>
 
-              <q-banner rounded :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-2'" class="q-pa-sm">
+              <q-banner rounded :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-2'" class="q-pa-sm q-mb-xs">
                 <template v-slot:avatar>
                   <q-icon name="ads_click" style="width: 20px" size="sm" />
                 </template>
                 <span v-html="formData.targetDoc" />
                 <template v-slot:action>
                   <span class="text-bold text-subtitle1 text-teal"> 설정목표 </span>
+                </template>
+              </q-banner>
+
+              <q-banner rounded :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-2'" class="q-pa-sm">
+                <template v-slot:avatar>
+                  <q-icon name="ads_click" style="width: 20px" size="sm" />
+                </template>
+                <span>{{ formData.evaS }}</span
+                ><br />
+                <span>{{ formData.evaA }}</span
+                ><br />
+                <span>{{ formData.evaB }}</span
+                ><br />
+                <span>{{ formData.evaC }}</span
+                ><br />
+                <span>{{ formData.evaD }}</span
+                ><br />
+                <template v-slot:action>
+                  <span class="text-bold text-subtitle1 text-teal"> 평가기준 </span>
                 </template>
               </q-banner>
             </q-card>

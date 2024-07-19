@@ -146,6 +146,30 @@ const columnDefs = reactive({
         showStepperButtons: true,
       },
     },
+    {
+      headerName: '진급년수',
+      field: 'nextYear',
+      maxWidth: 100,
+      minWidth: 100,
+    },
+    {
+      headerName: '차기진급코드',
+      field: 'nextTitlCd',
+      maxWidth: 120,
+      minWidth: 120,
+    },
+    {
+      headerName: '차기진급명',
+      field: 'nextTitlNm',
+      editable: false,
+      maxWidth: 150,
+      minWidth: 150,
+    },
+    {
+      headerName: '기타',
+      field: 'explains',
+      minWidth: 150,
+    },
   ],
 });
 
@@ -313,15 +337,10 @@ const saveDataAndHandleResult = resFormData => {
     .post('/api/mst/mst2040_save', resFormData)
     .then(res => {
       let saveStatus = {};
-      if (res.data.rtn === '0') {
-        saveStatus.rtn = 1;
-        saveStatus.rtn1 = res.data.rtnMsg1;
-        saveStatus.rtn2 = '자료저장 완료';
-      } else {
-        saveStatus.rtn = res.data.rtn;
-        saveStatus.rtn1 = res.data.rtnMsg1;
-        saveStatus.rtn2 = res.data.rtnMsg2;
-      }
+
+      saveStatus.rtn = res.data.rtn;
+      saveStatus.rtn1 = res.data.rtnMsg1;
+      saveStatus.rtn2 = res.data.rtnMsg2;
       showSaveBtn.value = false;
       notifySave.notifyView(saveStatus);
     })

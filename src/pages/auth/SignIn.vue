@@ -12,7 +12,7 @@
               <q-item-label>
                 <div class="row">
                   <q-avatar square class="q-mr-sm" size="md">
-                    <q-img src="/src/assets/images/dongil_logo.png" />
+                    <q-img src="~assets/images/dongil_logo.png" />
                   </q-avatar>
                   <div class="self-center"><span class="text-h5 text-weight-bold">동일석유주식회사</span></div>
                 </div>
@@ -84,6 +84,7 @@ const onSubmit = () => {
     form.value.password = form.value.id;
   }
   if (form.value.id !== true) {
+    console.log('URL : ' + api.getUri());
     idToStorageSave();
     api
       .post('/api/auth/login', form.value)
