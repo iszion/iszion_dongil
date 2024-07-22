@@ -416,6 +416,8 @@ const logout = () => {
   api
     .post('/api/auth/logout', access_token)
     .then(res => {
+      sessionStorage.removeItem("accessToken");
+      sessionStorage.removeItem("refreshToken");
       router.push({ path: '/' });
     })
     .catch(res => {
@@ -423,7 +425,7 @@ const logout = () => {
     });
 };
 
-const handleBeforeUnload = event => {
+/*const handleBeforeUnload = event => {
   const confirmationMessage = 'Are you sure you want to leave?';
   event.returnValue = confirmationMessage;
 
@@ -437,7 +439,7 @@ const handleBeforeUnload = event => {
       console.log('Error');
     });
   return confirmationMessage;
-};
+};*/
 
 // window.addEventListener('beforeunload', handleBeforeUnload);
 
