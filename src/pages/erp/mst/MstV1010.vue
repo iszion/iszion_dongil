@@ -128,9 +128,25 @@
                       <q-card class="q-ma-xs q-pa-sm">
                         <q-img src="https://cdn.quasar.dev/img/avatar6.jpg" />
                         <div class="row q-pa-xs">
-                          <q-avatar color="blue" text-color="white" icon="photo_camera" size="md" class="q-pa-none" />
+                          <q-avatar
+                            v-if="!formDisable"
+                            color="blue"
+                            text-color="white"
+                            icon="photo_camera"
+                            size="md"
+                            class="q-pa-none cursor-pointer"
+                            @click="handleImageUpload"
+                          />
                           <q-space />
-                          <q-avatar color="red" text-color="white" icon="delete_forever" size="md" class="q-pa-none" />
+                          <q-avatar
+                            v-if="!formDisable"
+                            color="red"
+                            text-color="white"
+                            icon="delete_forever"
+                            size="md"
+                            class="q-pa-none cursor-pointer"
+                            @click="handleImageDelete"
+                          />
                         </div>
                         <div class="text-center">{{ formData.imageFileNm }}</div>
                       </q-card>
@@ -819,6 +835,29 @@ async function getDataEvtgOption() {
 // **************************************************************//
 // ***** DataBase 연결부분 끝  *************************************//
 // **************************************************************//
+
+const handleImageUpload = () => {
+  // 파일 선택 대화 상자 열기
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*'; // 이미지 파일만 선택 가능하도록 설정 (선택 사항)
+  input.onchange = event => {
+    const file = event.target.files[0];
+    if (file) {
+      // 파일이 선택된 경우, 여기에서 파일 업로드 로직을 추가할 수 있습니다.
+      uploadFile(file);
+    }
+  };
+  input.click();
+};
+const uploadFile = file => {
+  // 파일 업로드 로직을 작성하세요.
+  insaFileName.value = file.name;
+  console.log('Selected file:', file);
+  // 여기에서 파일을 업로드하는 코드를 추가하세요.
+};
+
+const handleImageDelete = () => {};
 </script>
 
 <style lang="sass" scoped>

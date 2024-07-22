@@ -101,7 +101,7 @@
               <q-space />
               <div class="q-gutter-xs">
                 <q-btn
-                  v-if="formData.status === '3' && formData.workDoc.trim().length > 1 && formData.selfPoint > 0"
+                  v-if="formData.status === '3' && formData.selfPoint > 0 && formData.workDoc && formData.workDoc.length >= 4"
                   outline
                   color="blue-12"
                   dense
@@ -137,18 +137,13 @@
 
               <q-banner rounded :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-2'" class="q-pa-sm">
                 <template v-slot:avatar>
-                  <q-icon name="ads_click" style="width: 20px" size="sm" />
+                  <q-icon name="checklist" style="width: 20px" size="sm" />
                 </template>
-                <span>{{ formData.evaS }}</span
-                ><br />
-                <span>{{ formData.evaA }}</span
-                ><br />
-                <span>{{ formData.evaB }}</span
-                ><br />
-                <span>{{ formData.evaC }}</span
-                ><br />
-                <span>{{ formData.evaD }}</span
-                ><br />
+                <span v-if="formData.evaS"><span class="text-blue"> S(100점) : </span>{{ formData.evaS }}<br /></span>
+                <span v-if="formData.evaS"><span class="text-blue"> A(90점) : </span>{{ formData.evaA }}<br /></span>
+                <span v-if="formData.evaS"><span class="text-blue"> B(80점) : </span>{{ formData.evaB }}<br /></span>
+                <span v-if="formData.evaS"><span class="text-blue"> C(70점) : </span>{{ formData.evaC }}<br /></span>
+                <span v-if="formData.evaS"><span class="text-blue"> D(60점) : </span>{{ formData.evaD }}<br /></span>
                 <template v-slot:action>
                   <span class="text-bold text-subtitle1 text-teal"> 평가기준 </span>
                 </template>
@@ -166,8 +161,8 @@
                 color="blue-13"
                 label-color="blue-13"
                 label="성과업적/실적"
-                :hint="`${byteCount} / 200자 까지 입력하실 수 있습니다.`"
-                @update:model-value="updateByteCount"
+                :hint="`${byteCount} / 1000(한글500자) 까지 입력하실 수 있습니다.`"
+                @update:model-value="updateByteCount(value, 1000)"
               />
             </q-card>
             <q-card class="q-pa-sm">
@@ -547,7 +542,7 @@ const onSelectionChanged = event => {
   if (selectedRows.value.length === 1) {
     isSaveFg = 'U';
     getDataSelect(selectedRows.value[0]);
-    updateByteCount(selectedRows.value[0].workDoc);
+    updateByteCount(selectedRows.value[0].workDoc, 1000);
   } else if (selectedRows.value.length > 1) {
     isSaveFg = 'D';
     formDisable.value = true;
@@ -850,11 +845,11 @@ const acceptCheckSaveSection = (resStdYear, resEvtEmpCd) => {
 // **************************************************************//
 
 const byteCount = ref(0);
-const updateByteCount = val => {
+const updateByteCount = (val, maxCnt) => {
   if (val) {
     byteCount.value = commUtil.textByteLength(val);
-    if (byteCount.value > 200) {
-      alert('한글 200자 까지 가능합니다.');
+    if (byteCount.value > maxCnt) {
+      alert('한글 ' + maxCnt + '자 (한글 ' + Math.trunc(maxCnt / 2) + '자)까지 가능합니다.');
     }
   }
 };

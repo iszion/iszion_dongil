@@ -36,7 +36,7 @@
       </q-card-section>
 
       <div ref="gridZone" class="row q-col-gutter-x-lg">
-        <div class="col-xs-12 col-md-12 col-lg-4">
+        <div class="col-xs-12 col-md-12 col-lg-3">
           <q-card class="q-pa-sm">
             <q-toolbar class="row q-pa-none">
               <q-avatar color="red" text-color="white" size="md">1번</q-avatar>
@@ -62,7 +62,7 @@
             </div>
           </q-card>
         </div>
-        <div class="col-xs-12 col-md-12 col-lg-8">
+        <div class="col-xs-12 col-md-12 col-lg-9">
           <!--      {{ contentZoneHeight }} = {{ state.height }}-->
           <q-card class="q-pa-xs">
             <q-toolbar class="row q-pa-none">
@@ -100,7 +100,7 @@
                       {{ data.seq }}
                     </div>
                   </q-card>
-                  <q-card class="col-xs-12 col-sm-4">
+                  <q-card class="col-xs-12 col-sm-3">
                     <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">목표설정</div>
                     <div :class="$q.dark.isActive ? 'q-pa-xs bg-grey-8' : 'q-pa-xs bg-grey-4'">
                       <span :class="$q.dark.isActive ? 'text-orange' : 'text-deep-orange'"> 평가지표 : </span>
@@ -108,14 +108,14 @@
                     </div>
                     <div class="q-pa-xs" v-html="data.targetDoc.replace(/\n/g, '<br>')"></div>
                   </q-card>
-                  <q-card class="col-xs-12 col-sm-2">
+                  <q-card class="col-xs-12 col-sm-3">
                     <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">기준설정</div>
                     <div class="q-pa-xs">
-                      <span class="q-px-sm"> 1. {{ data.evaS }}<br /> </span>
-                      <span class="q-px-sm"> 2. {{ data.evaA }}<br /> </span>
-                      <span class="q-px-sm"> 3. {{ data.evaB }}<br /> </span>
-                      <span class="q-px-sm"> 4. {{ data.evaC }}<br /> </span>
-                      <span class="q-px-sm"> 5. {{ data.evaD }} </span>
+                      <span v-if="data.evaS" class="q-px-sm"> <span class="text-blue"> S(100점) :</span> {{ data.evaS }}<br /> </span>
+                      <span v-if="data.evaA" class="q-px-sm"> <span class="text-blue"> A(90점) :</span> {{ data.evaA }}<br /> </span>
+                      <span v-if="data.evaB" class="q-px-sm"> <span class="text-blue"> B(80점) :</span> {{ data.evaB }}<br /> </span>
+                      <span v-if="data.evaC" class="q-px-sm"> <span class="text-blue"> C(70점) :</span> {{ data.evaC }}<br /> </span>
+                      <span v-if="data.evaD" class="q-px-sm"> <span class="text-blue"> D(60점) :</span> {{ data.evaD }} </span>
                     </div>
                   </q-card>
                   <q-card class="col-xs-12 col-sm-3">
@@ -318,7 +318,6 @@ const columnDefs = reactive({
       headerName: '성명',
       field: 'evtEmpNm',
       minWidth: 80,
-      maxWidth: 80,
       resizable: true,
     },
     {
@@ -331,14 +330,12 @@ const columnDefs = reactive({
       headerName: '직급',
       field: 'evtTitlNm',
       minWidth: 80,
-      maxWidth: 80,
       resizable: true,
     },
     {
       headerName: '진행상태',
       field: 'statusMessage',
       minWidth: 105,
-      maxWidth: 105,
       cellStyle: params => {
         return getStatusMessageStyle(params.data);
       },

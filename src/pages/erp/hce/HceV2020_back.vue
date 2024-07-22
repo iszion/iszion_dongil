@@ -48,68 +48,84 @@
       </q-card-section>
 
       <div ref="gridZone" class="row q-col-gutter-x-lg">
-        <div class="col-xs-12 col-md-12 col-lg-2">
+        <div class="col-xs-12 col-md-12 col-lg-6">
           <q-card class="q-pa-sm">
-            <q-card-actions class="row q-px-none">
+            <q-toolbar class="row q-px-none">
               <q-avatar color="red" text-color="white" size="md">1번</q-avatar>
               <q-space />
               <div class="row q-gutter-x-xs">
-                <q-btn outline color="grey" dense @click="getDataEvtg">
+                <q-btn outline color="grey" dense @click="getData">
                   <q-icon name="refresh" size="xs" class="q-mr-xs" />
+                  자료정리
+                </q-btn>
+                <q-btn
+                  v-if="!sendCheck.lock && sendCheck.initialize && sendCheck.cnt > 0"
+                  outline
+                  color="deep-orange"
+                  dense
+                  class="q-pr-md"
+                  @click="deleteDataSection()"
+                >
+                  <q-icon name="delete" size="xs" class="q-mr-xs" />
+                  <q-badge color="orange" floating>{{ sendCheck.cnt }}</q-badge>
+                  초기화
                 </q-btn>
 
-                <q-btn v-if="sendCheck.lockBtn" outline color="blue-12" dense @click="saveDataLockSendSection">
+                <q-btn v-if="!sendCheck.lock && sendCheck.lockBtn" outline color="blue-12" dense @click="saveDataLockSendSection">
                   <q-icon name="lock" size="xs" class="q-mr-xs" />
                   평가마감하기
                 </q-btn>
               </div>
-            </q-card-actions>
-            <q-card-section class="q-pa-none">
-              <div :style="{ height: gridHeightEvtg + 33 + 'px' }">
-                <ag-grid-vue
-                  style="width: 100%; height: 100%"
-                  :class="$q.dark.isActive ? 'ag-theme-alpine-dark' : 'ag-theme-alpine'"
-                  :columnDefs="columnDefs.evtg"
-                  :rowData="rowData.rowsEvtg"
-                  :defaultColDef="defaultColDef.evtg"
-                  rowSelection="single"
-                  @selection-changed="onSelectionChangedEvtg"
-                  @grid-ready="onGridReadyEvtg"
-                  :grid-options="gridOptionsEvtg"
-                >
-                </ag-grid-vue>
-              </div>
-            </q-card-section>
-          </q-card>
-        </div>
-        <div class="col-xs-12 col-md-12 col-lg-4">
-          <q-card class="q-pa-sm">
-            <q-card-actions class="row q-px-none">
-              <q-avatar color="red" text-color="white" size="md">1번</q-avatar>
-              <q-space />
-              <div class="row q-gutter-x-xs">
-                <q-btn outline color="grey" dense @click="getDataCall">
-                  <q-icon name="refresh" size="xs" class="q-mr-xs" />
-                  자료정리
-                </q-btn>
-              </div>
-            </q-card-actions>
-            <q-card-section class="q-pa-none">
-              <div :style="{ height: gridHeight + 33 + 'px' }">
-                <ag-grid-vue
-                  style="width: 100%; height: 100%"
-                  :class="$q.dark.isActive ? 'ag-theme-alpine-dark' : 'ag-theme-alpine'"
-                  :columnDefs="columnDefs.group"
-                  :rowData="rowData.rows"
-                  :defaultColDef="defaultColDef.group"
-                  rowSelection="single"
-                  @selection-changed="onSelectionChanged"
-                  @grid-ready="onGridReady"
-                  :grid-options="gridOptions"
-                >
-                </ag-grid-vue>
-              </div>
-            </q-card-section>
+            </q-toolbar>
+            <q-card class="">
+              <q-tabs
+                v-model="setItemFg"
+                dense
+                class="text-grey bg-cyan-2"
+                active-color="primary"
+                indicator-color="primary"
+                @update:model-value="onTabChange"
+              >
+                <q-tab name="2021102" label="평가항목(팀원)" />
+                <q-tab name="2021101" label="평가항목(팀장/소장)" />
+              </q-tabs>
+              <q-separator spaced />
+              <q-tab-panels v-model="setItemFg" animated>
+                <q-tab-panel name="2021102" class="q-pa-none">
+                  <div :style="{ height: gridHeight + 33 + 'px' }">
+                    <ag-grid-vue
+                      style="width: 100%; height: 100%"
+                      :class="$q.dark.isActive ? 'ag-theme-alpine-dark' : 'ag-theme-alpine'"
+                      :columnDefs="columnDefs.group"
+                      :rowData="rowData.rows"
+                      :defaultColDef="defaultColDef.group"
+                      rowSelection="single"
+                      @selection-changed="onSelectionChanged"
+                      @grid-ready="onGridReady"
+                      :grid-options="gridOptions"
+                    >
+                    </ag-grid-vue>
+                  </div>
+                </q-tab-panel>
+
+                <q-tab-panel name="2021101" class="q-pa-none">
+                  <div :style="{ height: gridHeight + 33 + 'px' }">
+                    <ag-grid-vue
+                      style="width: 100%; height: 100%"
+                      :class="$q.dark.isActive ? 'ag-theme-alpine-dark' : 'ag-theme-alpine'"
+                      :columnDefs="columnDefs.group"
+                      :rowData="rowData.rows"
+                      :defaultColDef="defaultColDef.group"
+                      rowSelection="single"
+                      @selection-changed="onSelectionChanged"
+                      @grid-ready="onGridReady"
+                      :grid-options="gridOptions"
+                    >
+                    </ag-grid-vue>
+                  </div>
+                </q-tab-panel>
+              </q-tab-panels>
+            </q-card>
           </q-card>
         </div>
         <div class="col-xs-12 col-md-12 col-lg-6">
@@ -125,18 +141,6 @@
               </span>
 
               <q-space />
-              <q-btn
-                v-if="!sendCheck.lock && sendCheck.initialize && sendCheck.cnt > 0"
-                outline
-                color="deep-orange"
-                dense
-                class="q-pr-md"
-                @click="deleteDataSection()"
-              >
-                <q-icon name="delete" size="xs" class="q-mr-xs" />
-                <q-badge color="orange" floating>{{ sendCheck.cnt }}</q-badge>
-                초기화
-              </q-btn>
             </q-toolbar>
             <div class="row">
               <div class="col-12 row">
@@ -157,10 +161,10 @@
                       평가하기 [ <span class="text-teal-8">()안은 평가대상인원수</span> ]
                     </div>
                     <div v-if="!setTotEva" class="q-pa-sm text-subtitle1 text-bold flex flex-center q-gutter-x-lg">
-                      <span class="text-blue-9 q-mr-xs">S </span> ( {{ pointValue.cntS }} ) <span class="text-cyan-9 q-mr-xs">A</span> (
-                      {{ pointValue.cntA }} ) <span class="text-teal-8 q-mr-xs">B</span> ( {{ pointValue.cntB }} )
-                      <span class="text-green-8 q-mr-xs">C</span> ( {{ pointValue.cntC }} ) <span class="text-deep-orange-9 q-mr-xs">D</span> (
-                      {{ pointValue.cntD }} )
+                      <span class="text-blue-9 q-mr-xs">S </span> ( {{ pointValue.cnt.S }} ) <span class="text-cyan-9 q-mr-xs">A</span> (
+                      {{ pointValue.cnt.A }} ) <span class="text-teal-8 q-mr-xs">B</span> ( {{ pointValue.cnt.B }} )
+                      <span class="text-green-8 q-mr-xs">C</span> ( {{ pointValue.cnt.C }} ) <span class="text-deep-orange-9 q-mr-xs">D</span> (
+                      {{ pointValue.cnt.D }} )
                     </div>
                     <div v-if="setTotEva" class="row">
                       <div class="col-md-12 text-center">
@@ -170,7 +174,7 @@
                           v-model="tmpMark.markCh2"
                           :disable="formReadonly"
                           val="S"
-                          :label="`S(${pointValue.cntS})`"
+                          :label="`S(${pointValue.cnt.S})`"
                           color="blue-9"
                           class="text-subtitle1 text-bold"
                           @update:model-value="val => handlePointClickAll(val)"
@@ -181,7 +185,7 @@
                           v-model="tmpMark.markCh2"
                           :disable="formReadonly"
                           val="A"
-                          :label="`A(${pointValue.cntA})`"
+                          :label="`A(${pointValue.cnt.A})`"
                           color="cyan-9"
                           class="text-subtitle1 text-bold"
                           @update:model-value="val => handlePointClickAll(val)"
@@ -192,7 +196,7 @@
                           v-model="tmpMark.markCh2"
                           :disable="formReadonly"
                           val="B"
-                          :label="`B(${pointValue.cntB})`"
+                          :label="`B(${pointValue.cnt.B})`"
                           color="teal-9"
                           class="text-subtitle1 text-bold"
                           @update:model-value="val => handlePointClickAll(val)"
@@ -203,7 +207,7 @@
                           v-model="tmpMark.markCh2"
                           :disable="formReadonly"
                           val="C"
-                          :label="`C(${pointValue.cntC})`"
+                          :label="`C(${pointValue.cnt.C})`"
                           color="green-9"
                           class="text-subtitle1 text-bold"
                           @update:model-value="val => handlePointClickAll(val)"
@@ -214,7 +218,7 @@
                           v-model="tmpMark.markCh2"
                           :disable="formReadonly"
                           val="D"
-                          :label="`D(${pointValue.cntD})`"
+                          :label="`D(${pointValue.cnt.D})`"
                           color="deep-orange-8"
                           class="text-subtitle1 text-bold"
                           @update:model-value="val => handlePointClickAll(val)"
@@ -360,12 +364,17 @@ const storeUser = useUserInfoStore();
 const storeYear = useYearInfoStore();
 const setItemFg = ref(null);
 
-const rowData = reactive({ rows: [], rowsSel: [], rowsEvtg: [] });
+const rowData = reactive({ rows: [] });
 const formReadonly = ref(true);
 const isShowMessage = ref(false);
 
+const onTabChange = val => {
+  setItemFg.value = val;
+  getData();
+  isShowMessage.value = false;
+};
+
 // grid Height 자동처리부분
-const gridHeightEvtg = ref(200); // 초기 높이
 const gridHeight = ref(200); // 초기 높이
 const rowHeight = 45; // 행당 높이 (예: 25px)
 const minHeight = ref(15); // 최소 높이 (예: 300px) rowHeight의 3배
@@ -382,14 +391,6 @@ const contentZoneStyle = computed(() => ({
   height: `${contentZoneHeight.value}px`,
 }));
 
-const gridApiEvtg = ref(null);
-const onGridReadyEvtg = params => {
-  gridApiEvtg.value = params.api;
-  gridApiEvtg.value.setGridOption('headerHeight', 45);
-  gridApiEvtg.value.setGridOption('rowHeight', 45);
-  gridApiEvtg.value.deselectAll();
-  params.api.sizeColumnsToFit();
-};
 const gridApi = ref(null);
 const onGridReady = params => {
   gridApi.value = params.api;
@@ -400,13 +401,6 @@ const onGridReady = params => {
 };
 
 const defaultColDef = reactive({
-  evtg: {
-    flex: 1,
-    sortable: true,
-    filter: true,
-    floatingFilter: false,
-    editable: false,
-  },
   group: {
     flex: 1,
     sortable: true,
@@ -416,25 +410,6 @@ const defaultColDef = reactive({
   },
 });
 const columnDefs = reactive({
-  evtg: [
-    {
-      headerName: '평가그룹',
-      field: 'evtgNm',
-      pinned: 'left',
-      minWidth: 120,
-      maxWidth: 120,
-      resizable: true,
-    },
-    {
-      headerName: '진행상태',
-      field: 'statusMessage',
-      minWidth: 105,
-      maxWidth: 105,
-      cellStyle: params => {
-        return getStatusMessageStyle(params.data);
-      },
-    },
-  ],
   group: [
     {
       headerName: '#',
@@ -483,11 +458,17 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', handleResize);
 });
 onBeforeMount(() => {
-  // 평가대상그룹 불러오기
-  getDataEvtg();
-
-  // 평가항목 불러오기
-  // getData();
+  // console.log('onBeforeMount....', storeUser.setCatgCd, storeUser.setCatgNm, storeUser.setEvtgCd, storeUser.setEvtgNm);
+  // 대표이사
+  if (storeUser.setCatgCd <= '03') {
+    setItemFg.value = '2021101';
+  } else if (storeUser.setCatgCd <= '05') {
+    setItemFg.value = '2021102';
+  } else {
+    setItemFg.value = null;
+  }
+  getDataSetB();
+  getData();
 });
 
 const gridZone = ref(null);
@@ -516,68 +497,10 @@ const viewInfo = ref({
   workNo: null,
   attenYn: false,
 });
-
-const pointValue = ref({
-  cntS: 0,
-  cntA: 0,
-  cntB: 0,
-  cntC: 0,
-  cntD: 0,
-});
-
-const selectedRowsEvtg = ref([]);
-const onSelectionChangedEvtg = event => {
-  selectedRowsEvtg.value = event.api.getSelectedRows();
-  // console.log('sel: ', JSON.stringify(selectedRows.value));
-  if (selectedRowsEvtg.value.length === 1) {
-    getDataCall();
-  }
-};
-const getDataCall = () => {
-  getData(selectedRowsEvtg.value[0]).then(() => {
-    if (selectedRowsEvtg.value[0].evtgCnt > 5) {
-      pointValue.value.cntS = selectedRowsEvtg.value[0].teamCntS;
-      pointValue.value.cntA = selectedRowsEvtg.value[0].teamCntA;
-      pointValue.value.cntB = selectedRowsEvtg.value[0].teamCntB;
-      pointValue.value.cntC = selectedRowsEvtg.value[0].teamCntC;
-      pointValue.value.cntD = selectedRowsEvtg.value[0].teamCntD;
-    } else if (selectedRowsEvtg.value[0].evtgCnt === 5) {
-      pointValue.value.cntS = 1;
-      pointValue.value.cntA = 1;
-      pointValue.value.cntB = 1;
-      pointValue.value.cntC = 1;
-      pointValue.value.cntD = 1;
-    } else if (selectedRowsEvtg.value[0].evtgCnt === 4) {
-      pointValue.value.cntS = 1;
-      pointValue.value.cntA = 1;
-      pointValue.value.cntB = 1;
-      pointValue.value.cntC = 1;
-      pointValue.value.cntD = 0;
-    } else if (selectedRowsEvtg.value[0].evtgCnt === 3) {
-      pointValue.value.cntS = 1;
-      pointValue.value.cntA = 1;
-      pointValue.value.cntB = 1;
-      pointValue.value.cntC = 0;
-      pointValue.value.cntD = 0;
-    } else if (selectedRowsEvtg.value[0].evtgCnt === 2) {
-      pointValue.value.cntS = 1;
-      pointValue.value.cntA = 1;
-      pointValue.value.cntB = 0;
-      pointValue.value.cntC = 0;
-      pointValue.value.cntD = 0;
-    } else if (selectedRowsEvtg.value[0].evtgCnt === 1) {
-      pointValue.value.cntS = 1;
-      pointValue.value.cntA = 0;
-      pointValue.value.cntB = 0;
-      pointValue.value.cntC = 0;
-      pointValue.value.cntD = 0;
-    }
-  });
-};
 const selectedRows = ref([]);
 const onSelectionChanged = event => {
   selectedRows.value = event.api.getSelectedRows();
-  // console.log('sel: ', JSON.stringify(selectedRows.value));
+  console.log('sel: ', JSON.stringify(selectedRows.value));
   sendCheck.value.initialize = false;
   viewInfo.value.itemNm = null;
   viewInfo.value.workNo = null;
@@ -591,7 +514,6 @@ const onSelectionChanged = event => {
 
     viewInfo.value.itemNm = selectedRows.value[0].itemNm;
     viewInfo.value.workNo = selectedRows.value[0].workNo;
-    console.log('sel: ', JSON.stringify(selectedRows.value[0]));
     getDataSelectList(selectedRows.value[0]).then(() => {
       isShowMessage.value = false;
       if (rowData.rowsSel.length === 0) {
@@ -600,21 +522,17 @@ const onSelectionChanged = event => {
       }
       const evalCount = rowData.rows.filter(item => item.evalCount > 0).length;
       const empCount = rowData.rows.filter(item => item.empCount > 0).length;
-      const lockYn2Count = rowData.rows.filter(item => item.lockYn2 === 'Y').length;
-      if (lockYn2Count > 0) {
+      const lockYnCount = rowData.rows.filter(item => item.lockYn === 'Y').length;
+      if (lockYnCount > 0) {
+        sendCheck.value.lockBtn = false;
         formReadonly.value = true;
       } else {
+        sendCheck.value.lockBtn = evalCount === empCount && evalCount !== 0;
         sendCheck.value.initialize = evalCount > 0;
         sendCheck.value.cnt = rowData.rowsSel.filter(item => item.markPoint2 > 0).length;
       }
     });
   }
-};
-
-const lockBtnCheck = () => {
-  const _maxPerCnt = rowData.rowsEvtg.reduce((sum, current) => sum + current.maxPerCnt, 0);
-  const _maxEvlCnt = rowData.rowsEvtg.reduce((sum, current) => sum + current.maxEvlCnt, 0);
-  sendCheck.value.lockBtn = _maxPerCnt === _maxEvlCnt && _maxPerCnt !== 0;
 };
 
 const sendCheck = ref({
@@ -683,7 +601,7 @@ const handlePointClick = (resMarkCh, resData) => {
 
   switch (resMarkCh) {
     case 'S':
-      if (chS > pointValue.value.cntS) {
+      if (chS > pointValue.value.cnt.S) {
         resData.markPoint2 = 0;
         resData.markCh2 = null;
       } else {
@@ -691,7 +609,7 @@ const handlePointClick = (resMarkCh, resData) => {
       }
       break;
     case 'A':
-      if (chA > pointValue.value.cntA) {
+      if (chA > pointValue.value.cnt.A) {
         resData.markPoint2 = 0;
         resData.markCh2 = null;
       } else {
@@ -699,7 +617,7 @@ const handlePointClick = (resMarkCh, resData) => {
       }
       break;
     case 'B':
-      if (chB > pointValue.value.cntB) {
+      if (chB > pointValue.value.cnt.B) {
         resData.markPoint2 = 0;
         resData.markCh2 = null;
       } else {
@@ -707,7 +625,7 @@ const handlePointClick = (resMarkCh, resData) => {
       }
       break;
     case 'C':
-      if (chC > pointValue.value.cntC) {
+      if (chC > pointValue.value.cnt.C) {
         resData.markPoint2 = 0;
         resData.markCh2 = null;
       } else {
@@ -715,7 +633,7 @@ const handlePointClick = (resMarkCh, resData) => {
       }
       break;
     case 'D':
-      if (chD > pointValue.value.cntD) {
+      if (chD > pointValue.value.cnt.D) {
         resData.markPoint2 = 0;
         resData.markCh2 = null;
       } else {
@@ -744,11 +662,11 @@ const handlePointClick = (resMarkCh, resData) => {
       saveDataAndHandleResult(jsonUtil.dataJsonParse('I', resData));
 
       setTimeout(() => {
-        const checkS = chS === pointValue.value.cntS;
-        const checkA = chA === pointValue.value.cntA;
-        const checkB = chB === pointValue.value.cntB;
-        const checkC = chC === pointValue.value.cntC;
-        const checkD = chD === pointValue.value.cntD;
+        const checkS = chS === pointValue.value.cnt.S;
+        const checkA = chA === pointValue.value.cnt.A;
+        const checkB = chB === pointValue.value.cnt.B;
+        const checkC = chC === pointValue.value.cnt.C;
+        const checkD = chD === pointValue.value.cnt.D;
         // false인 변수를 찾는 함수
         const checks = { checkS, checkA, checkB, checkC, checkD };
         const falseKeys = Object.keys(checks).filter(key => !checks[key]);
@@ -820,7 +738,7 @@ const statusMessageUpdate = resEvalCount => {
   let selectedRow = gridApi.value.getSelectedNodes()[0];
   // console.log('sel : ', selectedRow.data);
 
-  if (selectedRow.data.lockYn2 === 'Y') {
+  if (selectedRow.data.lockYn === 'Y') {
     selectedRow.data.statusMessage = '평가마감';
   } else if (resEvalCount === 0) {
     selectedRow.data.statusMessage = '평가대기';
@@ -839,7 +757,7 @@ const statusMessageUpdate = resEvalCount => {
 
   const evalCount = rowData.rows.filter(item => item.evalCount > 0).length;
   const markPoint2Count = rowData.rows.filter(item => rowData.rows.length !== item.evalCount).length;
-  // sendCheck.value.lockBtn = evalCount === markPoint2Count && evalCount !== 0;
+  sendCheck.value.lockBtn = evalCount === markPoint2Count && evalCount !== 0;
   // console.log('ch :1: ', sendCheck.value.lock, evalCount, markPoint2Count);
 
   if (resEvalCount > 0) {
@@ -870,16 +788,17 @@ const deleteDataSection = () => {
 
       let iu = [];
       let iuD = [];
-
-      const formData = rowData.rowsSel.filter(item => item.markPoint2 > 0);
-      for (let i = 0; i < formData.length; i++) {
-        console.log('aaaa :: ', JSON.stringify(formData[i]));
-        let tmpJson = '{"mode": "' + isSaveFg + '","data":' + JSON.stringify(formData[i]) + '}';
-        iuD.push(tmpJson);
-      }
-
+      let formData = {};
+      formData.stdYear = selectedRows.value[0].stdYear;
+      formData.evsEmpCd = storeUser.setEmpCd;
+      formData.evtEmpCd = '';
+      formData.evsCd = selectedRows.value[0].evsCd;
+      formData.itemFg = selectedRows.value[0].itemFg;
+      formData.workNo = selectedRows.value[0].workNo;
+      let tmpJson = '{"mode": "' + isSaveFg + '","data":' + JSON.stringify(formData) + '}';
+      iuD.push(tmpJson);
       saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
-      //
+
       setTimeout(() => {
         statusMessageUpdate(0);
         gridApi.value.deselectAll();
@@ -923,7 +842,7 @@ const saveDataLockSendSection = () => {
       iu.push(tmpJson);
       saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
       setTimeout(() => {
-        getDataCall();
+        getData();
       }, 1000);
     })
     .onCancel(() => {})
@@ -936,46 +855,87 @@ const saveDataLockSendSection = () => {
 // **************************************************************//
 // ***** 기본설정자료 가져오기 부분  *****************************//
 const setTotEva = ref(false);
-
-// 평가분류대상항목 자료 불러오기
-const getDataEvtg = async () => {
+const pointValue = ref({
+  per1: {
+    S: 0,
+    A: 0,
+    B: 0,
+    C: 0,
+    D: 0,
+  },
+  per2: {
+    S: 0,
+    A: 0,
+    B: 0,
+    C: 0,
+    D: 0,
+  },
+  cnt: {
+    S: 0,
+    A: 0,
+    B: 0,
+    C: 0,
+    D: 0,
+  },
+  cnt1: {
+    S: 0,
+    A: 0,
+    B: 0,
+    C: 0,
+    D: 0,
+  },
+  cnt2: {
+    S: 0,
+    A: 0,
+    B: 0,
+    C: 0,
+    D: 0,
+  },
+});
+const getDataSetB = async () => {
   try {
-    const response = await api.post('/api/hce/hce2020_list_evtg', {
-      paramSetYear: storeYear.setYear,
-      paramEvsEmpCd: storeUser.setEmpCd,
+    const response = await api.post('/api/aux/aux1020_select', {
+      paramStdYear: storeYear.setYear,
     });
-    rowData.rowsEvtg = response.data.data;
-    lockBtnCheck();
-
-    // console.log('aa : ', JSON.stringify(response.data.data));
-    if (rowData.rowsEvtg.length === 0) {
-      minHeight.value = 220;
-      sendCheck.value.lock = false;
-    } else {
-      const calculatedHeight = rowData.rowsEvtg.length * rowHeight;
-      gridHeightEvtg.value = minHeight.value + calculatedHeight;
-
-      rowData.rows = [];
-      rowData.rowsSel = [];
-    }
+    setTotEva.value = response.data.data[0].eva2bYn === 'Y'; // 2차역량평가 항목기준 체크유무
+    pointValue.value.per1.S = response.data.data[0].team1PerPointS;
+    pointValue.value.per1.A = response.data.data[0].team1PerPointA;
+    pointValue.value.per1.B = response.data.data[0].team1PerPointB;
+    pointValue.value.per1.C = response.data.data[0].team1PerPointC;
+    pointValue.value.per1.D = response.data.data[0].team1PerPointD;
+    pointValue.value.per2.S = response.data.data[0].team2PerPointS;
+    pointValue.value.per2.A = response.data.data[0].team2PerPointA;
+    pointValue.value.per2.B = response.data.data[0].team2PerPointB;
+    pointValue.value.per2.C = response.data.data[0].team2PerPointC;
+    pointValue.value.per2.D = response.data.data[0].team2PerPointD;
+    console.log('point : ', JSON.stringify(response.data.data[0]));
+    formReadonly.value = true;
   } catch (error) {
     console.error('Error fetching users:', error);
   }
 };
-// 평가항목 자료 불러오기
-const getData = async resData => {
+// ***** 목표승인대상자 집계리스트 가져오기 부분  *****************************//
+const viewStatus = ref({
+  totalCnt: 0,
+  status_0: 0,
+  status_3: 0,
+  status_4: 0,
+  status_5: 0,
+});
+
+const getData = async () => {
   try {
     const response = await api.post('/api/hce/hce2020_list', {
-      paramSetYear: resData.stdYear,
+      paramSetYear: storeYear.setYear,
       paramEvsEmpCd: storeUser.setEmpCd,
-      paramEvtgCd: resData.evtgCd,
-      paramItemFg: resData.itemFg,
+      paramItemFg: setItemFg.value,
     });
     rowData.rows = response.data.data;
     // console.log('aa : ', JSON.stringify(response.data.data));
     if (rowData.rows.length === 0) {
       minHeight.value = 220;
       sendCheck.value.lock = false;
+      sendCheck.value.lockBtn = false;
     } else {
       const calculatedHeight = rowData.rows.length * rowHeight;
       gridHeight.value = minHeight.value + calculatedHeight;
@@ -984,10 +944,12 @@ const getData = async resData => {
       // console.log('getData : ', JSON.stringify(rowData.rows));
       const evalCount = rowData.rows.filter(item => item.evalCount > 0).length;
       const empCount = rowData.rows.filter(item => item.empCount > 0).length;
-      const lockYn2Count = rowData.rows.filter(item => item.lockYn2 === 'Y').length;
-      if (lockYn2Count > 0) {
+      const lockYnCount = rowData.rows.filter(item => item.lockYn === 'Y').length;
+      if (lockYnCount > 0) {
+        sendCheck.value.lockBtn = false;
         formReadonly.value = true;
       } else {
+        sendCheck.value.lockBtn = evalCount === empCount && evalCount !== 0;
         sendCheck.value.initialize = evalCount > 0;
         sendCheck.value.cnt = rowData.rowsSel.filter(item => item.markPoint2 > 0).length;
       }
@@ -1000,18 +962,32 @@ const getData = async resData => {
 // ***** 목표승인대상자 승인대상자료 목록 자료 가져오기 부분  *****************************//
 
 const getDataSelectList = async resRow => {
-  console.log('resRow : ', JSON.stringify(resRow));
+  // console.log('resRow : ', JSON.stringify(resRow));
   try {
     const response = await api.post('/api/hce/hce2020_select_list', {
       paramStdYear: resRow.stdYear,
       paramEvsEmpCd: storeUser.setEmpCd,
       paramEvsCd: resRow.evsCd,
-      paramEvtgCd: resRow.evtgCd,
       paramItemFg: resRow.itemFg,
       paramWorkNo: resRow.workNo,
     });
 
     rowData.rowsSel = response.data.data;
+    if (resRow.itemFg === '2021101') {
+      pointValue.value.cnt.S = Math.round((rowData.rowsSel.length * pointValue.value.per1.S) / 100);
+      pointValue.value.cnt.A = Math.round((rowData.rowsSel.length * pointValue.value.per1.A) / 100);
+      pointValue.value.cnt.C = Math.round((rowData.rowsSel.length * pointValue.value.per1.C) / 100);
+      pointValue.value.cnt.D = Math.round((rowData.rowsSel.length * pointValue.value.per1.D) / 100);
+      pointValue.value.cnt.B =
+        rowData.rowsSel.length - (pointValue.value.cnt.S + pointValue.value.cnt.A + pointValue.value.cnt.C + pointValue.value.cnt.D);
+    } else {
+      pointValue.value.cnt.S = Math.round((rowData.rowsSel.length * pointValue.value.per2.S) / 100);
+      pointValue.value.cnt.A = Math.round((rowData.rowsSel.length * pointValue.value.per2.A) / 100);
+      pointValue.value.cnt.C = Math.round((rowData.rowsSel.length * pointValue.value.per2.C) / 100);
+      pointValue.value.cnt.D = Math.round((rowData.rowsSel.length * pointValue.value.per2.D) / 100);
+      pointValue.value.cnt.B =
+        rowData.rowsSel.length - (pointValue.value.cnt.S + pointValue.value.cnt.A + pointValue.value.cnt.C + pointValue.value.cnt.D);
+    }
 
     // console.log('getDataSel : ', JSON.stringify(rowData.rowsSel));
   } catch (error) {
@@ -1040,9 +1016,6 @@ const saveDataAndHandleResult = resFormData => {
 // ***** DataBase 연결부분 끝  *************************************//
 // **************************************************************//
 
-const gridOptionsEvtg = {
-  localeText: { noRowsToShow: '조회 결과가 없습니다.' },
-};
 const gridOptions = {
   localeText: { noRowsToShow: '조회 결과가 없습니다.' },
 };

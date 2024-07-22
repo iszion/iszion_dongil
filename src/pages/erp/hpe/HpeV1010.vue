@@ -149,7 +149,6 @@
                 options-dense
                 emit-value
                 map-options
-                @focus="$refs.focusStart.showPopup()"
               >
                 <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
                   <q-item v-bind="itemProps">
@@ -173,8 +172,8 @@
                 color="orange-13"
                 label-color="orange-13"
                 label="세부목표"
-                :hint="`${byteCount} / 200자 까지 입력하실 수 있습니다.`"
-                @update:model-value="updateByteCount"
+                :hint="`${byteCount} / 400(한글200)자 까지 입력하실 수 있습니다.`"
+                @update:model-value="updateByteCount(value, 400)"
               />
               <div class="row q-col-gutter-x-xl q-mt-lg">
                 <div class="col-8 q-gutter-y-md">
@@ -182,56 +181,56 @@
                     :readonly="formReadonly"
                     :disable="formDisable"
                     v-model="formData.evaS"
-                    dense
                     clearable
                     color="purple-12"
                     label-color="purple-12"
-                    label="평가기준(S)"
-                    hint="평가기준 S(100)에 해당되는 기준"
+                    label="평가기준( S:100점 )"
+                    :hint="`${byteCount} /200(한글100자) 까지 입력하실 수 있습니다.`"
+                    @update:model-value="updateByteCount(value, 200)"
                   />
                   <q-input
                     :readonly="formReadonly"
                     :disable="formDisable"
                     v-model="formData.evaA"
-                    dense
                     clearable
                     color="purple-12"
                     label-color="purple-12"
-                    label="평가기준(A)"
-                    hint="평가기준 A(90)에 해당되는 기준"
+                    label="평가기준( A:90점 )"
+                    :hint="`${byteCount} /200(한글100자) 까지 입력하실 수 있습니다.`"
+                    @update:model-value="updateByteCount(value, 200)"
                   />
                   <q-input
                     :readonly="formReadonly"
                     :disable="formDisable"
                     v-model="formData.evaB"
-                    dense
                     clearable
                     color="purple-12"
                     label-color="purple-12"
-                    label="평가기준(B)"
-                    hint="평가기준 B(80)에 해당되는 기준"
+                    label="평가기준( B:80점 )"
+                    :hint="`${byteCount} /200(한글100자) 까지 입력하실 수 있습니다.`"
+                    @update:model-value="updateByteCount(value, 200)"
                   />
                   <q-input
                     :readonly="formReadonly"
                     :disable="formDisable"
                     v-model="formData.evaC"
-                    dense
                     clearable
                     color="purple-12"
                     label-color="purple-12"
-                    label="평가기준(C)"
-                    hint="평가기준 C(70)에 해당되는 기준"
+                    label="평가기준( C:70점 )"
+                    :hint="`${byteCount} /200(한글100자) 까지 입력하실 수 있습니다.`"
+                    @update:model-value="updateByteCount(value, 200)"
                   />
                   <q-input
                     :readonly="formReadonly"
                     :disable="formDisable"
                     v-model="formData.evaD"
-                    dense
                     clearable
                     color="purple-12"
                     label-color="purple-12"
-                    label="평가기준(D)"
-                    hint="평가기준 D(60)에 해당되는 기준"
+                    label="평가기준( D:60점 )"
+                    :hint="`${byteCount} /200(한글100자) 까지 입력하실 수 있습니다.`"
+                    @update:model-value="updateByteCount(value, 200)"
                   />
                 </div>
                 <div class="col-4 q-gutter-y-xl">
@@ -272,6 +271,7 @@ import commUtil from 'src/js_comm/comm-util';
 import { useUserInfoStore } from 'src/store/setUserInfo';
 import { useYearInfoStore } from 'src/store/setYearInfo';
 import { useRouter } from 'vue-router';
+import { value } from 'lodash/seq';
 
 const router = useRouter();
 const storeUser = useUserInfoStore();
@@ -475,11 +475,11 @@ const formDataInitialize = () => {
   formData.value.seq = 1;
   formData.value.eidcCd = '';
   formData.value.targetDoc = '';
-  formData.value.evaS = 'S:100점';
-  formData.value.evaA = 'A:90점';
-  formData.value.evaB = 'B:80점';
-  formData.value.evaC = 'C:70점';
-  formData.value.evaD = 'D:60점';
+  formData.value.evaS = '';
+  formData.value.evaA = '';
+  formData.value.evaB = '';
+  formData.value.evaC = '';
+  formData.value.evaD = '';
   formData.value.weight = 0;
   formData.value.workDoc = '';
   formData.value.workPer = 0;
@@ -558,7 +558,7 @@ const onSelectionChanged = event => {
   formReadonly.value = true;
   if (selectedRows.value.length === 1) {
     getDataSelect(selectedRows.value[0].stdYear, selectedRows.value[0].empCd, selectedRows.value[0].workNo);
-    updateByteCount(selectedRows.value[0].targetDoc);
+    updateByteCount(selectedRows.value[0].targetDoc, 400);
   } else {
     formData.value = {};
     isSaveFg.value = '';
@@ -916,11 +916,11 @@ async function getDataEidcOption() {
 // **************************************************************//
 
 const byteCount = ref(0);
-const updateByteCount = val => {
+const updateByteCount = (val, maxCnt) => {
   if (val) {
     byteCount.value = commUtil.textByteLength(val);
-    if (byteCount.value > 200) {
-      alert('한글 200자 까지 가능합니다.');
+    if (byteCount.value > maxCnt) {
+      alert('한글 ' + maxCnt + '자 (한글 ' + Math.trunc(maxCnt / 2) + '자)까지 가능합니다.');
     }
   }
 };

@@ -99,7 +99,7 @@
                   승인취소
                 </q-btn>
                 <q-btn
-                  v-if="statusCheck.sendHide"
+                  v-if="rowData.rowsSel.length > 0"
                   outline
                   color="blue"
                   dense
@@ -110,7 +110,7 @@
                   <q-icon name="check" size="xs" class="q-mr-xs" />
                   승인하기
                 </q-btn>
-                <q-btn v-if="statusCheck.sendHide" outline color="red" dense class="q-pr-md" @click="sendReturnDialog">
+                <q-btn v-if="rowData.rowsSel.length > 0" outline color="red" dense class="q-pr-md" @click="sendReturnDialog">
                   <q-badge color="orange" floating>{{ rowData.rowsSel.length }}</q-badge>
                   <q-icon name="reply" size="xs" class="q-mr-xs" />
                   반려하기
@@ -138,11 +138,11 @@
                   <q-card class="col-xs-12 col-sm-3">
                     <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">기준설정</div>
                     <div class="q-pa-xs">
-                      <span class="q-px-sm"> 1. {{ data.evaS }}<br /> </span>
-                      <span class="q-px-sm"> 2. {{ data.evaA }}<br /> </span>
-                      <span class="q-px-sm"> 3. {{ data.evaB }}<br /> </span>
-                      <span class="q-px-sm"> 4. {{ data.evaC }}<br /> </span>
-                      <span class="q-px-sm"> 5. {{ data.evaD }} </span>
+                      <span v-if="data.evaS" class="q-px-sm"> <span class="text-blue"> S(100점) :</span> {{ data.evaS }}<br /> </span>
+                      <span v-if="data.evaA" class="q-px-sm"> <span class="text-blue"> A(90점) :</span> {{ data.evaA }}<br /> </span>
+                      <span v-if="data.evaB" class="q-px-sm"> <span class="text-blue"> B(80점) :</span> {{ data.evaB }}<br /> </span>
+                      <span v-if="data.evaC" class="q-px-sm"> <span class="text-blue"> C(70점) :</span> {{ data.evaC }}<br /> </span>
+                      <span v-if="data.evaD" class="q-px-sm"> <span class="text-blue"> D(60점) :</span> {{ data.evaD }} </span>
                     </div>
                   </q-card>
                   <q-card class="col-xs-12 col-sm-1">
@@ -376,6 +376,8 @@ const onSelectionChanged = event => {
   if (selectedRows.value.length === 1) {
     if (selectedRows.value[0].status !== '') {
       getDataSelectList(selectedRows.value[0]);
+    } else {
+      rowData.rowsSel = [];
     }
   }
 };

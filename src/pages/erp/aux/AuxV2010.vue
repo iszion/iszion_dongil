@@ -430,6 +430,12 @@ const columnDefs = reactive({
       maxWidth: 100,
     },
     {
+      headerName: '대상그룹',
+      field: 'evtgNm',
+      minWidth: 100,
+      maxWidth: 150,
+    },
+    {
       headerName: '평가자',
       field: 'evsEmpNm',
       minWidth: 100,
