@@ -126,11 +126,28 @@
                   <div class="row q-col-gutter-xl">
                     <div class="col-12 col-md-6">
                       <q-card class="q-ma-xs q-pa-sm">
-                        <q-img src="https://cdn.quasar.dev/img/avatar6.jpg" />
+<!--                        <q-img src='https://www.iszion.com/images/' />-->
+                        <q-img v-if="imageSrc" :src="imageSrc" />
                         <div class="row q-pa-xs">
-                          <q-avatar color="blue" text-color="white" icon="photo_camera" size="md" class="q-pa-none" />
+                          <q-avatar
+                            v-if="!formDisable"
+                            color="blue"
+                            text-color="white"
+                            icon="photo_camera"
+                            size="md"
+                            class="q-pa-none cursor-pointer"
+                            @click="handleImageUpload"
+                          />
                           <q-space />
-                          <q-avatar color="red" text-color="white" icon="delete_forever" size="md" class="q-pa-none" />
+                          <q-avatar
+                            v-if="!formDisable"
+                            color="red"
+                            text-color="white"
+                            icon="delete_forever"
+                            size="md"
+                            class="q-pa-none cursor-pointer"
+                            @click="handleImageDelete"
+                          />
                         </div>
                         <div class="text-center">{{ formData.imageFileNm }}</div>
                       </q-card>
@@ -661,6 +678,60 @@ const handleResize = () => {
 
 // ***** 자료저장 및 삭제 처리부분 *****************************//
 // saveStatus = 0=수정성공 1=신규성공 2=삭제성공 3=수정에러 4=시스템에러
+
+
+const handleImageUpload = () => {
+  // 파일 선택 대화 상자 열기
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*'; // 이미지 파일만 선택 가능하도록 설정 (선택 사항)
+  input.onchange = event => {
+    const file = event.target.files[0];
+    console.log("File object: ", file);
+
+    console.log("file name : " + file.name)
+    console.log("File type: ", file.type);
+    console.log("File size: ", file.size);
+
+    if (file) {
+      // 파일이 선택된 경우, 여기에서 파일 업로드 로직을 추가할 수 있습니다.
+      uploadFile(file);
+    }
+  };
+  input.click();
+};
+const uploadFile = async (file) => {
+  try {
+    const param = new FormData();
+    param.append('file', file); // 'file'은 서버에서 받는 파라미터 이름
+    param.append("empCd", formData.value.empCd);
+    const response = await api.post('/api/mst/mst1010_fileSave', param, {
+      headers: {
+        'Content-Type': 'multipart/form-data', // 파일 업로드를 위한 헤더
+      },
+    });
+    // 서버의 응답 처리
+
+    console.log('File uploaded successfully:', response.data);
+  } catch (error) {
+    // 오류 처리
+    console.error('Error uploading file:', error);
+  }
+};
+
+const handleImageDelete = async () => {
+  const response = await api.delete('/api/mst/mst1010_fileDelete', {
+    params: {
+      filename: formData.value.imageFileNm,
+      empCd: formData.value.empCd
+    }
+  });
+  console.log("delete : " + response)
+
+};
+
+
+
 const saveDataAndHandleResult = resFormData => {
   console.log('save::: ', JSON.stringify(resFormData));
   api
@@ -729,6 +800,7 @@ const getData = async () => {
 };
 
 // ***** 인사정보 선택된 자료 가져오기 부분  *****************************//
+const imageSrc = ref('');
 const getDataSelect = async (resStdYear, resEmpCd) => {
   try {
     const response = await api.post('/api/mst/mst1010_select', { paramStdYear: resStdYear, paramEmpCd: resEmpCd });
@@ -737,6 +809,9 @@ const getDataSelect = async (resStdYear, resEmpCd) => {
     formData.value.birthday = commUtil.formatDate(response.data.data[0].birthday);
     formData.value.inDay = commUtil.formatDate(response.data.data[0].inDay);
     formData.value.outDay = commUtil.formatDate(response.data.data[0].outDay);
+    imageSrc.value = `https://www.iszion.com/images/${formData.value.imageFileNm}`;
+    console.log("imgSrc : " + imageSrc.value);
+    console.log("formData : " + formData.value.imageFileNm)
   } catch (error) {
     console.error('Error fetching users:', error);
   }
