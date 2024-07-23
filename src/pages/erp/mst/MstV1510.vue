@@ -64,7 +64,7 @@
         <q-card class="q-pa-lg">
           <div class="row q-col-gutter-x-xl">
             <div class="col-8">
-              <div class="row q-gutter-md-y-lg">
+              <div class="row">
                 <div class="col-12">
                   <q-input
                     ref="focusStart"
@@ -77,67 +77,78 @@
                     label-color="orange-13"
                     label="공통목표설정"
                     rows="3"
-                    :hint="`${byteCount} / 100자 까지 입력하실 수 있습니다.`"
-                    @update:model-value="updateByteCount"
+                    :hint="`${byteCount} / 400(한글200)자 까지 입력하실 수 있습니다.`"
+                    @update:model-value="updateByteCount(value, 400)"
                   />
                 </div>
                 <div class="col-12">
-                  <div class="row q-gutter-x-lg">
-                    <q-input
-                      :readonly="formReadonly"
-                      :disable="formDisable"
-                      v-model="formData.evaS"
-                      dense
-                      clearable
-                      color="purple-12"
-                      label-color="purple-12"
-                      label="평가기준(S)"
-                      hint="평가기준 S(100)에 해당되는 기준"
-                    />
-                    <q-input
-                      :readonly="formReadonly"
-                      :disable="formDisable"
-                      v-model="formData.evaA"
-                      dense
-                      clearable
-                      color="purple-12"
-                      label-color="purple-12"
-                      label="평가기준(A)"
-                      hint="평가기준 A(90)에 해당되는 기준"
-                    />
-                    <q-input
-                      :readonly="formReadonly"
-                      :disable="formDisable"
-                      v-model="formData.evaB"
-                      dense
-                      clearable
-                      color="purple-12"
-                      label-color="purple-12"
-                      label="평가기준(B)"
-                      hint="평가기준 B(80)에 해당되는 기준"
-                    />
-                    <q-input
-                      :readonly="formReadonly"
-                      :disable="formDisable"
-                      v-model="formData.evaC"
-                      dense
-                      clearable
-                      color="purple-12"
-                      label-color="purple-12"
-                      label="평가기준(C)"
-                      hint="평가기준 C(70)에 해당되는 기준"
-                    />
-                    <q-input
-                      :readonly="formReadonly"
-                      :disable="formDisable"
-                      v-model="formData.evaD"
-                      dense
-                      clearable
-                      color="purple-12"
-                      label-color="purple-12"
-                      label="평가기준(D)"
-                      hint="평가기준 D(60)에 해당되는 기준"
-                    />
+                  <div class="row q-col-gutter-x-xl">
+                    <div class="col-6 q-my-md">
+                      <q-input
+                        :readonly="formReadonly"
+                        :disable="formDisable"
+                        v-model="formData.evaS"
+                        clearable
+                        color="purple-12"
+                        label-color="purple-12"
+                        label="평가기준( S:100점 )"
+                        :hint="`${byteCount} /200(한글100자) 까지 입력하실 수 있습니다.`"
+                        @update:model-value="updateByteCount(value, 200)"
+                      />
+                    </div>
+                    <div class="col-6 q-my-md">
+                      <q-input
+                        :readonly="formReadonly"
+                        :disable="formDisable"
+                        v-model="formData.evaA"
+                        clearable
+                        color="purple-12"
+                        label-color="purple-12"
+                        label="평가기준( A:90점 )"
+                        :hint="`${byteCount} /200(한글100자) 까지 입력하실 수 있습니다.`"
+                        @update:model-value="updateByteCount(value, 200)"
+                      />
+                    </div>
+                    <div class="col-6 q-my-md">
+                      <q-input
+                        :readonly="formReadonly"
+                        :disable="formDisable"
+                        v-model="formData.evaB"
+                        clearable
+                        color="purple-12"
+                        label-color="purple-12"
+                        label="평가기준( B:80점 )"
+                        :hint="`${byteCount} /200(한글100자) 까지 입력하실 수 있습니다.`"
+                        @update:model-value="updateByteCount(value, 200)"
+                      />
+                    </div>
+                    <div class="col-6 q-my-md">
+                      <q-input
+                        :readonly="formReadonly"
+                        :disable="formDisable"
+                        v-model="formData.evaC"
+                        clearable
+                        color="purple-12"
+                        label-color="purple-12"
+                        label="평가기준( C:70점 )"
+                        :hint="`${byteCount} /200(한글100자) 까지 입력하실 수 있습니다.`"
+                        @update:model-value="updateByteCount(value, 200)"
+                      />
+                    </div>
+
+                    <div class="col-6 q-my-md">
+                      <q-input
+                        :readonly="formReadonly"
+                        :disable="formDisable"
+                        v-model="formData.evaD"
+                        clearable
+                        color="purple-12"
+                        label-color="purple-12"
+                        label="평가기준( D:60점 )"
+                        :hint="`${byteCount} /200(한글100자) 까지 입력하실 수 있습니다.`"
+                        @update:model-value="updateByteCount(value, 200)"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -296,6 +307,7 @@ import jsonUtil from 'src/js_comm/json-util';
 import { useUserInfoStore } from 'src/store/setUserInfo';
 import { useYearInfoStore } from 'src/store/setYearInfo';
 import CompButtonWorkNo from 'components/CompButtonWorkNo.vue';
+import commUtil from 'src/js_comm/comm-util';
 const storeUser = useUserInfoStore();
 const storeYear = useYearInfoStore();
 
@@ -533,11 +545,11 @@ const formDataInitialize = () => {
   formData.value.workNo = '';
   formData.value.seq = 1;
   formData.value.targetDoc = '';
-  formData.value.evaS = 'S:100점';
-  formData.value.evaA = 'A:90점';
-  formData.value.evaB = 'B:80점';
-  formData.value.evaC = 'C:70점';
-  formData.value.evaD = 'D:60점';
+  formData.value.evaS = '';
+  formData.value.evaA = '';
+  formData.value.evaB = '';
+  formData.value.evaC = '';
+  formData.value.evaD = '';
   formData.value.weight = 0;
   formData.value.deptFg = '';
   formData.value.useYn = 'N';
@@ -858,9 +870,13 @@ const getDataDialog = async () => {
 // **************************************************************//
 
 const byteCount = ref(0);
-const updateByteCount = () => {
-  const encoder = new TextEncoder();
-  byteCount.value = encoder.encode(formData.value.targetDoc).length;
+const updateByteCount = (val, maxCnt) => {
+  if (val) {
+    byteCount.value = commUtil.textByteLength(val);
+    if (byteCount.value > maxCnt) {
+      alert('한글 ' + maxCnt + '자 (한글 ' + Math.trunc(maxCnt / 2) + '자)까지 가능합니다.');
+    }
+  }
 };
 
 const gridOptionsDialog = {

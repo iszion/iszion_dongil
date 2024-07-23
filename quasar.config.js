@@ -75,9 +75,9 @@ module.exports = configure(function (/* ctx */) {
       //publicPath: '/',
       // analyze: true,
       env: {
-        SERVER_URL: 'http://192.168.141.13:8080',
+        // SERVER_URL: 'http://192.168.141.13:8080',
         // SERVER_URL: 'https://www.iszion.com:8080',
-        // SERVER_URL: 'http://192.168.141.254:8080',
+        SERVER_URL: 'http://localhost:8080',
       },
       // rawDefine: {}iszion_erp_backend.war
       // ignorePublicFolder: true,

@@ -60,18 +60,6 @@
                   <q-icon name="refresh" size="xs" class="q-mr-xs" />
                   자료정리
                 </q-btn>
-                <q-btn
-                  v-if="!sendCheck.lock && sendCheck.initialize && sendCheck.cnt > 0"
-                  outline
-                  color="deep-orange"
-                  dense
-                  class="q-pr-md"
-                  @click="deleteDataSection()"
-                >
-                  <q-icon name="delete" size="xs" class="q-mr-xs" />
-                  <q-badge color="orange" floating>{{ sendCheck.cnt }}</q-badge>
-                  초기화
-                </q-btn>
 
                 <q-btn v-if="sendCheck.lockBtn" outline color="blue-12" dense @click="saveDataLockSendSection">
                   <q-icon name="lock" size="xs" class="q-mr-xs" />
@@ -80,16 +68,9 @@
               </div>
             </q-toolbar>
             <q-card class="">
-              <q-tabs
-                v-model="setItemFg"
-                dense
-                class="text-grey bg-cyan-2"
-                active-color="primary"
-                indicator-color="primary"
-                @update:model-value="onTabChange"
-              >
-                <q-tab name="2021102" label="평가항목(팀원)" />
-                <q-tab name="2021101" label="평가항목(팀장/소장)" />
+              <q-tabs active-class="bg-blue" v-model="setItemFg" inline-label class="text-white bg-grey-6 shadow-2" @update:model-value="onTabChange">
+                <q-tab name="2021102" icon="people_alt" label="평가항목(팀원)" class="" />
+                <q-tab name="2021101" icon="groups_2" label="평가항목(팀장/소장)" />
               </q-tabs>
               <q-separator spaced />
               <q-tab-panels v-model="setItemFg" animated>
@@ -143,6 +124,18 @@
               </span>
 
               <q-space />
+              <q-btn
+                v-if="!sendCheck.lock && sendCheck.initialize && sendCheck.cnt > 0"
+                outline
+                color="deep-orange"
+                dense
+                class="q-pr-md"
+                @click="deleteDataSection()"
+              >
+                <q-icon name="delete" size="xs" class="q-mr-xs" />
+                <q-badge color="orange" floating>{{ sendCheck.cnt }}</q-badge>
+                초기화
+              </q-btn>
             </q-toolbar>
             <div class="row">
               <div class="col-12 row">
@@ -158,14 +151,15 @@
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-7 q-mb-sm">
                   <q-card square class="bg-grey" style="height: 60px">
-                    <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">
-                      평가하기 [ <span class="text-teal-8">(n)안은 평가대상인원수</span> ]
-                    </div>
-                    <div v-if="!setTotEva" class="q-pa-sm text-subtitle1 text-bold flex flex-center q-gutter-x-lg">
+                    <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">평가하기</div>
+                    <div v-if="setTotEva" class="q-pa-sm text-subtitle1 text-bold flex flex-center q-gutter-x-lg">
                       <span class="text-blue-9 q-mr-xs">S </span> ( {{ pointValue.cnt.S }} ) <span class="text-cyan-9 q-mr-xs">A</span> (
                       {{ pointValue.cnt.A }} ) <span class="text-teal-8 q-mr-xs">B</span> ( {{ pointValue.cnt.B }} )
                       <span class="text-green-8 q-mr-xs">C</span> ( {{ pointValue.cnt.C }} ) <span class="text-deep-orange-9 q-mr-xs">D</span> (
                       {{ pointValue.cnt.D }} )
+                    </div>
+                    <div v-if="!setTotEva" class="q-pa-sm text-subtitle1 text-bold flex flex-center q-gutter-x-lg">
+                      S선택시 사유를 입력하고 저장버튼을 클릭하세요
                     </div>
                     <div v-if="setTotEva" class="row">
                       <div class="col-md-9 text-center">
@@ -335,7 +329,7 @@
                         :readonly="formReadonly"
                         label-color="red"
                         v-model="data.sExplains"
-                        label="S포인트 사유"
+                        label="S 점수의 사유"
                         :hint="`${byteCount} / 한글기준(50자). (기본으로 문자5자이상 입력해야 등록가능)`"
                         @update:model-value="updateByteCount"
                       >
@@ -344,7 +338,7 @@
                           </q-icon>
                           <q-icon
                             v-if="data.sExplains !== '' && data.sExplains.trim().length > 5 && !formReadonly"
-                            name="save_alt"
+                            name="save"
                             @click="handlePointClick('S', data)"
                             class="cursor-pointer q-ml-sm"
                           >
@@ -476,7 +470,7 @@ const getStatusMessageStyle = data => {
   } else if (data.statusMessage === '평가완료') {
     return $q.dark.isActive ? { color: 'orange' } : { color: 'blue' };
   } else {
-    return {};
+    return $q.dark.isActive ? { color: 'white' } : { color: 'black' };
     // return { textAlign: 'center' };
   }
 };
@@ -613,12 +607,16 @@ const handlePointClickAll = resMarkCh => {
     // console.log('all save : ', JSON.stringify(rowData.rowsSel));
     iu.push(tmpJson);
   }
-  saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
-  setTimeout(() => {
-    const markPointCount = rowData.rowsSel.filter(item => item.markPoint > 0).length;
-    console.log('markPointCount :: ', markPointCount);
-    statusMessageUpdate(markPointCount);
-  }, 500);
+  saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD))
+    .then(saveStatus => {
+      if (saveStatus.rtn === '0') {
+        const markPointCount = rowData.rowsSel.filter(item => item.markPoint > 0).length;
+        statusMessageUpdate(markPointCount);
+      }
+    })
+    .catch(error => {
+      console.error('Error saving data: ', error);
+    });
 };
 
 const handlePointClick = (resMarkCh, resData) => {
@@ -650,11 +648,17 @@ const handlePointClick = (resMarkCh, resData) => {
   if (resMarkCh === 'S') {
     if (resData.sExplains.length > 5) {
       resData.markPoint = 100;
-      saveDataAndHandleResult(jsonUtil.dataJsonParse('I', resData));
-      setTimeout(() => {
-        const evalCount = rowData.rowsSel.filter(item => item.markPoint > 0).length;
-        statusMessageUpdate(evalCount);
-      }, 500);
+
+      saveDataAndHandleResult(jsonUtil.dataJsonParse('I', resData))
+        .then(saveStatus => {
+          if (saveStatus.rtn === '0') {
+            const evalCount = rowData.rowsSel.filter(item => item.markPoint > 0).length;
+            statusMessageUpdate(evalCount);
+          }
+        })
+        .catch(error => {
+          console.error('Error saving data: ', error);
+        });
     } else {
       $q.dialog({
         dark: true,
@@ -666,14 +670,16 @@ const handlePointClick = (resMarkCh, resData) => {
         .onDismiss(() => {});
     }
   } else {
-    // console.log('rowData :: ', JSON.stringify(rowData.rows));
-    // console.log('rowDataSel :: ', JSON.stringify(rowData.rowsSel));
-    saveDataAndHandleResult(jsonUtil.dataJsonParse('I', resData));
-
-    setTimeout(() => {
-      const evalCount = rowData.rowsSel.filter(item => item.markPoint > 0).length;
-      statusMessageUpdate(evalCount);
-    }, 500);
+    saveDataAndHandleResult(jsonUtil.dataJsonParse('I', resData))
+      .then(saveStatus => {
+        if (saveStatus.rtn === '0') {
+          const evalCount = rowData.rowsSel.filter(item => item.markPoint > 0).length;
+          statusMessageUpdate(evalCount);
+        }
+      })
+      .catch(error => {
+        console.error('Error saving data: ', error);
+      });
   }
 };
 
@@ -739,17 +745,22 @@ const deleteDataSection = () => {
       formData.workNo = selectedRows.value[0].workNo;
       let tmpJson = '{"mode": "' + isSaveFg + '","data":' + JSON.stringify(formData) + '}';
       iuD.push(tmpJson);
-      saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
 
-      tmpMark.value.markCh = null;
-      tmpMark.value.markPoint = 0;
-      for (let i = 0; i < rowData.rowsSel.length; i++) {
-        rowData.rowsSel[i].markCh = null;
-        rowData.rowsSel[i].markPoint = 0;
-      }
-      setTimeout(() => {
-        statusMessageUpdate(0);
-      }, 500);
+      saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD))
+        .then(saveStatus => {
+          if (saveStatus.rtn === '0') {
+            tmpMark.value.markCh = null;
+            tmpMark.value.markPoint = 0;
+            for (let i = 0; i < rowData.rowsSel.length; i++) {
+              rowData.rowsSel[i].markCh = null;
+              rowData.rowsSel[i].markPoint = 0;
+            }
+            statusMessageUpdate(0);
+          }
+        })
+        .catch(error => {
+          console.error('Error saving data: ', error);
+        });
     })
     .onCancel(() => {})
     .onDismiss(() => {
@@ -786,10 +797,16 @@ const saveDataLockSendSection = () => {
       formData.lock = 'Y';
       let tmpJson = '{"mode": "' + isSaveFg + '","data":' + JSON.stringify(formData) + '}';
       iu.push(tmpJson);
-      saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
-      setTimeout(() => {
-        getData();
-      }, 1000);
+
+      saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD))
+        .then(saveStatus => {
+          if (saveStatus.rtn === '0') {
+            getData();
+          }
+        })
+        .catch(error => {
+          console.error('Error saving data: ', error);
+        });
     })
     .onCancel(() => {})
     .onDismiss(() => {
@@ -940,19 +957,19 @@ const getDataSelectList = async resRow => {
 
 // ***** 자료저장 및 삭제 처리부분 *****************************//
 // saveStatus = 평가점수 저장
-const saveDataAndHandleResult = resFormData => {
-  // console.log('save :: ', JSON.stringify(resFormData));
-  api
-    .post('/api/hce/hce2010_save', resFormData)
-    .then(res => {
-      let saveStatus = {};
-      saveStatus.rtn = res.data.rtn;
-      saveStatus.rtnMsg = res.data.rtnMsg;
-      notifySave.notifyView(saveStatus);
-    })
-    .catch(error => {
-      console.log('error: ', error);
-    });
+const saveDataAndHandleResult = async resFormData => {
+  try {
+    const res = await api.post('/api/hce/hce2010_save', resFormData);
+    let saveStatus = {
+      rtn: res.data.rtn,
+      rtnMsg: res.data.rtnMsg,
+    };
+    notifySave.notifyView(saveStatus);
+    return saveStatus; // saveStatus 객체를 반환
+  } catch (error) {
+    console.log('error: ', error);
+    throw error; // 에러 발생 시 에러를 던져 호출자에서 처리할 수 있도록 함
+  }
 };
 
 // **************************************************************//

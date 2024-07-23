@@ -2,7 +2,7 @@ import { Notify } from 'quasar';
 
 Notify.registerType('my-notify', {
   icon: 'announcement',
-  progress: true,
+  // progress: false,
   color: 'brown',
   textColor: 'white',
   classes: 'glossy',
@@ -52,7 +52,7 @@ export default {
       textColor: notifyAlerts[res.rtn].textColor,
       caption: notifyAlerts[res.rtn].caption,
       message: res.rtnMsg,
-      group: false,
+      group: true,
       actions: [
         {
           label: '닫기',
@@ -62,7 +62,30 @@ export default {
           },
         },
       ],
-      timeout: 5000,
+      timeout: 3000,
+    });
+  },
+  notifyView1(res, resTime) {
+    // console.log('res: ', JSON.stringify(res));
+    Notify.create({
+      type: 'my-notify',
+      position: 'top-right',
+      color: notifyAlerts[res.rtn].color,
+      textColor: notifyAlerts[res.rtn].textColor,
+      caption: notifyAlerts[res.rtn].caption,
+      message: res.rtnMsg,
+      group: true,
+      html: true,
+      actions: [
+        {
+          label: '닫기',
+          color: 'dark',
+          handler: () => {
+            /* ... */
+          },
+        },
+      ],
+      timeout: resTime,
     });
   },
 };

@@ -272,6 +272,7 @@ import { useUserInfoStore } from 'src/store/setUserInfo';
 import { useYearInfoStore } from 'src/store/setYearInfo';
 import { useRouter } from 'vue-router';
 import { value } from 'lodash/seq';
+import axios from 'axios';
 
 const router = useRouter();
 const storeUser = useUserInfoStore();
@@ -740,10 +741,26 @@ const isCommonTargetLoad = () => {
         paramEmpCd: storeUser.setEmpCd,
         paramProgId: 'mst1030',
       };
-      commonTargetLoading(jsonUtil.dataJsonParse('I', formData)).then(() => {
-        commonTargetCountCheck().then(() => {
-          getData();
-        });
+      commonTargetWeightCheck().then(resWeight => {
+        alert(resWeight + ':' + totalWeight);
+        if (resWeight + totalWeight <= 100) {
+          commonTargetLoading(jsonUtil.dataJsonParse('I', formData)).then(() => {
+            commonTargetCountCheck().then(() => {
+              getData();
+            });
+          });
+        } else {
+          let message = '<strong>가중치 합이 <span style="color: red">가중치 합이 100을 초과</span> 합니다</strong> <br />';
+          message += '<strong>작성한 가중치 합 : ' + totalWeight + '</strong> <br>';
+          message += '<strong>공통목표 가중치 합 : ' + resWeight + '</strong> <br />';
+          message += '<strong><span style="color:red">초과 가중치 : ' + resWeight + '</span></strong> <br />';
+          message += '<strong>가중치를 조정하고 다시 불러오기 하십시요</strong>';
+
+          let saveStatus = {};
+          saveStatus.rtn = '0';
+          saveStatus.rtnMsg = message;
+          notifySave.notifyView1(saveStatus, 10000);
+        }
       });
     })
     .onCancel(() => {})
@@ -757,6 +774,19 @@ const isCommonTargetLoad = () => {
 
 // ***** 사원정보 가져오기 부분  *****************************//
 const tagtCnt = ref(0);
+const commonTargetWeightCheck = async () => {
+  try {
+    const response = await api.post('/api/hpe/hpe1010_tagt_weight', {
+      paramSetYear: storeYear.setYear,
+      paramEmpCd: storeUser.setEmpCd,
+    });
+    alert(response.data.data[0].weight);
+    return response.data.data[0].weight;
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+};
+
 const commonTargetCountCheck = async () => {
   try {
     const response = await api.post('/api/hpe/hpe1010_tagt_count', {
