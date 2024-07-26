@@ -139,7 +139,7 @@
             <q-card class="q-pa-lg">
               <q-select
                 ref="focusStart"
-                :disable="formDisable"
+                :disable="formReadonly"
                 v-model="formData.eidcCd"
                 :options="eidcOptions"
                 label="평가지표"
@@ -172,8 +172,8 @@
                 color="orange-13"
                 label-color="orange-13"
                 label="세부목표"
-                :hint="`${byteCount} / 400(한글200)자 까지 입력하실 수 있습니다.`"
-                @update:model-value="updateByteCount(value, 400)"
+                :hint="`${byteCount.targetDoc} / 400(한글200)자 까지 입력하실 수 있습니다.`"
+                @update:model-value="updateByteCount('targetDoc', formData.targetDoc, 400)"
               />
               <div class="row q-col-gutter-x-xl q-mt-lg">
                 <div class="col-8 q-gutter-y-md">
@@ -185,8 +185,8 @@
                     color="purple-12"
                     label-color="purple-12"
                     label="평가기준( S:100점 )"
-                    :hint="`${byteCount} /200(한글100자) 까지 입력하실 수 있습니다.`"
-                    @update:model-value="updateByteCount(value, 200)"
+                    :hint="`${byteCount.evaS} /200(한글100자) 까지 입력하실 수 있습니다.`"
+                    @update:model-value="updateByteCount('evaS', formData.evaS, 200)"
                   />
                   <q-input
                     :readonly="formReadonly"
@@ -196,8 +196,8 @@
                     color="purple-12"
                     label-color="purple-12"
                     label="평가기준( A:90점 )"
-                    :hint="`${byteCount} /200(한글100자) 까지 입력하실 수 있습니다.`"
-                    @update:model-value="updateByteCount(value, 200)"
+                    :hint="`${byteCount.evaA} /200(한글100자) 까지 입력하실 수 있습니다.`"
+                    @update:model-value="updateByteCount('evaA', formData.evaA, 200)"
                   />
                   <q-input
                     :readonly="formReadonly"
@@ -207,8 +207,8 @@
                     color="purple-12"
                     label-color="purple-12"
                     label="평가기준( B:80점 )"
-                    :hint="`${byteCount} /200(한글100자) 까지 입력하실 수 있습니다.`"
-                    @update:model-value="updateByteCount(value, 200)"
+                    :hint="`${byteCount.evaB} /200(한글100자) 까지 입력하실 수 있습니다.`"
+                    @update:model-value="updateByteCount('evaB', formData.evaB, 200)"
                   />
                   <q-input
                     :readonly="formReadonly"
@@ -218,8 +218,8 @@
                     color="purple-12"
                     label-color="purple-12"
                     label="평가기준( C:70점 )"
-                    :hint="`${byteCount} /200(한글100자) 까지 입력하실 수 있습니다.`"
-                    @update:model-value="updateByteCount(value, 200)"
+                    :hint="`${byteCount.evaC} /200(한글100자) 까지 입력하실 수 있습니다.`"
+                    @update:model-value="updateByteCount('evaC', formData.evaC, 200)"
                   />
                   <q-input
                     :readonly="formReadonly"
@@ -229,8 +229,8 @@
                     color="purple-12"
                     label-color="purple-12"
                     label="평가기준( D:60점 )"
-                    :hint="`${byteCount} /200(한글100자) 까지 입력하실 수 있습니다.`"
-                    @update:model-value="updateByteCount(value, 200)"
+                    :hint="`${byteCount.evaD} /200(한글100자) 까지 입력하실 수 있습니다.`"
+                    @update:model-value="updateByteCount('evaD', formData.evaD, 200)"
                   />
                 </div>
                 <div class="col-4 q-gutter-y-xl">
@@ -559,7 +559,12 @@ const onSelectionChanged = event => {
   formReadonly.value = true;
   if (selectedRows.value.length === 1) {
     getDataSelect(selectedRows.value[0].stdYear, selectedRows.value[0].empCd, selectedRows.value[0].workNo);
-    updateByteCount(selectedRows.value[0].targetDoc, 400);
+    updateByteCount('targetDoc', selectedRows.value[0].targetDoc, 400);
+    updateByteCount('evaS', selectedRows.value[0].evaS, 200);
+    updateByteCount('evaA', selectedRows.value[0].evaA, 200);
+    updateByteCount('evaB', selectedRows.value[0].evaB, 200);
+    updateByteCount('evaC', selectedRows.value[0].evaC, 200);
+    updateByteCount('evaD', selectedRows.value[0].evaD, 200);
   } else {
     formData.value = {};
     isSaveFg.value = '';
@@ -742,7 +747,6 @@ const isCommonTargetLoad = () => {
         paramProgId: 'mst1030',
       };
       commonTargetWeightCheck().then(resWeight => {
-        alert(resWeight + ':' + totalWeight);
         if (resWeight + totalWeight <= 100) {
           commonTargetLoading(jsonUtil.dataJsonParse('I', formData)).then(() => {
             commonTargetCountCheck().then(() => {
@@ -750,8 +754,8 @@ const isCommonTargetLoad = () => {
             });
           });
         } else {
-          let message = '<strong>가중치 합이 <span style="color: red">가중치 합이 100을 초과</span> 합니다</strong> <br />';
-          message += '<strong>작성한 가중치 합 : ' + totalWeight + '</strong> <br>';
+          let message = '<strong>가중치 합이 <span style="color: red">100을 초과</span> 합니다</strong> <br />';
+          message += '<strong>작성한 목표 가중치 합 : ' + totalWeight + '</strong> <br>';
           message += '<strong>공통목표 가중치 합 : ' + resWeight + '</strong> <br />';
           message += '<strong><span style="color:red">초과 가중치 : ' + resWeight + '</span></strong> <br />';
           message += '<strong>가중치를 조정하고 다시 불러오기 하십시요</strong>';
@@ -776,11 +780,10 @@ const isCommonTargetLoad = () => {
 const tagtCnt = ref(0);
 const commonTargetWeightCheck = async () => {
   try {
-    const response = await api.post('/api/hpe/hpe1010_tagt_weight', {
+    const response = await api.post('/api/hce/hce1010_tagt_weight', {
       paramSetYear: storeYear.setYear,
       paramEmpCd: storeUser.setEmpCd,
     });
-    alert(response.data.data[0].weight);
     return response.data.data[0].weight;
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -891,21 +894,16 @@ const getDataSelect = async () => {
     formDisable.value = false;
 
     if (formData.value.status !== selectedRows.value[0].status) {
-      $q.dialog({
-        dark: true,
-        title: '안내',
-        html: true,
-        message: '<em>자료가 변경되었습니다.</em> <br /><span class="text-red">다시 불러오기</span> <strong> 실행 후 작업을 진행하십시요.</strong>',
-      })
-        .onOk(() => {
-          // console.log('OK')
-        })
-        .onCancel(() => {
-          // console.log('Cancel')
-        })
-        .onDismiss(() => {
-          // console.log('I am triggered on both OK and Cancel')
-        });
+      getData().then(() => {
+        let saveStatus = {};
+        saveStatus.rtn = '0';
+        if (rowData.rows[0].status === '2') {
+          saveStatus.rtnMsg = '<em>승인요청이 <span class="text-red">반려</span> 되었습니다.</em> <br /><em>자료를 다시 불러옵니다</em>';
+        } else {
+          saveStatus.rtnMsg = '<em>승인요청이 <span class="text-red">취소</span> 되었습니다.</em> <br /><em>자료를 다시 불러옵니다</em>';
+        }
+        notifySave.notifyView1(saveStatus, 1000);
+      });
     }
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -945,12 +943,48 @@ async function getDataEidcOption() {
 // ***** DataBase 연결부분 끝  *************************************//
 // **************************************************************//
 
-const byteCount = ref(0);
-const updateByteCount = (val, maxCnt) => {
+const byteCount = ref({ targetDoc: 0, evaS: 0, evaA: 0, evaB: 0, evaC: 0, evaD: 0 });
+const updateByteCount = (ch, val, maxCnt) => {
   if (val) {
-    byteCount.value = commUtil.textByteLength(val);
-    if (byteCount.value > maxCnt) {
-      alert('한글 ' + maxCnt + '자 (한글 ' + Math.trunc(maxCnt / 2) + '자)까지 가능합니다.');
+    switch (ch) {
+      case 'targetDoc':
+        byteCount.value.targetDoc = commUtil.textByteLength(val);
+        if (byteCount.value.targetDoc > maxCnt) {
+          alert('한글 ' + maxCnt + '자 (한글 ' + Math.trunc(maxCnt / 2) + '자)까지 가능합니다.');
+        }
+        break;
+      case 'evaS':
+        byteCount.value.evaS = commUtil.textByteLength(val);
+        if (byteCount.value.evaS > maxCnt) {
+          alert('한글 ' + maxCnt + '자 (한글 ' + Math.trunc(maxCnt / 2) + '자)까지 가능합니다.');
+        }
+        break;
+      case 'evaA':
+        byteCount.value.evaA = commUtil.textByteLength(val);
+        if (byteCount.value.evaA > maxCnt) {
+          alert('한글 ' + maxCnt + '자 (한글 ' + Math.trunc(maxCnt / 2) + '자)까지 가능합니다.');
+        }
+        break;
+      case 'evaB':
+        byteCount.value.evaB = commUtil.textByteLength(val);
+        if (byteCount.value.evaB > maxCnt) {
+          alert('한글 ' + maxCnt + '자 (한글 ' + Math.trunc(maxCnt / 2) + '자)까지 가능합니다.');
+        }
+        break;
+      case 'evaC':
+        byteCount.value.evaC = commUtil.textByteLength(val);
+        if (byteCount.value.evaC > maxCnt) {
+          alert('한글 ' + maxCnt + '자 (한글 ' + Math.trunc(maxCnt / 2) + '자)까지 가능합니다.');
+        }
+        break;
+      case 'evaD':
+        byteCount.value.evaD = commUtil.textByteLength(val);
+        if (byteCount.value.evaD > maxCnt) {
+          alert('한글 ' + maxCnt + '자 (한글 ' + Math.trunc(maxCnt / 2) + '자)까지 가능합니다.');
+        }
+        break;
+      default:
+        break;
     }
   }
 };

@@ -84,7 +84,14 @@
                   <q-icon name="lock" size="xs" class="q-mr-xs" />
                   평가마감하기
                 </q-btn>
-                <q-btn v-if="sendCheck.cnt > 0" outline color="deep-orange" dense class="q-pr-md q-ml-sm" @click="deleteDataSection(sendCheck.cnt)">
+                <q-btn
+                  v-if="sendCheck.lockBtn && sendCheck.cnt > 0"
+                  outline
+                  color="deep-orange"
+                  dense
+                  class="q-pr-md q-ml-sm"
+                  @click="deleteDataSection(sendCheck.cnt)"
+                >
                   <q-badge color="orange" floating>{{ sendCheck.cnt }}</q-badge>
                   <q-icon name="delete" size="xs" class="q-mr-xs" />
                   평가초기화
@@ -321,15 +328,9 @@ const columnDefs = reactive({
       resizable: true,
     },
     {
-      headerName: '소속팀',
-      field: 'evtDeptNm',
-      minWidth: 100,
-      resizable: true,
-    },
-    {
-      headerName: '직급',
-      field: 'evtTitlNm',
-      minWidth: 80,
+      headerName: '소속팀/직급',
+      field: 'deptTitlNm',
+      minWidth: 130,
       resizable: true,
     },
     {
@@ -434,14 +435,14 @@ const onSelectionChanged = event => {
         viewMarkPointSection();
       });
     } else {
-      if (selectedRows.value[0].status !== '') {
+      if (selectedRows.value[0].status < '3') {
         rowData.rowsSel = [];
-        $q.dialog({
-          dark: true,
-          title: '목표성과',
-          html: true,
-          message: '목표성과 작성중입니다. <br />목표성과작업 완료 후 작업이 가능합니다.',
-        });
+        let message = '<strong>준비중 or 목표입력 중 입니다.';
+
+        let saveStatus = {};
+        saveStatus.rtn = '0';
+        saveStatus.rtnMsg = message;
+        notifySave.notifyView1(saveStatus, 500);
       }
       viewMarkPointSection();
     }
@@ -619,13 +620,6 @@ const saveDataEvalOkSendSection = resCnt => {
 // **************************************************************//
 
 // ***** 목표승인대상자 집계리스트 가져오기 부분  *****************************//
-const viewStatus = ref({
-  totalCnt: 0,
-  status_0: 0,
-  status_3: 0,
-  status_4: 0,
-  status_5: 0,
-});
 const getData = async () => {
   try {
     const response = await api.post('/api/hpe/hpe2020_list', { paramSetYear: storeYear.setYear, paramEvsEmpCd: storeUser.setEmpCd });
@@ -636,6 +630,7 @@ const getData = async () => {
     }
     const calculatedHeight = rowData.rows.length * rowHeight;
     gridHeight.value = minHeight.value + calculatedHeight;
+
     rowData.rowsSel = [];
 
     // console.log('getData : ', JSON.stringify(rowData.rows));

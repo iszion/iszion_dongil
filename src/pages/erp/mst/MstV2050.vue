@@ -135,6 +135,18 @@ const columnDefs = reactive({
       minWidth: 150,
     },
     {
+      headerName: '성과비율',
+      field: 'evaPer1',
+      maxWidth: 150,
+      minWidth: 150,
+    },
+    {
+      headerName: '역량비율',
+      field: 'evaPer2',
+      maxWidth: 150,
+      minWidth: 150,
+    },
+    {
       headerName: '처리순서',
       field: 'seq',
       maxWidth: 100,
@@ -314,17 +326,10 @@ const saveDataAndHandleResult = resFormData => {
     .post('/api/mst/mst2050_save', resFormData)
     .then(res => {
       let saveStatus = {};
-      if (res.data.rtn === '0') {
-        saveStatus.rtn = 1;
-        saveStatus.rtn1 = res.data.rtnMsg1;
-        saveStatus.rtn2 = '자료저장 완료';
-      } else {
-        saveStatus.rtn = res.data.rtn;
-        saveStatus.rtn1 = res.data.rtnMsg1;
-        saveStatus.rtn2 = res.data.rtnMsg2;
-      }
-      showSaveBtn.value = false;
+      saveStatus.rtn = res.data.rtn;
+      saveStatus.rtnMsg = res.data.rtnMsg;
       notifySave.notifyView(saveStatus);
+      showSaveBtn.value = false;
     })
     .catch(error => {
       console.log('error: ', error);

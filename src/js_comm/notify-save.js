@@ -69,10 +69,9 @@ export default {
     // console.log('res: ', JSON.stringify(res));
     Notify.create({
       type: 'my-notify',
-      position: 'top-right',
+      position: 'center',
       color: notifyAlerts[res.rtn].color,
       textColor: notifyAlerts[res.rtn].textColor,
-      caption: notifyAlerts[res.rtn].caption,
       message: res.rtnMsg,
       group: true,
       html: true,

@@ -607,7 +607,7 @@ onMounted(() => {
 // ***** 자료저장 및 삭제 처리부분 *****************************//
 // saveStatus = 0=수정성공 1=신규성공 2=삭제성공 3=수정에러 4=시스템에러
 const saveDataAndHandleResultGroup = resFormData => {
-  console.log('aaa::: ', JSON.stringify(resFormData));
+  // console.log('aaa::: ', JSON.stringify(resFormData));
   api
     .post('/api/mst/mst5090_group_save', resFormData)
     .then(res => {

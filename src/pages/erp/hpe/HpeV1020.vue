@@ -161,8 +161,8 @@
                 color="blue-13"
                 label-color="blue-13"
                 label="성과업적/실적"
-                :hint="`${byteCount} / 1000(한글500자) 까지 입력하실 수 있습니다.`"
-                @update:model-value="updateByteCount(value, 1000)"
+                :hint="`${byteCount.workDoc} / 1000(한글500자) 까지 입력하실 수 있습니다.`"
+                @update:model-value="updateByteCount('workDoc', formData.workDoc, 1000)"
               />
             </q-card>
             <q-card class="q-pa-sm">
@@ -422,7 +422,7 @@ const columnDefs = reactive({
         } else if (params.data.status === '4') {
           return $q.dark.isActive ? { color: 'pink' } : { color: 'purple' };
         } else if (params.data.status === '5') {
-          return $q.dark.isActive ? { color: 'cyan' } : { color: 'blue' };
+          return $q.dark.isActive ? { color: 'cyan' } : { color: 'red' };
         } else {
           return null;
         }
@@ -542,7 +542,7 @@ const onSelectionChanged = event => {
   if (selectedRows.value.length === 1) {
     isSaveFg = 'U';
     getDataSelect(selectedRows.value[0]);
-    updateByteCount(selectedRows.value[0].workDoc, 1000);
+    updateByteCount('workDoc', selectedRows.value[0].workDoc, 1000);
   } else if (selectedRows.value.length > 1) {
     isSaveFg = 'D';
     formDisable.value = true;
@@ -742,17 +742,19 @@ const getData = async () => {
     statusCheck.value.sendCount = 0;
 
     for (let i = 0; i < rowData.rows.length; i++) {
-      if (rowData.rows[i].status === '3' && rowData.rows[i].acceptYn === 'Y' && rowData.rows[i].workDoc !== null && rowData.rows[i].selfPoint !== 0) {
+      if (rowData.rows[i].status === '3' && rowData.rows[i].workDoc !== null && rowData.rows[i].selfPoint !== 0) {
         statusCheck.value.sendCount++;
       }
       if (rowData.rows[i].status === '3' && rowData.rows[i].acceptYn !== 'Y') {
         statusCheck.value.acceptUpdate = true;
       }
     }
+
     if (rowData.rows.length === statusCheck.value.sendCount && rowData.rows.length !== 0) {
-      // console.log(rowData.rows[i].status, ' = ', rowData.rows[i].acceptYn, ' = ', rowData.rows[i].workDoc, ' = ', rowData.rows[i].selfPoint);
+      console.log(rowData.rows.length, ' = ', statusCheck.value.sendCount, ' = ', rowData.rows.length);
       statusCheck.value.sendHide = true;
     }
+
     if (statusCheck.value.acceptUpdate) {
       acceptCheckSaveSection(storeYear.setYear, storeUser.setEmpCd);
     }
@@ -779,21 +781,12 @@ const getDataSelect = async resRowSel => {
     }
 
     if (formData.value.status !== selectedRows.value[0].status) {
-      $q.dialog({
-        dark: true,
-        title: '안내',
-        html: true,
-        message: '<em>자료가 변경되었습니다.</em> <br /><span class="text-red">다시 불러오기</span> <strong> 실행 후 작업을 진행하십시요.</strong>',
-      })
-        .onOk(() => {
-          // console.log('OK')
-        })
-        .onCancel(() => {
-          // console.log('Cancel')
-        })
-        .onDismiss(() => {
-          // console.log('I am triggered on both OK and Cancel')
-        });
+      getData().then(() => {
+        let saveStatus = {};
+        saveStatus.rtn = '0';
+        saveStatus.rtnMsg = '<em>자료가 <span class="text-red">변경</span> 되었습니다.</em> <br /><em>자료를 다시 불러옵니다</em>';
+        notifySave.notifyView1(saveStatus, 1000);
+      });
     }
 
     isSaveFg = 'U';
@@ -844,12 +837,19 @@ const acceptCheckSaveSection = (resStdYear, resEvtEmpCd) => {
 // ***** DataBase 연결부분 끝  *************************************//
 // **************************************************************//
 
-const byteCount = ref(0);
-const updateByteCount = (val, maxCnt) => {
+const byteCount = ref({ workDoc: 0 });
+const updateByteCount = (ch, val, maxCnt) => {
   if (val) {
-    byteCount.value = commUtil.textByteLength(val);
-    if (byteCount.value > maxCnt) {
-      alert('한글 ' + maxCnt + '자 (한글 ' + Math.trunc(maxCnt / 2) + '자)까지 가능합니다.');
+    switch (ch) {
+      case 'workDoc':
+        byteCount.value.workDoc = commUtil.textByteLength(val);
+        if (byteCount.value.workDoc > maxCnt) {
+          alert('한글 ' + maxCnt + '자 (한글 ' + Math.trunc(maxCnt / 2) + '자)까지 가능합니다.');
+        }
+        break;
+
+      default:
+        break;
     }
   }
 };

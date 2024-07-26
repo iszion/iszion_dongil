@@ -49,7 +49,7 @@
                 ><q-icon name="refresh" size="xs" class="q-mr-xs" />
                 다시 불러오기
               </q-btn>
-              <q-btn v-if="statusCheck.cancelHide" outline color="grey" dense @click="sendAuthRequestCancel" class="q-ml-xs"
+              <q-btn v-if="statusCheck.deleyCancel" outline color="grey" dense @click="sendAuthRequestCancel" class="q-ml-xs"
                 ><q-icon name="refresh" size="xs" class="q-mr-xs" />
                 승인대기취소
               </q-btn>
@@ -68,7 +68,7 @@
               >
               </ag-grid-vue>
             </div>
-            <q-card v-if="statusCheck.returnHide" class="q-pa-sm q-mt-md">
+            <q-card v-if="statusCheck.returnView" class="q-pa-sm q-mt-md">
               <q-banner rounded :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-2'">
                 <template v-slot:avatar>
                   <q-icon name="reply" style="width: 50px" />
@@ -87,19 +87,19 @@
               <q-space />
               <div class="row q-gutter-x-sm">
                 <q-btn
-                  v-if="statusCheck.sendCancelHide"
+                  v-if="statusCheck.sendOkCancel"
                   outline
                   color="teal"
                   dense
                   class="q-pr-md"
                   @click="saveDataSendAllSection('1', 'Y', '승인취소', rowData.rowsSel.length)"
                 >
-                  <q-badge color="orange" floating>{{ sendCount.status_3 }}</q-badge>
+                  <q-badge color="orange" floating>{{ rowData.rowsSel.length }}</q-badge>
                   <q-icon name="check" size="xs" class="q-mr-xs" />
                   승인취소
                 </q-btn>
                 <q-btn
-                  v-if="rowData.rowsSel.length > 0"
+                  v-if="statusCheck.sendOk"
                   outline
                   color="blue"
                   dense
@@ -110,7 +110,7 @@
                   <q-icon name="check" size="xs" class="q-mr-xs" />
                   승인하기
                 </q-btn>
-                <q-btn v-if="rowData.rowsSel.length > 0" outline color="red" dense class="q-pr-md" @click="sendReturnDialog">
+                <q-btn v-if="statusCheck.sendReturn" outline color="red" dense class="q-pr-md" @click="sendReturnDialog">
                   <q-badge color="orange" floating>{{ rowData.rowsSel.length }}</q-badge>
                   <q-icon name="reply" size="xs" class="q-mr-xs" />
                   반려하기
@@ -165,7 +165,7 @@
       <q-card flat bordered style="max-width: 450px; width: 100%">
         <q-bar>
           <q-icon name="list_alt" />
-          <div>목표반려사유 등록 (전체적용)</div>
+          <div>목표 반려사유 등록</div>
 
           <q-space />
           <q-btn dense flat icon="close" v-close-popup>
@@ -188,8 +188,8 @@
                 label="반려사유"
                 :rows="5"
                 :autogrow="true"
-                :hint="`${byteCount} / 200자 까지 입력하실 수 있습니다.`"
-                @update:model-value="updateByteCount"
+                :hint="`${byteCount.returnDoc} / 400(한글200)자 까지 입력하실 수 있습니다.`"
+                @update:model-value="updateByteCount('returnDoc', textReturnDoc, 400)"
               />
             </q-card-section>
           </q-card>
@@ -212,15 +212,15 @@ import 'ag-grid-community/styles/ag-theme-quartz.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
 import 'ag-grid-community/styles/ag-theme-balham.css';
 import { AgGridVue } from 'ag-grid-vue3';
-import { computed, onBeforeMount, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
-import { isEmpty, isEqual } from 'lodash';
+import { computed, onBeforeMount, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
 import { api } from 'boot/axios';
 import notifySave from 'src/js_comm/notify-save';
-import { QBtn, QIcon, QToggle, useQuasar } from 'quasar';
+import { QBtn, QIcon, useQuasar } from 'quasar';
 import jsonUtil from 'src/js_comm/json-util';
 import { useUserInfoStore } from 'src/store/setUserInfo';
 import { useYearInfoStore } from 'src/store/setYearInfo';
 import commUtil from 'src/js_comm/comm-util';
+
 const storeUser = useUserInfoStore();
 const storeYear = useYearInfoStore();
 
@@ -370,18 +370,86 @@ const sendCount = ref({
   status_3: 0,
 });
 
+const statusCheck = ref({
+  deleyCancel: false, // 승인대기취소버튼
+  sendOk: false, // 승인하기버튼
+  sendOkCancel: false, // 승인취소버튼
+  returnView: false, // 반려상태
+  sendReturn: false, // 반려하기버튼
+  acceptView: false, // 열람상태
+});
+
 const onSelectionChanged = event => {
   selectedRows.value = event.api.getSelectedRows();
-  // console.log('sel: ', JSON.stringify(selectedRows.value));
+  console.log('sel: ', JSON.stringify(selectedRows.value));
   if (selectedRows.value.length === 1) {
-    if (selectedRows.value[0].status !== '') {
-      getDataSelectList(selectedRows.value[0]);
+    if (selectedRows.value[0].status > '0') {
+      getDataSelectList(selectedRows.value[0]).then(() => {
+        if (rowData.rowsSel[0].status <= '0') {
+          // 진행상태 인경우
+          clearMessage();
+        } else {
+          console.log('rowData.rowsSel: ', JSON.stringify(rowData.rowsSel));
+
+          // 자료 열람확인 처리
+          textReturnDoc.value = null;
+          statusCheck.value.deleyCancel = false;
+          statusCheck.value.sendOk = false;
+          statusCheck.value.sendOkCancel = false;
+          statusCheck.value.returnView = false;
+          statusCheck.value.acceptView = false;
+
+          for (let i = 0; i < rowData.rowsSel.length; i++) {
+            if (rowData.rowsSel[i].status === '1' && rowData.rowsSel[i].acceptYn !== 'Y') {
+              statusCheck.value.acceptView = false; // 열람상태 체크
+              statusCheck.value.sendReturn = true; // 반려하기 버튼
+              statusCheck.value.sendOk = true; // 승인하기 버튼
+              statusCheck.value.deleyCancel = true; // 승인대기취소 버튼
+            }
+            if (rowData.rowsSel[i].status === '1' && rowData.rowsSel[i].acceptYn === 'Y') {
+              statusCheck.value.sendOk = true; // 승인하기 버튼
+              statusCheck.value.sendReturn = true; // 반려하기 버튼
+              statusCheck.value.deleyCancel = true; // 승인대기취소 버튼
+              textReturnDoc.value = rowData.rowsSel[i].returnDoc;
+            }
+            if (rowData.rowsSel[i].status === '2') {
+              statusCheck.value.acceptView = true;
+              statusCheck.value.returnView = true;
+              textReturnDoc.value = rowData.rowsSel[i].returnDoc;
+            }
+            if (rowData.rowsSel[i].status === '3' && rowData.rowsSel[i].acceptYn !== 'Y') {
+              statusCheck.value.sendOkCancel = true;
+              statusCheck.value.deleyCancel = false;
+              statusCheck.value.sendOk = false;
+              statusCheck.value.returnView = false;
+              statusCheck.value.acceptView = false;
+            }
+          }
+
+          // 미 열람상태일때 열람상태로 저장부분
+          if (!statusCheck.value.acceptView) {
+            acceptCheckSaveSection(selectedRows.value[0].stdYear, selectedRows.value[0].evtEmpCd);
+          }
+          // 자료 열람확인 처리 끝
+        }
+      });
     } else {
-      rowData.rowsSel = [];
+      clearMessage();
     }
   }
 };
 
+const clearMessage = () => {
+  getData();
+  rowData.rowsSel = [];
+
+  let message = '<strong>현재 목표등록 준비중입니다.</strong>';
+
+  let saveStatus = {};
+  saveStatus.rtn = '0';
+  saveStatus.rtnMsg = message;
+  notifySave.notifyView1(saveStatus, 500);
+};
 // ======================================================
 const screenSizeHeight = ref(0);
 const myTweak = offset => {
@@ -422,7 +490,10 @@ const sendAuthRequestCancel = () => {
       formData.acceptYn = 'N';
       let tmpJson = '{"mode": "' + isSaveFg + '","data":' + JSON.stringify(formData) + '}';
       iu.push(tmpJson);
-      saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
+      saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD)).then(saveStatus => {
+        notifySave.notifyView(saveStatus);
+        getData();
+      });
     })
     .onCancel(() => {})
     .onDismiss(() => {
@@ -459,7 +530,10 @@ const saveDataSendAllSection = (resStatus, resAcceptYn, resText, resCnt) => {
       let tmpJson = '{"mode": "' + isSaveFg + '","data":' + JSON.stringify(formData) + '}';
       iu.push(tmpJson);
 
-      saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
+      saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD)).then(saveStatus => {
+        notifySave.notifyView(saveStatus);
+        getData();
+      });
     })
     .onCancel(() => {})
     .onDismiss(() => {
@@ -493,7 +567,10 @@ const saveDataReturnAllSection = () => {
       formData.returnDoc = textReturnDoc.value;
       let tmpJson = '{"mode": "' + isSaveFg + '","data":' + JSON.stringify(formData) + '}';
       iu.push(tmpJson);
-      saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
+      saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD)).then(saveStatus => {
+        notifySave.notifyView(saveStatus);
+        getData();
+      });
     })
     .onCancel(() => {})
     .onDismiss(() => {
@@ -517,6 +594,13 @@ const getData = async () => {
     const calculatedHeight = rowData.rows.length * rowHeight;
     gridHeight.value = minHeight.value + calculatedHeight;
 
+    rowData.rowsSel = [];
+    statusCheck.value.deleyCancel = false;
+    statusCheck.value.sendOk = false;
+    statusCheck.value.sendOkCancel = false;
+    statusCheck.value.sendReturn = false;
+    statusCheck.value.acceptView = false;
+
     // console.log('getData : ', JSON.stringify(rowData.rows));
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -524,13 +608,6 @@ const getData = async () => {
 };
 
 // ***** 목표승인대상자 승인대상자료 목록 자료 가져오기 부분  *****************************//
-const statusCheck = ref({
-  cancelHide: false, // 승인대기취소
-  sendHide: false, // 승인
-  sendCancelHide: false, // 승인취소
-  returnHide: false, // 반려상태
-  acceptUpdate: false, // 열람상태
-});
 const getDataSelectList = async resRowSel => {
   try {
     const response = await api.post('/api/hpe/hpe2010_select_list', {
@@ -540,38 +617,6 @@ const getDataSelectList = async resRowSel => {
     });
     rowData.rowsSel = response.data.data;
     // alert(rowData.rowsSel.length);
-
-    // 자료 열람확인 처리
-    textReturnDoc.value = null;
-    statusCheck.value.cancelHide = false;
-    statusCheck.value.sendHide = false;
-    statusCheck.value.sendCancelHide = false;
-    statusCheck.value.returnHide = false;
-    statusCheck.value.acceptUpdate = false;
-
-    for (let i = 0; i < rowData.rowsSel.length; i++) {
-      if (rowData.rowsSel[i].status === '1' && rowData.rowsSel[i].acceptYn !== 'Y') {
-        statusCheck.value.acceptUpdate = true;
-      }
-      if (rowData.rowsSel[i].status === '1' && rowData.rowsSel[i].acceptYn === 'Y') {
-        statusCheck.value.sendHide = true;
-        statusCheck.value.cancelHide = true;
-        textReturnDoc.value = rowData.rowsSel[i].returnDoc;
-      }
-      if (rowData.rowsSel[i].status === '2') {
-        statusCheck.value.returnHide = true;
-        textReturnDoc.value = rowData.rowsSel[i].returnDoc;
-      }
-      if (rowData.rowsSel[i].status === '3' && rowData.rowsSel[i].acceptYn !== 'Y') {
-        statusCheck.value.sendCancelHide = true;
-      }
-    }
-    if (statusCheck.value.acceptUpdate) {
-      acceptCheckSaveSection(resRowSel.stdYear, resRowSel.evtEmpCd);
-      statusCheck.value.sendHide = true;
-      statusCheck.value.cancelHide = true;
-    }
-    // 자료 열람확인 처리 끝
   } catch (error) {
     console.error('Error fetching users:', error);
   }
@@ -579,27 +624,31 @@ const getDataSelectList = async resRowSel => {
 
 // ***** 자료저장 및 삭제 처리부분 *****************************//
 // saveStatus = 0=수정성공 1=신규성공 2=삭제성공 3=수정에러 4=시스템에러
-const saveDataAndHandleResult = resFormData => {
+const saveDataAndHandleResult = async resFormData => {
   // console.log('form data : ', JSON.stringify(resFormData));
-  api
-    .post('/api/hpe/hpe2010_save', resFormData)
-    .then(res => {
-      if (isSaveFg !== 'A') {
-        let saveStatus = {};
-        saveStatus.rtn = res.data.rtn;
-        saveStatus.rtnMsg = res.data.rtnMsg;
-        notifySave.notifyView(saveStatus);
-        getData();
-        rowData.rowsSel = [];
-        statusCheck.value.cancelHide = false;
-        statusCheck.value.sendHide = false;
-        statusCheck.value.sendCancelHide = false;
-        statusCheck.value.acceptUpdate = false;
-      }
-    })
-    .catch(error => {
-      console.log('error: ', error);
-    });
+  try {
+    const res = await api.post('/api/hpe/hpe2010_save', resFormData);
+    return {
+      rtn: res.data.rtn,
+      rtnMsg: res.data.rtnMsg,
+    }; // 객체를 반환
+
+    // if (isSaveFg !== 'A') {
+    //   let saveStatus = {};
+    //   saveStatus.rtn = res.data.rtn;
+    //   saveStatus.rtnMsg = res.data.rtnMsg;
+    //   notifySave.notifyView(saveStatus);
+    //   getData();
+    //   rowData.rowsSel = [];
+    //   statusCheck.value.deleyCancel = false;
+    //   statusCheck.value.sendOk = false;
+    //   statusCheck.value.sendOkCancel = false;
+    //   statusCheck.value.acceptView = false;
+    // }
+  } catch (error) {
+    console.log('error: ', error);
+    throw error; // 에러 발생 시 에러를 던져 호출자에서 처리할 수 있도록 함
+  }
 };
 
 // **************************************************************//
@@ -622,15 +671,21 @@ const acceptCheckSaveSection = (resStdYear, resEvtEmpCd) => {
   let tmpJson = '{"mode": "' + isSaveFg + '","data":' + JSON.stringify(formData) + '}';
   iu.push(tmpJson);
 
-  saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
+  saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD)).then(() => {});
 };
 
-const byteCount = ref(0);
-const updateByteCount = val => {
+const byteCount = ref({ returnDoc: 0 });
+const updateByteCount = (ch, val, maxCnt) => {
   if (val) {
-    byteCount.value = commUtil.textByteLength(val);
-    if (byteCount.value > 200) {
-      alert('한글 200자 까지 가능합니다.');
+    switch (ch) {
+      case 'returnDoc':
+        byteCount.value.returnDoc = commUtil.textByteLength(val);
+        if (byteCount.value.returnDoc > maxCnt) {
+          alert('한글 ' + maxCnt + '자 (한글 ' + Math.trunc(maxCnt / 2) + '자)까지 가능합니다.');
+        }
+        break;
+      default:
+        break;
     }
   }
 };

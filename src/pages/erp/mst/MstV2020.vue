@@ -150,6 +150,20 @@ const columnDefs = reactive({
       },
     },
     {
+      headerName: '본부별그룹',
+      field: 'deptSd1',
+      minWidth: 120,
+      maxWidth: 120,
+      filter: true,
+    },
+    {
+      headerName: '직무역량그룹',
+      field: 'deptSd2',
+      minWidth: 120,
+      maxWidth: 120,
+      filter: true,
+    },
+    {
       headerName: '처리순서',
       field: 'seq',
       maxWidth: 100,
@@ -279,7 +293,7 @@ const saveDataSection = () => {
       }
     }
   }
-  console.log('iu ::: ', JSON.stringify(iu));
+  // console.log('iu ::: ', JSON.stringify(iu));
   if (isEmpty(iu) && isEmpty(iuD)) {
     $q.dialog({
       dark: true,
@@ -331,17 +345,11 @@ const saveDataAndHandleResult = resFormData => {
     .post('/api/mst/mst2020_save', resFormData)
     .then(res => {
       let saveStatus = {};
-      if (res.data.rtn === '0') {
-        saveStatus.rtn = 1;
-        saveStatus.rtn1 = res.data.rtnMsg1;
-        saveStatus.rtn2 = '자료저장 완료';
-      } else {
-        saveStatus.rtn = res.data.rtn;
-        saveStatus.rtn1 = res.data.rtnMsg1;
-        saveStatus.rtn2 = res.data.rtnMsg2;
-      }
-      showSaveBtn.value = false;
+      saveStatus.rtn = res.data.rtn;
+      saveStatus.rtnMsg = res.data.rtnMsg;
       notifySave.notifyView(saveStatus);
+
+      showSaveBtn.value = false;
     })
     .catch(error => {
       console.log('error: ', error);

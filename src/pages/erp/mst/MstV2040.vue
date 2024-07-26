@@ -286,7 +286,7 @@ const saveDataSection = () => {
       }
     }
   }
-  console.log('iu ::: ', JSON.stringify(iu));
+  // console.log('iu ::: ', JSON.stringify(iu));
   if (isEmpty(iu) && isEmpty(iuD)) {
     $q.dialog({
       dark: true,
@@ -337,12 +337,11 @@ const saveDataAndHandleResult = resFormData => {
     .post('/api/mst/mst2040_save', resFormData)
     .then(res => {
       let saveStatus = {};
-
       saveStatus.rtn = res.data.rtn;
-      saveStatus.rtn1 = res.data.rtnMsg1;
-      saveStatus.rtn2 = res.data.rtnMsg2;
-      showSaveBtn.value = false;
+      saveStatus.rtnMsg = res.data.rtnMsg;
       notifySave.notifyView(saveStatus);
+
+      showSaveBtn.value = false;
     })
     .catch(error => {
       console.log('error: ', error);
