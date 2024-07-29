@@ -1,9 +1,11 @@
 <template>
   <q-page class="q-pa-xs-xs q-pa-sm-md" :style-fn="myTweak">
     <q-card class="q-pa-sm">
-      <q-card-section class="text-center q-pa-sm q-mb-sm" :class="$q.dark.isActive ? 'bg-teal-7' : 'bg-teal-3'">
-        <q-item-label class="text-h6">목표성과평가 현황 </q-item-label>
-      </q-card-section>
+      <q-bar class="q-px-sm">
+        <q-icon name="list_alt" />
+        <span class="q-px-sm text-bold text-subtitle1" :class="$q.dark.isActive ? 'text-orange' : 'text-primary'">{{ menuLabel }}</span>
+        <q-space />
+      </q-bar>
 
       <div class="">
         <q-card class="q-pa-sm">
@@ -308,9 +310,10 @@ onBeforeMount(() => {
   // getData();
 });
 
+const menuLabel = ref('');
 onMounted(() => {
-  // console.log('onMounted....');
   window.addEventListener('resize', handleResize);
+  menuLabel.value = window.history.state.label;
   handleResize();
 });
 

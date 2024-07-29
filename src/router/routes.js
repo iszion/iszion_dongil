@@ -26,6 +26,10 @@ const routes = [
       { path: 'hrt2010', component: () => import('pages/erp/hrt/HrtV2010.vue') },
       { path: 'hrt2020', component: () => import('pages/erp/hrt/HrtV2020.vue') },
       { path: 'hrt2030', component: () => import('pages/erp/hrt/HrtV2030.vue') },
+      { path: 'hrt3010', component: () => import('pages/erp/hrt/HrtV3010.vue') },
+      { path: 'hrt4010', component: () => import('pages/erp/hrt/HrtV4010.vue') },
+      { path: 'hrt4020', component: () => import('pages/erp/hrt/HrtV4020.vue') },
+      { path: 'hrt4030', component: () => import('pages/erp/hrt/HrtV4030.vue') },
       { path: 'hrt9000', component: () => import('pages/erp/hrt/HrtV9000.vue') },
       { path: 'hrt9001', component: () => import('pages/erp/hrt/HrtV9001.vue') },
       { path: 'hrt9002', component: () => import('pages/erp/hrt/HrtV9002.vue') },
@@ -63,7 +67,7 @@ const routes = [
 
       {
         path: 'profile',
-        component: () => import('pages/profile/PasswordPage.vue'),
+        component: () => import('pages/profile/ProfilePage.vue'),
         children: [
           { path: '', component: () => import('pages/profile/ProfilePosts.vue') },
           { path: 'saved', component: () => import('pages/profile/ProfileSaved.vue') },

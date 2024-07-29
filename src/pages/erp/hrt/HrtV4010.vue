@@ -87,9 +87,9 @@
                 조회
               </q-btn>
 
-              <q-btn :disable="rowData.rows.length === 0" outline color="teal" @click="isDialogVisible = true" class="q-px-sm">
+              <q-btn :disable="rowData.rows.length === 0" outline color="teal" @click="isExcelDownload" class="q-px-sm">
                 <q-icon name="download" size="xs" class="q-mr-xs" />
-                엑셀/출력
+                엑셀
               </q-btn>
             </div>
           </q-toolbar>
@@ -107,13 +107,13 @@
         </q-card>
       </div>
     </q-card>
-    <q-dialog persistent full-height full-width v-model="isDialogVisible">
-      <q-card class="q-pa-none q-ma-none">
-        <q-card-section class="q-pa-none q-ma-none">
-          <hrt-v2020p :rowData="rowData.rows" @close="handleClose" />
-        </q-card-section>
-      </q-card>
-    </q-dialog>
+    <!--    <q-dialog persistent full-height full-width v-model="isDialogVisible">-->
+    <!--      <q-card class="q-pa-none q-ma-none">-->
+    <!--        <q-card-section class="q-pa-none q-ma-none">-->
+    <!--          <hrt-v4010p :rowData="rowData.rows" @close="handleClose" />-->
+    <!--        </q-card-section>-->
+    <!--      </q-card>-->
+    <!--    </q-dialog>-->
   </q-page>
 </template>
 ㅌ
@@ -125,9 +125,10 @@ import 'ag-grid-community/styles/ag-theme-balham.css';
 import { AgGridVue } from 'ag-grid-vue3';
 import { computed, onBeforeMount, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
 import { api } from 'boot/axios';
+import * as XLSX from 'xlsx';
 import { QBtn, QIcon, QToggle, SessionStorage, useQuasar } from 'quasar';
 import { useYearInfoStore } from 'src/store/setYearInfo';
-import HrtV2020p from 'pages/erp/hrt/HrtV2020p.vue';
+// import HrtV4010p from 'pages/erp/hrt/HrtV4010p.vue';
 
 const storeYear = useYearInfoStore();
 
@@ -177,10 +178,29 @@ const columnDefs = reactive({
       },
     },
     {
+      headerName: '사번',
+      field: 'empCd',
+      pinned: 'left',
+      minWidth: 90,
+      resizable: true,
+      cellStyle: params => {
+        return getStatusMessageStyle(params.data);
+      },
+    },
+    {
+      headerName: '성명',
+      field: 'empNm',
+      pinned: 'left',
+      minWidth: 90,
+      resizable: true,
+      cellStyle: params => {
+        return getStatusMessageStyle(params.data);
+      },
+    },
+    {
       headerName: '소속',
       field: 'deptNm',
       minWidth: 105,
-      maxWidth: 105,
       cellStyle: params => {
         return getStatusMessageStyle(params.data);
       },
@@ -189,95 +209,152 @@ const columnDefs = reactive({
       headerName: '직급',
       field: 'titlNm',
       minWidth: 90,
-      maxWidth: 90,
       cellStyle: params => {
         return getStatusMessageStyle(params.data);
       },
     },
     {
-      headerName: '성명',
-      field: 'empNm',
-      minWidth: 90,
-      maxWidth: 90,
-      resizable: true,
-      cellStyle: params => {
-        return getStatusMessageStyle(params.data);
-      },
-    },
-    {
-      headerName: '항목구분',
-      field: 'itemFgNm',
+      headerName: '성과점수',
+      field: 'evaP1',
       minWidth: 100,
-      maxWidth: 100,
       cellStyle: params => {
         return getStatusMessageStyle(params.data);
       },
     },
     {
-      headerName: '평가항목',
-      field: 'itemNm',
-      minWidth: 150,
-      cellStyle: params => {
-        return { textAlign: 'left ' };
-      },
-    },
-    {
-      headerName: '가중치',
-      field: 'weight',
-      minWidth: 90,
-      maxWidth: 90,
-      cellStyle: params => {
-        return getStatusMessageStyle(params.data);
-      },
-    },
-    {
-      headerName: '1차평가',
-      field: 'ch1MarkPoint',
+      headerName: '역량점수',
+      field: 'evaP2',
       minWidth: 100,
-      maxWidth: 100,
       cellStyle: params => {
         return getStatusMessageStyle(params.data);
       },
     },
     {
-      headerName: '1차환산',
-      field: 'ch1MarkPointX',
+      headerName: '성과환산',
+      field: 'evaP1X',
       minWidth: 100,
-      maxWidth: 100,
       cellStyle: params => {
         return getStatusMessageStyle(params.data);
       },
     },
     {
-      headerName: '2차평가',
-      field: 'ch2MarkPoint',
+      headerName: '역량환산',
+      field: 'evaP2X',
       minWidth: 100,
-      maxWidth: 100,
       cellStyle: params => {
         return getStatusMessageStyle(params.data);
       },
     },
     {
-      headerName: '2차환산',
-      field: 'ch2MarkPointX',
+      headerName: '최종점수',
+      field: 'evaPT',
       minWidth: 100,
-      maxWidth: 100,
       cellStyle: params => {
         return getStatusMessageStyle(params.data);
+      },
+    },
+    {
+      headerName: '본부별역량평균',
+      field: 'evaP2Avg',
+      minWidth: 100,
+      cellStyle: params => {
+        return getStatusMessageStyle(params.data);
+      },
+    },
+    {
+      headerName: '역량평균개인편차',
+      field: 'evaP2C',
+      minWidth: 100,
+      cellStyle: params => {
+        return getStatusMessageStyle(params.data);
+      },
+    },
+    {
+      headerName: '개인편차의제곱',
+      field: 'evaP2Cc',
+      minWidth: 100,
+      cellStyle: params => {
+        return getStatusMessageStyle(params.data);
+      },
+    },
+    {
+      headerName: '소속의편차평균',
+      field: 'evaP2CcAvg',
+      minWidth: 100,
+      cellStyle: params => {
+        return getStatusMessageStyle(params.data);
+      },
+    },
+    {
+      headerName: '분산의루트(표준편차)',
+      field: 'evaP2SqSd',
+      minWidth: 100,
+      cellStyle: params => {
+        return getStatusMessageStyle(params.data);
+      },
+    },
+    {
+      headerName: '전체평균에대한편차',
+      field: 'evaP2TavgSd',
+      minWidth: 100,
+      cellStyle: params => {
+        return getStatusMessageStyle(params.data);
+      },
+    },
+    {
+      headerName: '소속표준편차',
+      field: 'evaP2DivSd',
+      minWidth: 100,
+      cellStyle: params => {
+        return getStatusMessageStyle(params.data);
+      },
+    },
+    {
+      headerName: '역량조정점수',
+      field: 'evaP2Comp',
+      minWidth: 100,
+      cellStyle: params => {
+        return getStatusMessageStyle(params.data);
+      },
+    },
+    {
+      headerName: '본부별평균',
+      field: 'evaDivAvg',
+      minWidth: 100,
+      cellStyle: params => {
+        return getStatusMessageStyle(params.data);
+      },
+    },
+    {
+      headerName: '소속표준편차',
+      field: 'evaP2Sd',
+      minWidth: 100,
+      cellStyle: params => {
+        return getStatusMessageStyle(params.data);
+      },
+    },
+    {
+      headerName: '역량조정환산',
+      field: 'evaP2Xx',
+      minWidth: 100,
+      cellStyle: params => {
+        return getStatusMessageStyle(params.data);
+      },
+    },
+    {
+      headerName: '환산최종점수',
+      field: 'evaPoint',
+      minWidth: 100,
+      cellStyle: params => {
+        return $q.dark.isActive ? { color: 'orange' } : { color: 'blue' };
       },
     },
   ],
 });
 
 const getStatusMessageStyle = val => {
-  // console.log(val);
-  // if (data.statusMessage === '평가마감') {
-  //   return $q.dark.isActive ? { color: 'red' } : { color: 'red' };
-  // } else if (data.statusMessage === '평가중') {
-  //   return $q.dark.isActive ? { color: 'teal' } : { color: 'teal' };
-  // } else if (data.statusMessage === '평가완료') {
-  //   return $q.dark.isActive ? { color: 'orange' } : { color: 'blue' };
-  // } else {
+  // console.log(JSON.stringify(val));
+
   return { color: 'dark' };
   // return { textAlign: 'center' };
   // }
@@ -325,8 +402,9 @@ const handleResize = () => {
 
 const getData = async () => {
   try {
-    const response = await api.post('/api/hrt/hrt2020_list', {
+    const response = await api.post('/api/hrt/hrt4010_list', {
       paramSetYear: storeYear.setYear,
+      paramEvaFg: '1',
       paramDeptCd: searchValue.value.deptCd,
       paramTitlCd: searchValue.value.titlCd,
       paramCatgCd: searchValue.value.catgCd,
@@ -422,7 +500,7 @@ const gridOptions = {
     if (param.node.rowPinned) {
       return 45;
     }
-    return 25;
+    return 35;
   },
   // GRID READY 이벤트, 사이즈 자동조정
   onGridReady: function (event) {
@@ -482,6 +560,187 @@ const gridOptions = {
   // },
   debug: false,
 };
+
+/* ************************************************************************* *
+ ** Excel저장  처리부분
+ ** ************************************************************************* */
+const isExcelDownload = () => {
+  $q.dialog({
+    dark: true,
+    title: 'Excel 저장',
+    html: true,
+    message: '엑셀 파일로 저장 하시겠습니까?',
+    // persistent: true,
+    ok: {
+      label: '저장',
+      color: 'primary',
+    },
+    cancel: {
+      label: '닫기',
+      color: 'secondary',
+    },
+  })
+    .onOk(() => {
+      excelDownload();
+    })
+    .onCancel(() => {})
+    .onDismiss(() => {});
+};
+const headerGroup = reactive({
+  header: [],
+  headProps: [
+    'deptNm',
+    'titlNm',
+    'empCd',
+    'empNm',
+    'evaP1',
+    'evaP2',
+    'evaP1X',
+    'evaP2X',
+    'evaPT',
+    'evaP2Avg',
+    'evaP2C',
+    'evaP2Cc',
+    'evaP2CcAvg',
+    'evaP2SqSd',
+    'evaP2TavgSd',
+    'evaP2DivSd',
+    'evaP2Comp',
+    'evaDivAvg',
+    'evaP2Sd',
+    'evaP2Xx',
+    'evaPoint',
+  ],
+  headRow1: [
+    { name: '소속', rowspan: 1, colspan: 1, key: 'deptNm' },
+    { name: '직급', rowspan: 1, colspan: 1, key: 'titlNm' },
+    { name: '사번', rowspan: 1, colspan: 1, key: 'empCd' },
+    { name: '성명', rowspan: 1, colspan: 1, key: 'empNm' },
+    { name: '성과평가점수', rowspan: 1, colspan: 1, key: 'evaP1' },
+    { name: '역량평가점수', rowspan: 1, colspan: 1, key: 'evaP2' },
+    { name: '성과환산', rowspan: 1, colspan: 1, key: 'evaP1X' },
+    { name: '역량환산', rowspan: 1, colspan: 1, key: 'evaP2X' },
+    { name: '최종점수', rowspan: 1, colspan: 1, key: 'evaPT' },
+    { name: '본부별역량평균', rowspan: 1, colspan: 1, key: 'evaP2Avg' },
+    { name: '역량평균개인편차', rowspan: 1, colspan: 1, key: 'evaP2C' },
+    { name: '개인편차의제곱', rowspan: 1, colspan: 1, key: 'evaP2Cc' },
+    { name: '소속의편차평균(분산)', rowspan: 1, colspan: 1, key: 'evaP2CcAvg' },
+    { name: '분산의루트(표준편차)', rowspan: 1, colspan: 1, key: 'evaP2SqSd' },
+    { name: '전체평균에대한편차', rowspan: 1, colspan: 1, key: 'evaP2TavgSd' },
+    { name: '소속표준편차', rowspan: 1, colspan: 1, key: 'evaP2DivSd' },
+    { name: '역량조정점수', rowspan: 1, colspan: 1, key: 'evaP2Comp' },
+    { name: '본부별평균', rowspan: 1, colspan: 1, key: 'evaDicAvg' },
+    { name: '소속표준편차', rowspan: 1, colspan: 1, key: 'evaP2Sd' },
+    { name: '역량조정환산', rowspan: 1, colspan: 1, key: 'evaP2Xx' },
+    { name: '환산최종점수', rowspan: 1, colspan: 1, key: 'evaPoint' },
+  ],
+});
+
+const excelDownload = () => {
+  headerGroup.header = [];
+  headerGroup.header.push(headerGroup.headRow1);
+  // headerGroup.header.push(headerGroup.headRow2);
+
+  let options = {
+    header: headerGroup.header,
+    headProps: headerGroup.headProps,
+  };
+  excelExport(rowData.rows, options);
+};
+
+const visibleHeadProps = ref([]);
+const instance = ref(undefined);
+const excelExport = (data, options) => {
+  let headProps = [];
+  if (Array.isArray(options.headProps)) {
+    headProps = options.headProps;
+  } else if (options.headProps === 'header') {
+    for (let h of headerGroup.header) {
+      headProps.push(h.key);
+    }
+  } else {
+    headProps = Object.keys(data[0]);
+  }
+  visibleHeadProps.value = headerGroup.headProps;
+
+  instance.value = document.createElement('table');
+
+  // Header 세팅
+  let headerRows = [];
+  if (!Array.isArray(headerGroup.header[0])) {
+    headerRows.push(headerGroup.header);
+  } else {
+    headerRows = headerGroup.header;
+  }
+  let thead = document.createElement('thead');
+  for (let row of headerRows) {
+    let tr = document.createElement('tr');
+    for (let h of row) {
+      let rowspan = h.rowspan || '1';
+      let colspan = h.colspan || '1';
+      let th = document.createElement('th');
+      th.setAttribute('rowspan', rowspan);
+      th.setAttribute('colspan', colspan);
+      th.innerText = h.name;
+      tr.appendChild(th);
+    }
+    thead.appendChild(tr);
+  }
+  instance.value.appendChild(thead);
+
+  // Body 세팅
+  let tbody = document.createElement('tbody');
+  for (let row of data) {
+    let tr = document.createElement('tr');
+    for (let cellkey of visibleHeadProps.value) {
+      let td = document.createElement('td');
+      td.innerText = row[cellkey];
+      tr.appendChild(td);
+    }
+    tbody.appendChild(tr);
+  }
+  instance.value.appendChild(tbody);
+
+  // instance에 만들어진 table을 엑셀파일로 저장
+  const config = { raw: true, type: 'string' };
+  const ws = XLSX.utils.table_to_sheet(instance.value, config);
+
+  // Set red color to A1 cell
+  ws['A1'].s = {
+    font: {
+      color: { rgb: 'FF0000' }, // Red color
+      bold: true,
+    },
+  };
+
+  // Add borders to all cells
+  const range = XLSX.utils.decode_range(ws['!ref']);
+  for (let R = range.s.r; R <= range.e.r; ++R) {
+    for (let C = range.s.c; C <= range.e.c; ++C) {
+      const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
+      if (!ws[cellAddress]) continue;
+      ws[cellAddress].s = {
+        border: {
+          // top: { style: 'thin', color: { auto: 1 } },
+          // bottom: { style: 'thin', color: { auto: 1 } },
+          // left: { style: 'thin', color: { auto: 1 } },
+          // right: { style: 'thin', color: { auto: 1 } },
+          top: { style: 'thin', color: { rgb: '0000FF' } }, // Blue color
+          bottom: { style: 'thin', color: { rgb: '0000FF' } }, // Blue color
+          left: { style: 'thin', color: { rgb: '0000FF' } }, // Blue color
+          right: { style: 'thin', color: { rgb: '0000FF' } }, // Blue color
+        },
+      };
+    }
+  }
+
+  let wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, '최종(편차적용)_본부별');
+  XLSX.writeFile(wb, '최종(편차적용)_본부별.xlsx');
+};
+/* ************************************************************************* *
+ ** Excel저장  처리부분 끝
+ ** ************************************************************************* */
 </script>
 <style>
 table {

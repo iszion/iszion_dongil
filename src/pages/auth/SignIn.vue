@@ -39,7 +39,7 @@
                   type="password"
                   :label="$t('login_password')"
                   :hint="$t('login_password_hint')"
-                  v-model="form.id"
+                  v-model="form.password"
                   lazy-rules
                   :rules="[val => !!val || $t('login_password_hint')]"
                 ></q-input>
@@ -78,13 +78,12 @@ const form = ref({
 });
 
 const onSubmit = () => {
-  if (form.value.id === 'admin') {
-    form.value.password = '1234';
-  } else {
-    form.value.password = form.value.id;
-  }
+  // if (form.value.id === 'admin') {
+  //   form.value.password = '1234';
+  // } else {
+  //   form.value.password = form.value.id;
+  // }
   if (form.value.id !== true) {
-    console.log('URL : ' + api.getUri());
     idToStorageSave();
     api
       .post('/api/auth/login', form.value)
