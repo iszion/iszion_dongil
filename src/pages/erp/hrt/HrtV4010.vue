@@ -349,8 +349,32 @@ const columnDefs = reactive({
         return $q.dark.isActive ? { color: 'orange' } : { color: 'blue' };
       },
     },
+    {
+      headerName: '근태점수',
+      field: 'evaAtt',
+      minWidth: 100,
+      maxWidth: 100,
+      cellStyle: params => {
+        return getStatusAttStyle(params.data);
+      },
+    },
+    {
+      headerName: '최종점수',
+      field: 'evaFinalPoint',
+      minWidth: 120,
+      maxWidth: 120,
+      cellStyle: { color: 'blue' },
+    },
   ],
 });
+
+const getStatusAttStyle = val => {
+  if (val.evaAtt > 0) {
+    return $q.dark.isActive ? { color: 'red' } : { color: 'red' };
+  } else {
+    return $q.dark.isActive ? { color: 'blue' } : { color: 'blue' };
+  }
+};
 
 const getStatusMessageStyle = val => {
   // console.log(JSON.stringify(val));

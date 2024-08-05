@@ -11,69 +11,58 @@
         <!--  end of contents list title bar -->
         <q-card-actions align="right" class="q-pa-none">
           <q-toolbar class="row">
-            <div v-if="showSimulatedReturnData" class="q-gutter-x-lg">
-              <q-radio keep-color v-model="searchParam.evaFg" val="1" label="본부별 편차적용 결과" color="teal" @click="getData" />
-              <q-radio keep-color v-model="searchParam.evaFg" val="2" label="직무역량별 편자적용 결과" color="cyan" @click="getData" />
+            <div class="row q-col-gutter-md">
+              <q-select
+                dense
+                v-model="searchParam.pYear"
+                :options="optionsDate.year"
+                label="년"
+                label-color="orange"
+                emit-value
+                map-options
+                options-dense
+                style="width: 100px"
+              />
+              <q-input
+                stack-label
+                bottom-slots
+                label-color="orange"
+                v-model="searchParam.word"
+                label="검색"
+                dense
+                class="q-pb-none"
+                style="width: 120px"
+              >
+                <template v-slot:append>
+                  <q-icon v-if="searchParam.word !== ''" name="close" size="xs" @click="searchParam.word = ''" class="cursor-pointer q-pt-sm" />
+                </template>
+              </q-input>
             </div>
             <q-space />
             <div class="q-gutter-xs">
-              <q-btn outline color="primary" dense @click="getData"><q-icon name="search" size="xs" /> 조회 </q-btn>
-              <q-btn outline color="positive" dense @click="showSimulatedReturnData = false"><q-icon name="calculate" size="xs" /> 계산 </q-btn>
+              <q-btn outline color="positive" dense @click="getData"><q-icon name="search" size="xs" /> 조회 </q-btn>
             </div>
           </q-toolbar>
         </q-card-actions>
 
         <q-separator size="3px" />
-        <q-card class="relative-position card-example" flat bordered>
-          <q-card-section v-if="!showSimulatedReturnData" class="q-pb-none">
-            <div :style="contentZoneStyle">
-              <div class="text-h5 q-pa-xl">
-                <div class="text-h4 text-primary text-bold flex flex-center q-py-md">{{ storeYear.setYear }}년</div>
-                <div class="text-h5 text-teal text-bold flex flex-center">인사평가 계산작업관리</div>
-                <div class="flex flex-center q-my-xl q-gutter-x-lg">
-                  <q-radio keep-color v-model="searchParam.evaFg" val="1" label="본부별 편차적용" color="teal" />
-                  <q-radio keep-color v-model="searchParam.evaFg" val="2" label="직무역량별 편자적용" color="cyan" />
-                </div>
-                <div class="flex flex-center q-my-xl">
-                  <q-btn
-                    :disable="storeYear.setLocCh !== '1' && storeYear.setLocCh !== '2'"
-                    size="lg"
-                    outline
-                    color="positive"
-                    @click="handleGetProcedure"
-                    ><q-icon name="calculate" size="md" class="q-mr-sm" /> 평가계산 시작하기
-                  </q-btn>
-                </div>
-              </div>
-            </div>
-          </q-card-section>
 
-          <q-card-section class="q-pa-xs">
-            <transition appear enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
-              <div v-show="showSimulatedReturnData">
-                <div :style="contentZoneStyle">
-                  <ag-grid-vue
-                    style="width: 100%; height: 100%"
-                    :class="$q.dark.isActive ? 'ag-theme-alpine-dark' : 'ag-theme-alpine'"
-                    :columnDefs="columnDefs.columns"
-                    :rowData="rowData.rows"
-                    :defaultColDef="defaultColDef.def"
-                    :rowSelection="rowSelection"
-                    @selection-changed="onSelectionChanged"
-                    @cell-value-changed="onCellValueChanged"
-                    @grid-ready="onGridReady"
-                    :grid-options="gridOptions"
-                  >
-                  </ag-grid-vue>
-                </div>
-              </div>
-            </transition>
-          </q-card-section>
-
-          <q-inner-loading :showing="calculatorVisible">
-            <q-spinner-gears size="100px" color="primary" />
-          </q-inner-loading>
-        </q-card>
+        <q-card-section class="q-pa-xs">
+          <div :style="contentZoneStyle">
+            <ag-grid-vue
+              style="width: 100%; height: 100%"
+              :class="$q.dark.isActive ? 'ag-theme-alpine-dark' : 'ag-theme-alpine'"
+              :columnDefs="columnDefs.columns"
+              :rowData="rowData.rows"
+              :defaultColDef="defaultColDef.def"
+              :rowSelection="rowSelection"
+              @selection-changed="onSelectionChanged"
+              @cell-value-changed="onCellValueChanged"
+              @grid-ready="onGridReady"
+            >
+            </ag-grid-vue>
+          </div>
+        </q-card-section>
       </q-card>
       <!--  end of contents list -->
     </q-card>
@@ -100,14 +89,11 @@ const storeYear = useYearInfoStore();
 
 const $q = useQuasar();
 
-const calculatorVisible = ref(false);
-const showSimulatedReturnData = ref(false);
-
 let isSaveFg = null;
 
 const searchParam = reactive({
-  pYear: '',
-  evaFg: '1',
+  pYear: 0,
+  word: '',
 });
 const statusEdit = reactive({
   icon: '',
@@ -123,7 +109,8 @@ onBeforeUnmount(() => {
 onBeforeMount(() => {
   rowSelection.value = 'multiple';
 
-  searchParam.pYear = commUtil.getTodayYear().toString();
+  searchParam.pYear = commUtil.getTodayYear();
+  changeHeaderName();
 
   optionYearReset();
 });
@@ -159,6 +146,31 @@ const defaultColDef = reactive({
   },
 });
 
+const changeHeaderName = () => {
+  columnDefs.columns = columnDefs.columns.map(colDef => {
+    if (colDef.field === 'year4') {
+      return { ...colDef, headerName: searchParam.pYear - 4 + '년' };
+    }
+    if (colDef.field === 'year3') {
+      return { ...colDef, headerName: searchParam.pYear - 3 + '년' };
+    }
+    if (colDef.field === 'year2') {
+      return { ...colDef, headerName: searchParam.pYear - 2 + '년' };
+    }
+    if (colDef.field === 'year1') {
+      return { ...colDef, headerName: searchParam.pYear - 1 + '년' };
+    }
+    if (colDef.field === 'year0') {
+      return { ...colDef, headerName: searchParam.pYear + '년' };
+    }
+
+    return colDef;
+  });
+  if (gridApi.value) {
+    gridApi.value.setColumnDefs(columnDefs.value);
+  }
+};
+
 const columnDefs = reactive({
   columns: [
     {
@@ -176,99 +188,75 @@ const columnDefs = reactive({
       field: 'empCd',
       minWidth: 100,
       maxWidth: 100,
-      pinned: 'left',
     },
     {
       headerName: '성명',
       field: 'empNm',
-      minWidth: 100,
-      maxWidth: 100,
-      pinned: 'left',
+      minWidth: 120,
+      maxWidth: 120,
+      editable: false,
     },
     {
       headerName: '소속팀',
       field: 'deptNm',
-      minWidth: 120,
+      minWidth: 150,
       maxWidth: 150,
+      filter: true,
+      editable: false,
     },
     {
       headerName: '직급',
       field: 'titlNm',
-      minWidth: 90,
-      maxWidth: 90,
-    },
-    {
-      headerName: '성과점수',
-      field: 'evaP1',
-      minWidth: 100,
-      maxWidth: 100,
-    },
-    {
-      headerName: '성과환산',
-      field: 'evaP1X',
-      minWidth: 100,
-      maxWidth: 100,
-    },
-    {
-      headerName: '역량점수',
-      field: 'evaP2',
-      minWidth: 100,
-      maxWidth: 100,
-    },
-    {
-      headerName: '역량환산',
-      field: 'evaP2X',
-      minWidth: 100,
-      maxWidth: 100,
-    },
-    {
-      headerName: '역량평균',
-      field: 'evaP2Avg',
-      minWidth: 100,
-      maxWidth: 100,
-      cellStyle: { color: 'blue' },
-    },
-    {
-      headerName: '표준편차',
-      field: 'evaP2Sd',
-      minWidth: 100,
-      maxWidth: 100,
-      cellStyle: { color: 'blue' },
-    },
-    {
-      headerName: '역량최종환산',
-      field: 'evaP2Xx',
       minWidth: 120,
       maxWidth: 120,
+      filter: true,
+      editable: false,
     },
     {
-      headerName: '최종평가점수',
-      field: 'evaPoint',
+      headerName: '-4년',
+      field: 'year4',
       minWidth: 120,
       maxWidth: 120,
-      cellStyle: { color: 'blue' },
+      filter: true,
+      editable: false,
     },
     {
-      headerName: '성과처리내용',
-      field: 'p1Explains',
+      headerName: '-3년',
+      field: 'year3',
       minWidth: 120,
+      maxWidth: 120,
+      filter: true,
+      editable: false,
     },
     {
-      headerName: '역량처리내용',
-      field: 'p2Explains',
+      headerName: '-2년',
+      field: 'year2',
       minWidth: 120,
+      maxWidth: 120,
+      filter: true,
+      editable: false,
     },
     {
-      headerName: '최종계산일',
-      field: 'updateDate',
+      headerName: '-1년',
+      field: 'year1',
       minWidth: 120,
-      maxWidth: 180,
+      maxWidth: 120,
+      filter: true,
+      editable: false,
     },
     {
-      headerName: '작업자',
-      field: 'updateEmpNm',
-      minWidth: 100,
-      maxWidth: 100,
+      headerName: '0년',
+      field: 'year0',
+      minWidth: 120,
+      maxWidth: 120,
+      filter: true,
+      editable: false,
+    },
+
+    {
+      headerName: '기타사항',
+      field: 'explains',
+      minWidth: 120,
     },
   ],
 });
@@ -304,45 +292,21 @@ const handleResize = () => {
   contentZoneHeight.value = window.innerHeight - screenSizeHeight.value - 180;
 };
 
-const handleGetProcedure = () => {
-  calculatorVisible.value = true;
-  showSimulatedReturnData.value = false;
-
-  getProcedure().then(() => {
-    setTimeout(() => {
-      calculatorVisible.value = false;
-      showSimulatedReturnData.value = true;
-      getData();
-    }, 3000);
-  });
-};
 // **************************************************************//
 // ***** DataBase 연결부분    *************************************//
 // **************************************************************//
 const getData = async () => {
-  showSimulatedReturnData.value = true;
+  changeHeaderName();
   try {
     const response = await api.post('/api/hpr/hpr1010_list', {
-      paramSetYear: storeYear.setYear,
-      paramEvaFg: searchParam.evaFg,
+      paramSetYear: searchParam.pYear,
+      paramSearchWord: searchParam.word,
     });
 
     rowData.rows = response.data.data;
     rowData.backup = JSON.parse(JSON.stringify(response.data.data));
   } catch (error) {
     console.error('Error fetching users:', error);
-  }
-};
-
-const getProcedure = async () => {
-  try {
-    const response = await api.post('/api/hpr/hpr1010_procedure', {
-      paramSetYear: searchParam.pYear,
-      paramEvaFg: searchParam.evaFg,
-    });
-  } catch (error) {
-    console.error('Error fetching users:', error);
-    calculatorVisible.value = false;
   }
 };
 
@@ -358,12 +322,8 @@ const optionsDate = ref({
 const optionYearReset = () => {
   optionsDate.value.year = Array.from({ length: 11 }, (_, i) => {
     const year = new Date().getFullYear() - 10 + i;
-    return { label: year.toString() + '년', value: year.toString() };
+    return { label: year.toString() + '년', value: year };
   });
-};
-
-const gridOptions = {
-  localeText: { noRowsToShow: storeYear.setYear + '년 평가 집계작업 전 입니다. 집계계산적업을 먼저 진행 하십시요' },
 };
 </script>
 

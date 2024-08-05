@@ -499,13 +499,49 @@ const columnDefs = reactive({
           field: 'eva2Point',
           minWidth: 100,
           cellStyle: params => {
-            return { color: 'red' };
+            return { color: 'blue' };
+          },
+        },
+      ],
+    },
+    {
+      headerName: '근태점수',
+      field: 'eva2Att',
+      minWidth: 100,
+      cellStyle: params => {
+        return getStatusAttStyle(params.data);
+      },
+    },
+    {
+      headerName: '최종점수',
+      children: [
+        {
+          headerName: '본부별',
+          field: 'eva1FinalPoint',
+          minWidth: 100,
+          cellStyle: params => {
+            return { color: 'blue' };
+          },
+        },
+        {
+          headerName: '직무역량',
+          field: 'eva2FinalPoint',
+          minWidth: 100,
+          cellStyle: params => {
+            return { color: 'blue' };
           },
         },
       ],
     },
   ],
 });
+const getStatusAttStyle = val => {
+  if (val.eva1Att > 0) {
+    return $q.dark.isActive ? { color: 'red' } : { color: 'red' };
+  } else {
+    return $q.dark.isActive ? { color: 'blue' } : { color: 'blue' };
+  }
+};
 
 const getStatusMessageStyle = val => {
   // console.log(JSON.stringify(val));
@@ -792,6 +828,10 @@ const headerGroup = reactive({
     'eva2P2Xx',
     'eva1Point',
     'eva2Point',
+    'eva1Att',
+    'eva2Att',
+    'eva1FinalPoint',
+    'eva2FinalPoint',
   ],
   headRow1: [
     { name: '소속', rowspan: 2, colspan: 1, key: 'deptNm' },
@@ -816,6 +856,8 @@ const headerGroup = reactive({
     { name: '소속표준편차', rowspan: 1, colspan: 2 },
     { name: '역량조정환산', rowspan: 1, colspan: 2 },
     { name: '환산최종점수', rowspan: 1, colspan: 2 },
+    { name: '근태점수', rowspan: 1, colspan: 2 },
+    { name: '최종점수', rowspan: 1, colspan: 2 },
   ],
   headRow2: [
     { name: '본부', rowspan: 1, colspan: 1, key: 'eva1P2Avg' },
@@ -853,6 +895,12 @@ const headerGroup = reactive({
 
     { name: '본부', rowspan: 1, colspan: 1, key: 'eva1Point' },
     { name: '직부역량', rowspan: 1, colspan: 1, key: 'eva2Point' },
+
+    { name: '본부', rowspan: 1, colspan: 1, key: 'eva1Att' },
+    { name: '직부역량', rowspan: 1, colspan: 1, key: 'eva2Att' },
+
+    { name: '본부', rowspan: 1, colspan: 1, key: 'eva1FinalPoint' },
+    { name: '직부역량', rowspan: 1, colspan: 1, key: 'eva2FinalPoint' },
   ],
 });
 

@@ -33,9 +33,10 @@ const routes = [
       { path: 'hrt9000', component: () => import('pages/erp/hrt/HrtV9000.vue') },
       { path: 'hrt9001', component: () => import('pages/erp/hrt/HrtV9001.vue') },
       { path: 'hrt9002', component: () => import('pages/erp/hrt/HrtV9002.vue') },
+      { path: 'hrt9010', component: () => import('pages/erp/hrt/HrtV9010.vue') },
 
       { path: 'hpr1010', component: () => import('pages/erp/hpr/HprV1010.vue') },
-      { path: 'hpr2010', component: () => import('pages/erp/hpr/HprV2010.vue') },
+      { path: 'hpr2010', component: () => import('pages/erp/hpr/HprV1010.vue') },
 
       { path: 'mst1010', component: () => import('pages/erp/mst/MstV1010.vue') },
       { path: 'mst1210', component: () => import('pages/erp/mst/MstV1210.vue') },

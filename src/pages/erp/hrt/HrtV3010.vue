@@ -249,6 +249,22 @@ const columnDefs = reactive({
       cellStyle: { color: 'blue' },
     },
     {
+      headerName: '근태점수',
+      field: 'evaAtt',
+      minWidth: 100,
+      maxWidth: 100,
+      cellStyle: params => {
+        return getStatusAttStyle(params.data);
+      },
+    },
+    {
+      headerName: '최종점수',
+      field: 'evaFinalPoint',
+      minWidth: 120,
+      maxWidth: 120,
+      cellStyle: { color: 'blue' },
+    },
+    {
       headerName: '성과처리내용',
       field: 'p1Explains',
       minWidth: 120,
@@ -272,6 +288,14 @@ const columnDefs = reactive({
     },
   ],
 });
+
+const getStatusAttStyle = val => {
+  if (val.evaAtt > 0) {
+    return $q.dark.isActive ? { color: 'red' } : { color: 'red' };
+  } else {
+    return $q.dark.isActive ? { color: 'blue' } : { color: 'blue' };
+  }
+};
 
 const selectedRows = ref([]);
 

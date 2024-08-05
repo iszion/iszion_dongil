@@ -8,7 +8,7 @@
         <div class="col-12 col-sm-auto q-py-md flex flex-center">
           <div>
             <q-avatar square size="180px"> <q-img :src="`https://www.iszion.com/images/${formData.imageFileNm}`" /></q-avatar>
-
+            {{ formData.imageFileNm }}
             <div class="row q-py-md">
               <q-avatar
                 v-if="!formDisable"
@@ -38,7 +38,7 @@
             <span class="text-h5 text-weight-bold">{{ formData.empNm }}</span>
             <q-space />
             <div class="q-gutter-x-sm">
-              <q-btn outline color="secondary" label="프로필 수정" />
+              <!--              <q-btn outline color="secondary" label="프로필 수정" />-->
               <q-btn outline color="secondary" label="패스워드 변경" @click="isDialogVisible = true" />
             </div>
           </div>
@@ -81,7 +81,7 @@
       </q-card-section>
       <q-card-section>
         <div class="q-px-xl q-mb-sm">
-          <q-input v-model="form.oldPassword" :type="isPwd1 ? 'password' : 'text'" label="현재비밀번호" hint="현재 비밀번호를 입력하세요" class="">
+          <q-input v-model="form.oldPassword" :type="isPwd1 ? 'password' : 'text'" label="패스워드" hint="현재 패스워드를 입력하세요" class="">
             <template v-slot:append>
               <q-icon :name="isPwd1 ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd1 = !isPwd1" />
             </template>
@@ -89,12 +89,12 @@
         </div>
         <div class="q-gutter-y-sm q-pa-xl">
           <!--            class="q-mt-md"-->
-          <q-input v-model="form.newPassword" :type="isPwd2 ? 'password' : 'text'" label="비밀번호" hint="새로운 패스워드를 입력하세요">
+          <q-input v-model="form.newPassword" :type="isPwd2 ? 'password' : 'text'" label="새로운 패스워드" hint="새로운 패스워드를 입력하세요">
             <template v-slot:append>
               <q-icon :name="isPwd2 ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd2 = !isPwd2" />
             </template>
           </q-input>
-          <q-input v-model="form.newPasswordX" :type="isPwd3 ? 'password' : 'text'" label="비밀번호(확인)" hint="다시한번 입력하세요">
+          <q-input v-model="form.newPasswordX" :type="isPwd3 ? 'password' : 'text'" label="패스워드(확인)" hint="다시한번 입력하세요">
             <template v-slot:append>
               <q-icon :name="isPwd3 ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd3 = !isPwd3" />
             </template>
@@ -113,10 +113,15 @@ import { onBeforeMount, ref } from 'vue';
 import { useYearInfoStore } from 'src/store/setYearInfo';
 import { useUserInfoStore } from 'src/store/setUserInfo';
 import { api } from 'boot/axios';
-import { QBtn, QIcon } from 'quasar';
-import { AgGridVue } from 'ag-grid-vue3';
+import { QBtn, QIcon, useQuasar } from 'quasar';
+import jsonUtil from 'src/js_comm/json-util';
+import notifySave from 'src/js_comm/notify-save';
+import { useRouter } from 'vue-router';
 const storeUser = useUserInfoStore();
 const storeYear = useYearInfoStore();
+
+const $q = useQuasar();
+const router = useRouter();
 
 const isDialogVisible = ref(false);
 const rowData = ref(null);
@@ -153,7 +158,7 @@ const onDialogShow = () => {};
 const onDialogHide = () => {};
 
 const passwordChangeSave = () => {
-  if (form.value.oldPassword) {
+  if (form.value.newPassword === form.value.newPasswordX) {
     api
       .post('/api/sys/passwordCheck', {
         paramUserId: storeUser.setEmpCd,
@@ -161,27 +166,83 @@ const passwordChangeSave = () => {
         paramNewPassword: form.value.newPassword,
       })
       .then(res => {
-        if (res.data.data.check) {
-          alert('ok');
+        if (res.data.data) {
+          passwdSave();
         } else {
-          $q.notify({
-            group: false,
-            icon: 'report_problem',
-            message: t('login_check_message'),
-            color: 'negative',
-            position: 'bottom-right',
-          });
+          $q.dialog({
+            dark: true,
+            title: '안내',
+            message: '패스워드가 변경되지 않았습니다. 패스워드를 확인하고 다시 입력하세요',
+          })
+            .onOk(() => {})
+            .onCancel(() => {})
+            .onDismiss(() => {});
         }
       })
       .catch(res => {
         console.log(res);
         console.log('error1');
       });
+  } else {
+    $q.dialog({
+      dark: true,
+      title: '패스워드체크',
+      message: '새로운 패스워드가 불일치 합니다. 다시 입력하세요',
+    })
+      .onOk(() => {})
+      .onCancel(() => {})
+      .onDismiss(() => {});
   }
 };
+const passwdSave = () => {
+  let iu = [];
+  let iuD = [];
+
+  let formData = {};
+  formData.userId = storeUser.setEmpCd;
+  formData.newPasswd = form.value.newPassword;
+  let tmpJson = '{"mode": "U","data":' + JSON.stringify(formData) + '}';
+  iu.push(tmpJson);
+  saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD)).then(val => {
+    if (val.rtn === '0') {
+      isDialogVisible.value = false;
+      logout();
+    }
+  });
+};
+
+const access_token = sessionStorage.getItem('accessToken');
+const logout = () => {
+  api
+    .post('/api/auth/logout', access_token)
+    .then(res => {
+      sessionStorage.removeItem('accessToken');
+      sessionStorage.removeItem('refreshToken');
+      router.push({ path: '/' });
+    })
+    .catch(res => {
+      console.log('Error');
+    });
+};
+
 // **************************************************************//
 // ***** DataBase 연결부분  ***************************************//
 // **************************************************************//
+
+const saveDataAndHandleResult = async resFormData => {
+  try {
+    const res = await api.post('/api/sys/passwdUpdate_save', resFormData);
+    let saveStatus = {
+      rtn: res.data.rtn,
+      rtnMsg: res.data.rtnMsg,
+    };
+    notifySave.notifyView(saveStatus);
+    return saveStatus; // saveStatus 객체를 반환
+  } catch (error) {
+    console.log('error: ', error);
+    throw error; // 에러 발생 시 에러를 던져 호출자에서 처리할 수 있도록 함
+  }
+};
 
 // ***** 유저정보 처리 부분 *****************************//
 const getData = async () => {
@@ -201,11 +262,11 @@ const handleImageUpload = () => {
   input.accept = 'image/*'; // 이미지 파일만 선택 가능하도록 설정 (선택 사항)
   input.onchange = event => {
     const file = event.target.files[0];
-    console.log('File object: ', file);
+    // console.log('File object: ', file);
 
-    console.log('file name : ' + file.name);
-    console.log('File type: ', file.type);
-    console.log('File size: ', file.size);
+    // console.log('file name : ' + file.name);
+    // console.log('File type: ', file.type);
+    // console.log('File size: ', file.size);
 
     if (file) {
       // 파일이 선택된 경우, 여기에서 파일 업로드 로직을 추가할 수 있습니다.
@@ -240,7 +301,7 @@ const handleImageDelete = async () => {
       empCd: formData.value.empCd,
     },
   });
-  console.log('delete : ' + response);
+  // console.log('delete : ' + response);
 };
 </script>
 
