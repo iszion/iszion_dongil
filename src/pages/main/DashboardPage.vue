@@ -4,13 +4,13 @@
       <div v-if="storeUser.setEvtgCd > '01'" class="col-xs-12 col-sm-12">
         <hpe-page2 />
       </div>
-      <div v-if="storeUser.setEvtgCd === '01'" class="col-xs-12 col-sm-7">
+      <div v-if="storeUser.setEvtgCd === '01'" class="col-xs-12 col-sm-6">
         <hpe-page2 />
       </div>
-      <div v-if="storeUser.setEvtgCd < '02'" class="col-xs-12 col-sm-5">
+      <div v-if="storeUser.setEvtgCd < '02'" class="col-xs-12 col-sm-6">
         <hpe-page3 />
       </div>
-      <div v-if="storeUser.setEvtgCd === ''" class="col-xs-12 col-sm-7">
+      <div v-if="storeUser.setEvtgCd === ''" class="col-xs-12 col-sm-6">
         <hpe-page1 />
       </div>
     </div>

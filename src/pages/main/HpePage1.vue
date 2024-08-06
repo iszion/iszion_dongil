@@ -12,7 +12,15 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { onBeforeMount, ref, watch } from 'vue';
+import { api } from 'boot/axios';
+import { useYearInfoStore } from 'src/store/setYearInfo';
+const storeYear = useYearInfoStore();
+
+const empNmData = ref([]);
+const evalP1Data = ref([]);
+const evalP2Data = ref([]);
+const evalAttData = ref([]);
 
 const chartOptions = ref({
   chart: {
@@ -45,11 +53,15 @@ const chartOptions = ref({
       borderRadiusApplication: 'end', // 'around', 'end'
       borderRadiusWhenStacked: 'last', // 'all', 'last'
       dataLabels: {
+        // position: '', // Ensure data labels are always at the top
         total: {
           enabled: true,
           style: {
-            fontSize: '13px',
+            fontSize: '14px',
             fontWeight: 900,
+          },
+          formatter: function (val) {
+            return val.toFixed(1); // format to one decimal place
           },
         },
       },
@@ -57,8 +69,9 @@ const chartOptions = ref({
   },
   dataLabels: {
     enabled: true,
+    position: 'top',
     formatter: function (val) {
-      return val.toFixed(1); // format to one decimal place
+      return val.toFixed(2); // format to one decimal place
     },
     style: {
       fontSize: '12px',
@@ -66,7 +79,7 @@ const chartOptions = ref({
   },
   xaxis: {
     // type: 'datetime',
-    categories: ['1.홍길동', '2.김길동', '3.이길동', '4.박길동', '5.차길동', '6.최길동', '7.조길동', '8.문길동', '9.채길동', '10.엄길동'],
+    categories: empNmData.value, // Use empNmData.value
   },
   legend: {
     position: 'right',
@@ -75,18 +88,60 @@ const chartOptions = ref({
   fill: {
     opacity: 1,
   },
+  colors: ['#f37a02', '#3357FF', '#03931d'], // Custom colors for each series
 });
 
 const series = ref([
   {
-    name: '역량평가',
-    data: [34.3, 42.2, 35.1, 45.0, 36.3, 37.6, 39.6, 35.4, 36.0, 30.4],
+    name: '근태평가',
+    data: evalAttData.value,
   },
   {
     name: '성과평가',
-    data: [65.2, 55.4, 61.2, 50.5, 58.2, 55.3, 50.3, 53.6, 49.4, 54.3],
+    data: evalP1Data.value,
+  },
+  {
+    name: '역량점수',
+    data: evalP2Data.value,
   },
 ]);
+
+onBeforeMount(async () => {
+  try {
+    const data = await fetchData('/api/aux/dashboard_301_list');
+    if (data) {
+      for (let i = 0; i < data.length; i++) {
+        if (i < 10) {
+          empNmData.value.push(data[i].empNm);
+          evalP1Data.value.push(data[i].evaP1X);
+          evalP2Data.value.push(data[i].evaP2Xx);
+          evalAttData.value.push(parseInt(0 - data[i].evaAtt));
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Error initializing data:', error);
+  }
+});
+
+// **************************************************************//
+// ***** DataBase 연결부분    *************************************//
+// **************************************************************//
+
+// ***** 목표진행율 가져오기 부분  *****************************//
+const fetchData = async endpoint => {
+  try {
+    const response = await api.post(endpoint, {
+      paramSetYear: storeYear.setYear,
+      paramEvaFg: '1',
+    });
+    console.log('data:: ', JSON.stringify(response));
+    return response.data.data;
+  } catch (error) {
+    console.error(`Error fetching data from ${endpoint}:`, error);
+    return [0]; // Return a default value to prevent the chart from breaking
+  }
+};
 </script>
 
 <style scoped>

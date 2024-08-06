@@ -805,7 +805,7 @@ const getDataSelect = async (resStdYear, resEmpCd) => {
     formData.value.birthday = commUtil.formatDate(response.data.data[0].birthday);
     formData.value.inDay = commUtil.formatDate(response.data.data[0].inDay);
     formData.value.outDay = commUtil.formatDate(response.data.data[0].outDay);
-    imageSrc.value = `https://www.iszion.com/images/${formData.value.imageFileNm}`;
+    imageSrc.value = `https://hr.energyshop.co.kr/images/${formData.value.imageFileNm}`;
     console.log('imgSrc : ' + imageSrc.value);
     console.log('formData : ' + formData.value.imageFileNm);
   } catch (error) {

@@ -128,7 +128,7 @@
                     <div class="col-12 col-md-6">
                       <q-card class="q-pa-xs shadow-7">
                         <q-card-section horizontal>
-                          <q-img spinner-color="white" class="" src="https://cdn.quasar.dev/img/avatar.png" />
+                          <q-img spinner-color="white" class="" :src="`https://hr.energyshop.co.kr/images/${formData.imageFileNm}`" />
                         </q-card-section>
                       </q-card>
                     </div>
@@ -456,8 +456,8 @@ const formData = ref({
   outDay: '',
   levelCd: '',
   explains: '',
-  filename: '',
-  filenameX: '',
+  imageFileNm: '',
+  imageFileNmFull: '',
 });
 
 const selectedRows = ref();

@@ -7,8 +7,7 @@
       <q-card-section class="row q-col-gutter-x-xl q-py-md">
         <div class="col-12 col-sm-auto q-py-md flex flex-center">
           <div>
-            <q-avatar square size="180px"> <q-img :src="`https://www.iszion.com/images/${formData.imageFileNm}`" /></q-avatar>
-            {{ formData.imageFileNm }}
+            <q-avatar square size="180px"> <q-img :src="`https://hr.energyshop.co.kr/images/${formData.imageFileNm}`" /></q-avatar>
             <div class="row q-py-md">
               <q-avatar
                 v-if="!formDisable"
@@ -65,6 +64,9 @@
             </div>
             <div>
               메일 : <span class="text-bold text-orange"> {{ formData.email }}</span>
+            </div>
+            <div>
+              이미지 : <span class="text-bold text-orange"> {{ formData.imageFileNm }}</span>
             </div>
           </div>
         </div>

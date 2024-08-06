@@ -110,7 +110,7 @@
             <div class="text-subtitle2 text-bold q-mr-sm">{{ storeUser.setEmpNm }}</div>
           </div>
           <q-avatar color="deep-orange">
-            <q-img loading="eager" :src="`https://www.iszion.com/images/${userImageName}`" />
+            <q-img loading="eager" :src="`https://hr.energyshop.co.kr/images/${userImageName}`" />
           </q-avatar>
           <q-menu :offset="[0, 10]" transition-show="scale" transition-hide="scale">
             <q-list style="min-width: 100px">
@@ -346,6 +346,7 @@ const { locale } = useI18n();
 
 onBeforeMount(() => {
   selectLanguage('ko-KR');
+  storeUser.setEmpCd = SessionStorage.getItem('empCd');
   getDataSetYear().then(() => {
     getDataMainMenu();
   });
@@ -458,10 +459,10 @@ const ev_set_year_options = ref([]);
 // ***** 유저정보 처리 부분 *****************************//
 const userImageName = ref(null);
 const getDataSetUserInfo = async () => {
-  storeUser.setEmpCd = SessionStorage.getItem('empCd');
+  // storeUser.setEmpCd = SessionStorage.getItem('empCd');
   try {
     const response = await api.post('/api/sys/user_info', { paramSetYear: storeYear.setYear, paramUserId: storeUser.setEmpCd });
-    console.log('data: ', JSON.stringify(response.data.data));
+    // console.log('data: ', JSON.stringify(response.data.data));
     userImageName.value = response.data.data[0].imageFileNm;
     storgeUserInfoGroupSave(
       response.data.data[0].empCd +

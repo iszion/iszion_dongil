@@ -37,16 +37,14 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { onBeforeMount, ref, watch } from 'vue';
 import { useQuasar } from 'quasar';
 import { useUserInfoStore } from 'src/store/setUserInfo';
 import { useYearInfoStore } from 'src/store/setYearInfo';
+import { api } from 'boot/axios';
+
 const storeUser = useUserInfoStore();
 const storeYear = useYearInfoStore();
-
-const series1 = ref([60]);
-const series2 = ref([20]);
-const series3 = ref([0]);
 
 const $q = useQuasar();
 const isXsScreen = ref($q.screen.lt.sm);
@@ -101,6 +99,50 @@ const getChartOptions = (label, isXs) => ({
   },
   labels: [label],
 });
+
+const series1 = ref([0]);
+const series2 = ref([0]);
+const series3 = ref([0]);
+
+onBeforeMount(async () => {
+  try {
+    const data1 = await fetchData('/api/aux/dashboard_101_list');
+    if (data1) {
+      series1.value = [data1]; // Ensure it's an array
+    }
+
+    const data2 = await fetchData('/api/aux/dashboard_102_list');
+    if (data2) {
+      series2.value = [data2]; // Ensure it's an array
+    }
+
+    const data3 = await fetchData('/api/aux/dashboard_103_list');
+    if (data3) {
+      series3.value = [data3]; // Ensure it's an array
+    }
+  } catch (error) {
+    console.error('Error initializing data:', error);
+  }
+});
+// **************************************************************//
+// ***** DataBase 연결부분    *************************************//
+// **************************************************************//
+
+// ***** 목표진행율 가져오기 부분  *****************************//
+const fetchData = async endpoint => {
+  try {
+    const response = await api.post(endpoint, {
+      paramSetYear: storeYear.setYear,
+      paramEmpCd: storeUser.setEmpCd,
+    });
+    const data = response.data.data[0].maxPer;
+    console.log(`Data from ${endpoint}:`, data);
+    return data;
+  } catch (error) {
+    console.error(`Error fetching data from ${endpoint}:`, error);
+    return [0]; // Return a default value to prevent the chart from breaking
+  }
+};
 </script>
 
 <style scoped>
