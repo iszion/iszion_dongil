@@ -126,8 +126,8 @@
                   <div class="row q-col-gutter-xl">
                     <div class="col-12 col-md-6">
                       <q-card class="q-ma-xs q-pa-sm">
-                        <!--                        <q-img src='https://www.iszion.com/images/' />-->
-                        <q-img v-if="imageSrc" :src="imageSrc" />
+                        <q-img :src="`https://hr.energyshop.co.kr/images/${formData.imageFileNm}`" />
+                        <!--                        <q-img :src="`https://www.iszion.com/images/${formData.imageFileNm}`" />-->
                         <div class="row q-pa-xs">
                           <q-avatar
                             v-if="!formDisable"
@@ -149,7 +149,7 @@
                             @click="handleImageDelete"
                           />
                         </div>
-                        <div class="text-center">{{ formData.imageFileNm }}</div>
+                        <!--                        <div class="text-center">{{ formData.imageFileNm }}</div>-->
                       </q-card>
                     </div>
                     <div class="col-12 col-md-6">
@@ -710,6 +710,7 @@ const uploadFile = async file => {
       },
     });
     // 서버의 응답 처리
+    formData.value.imageFileNm = formData.value.empCd + '_' + file.name;
 
     console.log('File uploaded successfully:', response.data);
   } catch (error) {
@@ -725,7 +726,10 @@ const handleImageDelete = async () => {
       empCd: formData.value.empCd,
     },
   });
-  console.log('delete : ' + response);
+  // console.log('delete : ' + response);
+  if (response.data.success) {
+    formData.value.imageFileNm = ''; // 이미지 삭제 후 이미지 파일명을 비움
+  }
 };
 
 const saveDataAndHandleResult = resFormData => {
@@ -805,9 +809,10 @@ const getDataSelect = async (resStdYear, resEmpCd) => {
     formData.value.birthday = commUtil.formatDate(response.data.data[0].birthday);
     formData.value.inDay = commUtil.formatDate(response.data.data[0].inDay);
     formData.value.outDay = commUtil.formatDate(response.data.data[0].outDay);
-    imageSrc.value = `https://hr.energyshop.co.kr/images/${formData.value.imageFileNm}`;
-    console.log('imgSrc : ' + imageSrc.value);
-    console.log('formData : ' + formData.value.imageFileNm);
+    // imageSrc.value = `https://hr.energyshop.co.kr/images/${formData.value.imageFileNm}`;
+    // imageSrc.value = `https://www.iszion.com/images/${formData.value.imageFileNm}`;
+    // console.log('imgSrc : ' + imageSrc.value);
+    // console.log('formData : ' + formData.value.imageFileNm);
   } catch (error) {
     console.error('Error fetching users:', error);
   }
@@ -817,7 +822,7 @@ const getDataSelect = async (resStdYear, resEmpCd) => {
 const getDataEmpCdCheck = async () => {
   try {
     const response = await api.post('/api/mst/mst1010_empCd_check', { paramStdYear: storeYear.setYear, paramEmpCd: formData.value.empCd });
-    console.log('check :: ', response.data.data[0].ch);
+    // console.log('check :: ', response.data.data[0].ch);
     if (response.data.data[0].ch === 0) {
       formDisable.value = false;
       setTimeout(() => {

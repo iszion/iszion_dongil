@@ -13,8 +13,10 @@
           <q-toolbar class="row">
             <q-space />
             <div class="q-gutter-xs">
-              <q-btn outline color="primary" dense @click="getData"><q-icon name="search" size="xs" /> 조회 </q-btn>
-              <q-btn outline color="positive" dense @click="showSimulatedReturnData = false"><q-icon name="calculate" size="xs" /> 계산 </q-btn>
+              <q-btn outline color="primary" dense @click="getData"><q-icon name="search" size="xs" class="q-mr-xs" /> 조회 </q-btn>
+              <q-btn outline color="negative" dense @click="showSimulatedReturnData = false"
+                ><q-icon name="key" size="xs" class="q-mr-xs" /> 마감
+              </q-btn>
             </div>
           </q-toolbar>
         </q-card-actions>
@@ -23,12 +25,12 @@
         <q-card class="relative-position card-example" flat bordered>
           <q-card-section v-if="!showSimulatedReturnData" class="q-pb-none">
             <div :style="contentZoneStyle">
-              <div class="text-h5 q-pa-xl">
+              <div class="text-h5 q-pa-xl-lg q-pa-sm-xl">
                 <div class="text-h4 text-primary text-bold flex flex-center q-py-md">{{ storeYear.setYear }}년</div>
                 <div class="text-h5 text-teal text-bold flex flex-center">인사평가점수 마감하기</div>
                 <div class="flex flex-center q-my-xl q-gutter-x-lg">
-                  <q-radio keep-color v-model="searchParam.evaFg" val="1" label="본부별 마감적용" color="teal" />
-                  <q-radio keep-color v-model="searchParam.evaFg" val="2" label="직무역량별 마감적용" color="cyan" />
+                  <q-radio keep-color v-model="searchParam.evaFg" val="1" label="본부별 마감 확정하기" color="teal" />
+                  <q-radio keep-color v-model="searchParam.evaFg" val="2" label="직무역량별 마감 확정하기" color="cyan" />
                 </div>
                 <div class="flex flex-center q-my-xl">
                   <q-btn
@@ -122,6 +124,7 @@ onBeforeMount(() => {
   searchParam.pYear = commUtil.getTodayYear().toString();
 
   optionYearReset();
+  getData();
 });
 
 const menuLabel = ref('');
@@ -275,12 +278,27 @@ const handleGetProcedure = () => {
 const getData = async () => {
   showSimulatedReturnData.value = true;
   try {
-    const response = await api.post('/api/hrt/hrt9010_list', {
+    const response = await api.post('/api/hrt/hrt5010_list', {
       paramStdYear: storeYear.setYear,
     });
 
     rowData.rows = response.data.data;
     rowData.backup = JSON.parse(JSON.stringify(response.data.data));
+
+    if (rowData.rows.length <= 0) {
+      $q.dialog({
+        dark: true,
+        title: '마감전',
+        message: '평가점수 마감 전 입니다. 마감작업을 진행하십시요',
+        // persistent: true,
+      })
+        .onOk(() => {})
+        .onCancel(() => {})
+        .onDismiss(() => {
+          // 확인/취소 모두 실행되었을때
+        });
+      showSimulatedReturnData.value = false;
+    }
   } catch (error) {
     console.error('Error fetching users:', error);
   }
@@ -288,7 +306,7 @@ const getData = async () => {
 
 const getProcedure = async () => {
   try {
-    const response = await api.post('/api/hrt/hrt9010_procedure', {
+    const response = await api.post('/api/hrt/hrt5010_procedure', {
       paramSetYear: searchParam.pYear,
       paramEvaFg: searchParam.evaFg,
     });

@@ -111,6 +111,7 @@
           </div>
           <q-avatar color="deep-orange">
             <q-img loading="eager" :src="`https://hr.energyshop.co.kr/images/${userImageName}`" />
+            <!--            <q-img loading="eager" :src="`https://www.iszion.com/images/${userImageName}`" />-->
           </q-avatar>
           <q-menu :offset="[0, 10]" transition-show="scale" transition-hide="scale">
             <q-list style="min-width: 100px">
@@ -383,7 +384,7 @@ const handleNodeClick = () => {
   pageTitleBarVisible.value = true;
   nodeValue.value.menuData = findValueById(menuList.value, selected.value);
   if (nodeValue.value.menuData.children.length === 0) {
-    console.log('node : ', JSON.stringify(nodeValue.value.menuData));
+    // console.log('node : ', JSON.stringify(nodeValue.value.menuData));
     router.push({
       path: nodeValue.value.menuData.url,
       state: { label: nodeValue.value.menuData.label },

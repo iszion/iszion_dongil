@@ -8,26 +8,11 @@
         <div class="col-12 col-sm-auto q-py-md flex flex-center">
           <div>
             <q-avatar square size="180px"> <q-img :src="`https://hr.energyshop.co.kr/images/${formData.imageFileNm}`" /></q-avatar>
+            <!--            <q-avatar square size="180px"> <q-img :src="`https://www.iszion.com/images/${formData.imageFileNm}`" /></q-avatar>-->
             <div class="row q-py-md">
-              <q-avatar
-                v-if="!formDisable"
-                color="blue"
-                text-color="white"
-                icon="photo_camera"
-                size="md"
-                class="q-pa-none cursor-pointer"
-                @click="handleImageUpload"
-              />
+              <q-avatar color="blue" text-color="white" icon="photo_camera" size="md" class="q-pa-none cursor-pointer" @click="handleImageUpload" />
               <q-space />
-              <q-avatar
-                v-if="!formDisable"
-                color="red"
-                text-color="white"
-                icon="delete_forever"
-                size="md"
-                class="q-pa-none cursor-pointer"
-                @click="handleImageDelete"
-              />
+              <q-avatar color="red" text-color="white" icon="delete_forever" size="md" class="q-pa-none cursor-pointer" @click="handleImageDelete" />
             </div>
           </div>
         </div>
@@ -288,8 +273,12 @@ const uploadFile = async file => {
       },
     });
     // 서버의 응답 처리
+    // console.log(file.name, ' === ', JSON.stringify(file));
+    formData.value.imageFileNm = formData.value.empCd + '_' + file.name;
+    // console.log('aa : ', formData.value.imageFileNm);
+    // formData.value.imageFileNm = response.data.newFileName;
 
-    console.log('File uploaded successfully:', response.data);
+    // console.log('File uploaded successfully:', response.data);
   } catch (error) {
     // 오류 처리
     console.error('Error uploading file:', error);
@@ -304,6 +293,9 @@ const handleImageDelete = async () => {
     },
   });
   // console.log('delete : ' + response);
+  if (response.data.success) {
+    formData.value.imageFileNm = ''; // 이미지 삭제 후 이미지 파일명을 비움
+  }
 };
 </script>
 

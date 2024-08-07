@@ -3,6 +3,8 @@
     <q-bar class="q-py-xs text-subtitle1 text-bold">
       평가순위표 ( 상위10위 )
       <q-space />
+      <span v-if="!isShowMessage">평가마감이 <span :class="$q.dark.isActive ? 'text-warning' : 'text-accent'"> 진행중</span> 입니다.</span>
+      <span v-if="isShowMessage">평가마감이 <span :class="$q.dark.isActive ? 'text-positive' : 'text-primary'"> 완료</span> 되었습니다.</span>
     </q-bar>
     <q-separator />
     <q-card-section class="q-py-sm q-px-none">
@@ -16,6 +18,8 @@ import { onBeforeMount, ref, watch } from 'vue';
 import { api } from 'boot/axios';
 import { useYearInfoStore } from 'src/store/setYearInfo';
 const storeYear = useYearInfoStore();
+
+const isShowMessage = ref(false);
 
 const empNmData = ref([]);
 const evalP1Data = ref([]);
@@ -117,6 +121,7 @@ onBeforeMount(async () => {
           evalP2Data.value.push(data[i].evaP2Xx);
           evalAttData.value.push(parseInt(0 - data[i].evaAtt));
         }
+        isShowMessage.value = true;
       }
     }
   } catch (error) {
@@ -133,7 +138,6 @@ const fetchData = async endpoint => {
   try {
     const response = await api.post(endpoint, {
       paramSetYear: storeYear.setYear,
-      paramEvaFg: '1',
     });
     console.log('data:: ', JSON.stringify(response));
     return response.data.data;

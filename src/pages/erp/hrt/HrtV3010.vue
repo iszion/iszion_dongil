@@ -17,8 +17,10 @@
             </div>
             <q-space />
             <div class="q-gutter-xs">
-              <q-btn outline color="primary" dense @click="getData"><q-icon name="search" size="xs" /> 조회 </q-btn>
-              <q-btn outline color="positive" dense @click="showSimulatedReturnData = false"><q-icon name="calculate" size="xs" /> 계산 </q-btn>
+              <q-btn outline color="primary" dense @click="getData"><q-icon name="search" size="xs" class="q-mr-xs" /> 조회 </q-btn>
+              <q-btn outline color="positive" dense @click="showSimulatedReturnData = false"
+                ><q-icon name="calculate" size="xs" class="q-mr-xs" /> 계산
+              </q-btn>
             </div>
           </q-toolbar>
         </q-card-actions>
