@@ -330,6 +330,7 @@ import notifySave from 'src/js_comm/notify-save';
 import commUtil from 'src/js_comm/comm-util';
 
 import { useYearInfoStore } from 'src/store/setYearInfo';
+import ImageView from 'components/ImageView.vue';
 const storeYear = useYearInfoStore();
 
 const $q = useQuasar();
@@ -447,6 +448,15 @@ const columnDefs = reactive({
       pinned: 'left',
     },
     {
+      headerName: '',
+      field: 'imageFileNm',
+      minWidth: 70,
+      maxWidth: 70,
+      filter: false,
+      pinned: 'left',
+      cellRenderer: ImageView,
+    },
+    {
       headerName: '소속팀',
       field: 'deptNm',
       maxWidth: 100,
@@ -522,11 +532,9 @@ const columnDefs = reactive({
       cellStyle: { textAlign: 'center' },
     },
     {
-      headerName: '퇴사일',
-      field: 'outDay',
-      valueFormatter: dateFormatter,
-      maxWidth: 130,
-      minWidth: 130,
+      headerName: '이미지파일명',
+      field: 'imageFileNm',
+      minWidth: 150,
       cellStyle: { textAlign: 'center' },
     },
   ],
@@ -920,8 +928,4 @@ async function getDataEvtgOption() {
 // const handleImageDelete = () => {};
 </script>
 
-<style lang="sass" scoped>
-.my-card
-  width: 100%
-  max-width: 350px
-</style>
+<style scoped></style>

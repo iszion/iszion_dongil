@@ -17,15 +17,15 @@
                 조회
               </q-btn>
 
-              <q-btn :disable="rowData.rows.length === 0" outline color="teal" @click="isExcelDownload" class="q-px-sm">
+              <q-btn :disable="rowData.rows.length === 0" outline color="teal" @click="isDialogVisible = true" class="q-px-sm">
                 <q-icon name="download" size="xs" class="q-mr-xs" />
-                엑셀
+                엑셀/출력
               </q-btn>
             </div>
           </q-toolbar>
           <q-separator />
           <q-card class="q-mt-sm">
-            <div id="printZone">
+            <div id="printZoneHeader">
               <div class="row q-px-xs">
                 <span class="text-h6">{{ storeYear.setYear }}년 인사평가 결과</span>
                 <q-space />
@@ -66,22 +66,28 @@
       </div>
       <q-separator />
       <q-card>
-        <div class="q-pa-md">
+        <div class="q-pa-sm">
           <q-carousel
             v-model="slide"
             swipeable
             animated
             padding
             arrows
+            :control-color="$q.dark.isActive ? 'white' : 'dark'"
             navigation
             navigation-icon="radio_button_unchecked"
             :style="contentBottomZoneStyle"
-            class="bg-purple text-white rounded-borders"
+            class="rounded-borders"
+            :class="$q.dark.isActive ? 'bg-grey-9 text-white' : 'bg-grey-3 text-dark'"
             @before-transition="beforeSlideChange"
           >
             <q-carousel-slide name="05" class="text-center">
               <q-scroll-area class="fit">
-                <q-icon name="style" size="sm" /><span class="text-subtitle1 text-bold q-ml-sm">[ 팀장 ] 인사평가결과</span>
+                <q-icon name="style" size="sm" />
+                <span class="text-h6 text-bold q-ml-sm">
+                  [ <span :class="$q.dark.isActive ? 'text-orange' : 'text-teal'">{{ activeSlideTitle }}</span>
+                  ] 인사평가결과
+                </span>
                 <q-separator class="q-my-sm" color="grey" />
                 <div :style="contentZoneStyle">
                   <ag-grid-vue
@@ -100,7 +106,11 @@
 
             <q-carousel-slide name="06" class="text-center">
               <q-scroll-area class="fit">
-                <q-icon name="style" size="sm" /><span class="text-subtitle1 text-bold q-ml-sm">[ 소장 ] 인사평가결과</span>
+                <q-icon name="style" size="sm" />
+                <span class="text-h6 text-bold q-ml-sm">
+                  [ <span :class="$q.dark.isActive ? 'text-orange' : 'text-teal'">{{ activeSlideTitle }}</span>
+                  ] 인사평가결과
+                </span>
                 <q-separator class="q-my-sm" color="grey" />
                 <div :style="contentZoneStyle">
                   <ag-grid-vue
@@ -119,7 +129,11 @@
 
             <q-carousel-slide name="07" class="text-center">
               <q-scroll-area class="fit">
-                <q-icon name="style" size="sm" /><span class="text-subtitle1 text-bold q-ml-sm">[ M3이상 ] 인사평가결과</span>
+                <q-icon name="style" size="sm" />
+                <span class="text-h6 text-bold q-ml-sm">
+                  [ <span :class="$q.dark.isActive ? 'text-orange' : 'text-teal'">{{ activeSlideTitle }}</span>
+                  ] 인사평가결과
+                </span>
                 <q-separator class="q-my-sm" color="grey" />
                 <div :style="contentZoneStyle">
                   <ag-grid-vue
@@ -138,7 +152,11 @@
 
             <q-carousel-slide name="08" class="text-center">
               <q-scroll-area class="fit">
-                <q-icon name="style" size="sm" /><span class="text-subtitle1 text-bold q-ml-sm">[ J이하 ] 인사평가결과</span>
+                <q-icon name="style" size="sm" />
+                <span class="text-h6 text-bold q-ml-sm">
+                  [ <span :class="$q.dark.isActive ? 'text-orange' : 'text-teal'">{{ activeSlideTitle }}</span>
+                  ] 인사평가결과
+                </span>
                 <q-separator class="q-my-sm" color="grey" />
                 <div :style="contentZoneStyle">
                   <ag-grid-vue
@@ -157,7 +175,11 @@
 
             <q-carousel-slide name="09" class="text-center">
               <q-scroll-area class="fit">
-                <q-icon name="style" size="sm" /><span class="text-subtitle1 text-bold q-ml-sm">[ SM급이상 ] 인사평가결과</span>
+                <q-icon name="style" size="sm" />
+                <span class="text-h6 text-bold q-ml-sm">
+                  [ <span :class="$q.dark.isActive ? 'text-orange' : 'text-teal'">{{ activeSlideTitle }}</span>
+                  ] 인사평가결과
+                </span>
                 <q-separator class="q-my-sm" color="grey" />
                 <div :style="contentZoneStyle">
                   <ag-grid-vue
@@ -176,7 +198,11 @@
 
             <q-carousel-slide name="10" class="text-center">
               <q-scroll-area class="fit">
-                <q-icon name="style" size="sm" /><span class="text-subtitle1 text-bold q-ml-sm">[ SD급이상 ] 인사평가결과</span>
+                <q-icon name="style" size="sm" />
+                <span class="text-h6 text-bold q-ml-sm">
+                  [ <span :class="$q.dark.isActive ? 'text-orange' : 'text-teal'">{{ activeSlideTitle }}</span>
+                  ] 인사평가결과
+                </span>
                 <q-separator class="q-my-sm" color="grey" />
                 <div :style="contentZoneStyle">
                   <ag-grid-vue
@@ -195,7 +221,11 @@
 
             <q-carousel-slide name="11" class="text-center">
               <q-scroll-area class="fit">
-                <q-icon name="style" size="sm" /><span class="text-subtitle1 text-bold q-ml-sm">[ CS급 ] 인사평가결과</span>
+                <q-icon name="style" size="sm" />
+                <span class="text-h6 text-bold q-ml-sm">
+                  [ <span :class="$q.dark.isActive ? 'text-orange' : 'text-teal'">{{ activeSlideTitle }}</span>
+                  ] 인사평가결과
+                </span>
                 <q-separator class="q-my-sm" color="grey" />
                 <div :style="contentZoneStyle">
                   <ag-grid-vue
@@ -214,7 +244,11 @@
 
             <q-carousel-slide name="12" class="text-center">
               <q-scroll-area class="fit">
-                <q-icon name="style" size="sm" /><span class="text-subtitle1 text-bold q-ml-sm">[ 별정직 ] 인사평가결과</span>
+                <q-icon name="style" size="sm" />
+                <span class="text-h6 text-bold q-ml-sm">
+                  [ <span :class="$q.dark.isActive ? 'text-orange' : 'text-teal'">{{ activeSlideTitle }}</span>
+                  ] 인사평가결과
+                </span>
                 <q-separator class="q-my-sm" color="grey" />
                 <div :style="contentZoneStyle">
                   <ag-grid-vue
@@ -235,6 +269,13 @@
       </q-card>
     </q-card>
   </q-page>
+  <q-dialog persistent full-height full-width v-model="isDialogVisible">
+    <q-card class="q-pa-none q-ma-none">
+      <q-card-section class="q-pa-none q-ma-none">
+        <hrt-v6010p :rowData="rowData.team" :slidTitle="activeSlideTitle" @close="handleClose" />
+      </q-card-section>
+    </q-card>
+  </q-dialog>
 </template>
 ㅌ
 <script setup>
@@ -245,14 +286,18 @@ import 'ag-grid-community/styles/ag-theme-balham.css';
 import { AgGridVue } from 'ag-grid-vue3';
 import { computed, onBeforeMount, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
 import { api } from 'boot/axios';
-import * as XLSX from 'xlsx';
 import { QBtn, QIcon, QToggle, SessionStorage, useQuasar } from 'quasar';
 import { useYearInfoStore } from 'src/store/setYearInfo';
-import state from '@quasar/app-vite/templates/app/ts/store/vuex/state';
+import HrtV6010p from 'pages/erp/hrt/HrtV6010p.vue';
 
 const storeYear = useYearInfoStore();
 
 const rowData = reactive({ rows: [], team: [] });
+const isDialogVisible = ref(false);
+function handleClose() {
+  console.log('handleClose called');
+  isDialogVisible.value = false;
+}
 
 // grid Height 자동처리부분1
 const gridHeight = ref(245); // 초기 높이
@@ -266,7 +311,7 @@ const contentBottomZoneStyle = computed(() => ({
   height: `${contentZoneHeight.value - 550}px`,
 }));
 const contentZoneStyle = computed(() => ({
-  height: `${contentZoneHeight.value - 750}px`,
+  height: `${contentZoneHeight.value - 680}px`,
 }));
 
 onBeforeUnmount(() => {
@@ -326,7 +371,7 @@ onMounted(() => {
       }
     });
   });
-  getData_team('05');
+  beforeSlideChange('05', '06');
 });
 
 // ======================================================
@@ -341,13 +386,13 @@ const handleResize = () => {
   // contentZoneHeight.value = window.innerHeight - state.height - 680;
 };
 // ======================================================
+const slideTitle = ['팀장', '소장', 'M3이상', 'J이하', 'SM급이상', 'SD급이상', 'CS급', '별정직'];
+const activeSlideTitle = ref(null);
 const beforeSlideChange = (to, from) => {
-  console.log('check : ', to, from);
+  activeSlideTitle.value = slideTitle[to - 5];
   getData_team(to);
 };
 const slide = ref('05');
-const lorem =
-  'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Itaque voluptatem totam, architecto cupiditate officia rerum, error dignissimos praesentium libero ab nemo.';
 
 const gridApiTeam = ref(null);
 const onGridReadyTeam = params => {
@@ -410,7 +455,7 @@ const columnDefs = reactive({
       headerName: '역량평가(편차)',
       field: 'evaP2Xx',
       minWidth: 120,
-      maxWidth: 120,
+      maxWidth: 140,
     },
     {
       headerName: '근태',
@@ -423,6 +468,11 @@ const columnDefs = reactive({
       field: 'evaFinalPoint',
       minWidth: 120,
       maxWidth: 120,
+    },
+    {
+      headerName: '기타',
+      field: '',
+      minWidth: 120,
     },
   ],
 });

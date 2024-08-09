@@ -257,6 +257,7 @@ import jsonUtil from 'src/js_comm/json-util';
 import notifySave from 'src/js_comm/notify-save';
 import commUtil from 'src/js_comm/comm-util';
 import { useYearInfoStore } from 'src/store/setYearInfo';
+import ImageView from 'components/ImageView.vue';
 const storeYear = useYearInfoStore();
 
 const $q = useQuasar();
@@ -362,6 +363,15 @@ const columnDefs = reactive({
       pinned: 'left',
     },
     {
+      headerName: '',
+      field: 'imageFileNm',
+      minWidth: 70,
+      maxWidth: 70,
+      filter: false,
+      pinned: 'left',
+      cellRenderer: ImageView,
+    },
+    {
       headerName: '닉네임',
       field: 'userNmx',
       maxWidth: 100,
@@ -434,7 +444,7 @@ const columnDefs = reactive({
     },
     {
       headerName: '파일명',
-      field: 'filename',
+      field: 'imageFileNm',
       maxWidth: 100,
       minWidth: 100,
       cellStyle: { textAlign: 'center' },
