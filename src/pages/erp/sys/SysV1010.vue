@@ -128,8 +128,8 @@
                     <div class="col-12 col-md-6">
                       <q-card class="q-pa-xs shadow-7">
                         <q-card-section horizontal>
-                          <q-img spinner-color="white" class="" :src="`https://hr.energyshop.co.kr/images/${formData.imageFileNm}`" />
-                          <!--                          <q-img spinner-color="white" class="" :src="`https://www.iszion.com/images/${formData.imageFileNm}`" />-->
+                          <!--                          <q-img spinner-color="white" class="" :src="`https://hr.energyshop.co.kr/images/${formData.imageFileNm}`" />-->
+                          <q-img spinner-color="white" class="" :src="`https://www.iszion.com/images/${formData.imageFileNm}`" />
                         </q-card-section>
                       </q-card>
                     </div>

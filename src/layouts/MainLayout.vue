@@ -110,8 +110,8 @@
             <div class="text-subtitle2 text-bold q-mr-sm">{{ storeUser.setEmpNm }}</div>
           </div>
           <q-avatar color="deep-orange">
-            <q-img loading="eager" :src="`https://hr.energyshop.co.kr/images/${userImageName}`" />
-            <!--            <q-img loading="eager" :src="`https://www.iszion.com/images/${userImageName}`" />-->
+            <!--            <q-img loading="eager" :src="`https://hr.energyshop.co.kr/images/${userImageName}`" />-->
+            <q-img loading="eager" :src="`https://www.iszion.com/images/${userImageName}`" />
           </q-avatar>
           <q-menu :offset="[0, 10]" transition-show="scale" transition-hide="scale">
             <q-list style="min-width: 100px">

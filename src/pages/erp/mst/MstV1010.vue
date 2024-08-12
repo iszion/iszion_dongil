@@ -126,8 +126,8 @@
                   <div class="row q-col-gutter-xl">
                     <div class="col-12 col-md-6">
                       <q-card class="q-ma-xs q-pa-sm">
-                        <q-img :src="`https://hr.energyshop.co.kr/images/${formData.imageFileNm}`" />
-                        <!--                        <q-img :src="`https://www.iszion.com/images/${formData.imageFileNm}`" />-->
+                        <!--                        <q-img :src="`https://hr.energyshop.co.kr/images/${formData.imageFileNm}`" />-->
+                        <q-img :src="`https://www.iszion.com/images/${formData.imageFileNm}`" />
                         <div class="row q-pa-xs">
                           <q-avatar
                             v-if="!formDisable"
