@@ -181,7 +181,7 @@ const columnDefs = reactive({
       headerName: '사번',
       field: 'empCd',
       pinned: 'left',
-      minWidth: 90,
+      minWidth: 100,
       resizable: true,
       cellStyle: params => {
         return getStatusMessageStyle(params.data);
@@ -334,22 +334,6 @@ const columnDefs = reactive({
       },
     },
     {
-      headerName: '역량조정환산',
-      field: 'evaP2Xx',
-      minWidth: 100,
-      cellStyle: params => {
-        return getStatusMessageStyle(params.data);
-      },
-    },
-    {
-      headerName: '환산최종점수',
-      field: 'evaPoint',
-      minWidth: 100,
-      cellStyle: params => {
-        return $q.dark.isActive ? { color: 'orange' } : { color: 'blue' };
-      },
-    },
-    {
       headerName: '근태점수',
       field: 'evaAtt',
       minWidth: 100,
@@ -359,10 +343,27 @@ const columnDefs = reactive({
       },
     },
     {
+      headerName: '역량조정환산',
+      field: 'evaP2Xx',
+      minWidth: 100,
+      cellStyle: params => {
+        return getStatusMessageStyle(params.data);
+      },
+    },
+    {
       headerName: '최종점수',
       field: 'evaFinalPoint',
+      pinned: 'right',
       minWidth: 120,
       maxWidth: 120,
+      cellStyle: { color: 'blue' },
+    },
+    {
+      headerName: '등급',
+      field: 'evaGrade',
+      pinned: 'right',
+      minWidth: 90,
+      maxWidth: 90,
       cellStyle: { color: 'blue' },
     },
   ],
@@ -632,8 +633,10 @@ const headerGroup = reactive({
     'evaP2Comp',
     'evaDivAvg',
     'evaP2Sd',
+    'evaAtt',
     'evaP2Xx',
-    'evaPoint',
+    'evaFinalPoint',
+    'evaGrade',
   ],
   headRow1: [
     { name: '소속', rowspan: 1, colspan: 1, key: 'deptNm' },
@@ -655,8 +658,9 @@ const headerGroup = reactive({
     { name: '역량조정점수', rowspan: 1, colspan: 1, key: 'evaP2Comp' },
     { name: '본부별평균', rowspan: 1, colspan: 1, key: 'evaDicAvg' },
     { name: '소속표준편차', rowspan: 1, colspan: 1, key: 'evaP2Sd' },
+    { name: '근태', rowspan: 1, colspan: 1, key: 'evaAtt' },
     { name: '역량조정환산', rowspan: 1, colspan: 1, key: 'evaP2Xx' },
-    { name: '환산최종점수', rowspan: 1, colspan: 1, key: 'evaPoint' },
+    { name: '최종점수', rowspan: 1, colspan: 1, key: 'evaFinalPoint' },
   ],
 });
 

@@ -128,8 +128,12 @@
                     <div class="col-12 col-md-6">
                       <q-card class="q-pa-xs shadow-7">
                         <q-card-section horizontal>
-                          <!--                          <q-img spinner-color="white" class="" :src="`https://hr.energyshop.co.kr/images/${formData.imageFileNm}`" />-->
-                          <q-img spinner-color="white" class="" :src="`https://www.iszion.com/images/${formData.imageFileNm}`" />
+                          <q-img
+                            spinner-color="white"
+                            class=""
+                            :src="`https://hr.energyshop.co.kr/images/${formData.imageFileNm}?${new Date().getTime()}`"
+                          />
+                          <!--                          <q-img spinner-color="white" class="" :src="`https://www.iszion.com/images/${formData.imageFileNm}?${new Date().getTime()}`" />-->
                         </q-card-section>
                       </q-card>
                     </div>
@@ -312,7 +316,7 @@ onBeforeUnmount(() => {
 onBeforeMount(() => {
   rowSelection.value = 'single';
   getData();
-  // getDataDeptOption();
+  getDataDeptOption();
   // getDataPstnOption();
   // getDataTitlOption();
   getDataCommOption('901'); // 보안레벨
@@ -674,7 +678,6 @@ async function getDataDeptOption() {
     const response = await api.post('/api/mst/dept_option_list', { paramSetYear: storeYear.setYear });
     deptOptions.value = response.data.data;
     deptOptionsSearch.value = JSON.parse(JSON.stringify(deptOptions.value));
-    console.log(JSON.stringify(deptOptionsSearch.value));
     deptOptionsSearch.value.push({ deptCd: '', deptNm: '전체' });
   } catch (error) {
     console.error('Error fetching users:', error);

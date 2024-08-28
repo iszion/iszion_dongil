@@ -50,7 +50,7 @@
       </q-card-section>
 
       <div ref="gridZone" class="row q-col-gutter-x-lg">
-        <div class="col-xs-12 col-md-12 col-lg-6">
+        <div class="col-xs-12 col-md-12 col-lg-5">
           <q-card class="q-pa-sm">
             <q-toolbar class="row q-px-none">
               <q-avatar color="red" text-color="white" size="md">1번</q-avatar>
@@ -70,7 +70,7 @@
             <q-card class="">
               <q-tabs active-class="bg-blue" v-model="setItemFg" inline-label class="text-white bg-grey-6 shadow-2" @update:model-value="onTabChange">
                 <q-tab name="2021102" icon="people_alt" label="평가항목(팀원)" class="" />
-                <q-tab name="2021101" icon="groups_2" label="평가항목(팀장/소장)" />
+                <q-tab v-if="storeUser.setCatgCd < '05'" name="2021101" icon="groups_2" label="평가항목(팀장/소장)" />
               </q-tabs>
               <q-separator spaced />
               <q-tab-panels v-model="setItemFg" animated>
@@ -111,8 +111,7 @@
             </q-card>
           </q-card>
         </div>
-        <div class="col-xs-12 col-md-12 col-lg-6">
-          <!--      {{ contentZoneHeight }} = {{ state.height }}-->
+        <div class="col-xs-12 col-md-12 col-lg-7">
           <q-card class="q-pa-xs">
             <q-toolbar class="row q-pa-none">
               <q-avatar color="red" text-color="white" size="md">2번</q-avatar>
@@ -137,235 +136,269 @@
                 초기화
               </q-btn>
             </q-toolbar>
-            <div class="row">
-              <div class="col-12 row">
-                <div class="col-xs-12 col-sm-12 col-md-5 q-mb-sm">
-                  <q-card square class="bg-grey" style="height: 60px">
-                    <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">인사정보</div>
-                    <div class="row">
-                      <div class="col-md-2 text-center text-subtitle1 q-py-xs">No</div>
-                      <div class="col-md-3 text-subtitle1 q-py-xs">성명</div>
-                      <div class="col-md-7 text-subtitle1 q-py-xs">소속/직급</div>
-                    </div>
-                  </q-card>
-                </div>
-                <div class="col-xs-12 col-sm-12 col-md-7 q-mb-sm">
-                  <q-card square class="bg-grey" style="height: 60px">
-                    <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">평가하기</div>
-                    <div v-if="setTotEva" class="q-pa-sm text-subtitle1 text-bold flex flex-center q-gutter-x-lg">
-                      <span class="text-blue-9 q-mr-xs">S </span> ( {{ pointValue.cnt.S }} ) <span class="text-cyan-9 q-mr-xs">A</span> (
-                      {{ pointValue.cnt.A }} ) <span class="text-teal-8 q-mr-xs">B</span> ( {{ pointValue.cnt.B }} )
-                      <span class="text-green-8 q-mr-xs">C</span> ( {{ pointValue.cnt.C }} ) <span class="text-deep-orange-9 q-mr-xs">D</span> (
-                      {{ pointValue.cnt.D }} )
-                    </div>
-                    <div v-if="!setTotEva" class="q-pa-sm text-subtitle1 text-bold flex flex-center q-gutter-x-lg">
-                      S선택시 사유를 입력하고 저장버튼을 클릭하세요
-                    </div>
-                    <div v-if="setTotEva" class="row">
-                      <div class="col-md-9 text-center">
-                        <q-radio
-                          keep-color
-                          left-label
-                          v-model="tmpMark.markCh"
-                          :disable="formReadonly"
-                          val="S"
-                          :label="`S(${pointValue.cnt.S})`"
-                          color="blue"
-                          class="text-subtitle1 text-bold"
-                          @update:model-value="val => handlePointClickAll(val)"
-                        />
-                        <q-radio
-                          keep-color
-                          left-label
-                          v-model="tmpMark.markCh"
-                          :disable="formReadonly"
-                          val="A"
-                          :label="`A(${pointValue.cnt.A})`"
-                          color="cyan"
-                          class="text-subtitle1 text-bold"
-                          @update:model-value="val => handlePointClickAll(val)"
-                        />
-                        <q-radio
-                          keep-color
-                          left-label
-                          v-model="tmpMark.markCh"
-                          :disable="formReadonly"
-                          val="B"
-                          :label="`B(${pointValue.cnt.B})`"
-                          color="teal"
-                          class="text-subtitle1 text-bold"
-                          @update:model-value="val => handlePointClickAll(val)"
-                        />
-                        <q-radio
-                          keep-color
-                          left-label
-                          v-model="tmpMark.markCh"
-                          :disable="formReadonly"
-                          val="C"
-                          :label="`C(${pointValue.cnt.C})`"
-                          color="green"
-                          class="text-subtitle1 text-bold"
-                          @update:model-value="val => handlePointClickAll(val)"
-                        />
-                        <q-radio
-                          keep-color
-                          left-label
-                          v-model="tmpMark.markCh"
-                          :disable="formReadonly"
-                          val="D"
-                          :label="`D(${pointValue.cnt.D})`"
-                          color="deep-orange"
-                          class="text-subtitle1 text-bold"
-                          @update:model-value="val => handlePointClickAll(val)"
-                        />
-                      </div>
-                    </div>
-                  </q-card>
-                </div>
+            <div class="col-12 row">
+              <div class="col-xs-12 col-sm-12 col-md-6 q-mb-sm">
+                <q-card square class="bg-grey" style="height: 60px">
+                  <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">인사정보</div>
+                  <div class="row">
+                    <div class="col-md-2 text-center text-subtitle1 q-py-xs">No</div>
+                    <div class="col-md-3 text-subtitle1 q-py-xs">성명</div>
+                    <div class="col-md-7 text-subtitle1 q-py-xs">소속/직급</div>
+                  </div>
+                </q-card>
               </div>
+              <div class="col-xs-12 col-sm-12 col-md-6 q-mb-sm">
+                <q-card square class="bg-grey" style="height: 60px">
+                  <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">평가하기</div>
+                  <div v-if="setTotEva" class="q-pa-sm text-subtitle1 text-bold flex flex-center q-gutter-x-lg">
+                    <span class="text-blue-9 q-mr-xs">S </span> ( {{ pointValue.cnt.S }} ) <span class="text-cyan-9 q-mr-xs">A</span> (
+                    {{ pointValue.cnt.A }} ) <span class="text-teal-8 q-mr-xs">B</span> ( {{ pointValue.cnt.B }} )
+                    <span class="text-green-8 q-mr-xs">C</span> ( {{ pointValue.cnt.C }} ) <span class="text-deep-orange-9 q-mr-xs">D</span> (
+                    {{ pointValue.cnt.D }} )
+                  </div>
+                  <div v-if="!setTotEva" class="q-pa-sm text-subtitle1 text-bold flex flex-center q-gutter-x-lg">
+                    S선택시 사유를 입력하고 저장버튼을 클릭하세요
+                  </div>
+                  <div v-if="setTotEva" class="row">
+                    <div class="col-md-9 text-center">
+                      <q-radio
+                        keep-color
+                        left-label
+                        v-model="tmpMark.markCh"
+                        :disable="formReadonly"
+                        val="S"
+                        :label="`S(${pointValue.cnt.S})`"
+                        color="blue"
+                        class="text-subtitle1 text-bold"
+                        @update:model-value="val => handlePointClickAll(val)"
+                      />
+                      <q-radio
+                        keep-color
+                        left-label
+                        v-model="tmpMark.markCh"
+                        :disable="formReadonly"
+                        val="A"
+                        :label="`A(${pointValue.cnt.A})`"
+                        color="cyan"
+                        class="text-subtitle1 text-bold"
+                        @update:model-value="val => handlePointClickAll(val)"
+                      />
+                      <q-radio
+                        keep-color
+                        left-label
+                        v-model="tmpMark.markCh"
+                        :disable="formReadonly"
+                        val="B"
+                        :label="`B(${pointValue.cnt.B})`"
+                        color="teal"
+                        class="text-subtitle1 text-bold"
+                        @update:model-value="val => handlePointClickAll(val)"
+                      />
+                      <q-radio
+                        keep-color
+                        left-label
+                        v-model="tmpMark.markCh"
+                        :disable="formReadonly"
+                        val="C"
+                        :label="`C(${pointValue.cnt.C})`"
+                        color="green"
+                        class="text-subtitle1 text-bold"
+                        @update:model-value="val => handlePointClickAll(val)"
+                      />
+                      <q-radio
+                        keep-color
+                        left-label
+                        v-model="tmpMark.markCh"
+                        :disable="formReadonly"
+                        val="D"
+                        :label="`D(${pointValue.cnt.D})`"
+                        color="deep-orange"
+                        class="text-subtitle1 text-bold"
+                        @update:model-value="val => handlePointClickAll(val)"
+                      />
+                    </div>
+                  </div>
+                </q-card>
+              </div>
+            </div>
 
-              <q-separator />
+            <q-separator />
+
+            <q-scroll-area :style="contentZoneStyle">
               <div v-if="isShowMessage" style="width: 100%" class="q-pa-xl">
                 <span class="text-subtitle1 text-bold row flex-center">관련팀원이 없습니다.</span>
               </div>
-
-              <div style="width: 100%" v-for="(data, index) in rowData.rowsSel" :key="data.seq" class="q-mb-sm">
-                <div class="row">
-                  <q-card class="col-xs-12 col-sm-12 col-md-5 shadow-3">
-                    <div class="row">
-                      <div class="col-xs-2 col-sm-2 col-md-2">
-                        <div class="text-subtitle1 text-center q-pa-xs">
-                          {{ index + 1 }}
-                        </div>
-                      </div>
-                      <div class="col-xs-3 col-sm-3 col-md-3">
-                        <div class="text-subtitle1 q-pa-xs" :class="data.markPoint > 0 ? 'text-blue' : ''">{{ data.evtEmpNm }}</div>
-                      </div>
-                      <div class="col-xs-2 col-sm-2 col-md-7">
-                        <div class="text-subtitle2 q-py-sm q-pl-sm">{{ data.evtDeptNm }} / {{ data.evtTitlNm }}</div>
+              <div style="width: 100%" v-for="(data, index) in rowData.rowsSel" :key="data.seq" class="q-mb-sm row">
+                <q-card class="col-xs-12 col-sm-12 col-md-6 shadow-3">
+                  <div class="row">
+                    <div class="col-xs-2 col-sm-2 col-md-1">
+                      <div class="text-subtitle1 text-center q-pa-xs">
+                        {{ index + 1 }}
                       </div>
                     </div>
-                    <div v-if="viewInfo.attenYn" class="row q-gutter-x-lg flex-center">
-                      <div class="">
-                        지각: <span class="text-red text-bold">{{ data.attenCh1 }}</span>
-                      </div>
-                      <div class="">
-                        미체크: <span class="text-red text-bold">{{ data.attenCh2 }}</span>
-                      </div>
-                      <div class="">
-                        결근: <span class="text-red text-bold">{{ data.attenCh3 }}</span>
-                      </div>
-                    </div>
-                  </q-card>
-                  <q-card class="col-xs-12 col-sm-12 col-md-7 shadow-3">
-                    <div class="row">
-                      <div class="col-md-9 text-center">
-                        <q-radio
-                          keep-color
-                          left-label
-                          v-model="data.markCh"
-                          :disable="formReadonly"
-                          val="S"
-                          label="S"
-                          color="blue"
-                          class="text-subtitle1 text-bold"
-                          @update:model-value="val => handlePointClick(val, data)"
-                        />
-                        <q-radio
-                          keep-color
-                          left-label
-                          v-model="data.markCh"
-                          :disable="formReadonly"
-                          val="A"
-                          label="A"
-                          color="cyan"
-                          class="text-subtitle1 text-bold"
-                          @update:model-value="val => handlePointClick(val, data)"
-                        />
-                        <q-radio
-                          keep-color
-                          left-label
-                          v-model="data.markCh"
-                          :disable="formReadonly"
-                          val="B"
-                          label="B"
-                          color="teal"
-                          class="text-subtitle1 text-bold"
-                          @update:model-value="val => handlePointClick(val, data)"
-                        />
-                        <q-radio
-                          keep-color
-                          left-label
-                          v-model="data.markCh"
-                          :disable="formReadonly"
-                          val="C"
-                          label="C"
-                          color="green"
-                          class="text-subtitle1 text-bold"
-                          @update:model-value="val => handlePointClick(val, data)"
-                        />
-                        <q-radio
-                          keep-color
-                          left-label
-                          v-model="data.markCh"
-                          :disable="formReadonly"
-                          val="D"
-                          label="D"
-                          color="deep-orange"
-                          class="text-subtitle1 text-bold"
-                          @update:model-value="val => handlePointClick(val, data)"
-                        />
-                      </div>
-                      <div class="col-md-3 flex flex-center">
-                        <span class="q-ml-lg text-center self-center text-subtitle1 text-bold">
-                          ( <span class="text-blue">{{ data.markPoint }}</span> )
-                        </span>
+                    <div class="col-xs-2 col-sm-2 col-md-2">
+                      <div class="flex flex-center">
+                        <q-avatar v-if="data.imageFileNm">
+                          <q-img
+                            class="cursor-pointer"
+                            :src="`https://hr.energyshop.co.kr/imagesThumbnail/${data.imageFileNm}?${new Date().getTime()}`"
+                            style="max-height: 50px"
+                            @click="handleShowImage(data)"
+                          />
+                        </q-avatar>
+                        <q-icon v-if="!data.imageFileNm" name="face" color="teal" size="50px" style="height: 50px" />
                       </div>
                     </div>
-                    <div class="q-pa-sm">
-                      <q-input
-                        dense
-                        v-if="data.markCh === 'S'"
-                        :readonly="formReadonly"
-                        label-color="red"
-                        v-model="data.sExplains"
-                        label="S 점수의 사유"
-                        :hint="`${byteCount} / 한글기준(50자). (기본으로 문자5자이상 입력해야 등록가능)`"
-                        @update:model-value="updateByteCount"
-                      >
-                        <template v-slot:append>
-                          <q-icon v-if="data.sExplains !== '' && !formReadonly" name="close" @click="data.sExplains = ''" class="cursor-pointer">
-                          </q-icon>
-                          <q-icon
-                            v-if="data.sExplains !== '' && data.sExplains.trim().length > 5 && !formReadonly"
-                            name="save"
-                            @click="handlePointClick('S', data)"
-                            class="cursor-pointer q-ml-sm"
+                    <div class="col-xs-3 col-sm-3 col-md-3">
+                      <div class="text-subtitle1 q-pa-xs" :class="data.markPoint > 0 ? 'text-blue' : ''">{{ data.evtEmpNm }}</div>
+                    </div>
+                    <div class="col-xs-2 col-sm-2 col-md-6">
+                      <div class="text-subtitle2 q-py-sm q-pl-sm">{{ data.evtDeptNm }} / {{ data.evtTitlNm }}</div>
+                    </div>
+                  </div>
+                  <div v-if="viewInfo.attenYn" class="row q-gutter-x-lg flex-center">
+                    <div class="">
+                      지각: <span class="text-red text-bold">{{ data.attenCh1 }}</span>
+                    </div>
+                    <div class="">
+                      미체크: <span class="text-red text-bold">{{ data.attenCh2 }}</span>
+                    </div>
+                    <div class="">
+                      결근: <span class="text-red text-bold">{{ data.attenCh3 }}</span>
+                    </div>
+                  </div>
+                </q-card>
+                <q-card class="col-xs-12 col-sm-12 col-md-6 shadow-3">
+                  <div class="row">
+                    <div class="col-md-9 text-center">
+                      <q-radio
+                        keep-color
+                        left-label
+                        v-model="data.markCh"
+                        :disable="formReadonly"
+                        val="S"
+                        label="S"
+                        color="blue"
+                        class="text-subtitle1 text-bold"
+                        @update:model-value="val => handlePointClick(val, data)"
+                      />
+                      <q-radio
+                        keep-color
+                        left-label
+                        v-model="data.markCh"
+                        :disable="formReadonly"
+                        val="A"
+                        label="A"
+                        color="cyan"
+                        class="text-subtitle1 text-bold"
+                        @update:model-value="val => handlePointClick(val, data)"
+                      />
+                      <q-radio
+                        keep-color
+                        left-label
+                        v-model="data.markCh"
+                        :disable="formReadonly"
+                        val="B"
+                        label="B"
+                        color="teal"
+                        class="text-subtitle1 text-bold"
+                        @update:model-value="val => handlePointClick(val, data)"
+                      />
+                      <q-radio
+                        keep-color
+                        left-label
+                        v-model="data.markCh"
+                        :disable="formReadonly"
+                        val="C"
+                        label="C"
+                        color="green"
+                        class="text-subtitle1 text-bold"
+                        @update:model-value="val => handlePointClick(val, data)"
+                      />
+                      <q-radio
+                        keep-color
+                        left-label
+                        v-model="data.markCh"
+                        :disable="formReadonly"
+                        val="D"
+                        label="D"
+                        color="deep-orange"
+                        class="text-subtitle1 text-bold"
+                        @update:model-value="val => handlePointClick(val, data)"
+                      />
+                    </div>
+                    <div class="col-md-3 flex flex-center">
+                      <span class="q-ml-lg text-center self-center text-subtitle1 text-bold">
+                        ( <span class="text-blue">{{ data.markPoint }}</span> )
+                      </span>
+                    </div>
+                  </div>
+                  <div class="q-pa-sm">
+                    <q-input
+                      dense
+                      v-if="data.markCh === 'S'"
+                      :readonly="formReadonly"
+                      label-color="red"
+                      v-model="data.sExplains"
+                      label="S 점수의 사유"
+                      :hint="`${byteCount} / 한글기준(50자). (기본으로 문자5자이상 입력해야 등록가능)`"
+                      @update:model-value="updateByteCount"
+                    >
+                      <template v-slot:append>
+                        <q-icon v-if="data.sExplains !== '' && !formReadonly" name="close" @click="data.sExplains = ''" class="cursor-pointer">
+                        </q-icon>
+                        <q-icon
+                          v-if="data.sExplains !== '' && data.sExplains.trim().length > 5 && !formReadonly"
+                          name="save"
+                          @click="handlePointClick('S', data)"
+                          class="cursor-pointer q-ml-sm"
+                        >
+                          <q-tooltip
+                            class="bg-amber text-black shadow-4"
+                            anchor="top middle"
+                            self="bottom middle"
+                            transition-show="rotate"
+                            transition-hide="rotate"
+                            :offset="[10, 10]"
                           >
-                            <q-tooltip
-                              class="bg-amber text-black shadow-4"
-                              anchor="top middle"
-                              self="bottom middle"
-                              transition-show="rotate"
-                              transition-hide="rotate"
-                              :offset="[10, 10]"
-                            >
-                              <q-icon name="save" size="0.8rem" />
-                              <strong> 저장하기 </strong>
-                            </q-tooltip>
-                          </q-icon>
-                        </template>
-                      </q-input>
-                    </div>
-                  </q-card>
-                </div>
+                            <q-icon name="save" size="0.8rem" />
+                            <strong> 저장하기 </strong>
+                          </q-tooltip>
+                        </q-icon>
+                      </template>
+                    </q-input>
+                  </div>
+                </q-card>
               </div>
-            </div>
-            <!--        </q-scroll-area>-->
+            </q-scroll-area>
           </q-card>
         </div>
       </div>
     </q-card>
+
+    <!-- 이미지 원본보기 Dialog -->
+    <q-dialog v-model="dialogOpen">
+      <q-card bordered style="max-width: 450px; width: 100%">
+        <q-img :src="showImage.fullImageUrl" style="max-width: 100%; max-height: 100vh" />
+        <q-card-section>
+          <div class="row no-wrap items-center">
+            <div class="col text-h6 ellipsis">{{ showImage.empNm }}</div>
+            <div class="q-gutter-x-sm">
+              <span class="text-subtitle1">{{ showImage.deptNm }}</span>
+              <span class="text-subtitle2">{{ showImage.titlNm }}</span>
+            </div>
+          </div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none"> </q-card-section>
+
+        <q-separator />
+
+        <q-card-actions align="right">
+          <q-btn v-close-popup flat color="primary" label="닫기" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -571,7 +604,7 @@ const myTweak = offset => {
   return { minHeight: offset ? `calc(100vh - ${offset}px)` : '100vh' };
 };
 const handleResize = () => {
-  contentZoneHeight.value = window.innerHeight - screenSizeHeight.value - 730;
+  contentZoneHeight.value = window.innerHeight - screenSizeHeight.value - 360;
   // contentZoneHeight.value = window.innerHeight - state.height - 680;
 };
 // ======================================================
@@ -975,6 +1008,23 @@ const saveDataAndHandleResult = async resFormData => {
 // **************************************************************//
 // ***** DataBase 연결부분 끝  *************************************//
 // **************************************************************//
+// 이미지 팝업 뷰
+const dialogOpen = ref(false);
+const showImage = ref({
+  fullImageUrl: '',
+  empNm: '',
+  deptNm: '',
+  titlNm: '',
+});
+const handleShowImage = data => {
+  showImage.value.fullImageUrl = `https://hr.energyshop.co.kr/images/${data.imageFileNm}?${new Date().getTime()}`;
+  showImage.value.empNm = data.evtEmpNm;
+  showImage.value.deptNm = data.evtDeptNm;
+  showImage.value.titlNm = data.evtTitlNm;
+  dialogOpen.value = true;
+};
+// 이미지 팝업 뷰 끝
+
 const byteCount = ref(0);
 const updateByteCount = val => {
   if (val) {

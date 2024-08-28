@@ -41,6 +41,7 @@
                 <th rowspan="1" colspan="2">역량평가</th>
                 <th rowspan="2" colspan="1">근태</th>
                 <th rowspan="2" colspan="1">최종평가</th>
+                <th rowspan="2" colspan="1">평가등급</th>
                 <th rowspan="2" colspan="1">기타</th>
               </tr>
               <tr>
@@ -59,6 +60,7 @@
                 <td>{{ data.evaP1Xx }}</td>
                 <td>{{ data.evaAtt }}</td>
                 <td>{{ data.evaFinalPoint }}</td>
+                <td>{{ data.evaGrade }}</td>
                 <td></td>
               </tr>
             </table>
@@ -93,7 +95,7 @@ const isPrintReport = () => {
   printJS({
     printable: 'printZone',
     type: 'html',
-    css: ['/src/css/print/hrt6010p.css'],
+    css: ['/css/print/hrt6010p.css'],
     scanStyles: false,
   });
 };
@@ -138,6 +140,7 @@ const headerGroup = reactive({
     { name: '역량평가', rowspan: 1, colspan: 2 },
     { name: '근태', rowspan: 2, colspan: 1, key: 'evaAtt' },
     { name: '최종평가점수', rowspan: 2, colspan: 1, key: 'evaFinalPoint' },
+    { name: '평가등급', rowspan: 2, colspan: 1, key: 'evaGrade' },
   ],
   headRow2: [
     { name: '소속', rowspan: 1, colspan: 1, key: 'deptNm' },

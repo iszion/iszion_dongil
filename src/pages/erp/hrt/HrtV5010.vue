@@ -204,8 +204,26 @@ const columnDefs = reactive({
       maxWidth: 90,
     },
     {
+      headerName: '성과점수',
+      field: 'evaP1X',
+      minWidth: 120,
+      maxWidth: 120,
+    },
+    {
+      headerName: '역량점수',
+      field: 'evaP2Xx',
+      minWidth: 120,
+      maxWidth: 120,
+    },
+    {
       headerName: '평가점수',
       field: 'finalPoint',
+      minWidth: 120,
+      maxWidth: 120,
+    },
+    {
+      headerName: '평가등급',
+      field: 'evaGrade',
       minWidth: 120,
       maxWidth: 120,
     },

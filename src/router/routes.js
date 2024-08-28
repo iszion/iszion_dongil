@@ -33,6 +33,7 @@ const routes = [
       { path: 'hrt4030', component: () => import('pages/erp/hrt/HrtV4030.vue') },
       { path: 'hrt5010', component: () => import('pages/erp/hrt/HrtV5010.vue') },
       { path: 'hrt6010', component: () => import('pages/erp/hrt/HrtV6010.vue') },
+      { path: 'hrt6020', component: () => import('pages/erp/hrt/HrtV6020.vue') },
       { path: 'hrt9000', component: () => import('pages/erp/hrt/HrtV9000.vue') },
       { path: 'hrt9001', component: () => import('pages/erp/hrt/HrtV9001.vue') },
       { path: 'hrt9002', component: () => import('pages/erp/hrt/HrtV9002.vue') },

@@ -95,7 +95,7 @@ const isPrintReport = () => {
   printJS({
     printable: 'printZone',
     type: 'html',
-    css: ['/src/css/print/hrt2020.css'],
+    css: ['/css/print/hrt2020.css'],
     scanStyles: false,
   });
 };

@@ -164,6 +164,13 @@ const columnDefs = reactive({
       filter: true,
     },
     {
+      headerName: '상위부서코드',
+      field: 'upDeptCd',
+      minWidth: 120,
+      maxWidth: 120,
+      filter: true,
+    },
+    {
       headerName: '처리순서',
       field: 'seq',
       maxWidth: 100,
@@ -225,6 +232,7 @@ const addDataSection = () => {
     oldDeptCd: '',
     deptNm: '',
     depgNm: '',
+    upDeptCd: '',
     depgCd: '1011003',
     seq: rowData.rows.length + 1,
     iuD: 'I',

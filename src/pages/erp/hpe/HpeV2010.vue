@@ -54,7 +54,7 @@
                 승인대기취소
               </q-btn>
             </q-toolbar>
-            <div :style="{ height: gridHeight + 30 + 'px' }">
+            <div :style="contentZoneStyle">
               <ag-grid-vue
                 style="width: 100%; height: 100%"
                 :class="$q.dark.isActive ? 'ag-theme-alpine-dark' : 'ag-theme-alpine'"
@@ -117,49 +117,91 @@
                 </q-btn>
               </div>
             </q-toolbar>
-            <!--        <q-scroll-area :style="contentZoneStyle">-->
-            <div class="row">
-              <q-card flat bordered style="width: 100%" v-for="data in rowData.rowsSel" :key="data.workNo" class="q-mb-sm">
-                <div class="row">
-                  <q-card class="col-xs-12 col-sm-1">
-                    <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">순번</div>
-                    <div class="text-center q-pa-xs" :class="$q.screen.xs ? '' : 'row flex-center'" style="height: 100%">
-                      {{ data.seq }}
+            <q-separator size="3px" />
+            <q-scroll-area :style="contentZoneStyle">
+              <div style="width: 100%" v-for="data in rowData.rowsSel" :key="data.workNo" class="q-mb-sm row">
+                <q-card class="col-xs-12 col-sm-1">
+                  <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">순번</div>
+                  <div class="text-center q-pa-xs" :class="$q.screen.xs ? '' : 'row flex-center'" style="height: 100%">
+                    <div class="flex flex-center">
+                      <q-img
+                        v-if="data.imageFileNm"
+                        class="cursor-pointer"
+                        :src="`https://hr.energyshop.co.kr/imagesThumbnail/${data.imageFileNm}?${new Date().getTime()}`"
+                        style="max-height: 130px"
+                        @click="handleShowImage(data)"
+                      />
+                      <q-icon v-if="!data.imageFileNm" name="face" color="teal" size="50px" style="height: 130px" />
+                      <q-list>
+                        <q-item>
+                          <q-item-section avatar>
+                            <q-icon color="primary" name="numbers" />
+                          </q-item-section>
+
+                          <q-item-section>
+                            <q-item-label class="text-subtitle1 text-bold">{{ data.seq }} </q-item-label>
+                          </q-item-section>
+                        </q-item>
+                      </q-list>
                     </div>
-                  </q-card>
-                  <q-card class="col-xs-12 col-sm-7">
-                    <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">목표설정</div>
-                    <div :class="$q.dark.isActive ? 'q-pa-xs bg-grey-8' : 'q-pa-xs bg-grey-4'">
-                      <span :class="$q.dark.isActive ? 'text-orange' : 'text-deep-orange'"> 평가지표 : </span>
-                      <span class="text-bold"> {{ data.eidcNm }}</span>
-                    </div>
-                    <div class="q-pa-xs" v-html="data.targetDoc.replace(/\n/g, '<br>')"></div>
-                  </q-card>
-                  <q-card class="col-xs-12 col-sm-3">
-                    <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">기준설정</div>
-                    <div class="q-pa-xs">
-                      <span v-if="data.evaS" class="q-px-sm"> <span class="text-blue"> S(100점) :</span> {{ data.evaS }}<br /> </span>
-                      <span v-if="data.evaA" class="q-px-sm"> <span class="text-blue"> A(90점) :</span> {{ data.evaA }}<br /> </span>
-                      <span v-if="data.evaB" class="q-px-sm"> <span class="text-blue"> B(80점) :</span> {{ data.evaB }}<br /> </span>
-                      <span v-if="data.evaC" class="q-px-sm"> <span class="text-blue"> C(70점) :</span> {{ data.evaC }}<br /> </span>
-                      <span v-if="data.evaD" class="q-px-sm"> <span class="text-blue"> D(60점) :</span> {{ data.evaD }} </span>
-                    </div>
-                  </q-card>
-                  <q-card class="col-xs-12 col-sm-1">
-                    <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">가중치</div>
-                    <div class="text-center q-pa-xs" :class="$q.screen.xs ? '' : 'row flex-center'" style="height: 100%">
-                      {{ data.weight }}
-                    </div>
-                  </q-card>
-                </div>
-              </q-card>
-            </div>
+                  </div>
+                </q-card>
+                <q-card class="col-xs-12 col-sm-7">
+                  <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">목표설정</div>
+                  <div :class="$q.dark.isActive ? 'q-pa-xs bg-grey-8' : 'q-pa-xs bg-grey-4'">
+                    <span :class="$q.dark.isActive ? 'text-orange' : 'text-deep-orange'"> 평가지표 : </span>
+                    <span class="text-bold"> {{ data.eidcNm }}</span>
+                  </div>
+                  <div class="q-pa-xs" v-html="data.targetDoc.replace(/\n/g, '<br>')"></div>
+                </q-card>
+                <q-card class="col-xs-12 col-sm-3">
+                  <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">기준설정</div>
+                  <div class="q-pa-xs">
+                    <span v-if="data.evaS" class="q-px-sm"> <span class="text-blue"> S(100점) :</span> {{ data.evaS }}<br /> </span>
+                    <span v-if="data.evaA" class="q-px-sm"> <span class="text-blue"> A(90점) :</span> {{ data.evaA }}<br /> </span>
+                    <span v-if="data.evaB" class="q-px-sm"> <span class="text-blue"> B(80점) :</span> {{ data.evaB }}<br /> </span>
+                    <span v-if="data.evaC" class="q-px-sm"> <span class="text-blue"> C(70점) :</span> {{ data.evaC }}<br /> </span>
+                    <span v-if="data.evaD" class="q-px-sm"> <span class="text-blue"> D(60점) :</span> {{ data.evaD }} </span>
+                  </div>
+                </q-card>
+                <q-card class="col-xs-12 col-sm-1">
+                  <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">가중치</div>
+                  <div class="text-center q-pa-xs" :class="$q.screen.xs ? '' : 'row flex-center'" style="height: 100%">
+                    {{ data.weight }}
+                  </div>
+                </q-card>
+              </div>
+            </q-scroll-area>
             <!--        </q-scroll-area>-->
           </q-card>
         </div>
       </div>
       <q-separator spaced />
     </q-card>
+
+    <!-- 이미지 원본보기 Dialog -->
+    <q-dialog v-model="dialogOpen">
+      <q-card bordered style="max-width: 450px; width: 100%">
+        <q-img :src="showImage.fullImageUrl" style="max-width: 100%; max-height: 100vh" />
+        <q-card-section>
+          <div class="row no-wrap items-center">
+            <div class="col text-h6 ellipsis">{{ showImage.empNm }}</div>
+            <div class="q-gutter-x-sm">
+              <span class="text-subtitle1">{{ showImage.deptNm }}</span>
+              <span class="text-subtitle2">{{ showImage.titlNm }}</span>
+            </div>
+          </div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none"> </q-card-section>
+
+        <q-separator />
+
+        <q-card-actions align="right">
+          <q-btn v-close-popup flat color="primary" label="닫기" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
 
     <q-dialog persistent v-model="isDialogVisible">
       <q-card flat bordered style="max-width: 450px; width: 100%">
@@ -319,7 +361,6 @@ const columnDefs = reactive({
       headerName: '직급',
       field: 'evtTitlNm',
       minWidth: 80,
-      maxWidth: 80,
       resizable: true,
     },
     {
@@ -381,7 +422,7 @@ const statusCheck = ref({
 
 const onSelectionChanged = event => {
   selectedRows.value = event.api.getSelectedRows();
-  console.log('sel: ', JSON.stringify(selectedRows.value));
+  // console.log('sel: ', JSON.stringify(selectedRows.value));
   if (selectedRows.value.length === 1) {
     if (selectedRows.value[0].status > '0') {
       getDataSelectList(selectedRows.value[0]).then(() => {
@@ -389,7 +430,7 @@ const onSelectionChanged = event => {
           // 진행상태 인경우
           clearMessage();
         } else {
-          console.log('rowData.rowsSel: ', JSON.stringify(rowData.rowsSel));
+          // console.log('rowData.rowsSel: ', JSON.stringify(rowData.rowsSel));
 
           // 자료 열람확인 처리
           textReturnDoc.value = null;
@@ -457,7 +498,7 @@ const myTweak = offset => {
   return { minHeight: offset ? `calc(100vh - ${offset}px)` : '100vh' };
 };
 const handleResize = () => {
-  contentZoneHeight.value = window.innerHeight - screenSizeHeight.value - 730;
+  contentZoneHeight.value = window.innerHeight - screenSizeHeight.value - 300;
   // alert(contentZoneHeight.value + ' =  ' + window.innerHeight + '  -  ' + screenSizeHeight.value + ' - 730');
 };
 // ======================================================
@@ -654,6 +695,23 @@ const saveDataAndHandleResult = async resFormData => {
 // **************************************************************//
 // ***** DataBase 연결부분 끝  *************************************//
 // **************************************************************//
+
+// 이미지 팝업 뷰
+const dialogOpen = ref(false);
+const showImage = ref({
+  fullImageUrl: '',
+  empNm: '',
+  deptNm: '',
+  titlNm: '',
+});
+const handleShowImage = data => {
+  showImage.value.fullImageUrl = `https://hr.energyshop.co.kr/images/${data.imageFileNm}?${new Date().getTime()}`;
+  showImage.value.empNm = data.evtEmpNm;
+  showImage.value.deptNm = data.evtDeptNm;
+  showImage.value.titlNm = data.evtTitlNm;
+  dialogOpen.value = true;
+};
+// 이미지 팝업 뷰 끝
 
 // **************************************************************//
 // ***** View Accept Check Save  ********************************//

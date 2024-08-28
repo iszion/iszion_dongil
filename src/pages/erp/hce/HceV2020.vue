@@ -48,7 +48,7 @@
       </q-card-section>
 
       <div ref="gridZone" class="row q-col-gutter-x-lg">
-        <div class="col-xs-12 col-md-12 col-lg-2">
+        <div class="col-xs-12 col-md-12 col-lg-5 q-gutter-y-md">
           <q-card class="q-pa-sm">
             <q-card-actions class="row q-px-none">
               <q-avatar color="red" text-color="white" size="md">1번</q-avatar>
@@ -64,7 +64,7 @@
               </div>
             </q-card-actions>
             <q-card-section class="q-pa-none">
-              <div :style="{ height: gridHeightCatg + 33 + 'px' }">
+              <div :style="{ height: gridHeightCatg + 60 + 'px' }">
                 <ag-grid-vue
                   style="width: 100%; height: 100%"
                   :class="$q.dark.isActive ? 'ag-theme-alpine-dark' : 'ag-theme-alpine'"
@@ -80,8 +80,7 @@
               </div>
             </q-card-section>
           </q-card>
-        </div>
-        <div class="col-xs-12 col-md-12 col-lg-4">
+
           <q-card class="q-pa-sm">
             <q-card-actions class="row q-px-none">
               <q-avatar color="red" text-color="white" size="md">2번</q-avatar>
@@ -111,7 +110,7 @@
             </q-card-section>
           </q-card>
         </div>
-        <div class="col-xs-12 col-md-12 col-lg-6">
+        <div class="col-xs-12 col-md-12 col-lg-7">
           <!--      {{ contentZoneHeight }} = {{ state.height }}-->
           <q-card class="q-pa-xs">
             <q-toolbar class="row q-pa-none">
@@ -130,94 +129,95 @@
                 초기화
               </q-btn>
             </q-toolbar>
-            <div class="row">
-              <div class="col-12 row">
-                <div class="col-xs-12 col-sm-12 col-md-6 q-mb-sm">
-                  <q-card square class="bg-grey" style="height: 60px">
-                    <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">인사정보</div>
-                    <div class="row">
-                      <div class="col-md-2 text-center text-subtitle1 q-py-xs">No</div>
-                      <div class="col-md-3 text-subtitle1 q-py-xs">성명</div>
-                      <div class="col-md-6 text-subtitle1 q-py-xs">소속/직급</div>
-                      <div class="col-md-1 text-subtitle1 q-py-xs">1차</div>
-                    </div>
-                  </q-card>
-                </div>
-                <div class="col-xs-12 col-sm-12 col-md-6 q-mb-sm">
-                  <q-card square class="bg-grey" style="height: 60px">
-                    <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">
-                      평가하기 [ <span class="text-teal-8">()안은 평가대상인원수</span> ]
-                    </div>
-                    <div v-if="!setTotEva" class="q-pa-sm text-subtitle1 text-bold flex flex-center q-gutter-x-lg">
-                      <span class="text-blue-9 q-mr-xs">S </span> ( {{ pointValue.cntS }} ) <span class="text-cyan-9 q-mr-xs">A</span> (
-                      {{ pointValue.cntA }} ) <span class="text-teal-8 q-mr-xs">B</span> ( {{ pointValue.cntB }} )
-                      <span class="text-green-8 q-mr-xs">C</span> ( {{ pointValue.cntC }} ) <span class="text-deep-orange-9 q-mr-xs">D</span> (
-                      {{ pointValue.cntD }} )
-                    </div>
-                    <div v-if="setTotEva" class="row">
-                      <div class="col-md-12 text-center">
-                        <q-radio
-                          keep-color
-                          left-label
-                          v-model="tmpMark.markCh2"
-                          :disable="formReadonly"
-                          val="S"
-                          :label="`S(${pointValue.cntS})`"
-                          color="blue-9"
-                          class="text-subtitle1 text-bold"
-                          @update:model-value="val => handlePointClickAll(val)"
-                        />
-                        <q-radio
-                          keep-color
-                          left-label
-                          v-model="tmpMark.markCh2"
-                          :disable="formReadonly"
-                          val="A"
-                          :label="`A(${pointValue.cntA})`"
-                          color="cyan-9"
-                          class="text-subtitle1 text-bold"
-                          @update:model-value="val => handlePointClickAll(val)"
-                        />
-                        <q-radio
-                          keep-color
-                          left-label
-                          v-model="tmpMark.markCh2"
-                          :disable="formReadonly"
-                          val="B"
-                          :label="`B(${pointValue.cntB})`"
-                          color="teal-9"
-                          class="text-subtitle1 text-bold"
-                          @update:model-value="val => handlePointClickAll(val)"
-                        />
-                        <q-radio
-                          keep-color
-                          left-label
-                          v-model="tmpMark.markCh2"
-                          :disable="formReadonly"
-                          val="C"
-                          :label="`C(${pointValue.cntC})`"
-                          color="green-9"
-                          class="text-subtitle1 text-bold"
-                          @update:model-value="val => handlePointClickAll(val)"
-                        />
-                        <q-radio
-                          keep-color
-                          left-label
-                          v-model="tmpMark.markCh2"
-                          :disable="formReadonly"
-                          val="D"
-                          :label="`D(${pointValue.cntD})`"
-                          color="deep-orange-8"
-                          class="text-subtitle1 text-bold"
-                          @update:model-value="val => handlePointClickAll(val)"
-                        />
-                      </div>
-                    </div>
-                  </q-card>
-                </div>
+            <div class="col-12 row">
+              <div class="col-xs-12 col-sm-12 col-md-6 q-mb-sm">
+                <q-card square class="bg-grey" style="height: 60px">
+                  <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">인사정보</div>
+                  <div class="row">
+                    <div class="col-md-2 text-center text-subtitle1 q-py-xs">No</div>
+                    <div class="col-md-3 text-subtitle1 q-py-xs">성명</div>
+                    <div class="col-md-6 text-subtitle1 q-py-xs">소속/직급</div>
+                    <div class="col-md-1 text-subtitle1 q-py-xs">1차</div>
+                  </div>
+                </q-card>
               </div>
+              <div class="col-xs-12 col-sm-12 col-md-6 q-mb-sm">
+                <q-card square class="bg-grey" style="height: 60px">
+                  <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">
+                    평가하기 [ <span class="text-teal-8">()안은 평가대상인원수</span> ]
+                  </div>
+                  <div v-if="!setTotEva" class="q-pa-sm text-subtitle1 text-bold flex flex-center q-gutter-x-lg">
+                    <span class="text-blue-9 q-mr-xs">S </span> ( {{ pointValue.cntS }} ) <span class="text-cyan-9 q-mr-xs">A</span> (
+                    {{ pointValue.cntA }} ) <span class="text-teal-8 q-mr-xs">B</span> ( {{ pointValue.cntB }} )
+                    <span class="text-green-8 q-mr-xs">C</span> ( {{ pointValue.cntC }} ) <span class="text-deep-orange-9 q-mr-xs">D</span> (
+                    {{ pointValue.cntD }} )
+                  </div>
+                  <div v-if="setTotEva" class="row">
+                    <div class="col-md-12 text-center">
+                      <q-radio
+                        keep-color
+                        left-label
+                        v-model="tmpMark.markCh2"
+                        :disable="formReadonly"
+                        val="S"
+                        :label="`S(${pointValue.cntS})`"
+                        color="blue-9"
+                        class="text-subtitle1 text-bold"
+                        @update:model-value="val => handlePointClickAll(val)"
+                      />
+                      <q-radio
+                        keep-color
+                        left-label
+                        v-model="tmpMark.markCh2"
+                        :disable="formReadonly"
+                        val="A"
+                        :label="`A(${pointValue.cntA})`"
+                        color="cyan-9"
+                        class="text-subtitle1 text-bold"
+                        @update:model-value="val => handlePointClickAll(val)"
+                      />
+                      <q-radio
+                        keep-color
+                        left-label
+                        v-model="tmpMark.markCh2"
+                        :disable="formReadonly"
+                        val="B"
+                        :label="`B(${pointValue.cntB})`"
+                        color="teal-9"
+                        class="text-subtitle1 text-bold"
+                        @update:model-value="val => handlePointClickAll(val)"
+                      />
+                      <q-radio
+                        keep-color
+                        left-label
+                        v-model="tmpMark.markCh2"
+                        :disable="formReadonly"
+                        val="C"
+                        :label="`C(${pointValue.cntC})`"
+                        color="green-9"
+                        class="text-subtitle1 text-bold"
+                        @update:model-value="val => handlePointClickAll(val)"
+                      />
+                      <q-radio
+                        keep-color
+                        left-label
+                        v-model="tmpMark.markCh2"
+                        :disable="formReadonly"
+                        val="D"
+                        :label="`D(${pointValue.cntD})`"
+                        color="deep-orange-8"
+                        class="text-subtitle1 text-bold"
+                        @update:model-value="val => handlePointClickAll(val)"
+                      />
+                    </div>
+                  </div>
+                </q-card>
+              </div>
+            </div>
 
-              <q-separator />
+            <q-separator />
+
+            <q-scroll-area :style="contentZoneStyle">
               <div v-if="isShowMessage" style="width: 100%" class="q-pa-xl">
                 <span class="text-subtitle1 text-bold row flex-center">관련팀원이 없습니다.</span>
               </div>
@@ -225,12 +225,27 @@
                 <div class="row">
                   <q-card class="col-xs-12 col-sm-12 col-md-6 shadow-3">
                     <div class="row">
-                      <div class="col-xs-2 col-sm-2 col-md-2">
+                      <div class="col-xs-2 col-sm-2 col-md-1">
                         <div class="text-subtitle1 text-center q-pa-xs">
                           {{ index + 1 }}
                         </div>
                       </div>
-                      <div class="col-xs-3 col-sm-3 col-md-3">
+
+                      <div class="col-xs-2 col-sm-2 col-md-2">
+                        <div class="flex flex-center">
+                          <q-avatar v-if="data.imageFileNm">
+                            <q-img
+                              class="cursor-pointer"
+                              :src="`https://hr.energyshop.co.kr/imagesThumbnail/${data.imageFileNm}?${new Date().getTime()}`"
+                              style="max-height: 50px"
+                              @click="handleShowImage(data)"
+                            />
+                          </q-avatar>
+                          <q-icon v-if="!data.imageFileNm" name="face" color="teal" size="50px" style="height: 50px" />
+                        </div>
+                      </div>
+
+                      <div class="col-xs-3 col-sm-3 col-md-2">
                         <div class="text-subtitle1 q-pa-xs" :class="data.markPoint2 > 0 ? 'text-blue' : ''">{{ data.evtEmpNm }}</div>
                       </div>
                       <div class="col-xs-2 col-sm-2 col-md-5">
@@ -325,12 +340,35 @@
                   </q-card>
                 </div>
               </div>
-            </div>
-            <!--        </q-scroll-area>-->
+            </q-scroll-area>
           </q-card>
         </div>
       </div>
     </q-card>
+
+    <!-- 이미지 원본보기 Dialog -->
+    <q-dialog v-model="dialogOpen">
+      <q-card bordered style="max-width: 450px; width: 100%">
+        <q-img :src="showImage.fullImageUrl" style="max-width: 100%; max-height: 100vh" />
+        <q-card-section>
+          <div class="row no-wrap items-center">
+            <div class="col text-h6 ellipsis">{{ showImage.empNm }}</div>
+            <div class="q-gutter-x-sm">
+              <span class="text-subtitle1">{{ showImage.deptNm }}</span>
+              <span class="text-subtitle2">{{ showImage.titlNm }}</span>
+            </div>
+          </div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none"> </q-card-section>
+
+        <q-separator />
+
+        <q-card-actions align="right">
+          <q-btn v-close-popup flat color="primary" label="닫기" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -414,7 +452,6 @@ const columnDefs = reactive({
       field: 'catgNm',
       pinned: 'left',
       minWidth: 100,
-      maxWidth: 100,
       resizable: true,
     },
     {
@@ -424,6 +461,13 @@ const columnDefs = reactive({
       cellStyle: params => {
         return getStatusMessageStyle(params.data);
       },
+    },
+    {
+      headerName: '',
+      field: '',
+      minWidth: 100,
+      sortable: false,
+      filter: false,
     },
   ],
   group: [
@@ -619,7 +663,7 @@ const myTweak = offset => {
   return { minHeight: offset ? `calc(100vh - ${offset}px)` : '100vh' };
 };
 const handleResize = () => {
-  contentZoneHeight.value = window.innerHeight - screenSizeHeight.value - 730;
+  contentZoneHeight.value = window.innerHeight - screenSizeHeight.value - 360;
   // contentZoneHeight.value = window.innerHeight - state.height - 680;
 };
 // ======================================================
@@ -1072,6 +1116,22 @@ const saveDataAndHandleResult = async resFormData => {
 // **************************************************************//
 // ***** DataBase 연결부분 끝  *************************************//
 // **************************************************************//
+// 이미지 팝업 뷰
+const dialogOpen = ref(false);
+const showImage = ref({
+  fullImageUrl: '',
+  empNm: '',
+  deptNm: '',
+  titlNm: '',
+});
+const handleShowImage = data => {
+  showImage.value.fullImageUrl = `https://hr.energyshop.co.kr/images/${data.imageFileNm}?${new Date().getTime()}`;
+  showImage.value.empNm = data.evtEmpNm;
+  showImage.value.deptNm = data.evtDeptNm;
+  showImage.value.titlNm = data.evtTitlNm;
+  dialogOpen.value = true;
+};
+// 이미지 팝업 뷰 끝
 
 const gridOptionsCatg = {
   localeText: { noRowsToShow: '조회 결과가 없습니다.' },

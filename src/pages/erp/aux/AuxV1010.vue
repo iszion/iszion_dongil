@@ -85,7 +85,7 @@
                           <q-radio v-model="formData.locCh" val="0" color="teal" :disable="formDisable" />
                         </q-item-section>
                         <q-item-section>
-                          <q-item-label :style="{ color: 'teal' }">평가진행오픈 준비중</q-item-label>
+                          <q-item-label :style="{ color: 'teal' }">평가준비</q-item-label>
                           <q-item-label caption>
                             관리자가 평가작업을 진행 하기전 평가관련 자료를 준비하는 과정입니다.<br />
                             해당 작업을 선택하시면 관리자먄 작업을 진행 하실 수 있습니다.
@@ -98,7 +98,7 @@
                           <q-radio v-model="formData.locCh" val="1" color="blue" :disable="formDisable" />
                         </q-item-section>
                         <q-item-section>
-                          <q-item-label :style="{ color: 'blue' }">평가진행오픈</q-item-label>
+                          <q-item-label :style="{ color: 'blue' }">평가진행</q-item-label>
                           <q-item-label caption> 모든 피평가자 또는 평가자의 작업을 진행 하실 수 있습니다.<br /> </q-item-label>
                         </q-item-section>
                       </q-item>
@@ -108,7 +108,7 @@
                           <q-radio v-model="formData.locCh" val="2" color="red" :disable="formDisable" />
                         </q-item-section>
                         <q-item-section>
-                          <q-item-label :style="{ color: 'red' }">평가마감진행</q-item-label>
+                          <q-item-label :style="{ color: 'red' }">평가집계</q-item-label>
                           <q-item-label caption>
                             평가진행을 종료하고 관리자가 마감작업을 진행합니다.<br />해당 작업을 선택 시 모든 자료는 조회만 가능합니다.
                           </q-item-label>
@@ -120,7 +120,7 @@
                           <q-radio v-model="formData.locCh" val="3" color="orange" :disable="formDisable" />
                         </q-item-section>
                         <q-item-section>
-                          <q-item-label :style="{ color: 'orange' }">평가열람오픈</q-item-label>
+                          <q-item-label :style="{ color: 'orange' }">평가마감</q-item-label>
                           <q-item-label caption>
                             모든 평가작업이 끝나고 각 평가에 대한 결과를 모든 직원들에게 오픈합니다.<br />
                             - 로그인 하면 본인의 결과를 대시보드에서 확인 하실 수 있습니다.

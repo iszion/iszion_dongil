@@ -3,20 +3,16 @@
     <q-layout view="hHh lpR fFf">
       <div class="row">
         <div class="col-sm-6 col-md-8 col-lg-9" :class="leftColStyle">
-          <q-img height="100vh" src="~assets/images/bg_login.png" />
+          <q-img height="100vh" src="~assets/images/bg_002.png" fit="fill"> </q-img>
         </div>
 
         <div class="col-12 col-sm-6 col-md-4 col-lg-3 flex flex-center q-pt-xs-xl q-px-xl" :class="$q.dark.isActive ? 'bg-dark' : 'bg-white'">
           <q-card flat :class="$q.dark.isActive ? 'bg-dark' : 'bg-white'">
-            <q-card-section class="q-mb-xl">
+            <q-card-section class="q-mb-lg">
+              <q-img v-if="$q.dark.mode" src="~assets/images/dongil_auth_logo2.png" style="width: 180px" />
+              <q-img v-else src="~assets/images/dongil_auth_logo1.png" style="width: 180px" />
               <q-item-label>
-                <div class="row">
-                  <q-avatar square class="q-mr-sm" size="md">
-                    <q-img src="~assets/images/dongil_logo.png" />
-                  </q-avatar>
-                  <div class="self-center"><span class="text-h5 text-weight-bold">동일석유주식회사</span></div>
-                </div>
-                <div class="text-weight-bold self-center q-mt-md" style="font-size: 1.92em">{{ $t('project_name') }}</div>
+                <div class="text-bold q-mt-lg text-deep-orange" style="font-size: 1.65em">{{ $t('project_name') }}</div>
               </q-item-label>
             </q-card-section>
             <q-card-section>

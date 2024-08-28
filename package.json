@@ -18,6 +18,7 @@
     "ag-charts-vue3": "^9.0.2",
     "ag-grid-vue3": "^31.0.1",
     "apexcharts": "^3.49.1",
+    "apextree": "^1.3.0",
     "axios": "^1.6.7",
     "chart.js": "^4.4.1",
     "jquery": "^3.7.1",

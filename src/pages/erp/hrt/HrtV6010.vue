@@ -309,9 +309,11 @@ const $q = useQuasar();
 const contentZoneHeight = ref(300);
 const contentBottomZoneStyle = computed(() => ({
   height: `${contentZoneHeight.value - 550}px`,
+  minHeight: '400px',
 }));
 const contentZoneStyle = computed(() => ({
   height: `${contentZoneHeight.value - 680}px`,
+  minHeight: '270px',
 }));
 
 onBeforeUnmount(() => {
@@ -468,6 +470,12 @@ const columnDefs = reactive({
       field: 'evaFinalPoint',
       minWidth: 120,
       maxWidth: 120,
+    },
+    {
+      headerName: '평가등급',
+      field: 'evaGrade',
+      minWidth: 100,
+      maxWidth: 100,
     },
     {
       headerName: '기타',

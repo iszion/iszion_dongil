@@ -8,9 +8,8 @@
         <div class="col-12 col-sm-auto q-py-md flex flex-center">
           <div>
             <q-avatar square size="180px">
-              <!--              <q-img :src="`https://hr.energyshop.co.kr/images/${formData.imageFileNm}`" />-->
-              <!--              <q-img :src="`https://hr.energyshop.co.kr/images/${formData.imageFileNm}?${new Date().getTime()}`" />-->
-              <q-img :src="`https://www.iszion.com/images/${formData.imageFileNm}?${new Date().getTime()}`" />
+              <q-img :src="`https://hr.energyshop.co.kr/images/${formData.imageFileNm}?${new Date().getTime()}`" />
+              <!--              <q-img :src="`https://www.iszion.com/images/${formData.imageFileNm}?${new Date().getTime()}?${new Date().getTime()}`" />-->
             </q-avatar>
             <!--            <q-avatar square size="180px"> <q-img :src="`https://www.iszion.com/images/${formData.imageFileNm}`" /></q-avatar>-->
             <div class="row q-py-md">
@@ -266,7 +265,10 @@ const handleImageUpload = () => {
 
     if (file) {
       // 파일이 선택된 경우, 여기에서 파일 업로드 로직을 추가할 수 있습니다.
-      await uploadFile(file);
+      await uploadFile(file).then(() => {
+        // formData.value.imageFileNm = formData.value.empCd + '_' + file.name;
+        // console.log('filename last : ', formData.value.imageFileNm);
+      });
       await nextTick();
     }
   };
@@ -284,13 +286,11 @@ const uploadFile = async file => {
       },
     });
     // 서버의 응답 처리
-    // console.log(file.name, ' === ', JSON.stringify(file));
+    console.log(file.name, ' === ', JSON.stringify(file));
     formData.value.imageFileNm = formData.value.empCd + '_' + file.name;
     await nextTick(); // Ensure Vue reactivity updates the view
-    // console.log('aa : ', formData.value.imageFileNm);
-    // formData.value.imageFileNm = response.data.newFileName;
 
-    // console.log('File uploaded successfully:', response.data);
+    console.log('File uploaded successfully:', response.data);
   } catch (error) {
     // 오류 처리
     console.error('Error uploading file:', error);

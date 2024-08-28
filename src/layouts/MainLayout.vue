@@ -6,7 +6,7 @@
           <img src="../assets/images/dongil_logo.png" />
         </q-avatar>
 
-        <div v-if="!$q.screen.lt.lg" class="text-h6 text-weight-bold q-pl-sm self-center cursor-pointer" @click="rootView">
+        <div v-if="!$q.screen.lt.lg" class="text-h6 text-bold text-deep-orange q-pl-sm self-center cursor-pointer" @click="rootView">
           {{ $t('project_name') }}
         </div>
 
@@ -109,9 +109,10 @@
             <div class="text-subtitle2 text-bold q-mr-sm text-orange" style="font-size: 1.2em">{{ storeUser.setDeptNm }}</div>
             <div class="text-subtitle2 text-bold q-mr-sm">{{ storeUser.setEmpNm }}</div>
           </div>
-          <q-avatar color="deep-orange">
-            <!--            <q-img loading="eager" :src="`https://hr.energyshop.co.kr/images/${userImageName}`" />-->
-            <q-img loading="eager" :src="`https://www.iszion.com/images/${userImageName}`" />
+          <q-avatar color="white">
+            <q-img v-if="userImageName" loading="eager" :src="`https://hr.energyshop.co.kr/images/${userImageName}?${new Date().getTime()}`" />
+            <!--            <q-img loading="eager" :src="`https://www.iszion.com/images/${userImageName}?${new Date().getTime()}`" />-->
+            <q-icon v-if="!userImageName" name="face" color="teal" size="50px" style="height: 50px" />
           </q-avatar>
           <q-menu :offset="[0, 10]" transition-show="scale" transition-hide="scale">
             <q-list style="min-width: 100px">

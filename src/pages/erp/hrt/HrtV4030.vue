@@ -463,6 +463,14 @@ const columnDefs = reactive({
       ],
     },
     {
+      headerName: '근태점수',
+      field: 'eva2Att',
+      minWidth: 100,
+      cellStyle: params => {
+        return getStatusAttStyle(params.data);
+      },
+    },
+    {
       headerName: '역량조정환산',
       children: [
         {
@@ -484,40 +492,12 @@ const columnDefs = reactive({
       ],
     },
     {
-      headerName: '환산최종점수',
-      children: [
-        {
-          headerName: '본부별',
-          field: 'eva1Point',
-          minWidth: 100,
-          cellStyle: params => {
-            return { color: 'blue' };
-          },
-        },
-        {
-          headerName: '직무역량',
-          field: 'eva2Point',
-          minWidth: 100,
-          cellStyle: params => {
-            return { color: 'blue' };
-          },
-        },
-      ],
-    },
-    {
-      headerName: '근태점수',
-      field: 'eva2Att',
-      minWidth: 100,
-      cellStyle: params => {
-        return getStatusAttStyle(params.data);
-      },
-    },
-    {
       headerName: '최종점수',
       children: [
         {
           headerName: '본부별',
           field: 'eva1FinalPoint',
+          pinned: 'right',
           minWidth: 100,
           cellStyle: params => {
             return { color: 'blue' };
@@ -526,7 +506,32 @@ const columnDefs = reactive({
         {
           headerName: '직무역량',
           field: 'eva2FinalPoint',
+          pinned: 'right',
           minWidth: 100,
+          cellStyle: params => {
+            return { color: 'blue' };
+          },
+        },
+      ],
+    },
+    {
+      headerName: '등급',
+
+      children: [
+        {
+          headerName: '본부별',
+          field: 'eva1Grade',
+          pinned: 'right',
+          minWidth: 80,
+          cellStyle: params => {
+            return { color: 'blue' };
+          },
+        },
+        {
+          headerName: '직무역량',
+          field: 'eva2Grade',
+          pinned: 'right',
+          minWidth: 80,
           cellStyle: params => {
             return { color: 'blue' };
           },
@@ -824,25 +829,25 @@ const headerGroup = reactive({
     'eva2DivAvg',
     'eva1P2Sd',
     'eva2P2Sd',
+    'eva1Att',
     'eva1P2Xx',
     'eva2P2Xx',
-    'eva1Point',
-    'eva2Point',
-    'eva1Att',
-    'eva2Att',
     'eva1FinalPoint',
     'eva2FinalPoint',
+    'eva1Grade',
+    'eva2Grade',
   ],
   headRow1: [
     { name: '소속', rowspan: 2, colspan: 1, key: 'deptNm' },
     { name: '직급', rowspan: 2, colspan: 1, key: 'titlNm' },
     { name: '사번', rowspan: 2, colspan: 1, key: 'empCd' },
     { name: '성명', rowspan: 2, colspan: 1, key: 'empNm' },
-    { name: '성과평가점수', rowspan: 2, colspan: 1, key: 'evaP1' },
-    { name: '역량평가점수', rowspan: 2, colspan: 1, key: 'evaP2' },
-    { name: '성과환산', rowspan: 2, colspan: 1, key: 'evaP1X' },
-    { name: '역량환산', rowspan: 2, colspan: 1, key: 'evaP2X' },
-    { name: '최종점수', rowspan: 2, colspan: 1, key: 'evaPT' },
+    { name: '성과평가점수', rowspan: 2, colspan: 1 },
+    { name: '역량평가점수', rowspan: 2, colspan: 1 },
+    { name: '성과환산', rowspan: 2, colspan: 1 },
+    { name: '근태점수', rowspan: 2, colspan: 1, key: 'eva1Att' },
+    { name: '역량환산', rowspan: 2, colspan: 1 },
+    { name: '최종점수', rowspan: 2, colspan: 1 },
 
     { name: '본부별역량평균', rowspan: 1, colspan: 2 },
     { name: '역량평균개인편차', rowspan: 1, colspan: 2 },
@@ -855,52 +860,48 @@ const headerGroup = reactive({
     { name: '본부별평균', rowspan: 1, colspan: 2 },
     { name: '소속표준편차', rowspan: 1, colspan: 2 },
     { name: '역량조정환산', rowspan: 1, colspan: 2 },
-    { name: '환산최종점수', rowspan: 1, colspan: 2 },
-    { name: '근태점수', rowspan: 1, colspan: 2 },
     { name: '최종점수', rowspan: 1, colspan: 2 },
+    { name: '등급', rowspan: 1, colspan: 2 },
   ],
   headRow2: [
     { name: '본부', rowspan: 1, colspan: 1, key: 'eva1P2Avg' },
-    { name: '직부역량', rowspan: 1, colspan: 1, key: 'eva2P2Avg' },
+    { name: '직무역량', rowspan: 1, colspan: 1, key: 'eva2P2Avg' },
 
     { name: '본부', rowspan: 1, colspan: 1, key: 'eva1P2C' },
-    { name: '직부역량', rowspan: 1, colspan: 1, key: 'eva2P2C' },
+    { name: '직무역량', rowspan: 1, colspan: 1, key: 'eva2P2C' },
 
     { name: '본부', rowspan: 1, colspan: 1, key: 'eva1P2Cc' },
-    { name: '직부역량', rowspan: 1, colspan: 1, key: 'eva2P2Cc' },
+    { name: '직무역량', rowspan: 1, colspan: 1, key: 'eva2P2Cc' },
 
     { name: '본부', rowspan: 1, colspan: 1, key: 'eva1P2CcAvg' },
-    { name: '직부역량', rowspan: 1, colspan: 1, key: 'eva2P2CcAvg' },
+    { name: '직무역량', rowspan: 1, colspan: 1, key: 'eva2P2CcAvg' },
 
     { name: '본부', rowspan: 1, colspan: 1, key: 'eva1P2SqSd' },
-    { name: '직부역량', rowspan: 1, colspan: 1, key: 'eva2P2SqSd' },
+    { name: '직무역량', rowspan: 1, colspan: 1, key: 'eva2P2SqSd' },
 
     { name: '본부', rowspan: 1, colspan: 1, key: 'eva1P2TavgSd' },
-    { name: '직부역량', rowspan: 1, colspan: 1, key: 'eva2P2TavgSd' },
+    { name: '직무역량', rowspan: 1, colspan: 1, key: 'eva2P2TavgSd' },
 
     { name: '본부', rowspan: 1, colspan: 1, key: 'eva1P2DivSd' },
-    { name: '직부역량', rowspan: 1, colspan: 1, key: 'eva2P2DivSd' },
+    { name: '직무역량', rowspan: 1, colspan: 1, key: 'eva2P2DivSd' },
 
     { name: '본부', rowspan: 1, colspan: 1, key: 'eva1P2Comp' },
-    { name: '직부역량', rowspan: 1, colspan: 1, key: 'eva2P2Comp' },
+    { name: '직무역량', rowspan: 1, colspan: 1, key: 'eva2P2Comp' },
 
     { name: '본부', rowspan: 1, colspan: 1, key: 'eva1DicAvg' },
-    { name: '직부역량', rowspan: 1, colspan: 1, key: 'eva2DicAvg' },
+    { name: '직무역량', rowspan: 1, colspan: 1, key: 'eva2DicAvg' },
 
     { name: '본부', rowspan: 1, colspan: 1, key: 'eva1P2Sd' },
-    { name: '직부역량', rowspan: 1, colspan: 1, key: 'eva2P2Sd' },
+    { name: '직무역량', rowspan: 1, colspan: 1, key: 'eva2P2Sd' },
 
     { name: '본부', rowspan: 1, colspan: 1, key: 'eva1P2Xx' },
-    { name: '직부역량', rowspan: 1, colspan: 1, key: 'eva2P2Xx' },
-
-    { name: '본부', rowspan: 1, colspan: 1, key: 'eva1Point' },
-    { name: '직부역량', rowspan: 1, colspan: 1, key: 'eva2Point' },
-
-    { name: '본부', rowspan: 1, colspan: 1, key: 'eva1Att' },
-    { name: '직부역량', rowspan: 1, colspan: 1, key: 'eva2Att' },
+    { name: '직무역량', rowspan: 1, colspan: 1, key: 'eva2P2Xx' },
 
     { name: '본부', rowspan: 1, colspan: 1, key: 'eva1FinalPoint' },
-    { name: '직부역량', rowspan: 1, colspan: 1, key: 'eva2FinalPoint' },
+    { name: '직무역량', rowspan: 1, colspan: 1, key: 'eva2FinalPoint' },
+
+    { name: '본부', rowspan: 1, colspan: 1, key: 'eva1Grade' },
+    { name: '직무역량', rowspan: 1, colspan: 1, key: 'eva2Grade' },
   ],
 });
 

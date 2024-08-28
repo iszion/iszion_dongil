@@ -103,7 +103,7 @@ const isPrintReport = () => {
   printJS({
     printable: 'printZone',
     type: 'html',
-    css: ['/src/css/print/hpr2010.css'],
+    css: ['/css/print/hpr2010.css'],
     scanStyles: false,
   });
 };

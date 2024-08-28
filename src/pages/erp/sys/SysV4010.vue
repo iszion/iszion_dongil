@@ -151,25 +151,8 @@
                 ref="contentsFocus"
                 v-model="formData.contents"
                 :dense="$q.screen.lt.md"
+                :definitions="definitions"
                 :toolbar="[
-                  [
-                    {
-                      label: $q.lang.editor.align,
-                      icon: $q.iconSet.editor.align,
-                      fixedLabel: true,
-                      list: 'only-icons',
-                      options: ['left', 'center', 'right', 'justify'],
-                    },
-                    {
-                      label: $q.lang.editor.align,
-                      icon: $q.iconSet.editor.align,
-                      fixedLabel: true,
-                      options: ['left', 'center', 'right', 'justify'],
-                    },
-                  ],
-                  ['bold', 'italic', 'strike', 'underline', 'subscript', 'superscript'],
-                  ['token', 'hr', 'link', 'custom_btn'],
-                  ['print', 'fullscreen'],
                   [
                     {
                       label: $q.lang.editor.formatting,
@@ -204,6 +187,19 @@
                     },
                     'removeFormat',
                   ],
+                  [
+                    {
+                      label: $q.lang.editor.align,
+                      icon: $q.iconSet.editor.align,
+                      fixedLabel: true,
+                      list: 'only-icons',
+                      options: ['left', 'center', 'right', 'justify'],
+                    },
+                  ],
+                  ['bold', 'italic', 'strike', 'underline', 'subscript', 'superscript'],
+                  ['token', 'hr', 'link', 'custom_btn'],
+                  ['insert_img'],
+                  ['print', 'fullscreen'],
                   ['quote', 'unordered', 'ordered', 'outdent', 'indent'],
 
                   ['undo', 'redo'],
@@ -522,6 +518,34 @@ const getGroupData = async () => {
   }
 };
 
+const definitions = ref({
+  insert_img: {
+    tip: '사진 첨부',
+    label: '사진넣기',
+    icon: 'photo',
+    handler: insertImg,
+  },
+});
+
+function insertImg() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.png, .jpg, .jpeg';
+  let file;
+  input.onchange = _ => {
+    const files = Array.from(input.files);
+    file = files[0];
+
+    const reader = new FileReader();
+    let dataUrl = '';
+    reader.onloadend = () => {
+      dataUrl = reader.result;
+      formData.value.contents += '<div><img style="max-width: 250px;" src="' + dataUrl + '" /></div>';
+    };
+    reader.readAsDataURL(file);
+  };
+  input.click();
+}
 // **************************************************************//
 // ***** DataBase 연결부분 끝  *************************************//
 // **************************************************************//

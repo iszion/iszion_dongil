@@ -238,19 +238,6 @@ const columnDefs = reactive({
       cellStyle: { color: 'blue' },
     },
     {
-      headerName: '역량최종환산',
-      field: 'evaP2Xx',
-      minWidth: 120,
-      maxWidth: 120,
-    },
-    {
-      headerName: '최종평가점수',
-      field: 'evaPoint',
-      minWidth: 120,
-      maxWidth: 120,
-      cellStyle: { color: 'blue' },
-    },
-    {
       headerName: '근태점수',
       field: 'evaAtt',
       minWidth: 100,
@@ -258,6 +245,12 @@ const columnDefs = reactive({
       cellStyle: params => {
         return getStatusAttStyle(params.data);
       },
+    },
+    {
+      headerName: '역량최종환산',
+      field: 'evaP2Xx',
+      minWidth: 120,
+      maxWidth: 120,
     },
     {
       headerName: '최종점수',

@@ -126,8 +126,8 @@
                   <div class="row q-col-gutter-xl">
                     <div class="col-12 col-md-6">
                       <q-card class="q-ma-xs q-pa-sm">
-                        <!--                        <q-img :src="`https://hr.energyshop.co.kr/images/${formData.imageFileNm}`" />-->
-                        <q-img :src="`https://www.iszion.com/images/${formData.imageFileNm}`" />
+                        <q-img :src="`https://hr.energyshop.co.kr/images/${formData.imageFileNm}?${new Date().getTime()}`" />
+                        <!--                        <q-img :src="`https://www.iszion.com/images/${formData.imageFileNm}?${new Date().getTime()}`" />-->
                         <div class="row q-pa-xs">
                           <q-avatar
                             v-if="!formDisable"
@@ -321,7 +321,7 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 import 'ag-grid-community/styles/ag-theme-balham.css';
 import { AgGridVue } from 'ag-grid-vue3';
 import { QBtn, QIcon, useQuasar } from 'quasar';
-import { computed, onBeforeMount, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
+import { computed, nextTick, onBeforeMount, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
 import { api } from '/src/boot/axios';
 
 import { isEqual } from 'lodash';
@@ -688,25 +688,32 @@ const handleResize = () => {
 // saveStatus = 0=수정성공 1=신규성공 2=삭제성공 3=수정에러 4=시스템에러
 
 const handleImageUpload = () => {
+  // const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+  // const isAndroid = /Android/.test(navigator.userAgent);
   // 파일 선택 대화 상자 열기
   const input = document.createElement('input');
   input.type = 'file';
   input.accept = 'image/*'; // 이미지 파일만 선택 가능하도록 설정 (선택 사항)
-  input.onchange = event => {
+  // input.capture = 'environment'; // 모든 기기에서 카메라만 사용 가능하고 파일선택은 안됨
+  // if (isAndroid) {
+  //   input.capture = 'camera'; // Force camera usage on Android
+  // }
+  input.onchange = async event => {
     const file = event.target.files[0];
-    console.log('File object: ', file);
-
-    console.log('file name : ' + file.name);
-    console.log('File type: ', file.type);
-    console.log('File size: ', file.size);
+    // console.log('File object: ', file);
+    // console.log('file name : ' + file.name);
+    // console.log('File type: ', file.type);
+    // console.log('File size: ', file.size);
 
     if (file) {
       // 파일이 선택된 경우, 여기에서 파일 업로드 로직을 추가할 수 있습니다.
-      uploadFile(file);
+      await uploadFile(file);
+      await nextTick();
     }
   };
   input.click();
 };
+
 const uploadFile = async file => {
   try {
     const param = new FormData();
@@ -719,6 +726,7 @@ const uploadFile = async file => {
     });
     // 서버의 응답 처리
     formData.value.imageFileNm = formData.value.empCd + '_' + file.name;
+    await nextTick(); // Ensure Vue reactivity updates the view
 
     console.log('File uploaded successfully:', response.data);
   } catch (error) {
