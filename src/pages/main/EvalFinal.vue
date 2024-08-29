@@ -61,21 +61,21 @@
       <div class="text-h6">3. 종합결과</div>
       <table class="table-3">
         <tr>
+          <th rowspan="1" colspan="1">근태</th>
           <th rowspan="1" colspan="1">성과평과</th>
           <th rowspan="1" colspan="1">역량평가</th>
-          <th rowspan="1" colspan="1">근태</th>
           <th rowspan="1" colspan="1">최종점수</th>
           <th rowspan="1" colspan="1">등급</th>
         </tr>
         <tr v-if="rowData">
           <td>
+            <span v-if="rowData">{{ rowData.evaAtt }}</span>
+          </td>
+          <td>
             <span v-if="rowData">{{ rowData.evaP1X }}</span>
           </td>
           <td>
             <span v-if="rowData">{{ rowData.evaP2Xx }}</span>
-          </td>
-          <td>
-            <span v-if="rowData">{{ rowData.evaAtt }}</span>
           </td>
           <td>
             <span v-if="rowData">{{ rowData.evaFinalPoint }}</span>

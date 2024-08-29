@@ -320,7 +320,7 @@ const getData = async () => {
   try {
     const response = await api.post('/api/hpr/hpr2010_list', {
       paramSetYear: storeYear.setYear,
-      paramBasicDay: '20240430',
+      paramBasicDay: storeYear.setYear + '0430',
     });
     rowData.rows = response.data.data;
     // console.log('aa : ', JSON.stringify(response.data.data));

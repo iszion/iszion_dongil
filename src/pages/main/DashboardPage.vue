@@ -7,18 +7,33 @@
       <div v-if="storeUser.setEvtgCd > '01'" class="col-xs-12 col-sm-6">
         <hpe-page1 />
       </div>
-      <div v-if="storeUser.setEvtgCd === '01'" class="col-xs-12 col-sm-6">
+
+      <div v-if="storeUser.setEvtgCd === '01'" class="col-xs-12 col-sm-4">
         <hpe-page2 />
       </div>
-      <div v-if="storeUser.setEvtgCd < '02'" class="col-xs-12 col-sm-6">
+      <div v-if="storeUser.setEvtgCd === '01'" class="col-xs-12 col-sm-3">
         <hpe-page3 />
       </div>
+      <div v-if="storeUser.setEvtgCd === '01'" class="col-xs-12 col-sm-5">
+        <hpe-page1 />
+      </div>
+
+      <div v-if="storeUser.setTitlCd === '101'" class="col-xs-12 col-sm-6">
+        <hpe-page41 />
+      </div>
+      <div v-if="storeUser.setTitlCd === '101'" class="col-xs-12 col-sm-3">
+        <hpe-page42 />
+      </div>
+      <div v-if="storeUser.setTitlCd === '101'" class="col-xs-12 col-sm-3">
+        <hpe-page3 />
+      </div>
+
       <div v-if="storeUser.setTitlCd === '101'" class="col-xs-12 col-sm-12">
         <dept-tree />
       </div>
     </div>
 
-    <div class="row q-col-gutter-md">
+    <div v-if="storeUser.setTitlCd !== '101'" class="row q-col-gutter-md">
       <div class="col-12 col-md-6">
         <event-view />
       </div>
@@ -35,11 +50,13 @@ import { reactive, ref } from 'vue';
 import HpePage1 from 'pages/main/HpePage1.vue';
 import HpePage2 from 'pages/main/HpePage2.vue';
 import HpePage3 from 'pages/main/HpePage3.vue';
+import HpePage41 from 'pages/main/HpePage41.vue';
 import BoardList from 'pages/main/BoardList.vue';
 import EventView from 'pages/main/EventView.vue';
 import { useUserInfoStore } from 'src/store/setUserInfo';
 import { useYearInfoStore } from 'src/store/setYearInfo';
 import DeptTree from 'pages/main/DeptTree.vue';
+import HpePage42 from 'pages/main/HpePage42.vue';
 const storeUser = useUserInfoStore();
 const storeYear = useYearInfoStore();
 

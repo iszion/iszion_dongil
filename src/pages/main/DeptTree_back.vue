@@ -6,72 +6,32 @@
     </q-bar>
     <q-card-section class="q-pa-none">
       <div class="row q-col-gutter-sm-x-xs">
-        <div class="col-xs-12 col-sm-5">
+        <div class="col-xs-12 col-sm-3">
           <q-card bordered class="q-ma-xs-none q-ma-sm-sm">
             <div id="svg-tree1" />
           </q-card>
         </div>
 
-        <div class="col-xs-12 col-sm-4 q-pa-sm-sm q-pa-xs-none">
-          <q-card bordered>
-            <span class="text-bold flex flex-center q-pa-sm text-h6">사업장 현황</span>
-            <div class="q-pa-sm">
-              <q-scroll-area style="height: 430px">
-                <q-list bordered class="rounded-borders">
-                  <div v-for="(data, index) in rowDataDept" :key="index" class="">
-                    <div class="row cursor-pointer" @click="handleRowClick(data)">
-                      <div class="col-1 flex flex-center">
-                        <q-item-label>{{ index + 1 }}</q-item-label>
-                      </div>
-
-                      <div class="col-4 flex flex-center">
-                        <q-item-label>{{ data.depgNm }} / {{ data.deptNm }}</q-item-label>
-                      </div>
-
-                      <div class="col-1 flex flex-center">
-                        <q-avatar size="35px">
-                          <q-img
-                            class="cursor-pointer"
-                            v-if="data.imageFileNm"
-                            :src="`https://hr.energyshop.co.kr/imagesThumbnail/${data.imageFileNm}`"
-                            @click="handleShowImage(data)"
-                          />
-                          <q-icon v-else name="face" color="teal" size="md" />
-                        </q-avatar>
-                      </div>
-
-                      <div class="col-2 flex flex-center">
-                        <q-item-label>{{ data.empNm }}</q-item-label>
-                      </div>
-
-                      <div class="col-2 flex flex-center">
-                        <q-item-label>{{ data.titlNm }}</q-item-label>
-                      </div>
-
-                      <div class="col-2 flex flex-center">
-                        <q-item-label>{{ data.catgNm }}</q-item-label>
-                      </div>
-                    </div>
-                    <q-separator v-if="rowDataDept.length - 1 !== index" spaced />
-                  </div>
-                </q-list>
-              </q-scroll-area>
-            </div>
+        <div class="col-xs-12 col-sm-6">
+          <q-card bordered class="q-ma-xs-none q-ma-sm-sm">
+            <div id="svg-tree2" />
           </q-card>
         </div>
 
         <div class="col-xs-12 col-sm-3 q-pa-sm-sm q-pa-xs-none">
           <q-card bordered>
-            <span class="text-bold flex flex-center q-pa-sm text-h6">소속팀 현황</span>
+            <q-bar>
+              <span class="text-bold text-subtitle1">소속팀 현황</span>
+            </q-bar>
             <div class="q-pa-sm">
               <q-list bordered class="rounded-borders">
-                <div v-for="(data, index) in rowDataDeptEmp" :key="index" class="">
-                  <div class="row">
-                    <div class="col-1 flex flex-center">
+                <div v-for="(data, index) in rowDataDept" :key="index" class="">
+                  <q-item class="row">
+                    <q-item-section class="col-1">
                       <q-item-label>{{ index + 1 }}</q-item-label>
-                    </div>
+                    </q-item-section>
 
-                    <div class="col-1 flex flex-center">
+                    <q-item-section class="col-1">
                       <q-avatar size="35px">
                         <q-img
                           class="cursor-pointer"
@@ -81,25 +41,26 @@
                         />
                         <q-icon v-else name="face" color="teal" size="md" />
                       </q-avatar>
-                    </div>
+                    </q-item-section>
 
-                    <div class="col-2 flex flex-center">
+                    <q-item-section class="col-2">
                       <q-item-label>{{ data.empNm }}</q-item-label>
-                    </div>
+                    </q-item-section>
 
-                    <div class="col-4 flex flex-center">
-                      <q-item-label>{{ data.depgNm }} / {{ data.deptNm }}</q-item-label>
-                    </div>
+                    <q-item-section class="col-4">
+                      <q-item-label>{{ data.deptNm }}</q-item-label>
+                      <q-item-label caption> {{ data.depgNm }}</q-item-label>
+                    </q-item-section>
 
-                    <div class="col-2 flex flex-center">
+                    <q-item-section class="col-xs-auto col-sm-2">
                       <q-item-label>{{ data.titlNm }}</q-item-label>
-                    </div>
+                    </q-item-section>
 
-                    <div class="col-2 flex flex-center">
+                    <q-item-section class="col-xs-auto col-sm-2">
                       <q-item-label>{{ data.catgNm }}</q-item-label>
-                    </div>
-                  </div>
-                  <q-separator v-if="rowDataDeptEmp.length - 1 !== index" spaced />
+                    </q-item-section>
+                  </q-item>
+                  <q-separator v-if="rowDataDept.length - 1 !== index" spaced />
                 </div>
               </q-list>
             </div>
@@ -142,16 +103,8 @@ import { useYearInfoStore } from 'src/store/setYearInfo';
 import { QBtn } from 'quasar';
 const storeYear = useYearInfoStore();
 
-const rowDataDeptEmp = ref();
 const rowDataDept = ref();
 const rowData = reactive({ office: '', sale: '' });
-
-const handleRowClick = data => {
-  console.log('Row clicked:', data);
-  getDeptEmpData(data.deptCd, data.empCd);
-  // Your logic to handle the row click goes here
-  // For example, you might show a dialog, navigate to another page, or perform an API call
-};
 
 // 이미지 팝업 뷰
 const dialogOpen = ref(false);
@@ -234,13 +187,23 @@ onMounted(() => {
         // const content = node.__vue__; // Access the Vue component's data
         const empCd = node.getAttribute('data-empCd');
         const deptCd = node.getAttribute('data-deptCd');
-        if (deptCd.substring(0, 2) === '99') {
-          let callDeptCd1 = deptCd === '991' ? '2' : '3';
-          getDeptData(callDeptCd1);
-        } else {
-          rowDataDept.value = [];
-          deptDetailView(deptCd, empCd);
-        }
+        deptDetailView(deptCd, empCd);
+      });
+    });
+  });
+
+  getDeptSaleTreeData().then(() => {
+    const tree = new ApexTree(document.getElementById('svg-tree2'), options_sale);
+    tree.render(rowData.sale);
+
+    // 이벤트를 수동으로 바인딩
+    const nodes = document.querySelectorAll('.node-content');
+    nodes.forEach(node => {
+      node.addEventListener('click', () => {
+        // const content = node.__vue__; // Access the Vue component's data
+        const empCd = node.getAttribute('data-empCd');
+        const deptCd = node.getAttribute('data-deptCd');
+        deptDetailView(deptCd, empCd);
       });
     });
   });
@@ -256,21 +219,6 @@ const getDeptEmpData = async (resDeptCd, resEmpCd) => {
       paramSetYear: storeYear.setYear,
       paramDeptCd: resDeptCd,
       paramEmpCd: resEmpCd,
-    });
-
-    // console.log('data ; ', JSON.stringify(response.data.data));
-    rowDataDeptEmp.value = response.data.data;
-  } catch (error) {
-    console.error('Error fetching users:', error);
-  }
-};
-
-const getDeptData = async resDeptCd1 => {
-  rowDataDeptEmp.value = [];
-  try {
-    const response = await api.post('/api/aux/dashboard_dept_list', {
-      paramSetYear: storeYear.setYear,
-      paramDeptCd1: resDeptCd1,
     });
 
     // console.log('data ; ', JSON.stringify(response.data.data));
