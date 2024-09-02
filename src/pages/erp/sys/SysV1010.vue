@@ -132,6 +132,7 @@
                             spinner-color="white"
                             class=""
                             :src="`https://hr.energyshop.co.kr/images/${formData.imageFileNm}?${new Date().getTime()}`"
+                            style="object-fit: cover; width: 100%; height: 100%"
                           />
                           <!--                          <q-img spinner-color="white" class="" :src="`https://www.iszion.com/images/${formData.imageFileNm}?${new Date().getTime()}`" />-->
                         </q-card-section>

@@ -237,7 +237,7 @@
                             <q-img
                               class="cursor-pointer"
                               :src="`https://hr.energyshop.co.kr/imagesThumbnail/${data.imageFileNm}?${new Date().getTime()}`"
-                              style="max-height: 50px"
+                              style="object-fit: cover; width: 100%; height: 100%"
                               @click="handleShowImage(data)"
                             />
                           </q-avatar>

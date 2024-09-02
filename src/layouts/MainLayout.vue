@@ -2,11 +2,11 @@
   <q-layout view="hHh lpR fFf">
     <q-header class="shadow-1 bg-grey-8">
       <q-toolbar>
-        <q-avatar square size="sm" @click="rootView" class="cursor-pointer">
+        <q-avatar square size="sm" @click="handleHomeClick" class="cursor-pointer">
           <img src="../assets/images/dongil_logo.png" />
         </q-avatar>
 
-        <div v-if="!$q.screen.lt.lg" class="text-h6 text-bold text-deep-orange q-pl-sm self-center cursor-pointer" @click="rootView">
+        <div v-if="!$q.screen.lt.lg" class="text-h6 text-bold text-deep-orange q-pl-sm self-center cursor-pointer" @click="handleHomeClick">
           {{ $t('project_name') }}
         </div>
 
@@ -109,8 +109,13 @@
             <div class="text-subtitle2 text-bold q-mr-sm text-orange" style="font-size: 1.2em">{{ storeUser.setDeptNm }}</div>
             <div class="text-subtitle2 text-bold q-mr-sm">{{ storeUser.setEmpNm }}</div>
           </div>
-          <q-avatar color="white">
-            <q-img v-if="userImageName" loading="eager" :src="`https://hr.energyshop.co.kr/images/${userImageName}?${new Date().getTime()}`" />
+          <q-avatar rounded color="white" class="flex flex-center">
+            <q-img
+              v-if="userImageName"
+              loading="eager"
+              :src="`https://hr.energyshop.co.kr/imagesThumbnail/${userImageName}?${new Date().getTime()}`"
+              style="object-fit: cover; width: 100%; height: 100%"
+            />
             <!--            <q-img loading="eager" :src="`https://www.iszion.com/images/${userImageName}?${new Date().getTime()}`" />-->
             <q-icon v-if="!userImageName" name="face" color="teal" size="50px" style="height: 50px" />
           </q-avatar>
@@ -230,7 +235,7 @@
 </template>
 
 <script setup>
-import { onBeforeMount, onMounted, reactive, ref, watch } from 'vue';
+import { nextTick, onBeforeMount, onMounted, reactive, ref, watch } from 'vue';
 import FooterBar from 'layouts/FooterBar.vue';
 import { QIcon, useQuasar, Cookies, SessionStorage, QBtn } from 'quasar';
 import { useI18n } from 'vue-i18n';
@@ -362,6 +367,9 @@ onMounted(() => {
 });
 
 // 메인화면 재시작 (평가기준년도 변경시 실행)
+const handleHomeClick = () => {
+  rootView();
+};
 const rootView = () => {
   leftDrawerOpen.value = false;
   pageTitleBarVisible.value = false;

@@ -8,8 +8,16 @@
               <q-icon name="menu_book" color="primary" size="md" />
             </template>
             <span class="text-subtitle1 text-bold"> 목표에대한 성과및업적에 대한 평가작업입니다.</span><br />
-            1. <span class="text-teal text-bold">평가대기</span> 자료만 평가하실 수 있습니다.<br />
-            2. 선택한 직원의 평가완료 시 <span class="text-teal text-bold">평가마감</span>버튼이 활성화됩니다.<br />
+            <div class="row">
+              <div class="col-xs-12 col-sm-6">
+                1. <span class="text-teal text-bold">평가대기</span> 자료만 평가하실 수 있습니다.<br />
+                2. 선택한 직원의 평가완료 시 <span class="text-teal text-bold">평가마감</span>버튼이 활성화됩니다.<br />
+              </div>
+              <div class="col-xs-12 col-sm-6">
+                3. <span class="text-red text-bold">초기화</span>는 모든자료가 선택되었을 시 초기화 하실 수 있습니다.<br />
+                4. <span class="text-blue text-bold">평가점수가 자기점수와 틀릴경우 사유를 입력하세요</span>
+              </div>
+            </div>
           </q-banner>
         </div>
         <div class="col-xs-12 col-sm-12 col-lg-4">
@@ -103,14 +111,16 @@
                 <div style="width: 100%" v-for="data in rowData.rowsSel" :key="data.seq" class="q-mb-sm">
                   <div class="row">
                     <q-card class="col-xs-12 col-sm-1">
-                      <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">순번</div>
+                      <div class="text-center text-subtitle2 text-bold q-px-xs" :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-deep-orange-3'">
+                        순번
+                      </div>
                       <div class="text-center text-bold text-subtitle1 q-pa-xs" :class="$q.screen.xs ? '' : 'row flex-center'" style="height: 100%">
                         <div class="flex flex-center">
                           <q-img
                             v-if="data.imageFileNm"
                             class="cursor-pointer"
                             :src="`https://hr.energyshop.co.kr/imagesThumbnail/${data.imageFileNm}?${new Date().getTime()}`"
-                            style="max-height: 130px"
+                            style="object-fit: cover; width: 100%; height: 100%"
                             @click="handleShowImage(data)"
                           />
                           <q-icon v-if="!data.imageFileNm" name="face" color="teal" size="50px" style="height: 130px" />
@@ -129,7 +139,9 @@
                       </div>
                     </q-card>
                     <q-card class="col-xs-12 col-sm-3">
-                      <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">목표설정</div>
+                      <div class="text-center text-subtitle2 text-bold q-px-xs" :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-deep-orange-3'">
+                        목표설정
+                      </div>
                       <div :class="$q.dark.isActive ? 'q-pa-xs bg-grey-8' : 'q-pa-xs bg-grey-4'">
                         <span :class="$q.dark.isActive ? 'text-orange' : 'text-deep-orange'"> 평가지표 : </span>
                         <span class="text-bold"> {{ data.eidcNm }}</span>
@@ -137,7 +149,9 @@
                       <div class="q-pa-xs" v-html="data.targetDoc.replace(/\n/g, '<br>')"></div>
                     </q-card>
                     <q-card class="col-xs-12 col-sm-3">
-                      <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">기준설정</div>
+                      <div class="text-center text-subtitle2 text-bold q-px-xs" :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-deep-orange-3'">
+                        기준설정
+                      </div>
                       <div class="q-pa-xs">
                         <span v-if="data.evaS" class="q-px-sm"> <span class="text-blue"> S(100점) :</span> {{ data.evaS }}<br /> </span>
                         <span v-if="data.evaA" class="q-px-sm"> <span class="text-blue"> A(90점) :</span> {{ data.evaA }}<br /> </span>
@@ -147,23 +161,30 @@
                       </div>
                     </q-card>
                     <q-card class="col-xs-12 col-sm-3">
-                      <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">성과/업적</div>
+                      <div class="text-center text-subtitle2 text-bold q-px-xs" :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-deep-orange-3'">
+                        성과/업적
+                      </div>
                       <div class="q-pa-xs" v-html="data.workDoc.replace(/\n/g, '<br>')"></div>
                     </q-card>
                     <q-card class="col-xs-12 col-sm-1">
-                      <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">가중치</div>
+                      <div class="text-center text-subtitle2 text-bold q-px-xs" :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-deep-orange-3'">
+                        가중치
+                      </div>
                       <div class="text-center text-bold text-subtitle1 q-pa-xs" :class="$q.screen.xs ? '' : 'row flex-center'" style="height: 100%">
                         {{ data.weight }}
                       </div>
                     </q-card>
                     <q-card class="col-xs-12 col-sm-1">
-                      <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">자기평가</div>
+                      <div class="text-center text-subtitle2 text-bold q-px-xs" :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-deep-orange-3'">
+                        자기평가
+                      </div>
                       <div class="text-center q-pa-xs" :class="$q.screen.xs ? '' : 'row flex-center'" style="height: 100%">
-                        {{ data.selfPoint }}
+                        {{ data.selfPoint }}(<span class="text-bold text-orange"> {{ data.selfCh }}</span
+                        >)
                       </div>
                     </q-card>
                   </div>
-                  <q-card bordered class="bg-blue-grey-2 q-mt-xs">
+                  <q-card bordered flat class="" :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-blue-grey-2'">
                     <div class="row">
                       <div
                         class="col-xs-12 col-sm-5 text-center self-center text-subtitle1 text-bold"
@@ -231,7 +252,26 @@
                       </div>
                       <div class="col-xs-12 col-sm-2 text-center self-center text-subtitle1 text-bold">평가점수 : {{ data.markPoint }}</div>
                     </div>
+                    <div v-if="data.selfCh !== data.markCh && data.markCh !== ''" class="q-mb-sm text-dark q-pl-xl">
+                      <q-separator class="q-my-none" />
+                      <q-input
+                        :style="$q.screen.lt.md ? '' : 'width: 500px'"
+                        class="q-ml-sm"
+                        dense
+                        v-model="data.sExplains"
+                        placeholder="자기평가와 다른점의 사유를 10자이상 입력하세요 (최대 100자)"
+                        @update:model-value="updateByteCount(data.sExplains, 100)"
+                      >
+                        <template v-slot:before>
+                          <q-icon name="edit_note" />
+                        </template>
+                        <template v-slot:append>
+                          <q-icon v-if="data.sExplains.length > 10" name="save" class="cursor-pointer" @click="resultDataSave(data.markCh, data)" />
+                        </template>
+                      </q-input>
+                    </div>
                   </q-card>
+                  <q-separator class="q-mt-md" />
                 </div>
               </q-scroll-area>
             </div>
@@ -280,6 +320,7 @@ import { QBtn, QIcon, QToggle, useQuasar } from 'quasar';
 import jsonUtil from 'src/js_comm/json-util';
 import { useUserInfoStore } from 'src/store/setUserInfo';
 import { useYearInfoStore } from 'src/store/setYearInfo';
+import commUtil from 'src/js_comm/comm-util';
 const storeUser = useUserInfoStore();
 const storeYear = useYearInfoStore();
 
@@ -460,6 +501,7 @@ const onSelectionChanged = event => {
   if (selectedRows.value.length === 1) {
     if (selectedRows.value[0].status > '3') {
       getDataSelectList(selectedRows.value[0]).then(() => {
+        console.log('sel: ', JSON.stringify(rowData.rowsSel));
         const evalCount = rowData.rowsSel.filter(item => item.markPoint > 0).length;
         sendCheck.value.cnt = evalCount;
         // if (selectedRows.value[0].evalCount > 0) {
@@ -495,6 +537,12 @@ const onSelectionChanged = event => {
 };
 
 const handlePointClick = (val, resData) => {
+  if (resData.selfCh === resData.markCh) {
+    resData.sExplains = '';
+    resultDataSave(val, resData);
+  }
+};
+const resultDataSave = (val, resData) => {
   switch (val) {
     case 'S':
       resData.markPoint = 100;
@@ -745,6 +793,15 @@ const saveDataAndHandleResult = resFormData => {
 // **************************************************************//
 // ***** DataBase 연결부분 끝  *************************************//
 // **************************************************************//
+
+const updateByteCount = (val, maxCnt) => {
+  if (val) {
+    let cnt = commUtil.textByteLength(val);
+    if (cnt > maxCnt) {
+      alert('한글 ' + maxCnt + '자 (한글 ' + Math.trunc(maxCnt / 2) + '자)까지 가능합니다.');
+    }
+  }
+};
 
 // 이미지 팝업 뷰
 const dialogOpen = ref(false);

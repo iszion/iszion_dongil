@@ -8,7 +8,10 @@
         <div class="col-12 col-sm-auto q-py-md flex flex-center">
           <div>
             <q-avatar square size="180px">
-              <q-img :src="`https://hr.energyshop.co.kr/images/${formData.imageFileNm}?${new Date().getTime()}`" />
+              <q-img
+                :src="`https://hr.energyshop.co.kr/images/${formData.imageFileNm}?${new Date().getTime()}`"
+                style="object-fit: cover; width: 100%; height: 100%"
+              />
               <!--              <q-img :src="`https://www.iszion.com/images/${formData.imageFileNm}?${new Date().getTime()}?${new Date().getTime()}`" />-->
             </q-avatar>
             <!--            <q-avatar square size="180px"> <q-img :src="`https://www.iszion.com/images/${formData.imageFileNm}`" /></q-avatar>-->

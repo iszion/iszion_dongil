@@ -29,16 +29,6 @@
                 <div class="row q-col-gutter-md">
                   <q-select
                     dense
-                    v-model="searchParam.pYear"
-                    :options="optionsDate.year"
-                    label="년"
-                    label-color="orange"
-                    emit-value
-                    map-options
-                    options-dense
-                    style="width: 100px"
-                  /><q-select
-                    dense
                     v-model="searchParam.pMonth"
                     :options="optionsDate.month"
                     label="월"
@@ -66,11 +56,13 @@
                 <q-space />
                 <div class="q-gutter-xs">
                   <q-btn outline color="positive" dense @click="getData"><q-icon name="search" size="xs" /> 조회 </q-btn>
-                  <q-btn outline color="primary" dense @click="addDataSection"> <q-icon name="add" size="xs" /> 신규</q-btn>
-                  <q-btn v-if="showSaveBtn" outline color="primary" dense @click="saveDataSection"> <q-icon name="save" size="xs" /> 저장</q-btn>
-                  <q-btn v-if="selectedRows.length > 0" outline color="negative" dense @click="deleteDataSection">
-                    <q-icon name="delete" size="xs" /> 삭제</q-btn
+                  <q-btn v-if="searchParam.pMonth > '00'" outline color="primary" dense @click="addDataSection">
+                    <q-icon name="add" size="xs" /> 신규</q-btn
                   >
+                  <q-btn v-if="showSaveBtn" outline color="primary" dense @click="saveDataSection"> <q-icon name="save" size="xs" /> 저장</q-btn>
+                  <!--                  <q-btn v-if="selectedRows.length > 0" outline color="negative" dense @click="deleteDataSection">-->
+                  <!--                    <q-icon name="delete" size="xs" /> 삭제</q-btn-->
+                  <!--                  >-->
                 </div>
               </q-toolbar>
             </q-card-actions>
@@ -89,6 +81,7 @@
                   @selection-changed="onSelectionChanged"
                   @cell-value-changed="onCellValueChanged"
                   @grid-ready="onGridReady"
+                  suppressRowClickSelection="true"
                 >
                 </ag-grid-vue>
               </div>
@@ -203,7 +196,6 @@ let isSaveFg = null;
 const searchParam = reactive({
   pYear: '',
   pMonth: '',
-  pDay: '',
   word: '',
 });
 const statusEdit = reactive({
@@ -220,11 +212,9 @@ onBeforeUnmount(() => {
 onBeforeMount(() => {
   rowSelection.value = 'multiple';
 
-  searchParam.pYear = commUtil.getTodayYear();
+  searchParam.pYear = storeYear.setYear;
   searchParam.pMonth = commUtil.getTodayMonth();
-  searchParam.pDay = commUtil.getTodayDay();
   optionYymmReset();
-  getDataAppoYearOption();
 });
 
 const menuLabel = ref('');
@@ -234,15 +224,8 @@ onMounted(() => {
   handleResize();
 });
 
-const formDisableEmpCd = ref(true);
 const formDisable = ref(true);
-const isScreenVisible = ref(true);
-const isClassActive = ref(true);
 
-const isScreenVisibleProcess = () => {
-  isScreenVisible.value = !isScreenVisible.value;
-  isScreenVisible.value ? (isClassActive.value = true) : (isClassActive.value = false);
-};
 const contentZoneHeight = ref(500);
 const contentZoneStyle = computed(() => ({
   height: `${contentZoneHeight.value}px`,
@@ -251,13 +234,6 @@ const contentZoneStyle = computed(() => ({
 const gridApi = ref(null);
 const rowData = reactive({ rows: [], update: [], backup: [] });
 
-const dateFormatter = params => {
-  const dateStr = params.value;
-  if (dateStr && dateStr.length === 8) {
-    return `${dateStr.slice(0, 4)}-${dateStr.slice(4, 6)}-${dateStr.slice(6)}`;
-  }
-  return dateStr;
-};
 const onGridReady = params => {
   gridApi.value = params.api;
 };
@@ -363,17 +339,41 @@ const selectedRows = ref([]);
 
 const onSelectionChanged = event => {
   selectedRows.value = event.api.getSelectedRows();
+  // console.log('sele : ', JSON.stringify(selectedRows.value));
+  iuD = [];
+  for (let i = 0; selectedRows.value.length > i; i++) {
+    if (selectedRows.value[i].iuD !== 'I') {
+      let tmpJson = '{"mode": "D","data":' + JSON.stringify(selectedRows.value[i]) + '}';
+      iuD.push(tmpJson);
+    }
+  }
+  showSaveBtn.value = selectedRows.value.length > 0;
+  // console.log('iuD ;', JSON.stringify(iuD));
 };
 
 const showSaveBtn = ref(false);
-const onCellValueChanged = () => {
-  rowData.update = [];
-  for (let i = 0; rowData.backup.length > i; i++) {
-    if (JSON.stringify(rowData.backup[i]) !== JSON.stringify(rowData.rows[i])) {
-      rowData.update.push(rowData.rows[i]);
+let iu = [];
+let iuD = [];
+const onCellValueChanged = params => {
+  // console.log(JSON.stringify(rowData.rows));
+  let updateRow = params.data;
+  for (let i = 0; rowData.rows.length > i; i++) {
+    if (updateRow.rowNum === rowData.rows[i].rowNum) {
+      if (rowData.rows[i].iuD !== 'I') {
+        rowData.rows[i].iuD = 'U';
+      }
     }
   }
-  showSaveBtn.value = rowData.update.length > 0;
+  showSaveBtn.value = rowData.rows.filter(item => item.iuD === 'I' || item.iuD === 'U').length > 0;
+  iu = [];
+  for (let i = 0; rowData.rows.length > i; i++) {
+    if (rowData.rows[i].iuD === 'I' || rowData.rows[i].iuD === 'U') {
+      let tmpJson = '{"mode":"' + rowData.rows[i].iuD + '","data":' + JSON.stringify(rowData.rows[i]) + '}';
+
+      iu.push(tmpJson);
+    }
+  }
+  // console.log('iu ;', JSON.stringify(iu));
 };
 
 const rowSelection = ref(null);
@@ -381,8 +381,11 @@ const rowSelection = ref(null);
 const empCdFocus = ref(null);
 const empNmFocus = ref(null);
 const addDataSection = () => {
+  showSaveBtn.value = true;
+  const addIndex = 0;
   const newItem = {
-    makeYm: searchParam.pYear + searchParam.pMonth,
+    rowNum: rowData.rows.length + 1,
+    makeYm: storeYear.setYear + searchParam.pMonth,
     empCd: '',
     empNm: '',
     deptNm: '',
@@ -391,15 +394,22 @@ const addDataSection = () => {
     attenCh2: '',
     attenCh3: '',
     explains: '',
+    iuD: 'I',
   };
-  const res = gridApi.value.applyTransaction({ add: [newItem] });
-  if (res.add) {
-    // 새로 추가된 행의 첫 번째 셀에 포커스 맞추기
-    gridApi.value.startEditingCell({
-      rowIndex: res.add[0].rowIndex,
-      colKey: 'empCd',
-    });
-  }
+  rowData.rows.splice(addIndex, 0, newItem);
+
+  gridApi.value.setRowData(rowData.rows);
+  // 첫컬럼에 focus
+  gridApi.value.setFocusedCell(addIndex, 'empCd');
+
+  // const res = gridApi.value.applyTransaction({ add: [newItem] });
+  // if (res.add) {
+  //   새로 추가된 행의 첫 번째 셀에 포커스 맞추기
+  // gridApi.value.startEditingCell({
+  //   rowIndex: res.add[0].rowIndex,
+  //   colKey: 'empCd',
+  // });
+  // }
 };
 
 const uploadSaveSection = () => {
@@ -446,58 +456,23 @@ const uploadSaveSection = () => {
       // 확인/취소 모두 실행되었을때
     });
 };
-const deleteDataSection = () => {
-  $q.dialog({
-    dark: true,
-    title: '자료삭제',
-    message: '선택된 자료를 삭제하시겠습니까? ',
-    ok: {
-      push: true,
-      color: 'negative',
-    },
-    cancel: {
-      push: true,
-      color: 'grey-7',
-    },
-    // persistent: true,
-  })
-    .onOk(() => {
-      isSaveFg = 'D';
-
-      let iu = [];
-      let iuD = [];
-      for (let i = 0; i < selectedRows.value.length; i++) {
-        let tmpJson = '{"mode":"D","data":' + JSON.stringify(selectedRows.value[i]) + '}';
-        iuD.push(tmpJson);
-      }
-      saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
-    })
-    .onCancel(() => {})
-    .onDismiss(() => {
-      // 확인/취소 모두 실행되었을때
-    });
-};
 
 const saveDataSection = () => {
   $q.dialog({
     dark: true,
-    title: '자료저장',
-    message: '변경된 자료를 저장하시겠습니까?',
+    title: iuD.length > 0 ? '자료 저장(삭제)' : '자료저장',
+    message: iuD.length > 0 ? '자료를 저장(삭제)하시겠습니까?' : '자료를 저장하시겠습니까?',
     // persistent: true,
   })
     .onOk(() => {
-      let iu = [];
-      let iuD = [];
-      let tmpJson = '';
-      for (let i = 0; i < rowData.update.length; i++) {
-        if (rowData.update[i].iuD === 'U') {
-          tmpJson = '{"mode":"U","data":' + JSON.stringify(rowData.update[i]) + '}';
-        } else {
-          tmpJson = '{"mode":"I","data":' + JSON.stringify(rowData.update[i]) + '}';
-        }
-        iu.push(tmpJson);
+      if (iu.length > 0 || iuD.length > 0) {
+        saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
+        setTimeout(() => {
+          getData();
+        }, 500);
+      } else {
+        alert('변경된 자료가 없습니다.');
       }
-      saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
     })
     .onCancel(() => {})
     .onDismiss(() => {
@@ -537,7 +512,7 @@ const saveDataAndHandleResult = resFormData => {
 const getData = async () => {
   try {
     const response = await api.post('/api/mst/mst1220_list', {
-      paramMakeYear: searchParam.pYear,
+      paramMakeYear: storeYear.setYear,
       paramMakeMonth: searchParam.pMonth,
       paramSearchWord: searchParam.word,
     });
@@ -547,18 +522,6 @@ const getData = async () => {
     console.error('Error fetching users:', error);
   }
 };
-
-// ***** 발령년도 가져오기 부분  *****************************//
-const appoYearOptions = ref([]);
-async function getDataAppoYearOption() {
-  try {
-    const response = await api.post('/api/mst/mst1210_year_list', { paramSetYear: storeYear.setYear });
-    appoYearOptions.value = response.data.data;
-    appoYearOptions.value.unshift({ appoYearNm: '전체', appoYear: '' });
-  } catch (error) {
-    console.error('Error fetching users:', error);
-  }
-}
 
 // **************************************************************//
 // ***** DataBase 연결부분 끝  *************************************//

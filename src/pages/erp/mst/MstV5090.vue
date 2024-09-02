@@ -295,6 +295,8 @@ const selectedRows = ref();
 const onSelectionChangedGroup = event => {
   selectedRows.value = event.api.getSelectedRows();
 
+  showSaveBtn.value = false;
+
   if (selectedRows.value.length === 1) {
     paramComm.value.commCd1 = selectedRows.value[0].commCd1;
     paramComm.value.commNm = selectedRows.value[0].commNm;
@@ -351,6 +353,8 @@ const onCellValueChangedGroup = () => {
 };
 
 const onCellValueChanged = () => {
+  console.log('rowData.rows : ', JSON.stringify(rowData.rows));
+  console.log('rowData.update : ', JSON.stringify(rowData.update));
   updateData.value = [];
   for (let i = 0; rowDataBack.value.length > i; i++) {
     if (JSON.stringify(rowDataBack.value[i]) !== JSON.stringify(rowData.rows[i])) {

@@ -253,8 +253,8 @@ const columnDefs = reactive({
       },
     },
     {
-      headerName: '자기환산',
-      field: 'selfPointX',
+      headerName: '성과평가',
+      field: 'markPoint',
       minWidth: 100,
       maxWidth: 100,
       cellStyle: params => {
@@ -262,8 +262,16 @@ const columnDefs = reactive({
       },
     },
     {
-      headerName: '성과평가',
-      field: 'markPoint',
+      headerName: '사유',
+      field: 'sExplains',
+      minWidth: 150,
+      cellStyle: params => {
+        return getStatusMessageStyle(params.data);
+      },
+    },
+    {
+      headerName: '자기환산',
+      field: 'selfPointX',
       minWidth: 100,
       maxWidth: 100,
       cellStyle: params => {

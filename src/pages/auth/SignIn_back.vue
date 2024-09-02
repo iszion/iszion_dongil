@@ -2,13 +2,13 @@
   <q-page>
     <div class="row">
       <div class="col-sm-6 col-md-8 col-lg-9" :class="leftColStyle">
-        <!--        <q-img height="98vh" src="~assets/images/dongil_bg.jpeg" fit="fill"> </q-img>-->
-        <!--        <div>-->
-        <!--          <q-img src="~assets/images/dongil_bg.jpeg"> </q-img>-->
+        <q-img height="98vh" src="~assets/images/dongil_bg.jpeg" fit="fill"> </q-img>
+        <!--                <div>-->
+        <!--                  <q-img src="~assets/images/dongil_bg.jpeg"> </q-img>-->
+        <!--                </div>-->
+        <!--        <div style="padding: 100px; height: 100%" :class="$q.dark.isActive ? 'bg-white' : 'bg-white'" class="flex flex-center">-->
+        <!--          <q-img src="~assets/images/dongil_bg.jpeg" style="height: 100%"></q-img>-->
         <!--        </div>-->
-        <div style="padding: 100px; height: calc(98vh)" :class="$q.dark.isActive ? 'bg-white' : 'bg-white'" class="flex flex-center">
-          <q-img src="~assets/images/dongil_bg.jpeg"></q-img>
-        </div>
       </div>
 
       <div class="col-12 col-sm-6 col-md-4 col-lg-3 flex flex-center q-pt-xs-xl q-px-xl" :class="$q.dark.isActive ? 'bg-dark' : 'bg-grey-3'">

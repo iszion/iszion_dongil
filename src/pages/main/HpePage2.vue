@@ -28,9 +28,9 @@
     <q-separator />
     <q-card-section class="q-py-sm q-px-none">
       <div class="row q-pa-xs">
-        <apexchart class="col-4" type="radialBar" :height="$q.screen.xs ? '180' : '280'" :options="chartOptions1" :series="series1"> </apexchart>
-        <apexchart class="col-4" type="radialBar" :height="$q.screen.xs ? '180' : '280'" :options="chartOptions2" :series="series2"> </apexchart>
-        <apexchart class="col-4" type="radialBar" :height="$q.screen.xs ? '180' : '280'" :options="chartOptions3" :series="series3"> </apexchart>
+        <apexchart class="col-4" type="radialBar" :height="$q.screen.xs ? '180' : '220'" :options="chartOptions1" :series="series1"> </apexchart>
+        <apexchart class="col-4" type="radialBar" :height="$q.screen.xs ? '180' : '220'" :options="chartOptions2" :series="series2"> </apexchart>
+        <apexchart class="col-4" type="radialBar" :height="$q.screen.xs ? '180' : '220'" :options="chartOptions3" :series="series3"> </apexchart>
       </div>
     </q-card-section>
   </q-card>
@@ -79,7 +79,7 @@ const chartOptions2 = ref({});
 const chartOptions3 = ref({});
 const getChartOptions = (label, isXs, isDarkMode) => ({
   chart: {
-    height: isXs ? 180 : 280,
+    height: isXs ? 180 : 220,
     type: 'radialBar',
     offsetY: -10,
   },
@@ -90,10 +90,10 @@ const getChartOptions = (label, isXs, isDarkMode) => ({
       dataLabels: {
         name: {
           fontSize: isXs ? '15px' : '25px',
-          offsetY: 120,
+          offsetY: 100,
         },
         value: {
-          offsetY: 76,
+          offsetY: 55,
           fontSize: isXs ? '20px' : '30px',
           color: isDarkMode ? '#f37a02' : '#017fc2',
           formatter: function (val) {

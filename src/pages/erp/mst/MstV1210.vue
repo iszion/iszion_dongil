@@ -64,9 +64,9 @@
                   <q-btn outline color="positive" dense @click="getData"><q-icon name="search" size="xs" /> 조회 </q-btn>
                   <q-btn outline color="primary" dense @click="addDataSection"> <q-icon name="add" size="xs" /> 신규</q-btn>
                   <q-btn v-if="showSaveBtn" outline color="primary" dense @click="saveDataSection"> <q-icon name="save" size="xs" /> 저장</q-btn>
-                  <q-btn v-if="selectedRows.length > 0" outline color="negative" dense @click="deleteDataSection">
-                    <q-icon name="delete" size="xs" /> 삭제</q-btn
-                  >
+                  <!--                  <q-btn v-if="selectedRows.length > 0" outline color="negative" dense @click="deleteDataSection">-->
+                  <!--                    <q-icon name="delete" size="xs" /> 삭제</q-btn-->
+                  <!--                  >-->
                 </div>
               </q-toolbar>
             </q-card-actions>
@@ -85,6 +85,7 @@
                   @selection-changed="onSelectionChanged"
                   @cell-value-changed="onCellValueChanged"
                   @grid-ready="onGridReady"
+                  suppressRowClickSelection="true"
                 >
                 </ag-grid-vue>
               </div>
@@ -282,6 +283,7 @@ const columnDefs = reactive({
     {
       headerName: '성명',
       field: 'empNm',
+      editable: false,
       minWidth: 120,
       maxWidth: 120,
     },
@@ -290,11 +292,12 @@ const columnDefs = reactive({
       field: 'deptCd',
       minWidth: 150,
       maxWidth: 150,
+      editable: false,
       filter: true,
       cellRenderer: CompSelectDept,
       cellRendererParams: {
         updateSelectedValue: row => {
-          onCellValueChanged();
+          onCellValueChanged({ data: row.value });
         },
       },
     },
@@ -303,11 +306,12 @@ const columnDefs = reactive({
       field: 'titlCd',
       minWidth: 120,
       maxWidth: 120,
+      editable: false,
       filter: true,
       cellRenderer: CompSelectTitl,
       cellRendererParams: {
         updateSelectedValue: row => {
-          onCellValueChanged();
+          onCellValueChanged({ data: row.value });
         },
       },
     },
@@ -321,122 +325,101 @@ const columnDefs = reactive({
     {
       headerName: '기타사항',
       field: 'explains',
-      valueFormatter: dateFormatter,
       minWidth: 120,
     },
   ],
 });
 
-const oldFormData = ref(null);
-const formData = ref({
-  empCd: '',
-  empNm: '',
-  deptCd: '',
-  catgCd: '',
-  pstnCd: '',
-  titlCd: '',
-  evtgCd: '',
-  gender: '',
-  birthday: '',
-  mobile: '',
-  email: '',
-  inDay: '',
-  outDay: '',
-  imageFileNm: '',
-});
-
 const selectedRows = ref([]);
-const isShowStatusEdit = ref(false);
-const isShowDeleteBtn = ref(false);
-const isShowSaveBtn = ref(false);
 
 const onSelectionChanged = event => {
   selectedRows.value = event.api.getSelectedRows();
+  iuD = [];
+  for (let i = 0; selectedRows.value.length > i; i++) {
+    if (selectedRows.value[i].iuD !== 'I') {
+      let tmpJson = '{"mode": "D","data":' + JSON.stringify(selectedRows.value[i]) + '}';
+      iuD.push(tmpJson);
+    }
+  }
+  showSaveBtn.value = selectedRows.value.length > 0;
+  // console.log('iuD ;', JSON.stringify(iuD));
 };
 
 const showSaveBtn = ref(false);
-const onCellValueChanged = () => {
-  rowData.update = [];
-  for (let i = 0; rowData.backup.length > i; i++) {
-    if (JSON.stringify(rowData.backup[i]) !== JSON.stringify(rowData.rows[i])) {
-      rowData.update.push(rowData.rows[i]);
+let iu = [];
+let iuD = [];
+
+const onCellValueChanged = params => {
+  let updateRow = params.data;
+  console.log('params1 : ', JSON.stringify(params.data));
+  console.log('num : ', updateRow.rowNum);
+  for (let i = 0; rowData.rows.length > i; i++) {
+    if (updateRow.rowNum === rowData.rows[i].rowNum) {
+      if (rowData.rows[i].iuD !== 'I') {
+        rowData.rows[i].iuD = 'U';
+      }
     }
   }
-  showSaveBtn.value = rowData.update.length > 0;
+  showSaveBtn.value = rowData.rows.filter(item => item.iuD === 'I' || item.iuD === 'U').length > 0;
+
+  iu = [];
+  for (let i = 0; rowData.rows.length > i; i++) {
+    if (rowData.rows[i].iuD === 'I' || rowData.rows[i].iuD === 'U') {
+      let tmpJson = '{"mode":"' + rowData.rows[i].iuD + '","data":' + JSON.stringify(rowData.rows[i]) + '}';
+
+      iu.push(tmpJson);
+    }
+  }
+  // console.log('iu ;', JSON.stringify(iu));
 };
 
 const rowSelection = ref(null);
 
 const addDataSection = () => {
+  showSaveBtn.value = true;
+  const addIndex = 0;
   const newItem = {
+    rowNum: rowData.rows.length + 1,
     empCd: '',
     empNm: '',
     deptCd: '',
     titlCd: '',
     appoDay: '',
     explains: '',
+    iuD: 'I',
   };
-  const res = gridApi.value.applyTransaction({ add: [newItem] });
-  if (res.add) {
-    // 새로 추가된 행의 첫 번째 셀에 포커스 맞추기
-    gridApi.value.startEditingCell({
-      rowIndex: res.add[0].rowIndex,
-      colKey: 'empCd',
-    });
-  }
+  rowData.rows.splice(addIndex, 0, newItem);
+
+  gridApi.value.setRowData(rowData.rows);
+  // 첫컬럼에 focus
+  gridApi.value.setFocusedCell(addIndex, 'empCd');
+
+  // const res = gridApi.value.applyTransaction({ add: [newItem] });
+  // if (res.add) {
+  //   새로 추가된 행의 첫 번째 셀에 포커스 맞추기
+  // gridApi.value.startEditingCell({
+  //   rowIndex: res.add[0].rowIndex,
+  //   colKey: 'empCd',
+  // });
+  // }
 };
 
-const deleteDataSection = () => {
-  $q.dialog({
-    dark: true,
-    title: '자료삭제',
-    message: '선택된 자료를 삭제하시겠습니까? ',
-    ok: {
-      push: true,
-      color: 'negative',
-    },
-    cancel: {
-      push: true,
-      color: 'grey-7',
-    },
-    // persistent: true,
-  })
-    .onOk(() => {
-      isSaveFg = 'D';
-
-      let iu = [];
-      let iuD = [];
-      for (let i = 0; i < selectedRows.value.length; i++) {
-        let tmpJson = '{"mode":"U","data":' + JSON.stringify(selectedRows.value[i]) + '}';
-        iuD.push(tmpJson);
-      }
-      saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
-    })
-    .onCancel(() => {})
-    .onDismiss(() => {
-      // 확인/취소 모두 실행되었을때
-    });
-};
 const saveDataSection = () => {
   $q.dialog({
     dark: true,
-    title: '자료저장',
-    message: '변경된 자료를 저장하시겠습니까?',
+    title: iuD.length > 0 ? '자료 저장(삭제)' : '자료저장',
+    message: iuD.length > 0 ? '자료를 저장(삭제)하시겠습니까?' : '자료를 저장하시겠습니까?',
     // persistent: true,
   })
     .onOk(() => {
-      let iu = [];
-      let iuD = [];
-      let tmpJson = '';
-      for (let i = 0; i < rowData.update.length; i++) {
-        if (rowData.update[i].iuD === 'U') {
-          tmpJson = '{"mode":"U","data":' + JSON.stringify(rowData.update[i]) + '}';
-        } else {
-          tmpJson = '{"mode":"I","data":' + JSON.stringify(rowData.update[i]) + '}';
-        }
-        iu.push(tmpJson);
+      if (iu.length > 0 || iuD.length > 0) {
+        saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
+        setTimeout(() => {
+          getData();
+        }, 500);
+      } else {
+        alert('변경된 자료가 없습니다.');
       }
-      saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
     })
     .onCancel(() => {})
     .onDismiss(() => {
@@ -460,45 +443,9 @@ const handleResize = () => {
 // ***** 자료저장 및 삭제 처리부분 *****************************//
 // saveStatus = 0=수정성공 1=신규성공 2=삭제성공 3=수정에러 4=시스템에러
 const saveDataAndHandleResult = resFormData => {
-  console.log('save::: ', JSON.stringify(resFormData));
   api
-    .post('/api/mst/mst1010_save', resFormData)
+    .post('/api/mst/mst1210_save', resFormData)
     .then(res => {
-      if (res.data.rtn === '0') {
-        if (isSaveFg === 'I') {
-          formData.value.oldUserId = formData.value.empCd;
-
-          let newData = [formData.value];
-          gridApi.value.applyTransaction({
-            add: newData,
-            addIndex: 0,
-          });
-        } else if (isSaveFg === 'U') {
-          const selectedData = gridApi.value.getSelectedRows();
-
-          // selectedData[0] = { ...formData.value };
-          selectedData[0].empCd = formData.value.empCd;
-          selectedData[0].oldEmpCd = formData.value.empCd;
-          selectedData[0].empNm = formData.value.empNm;
-          selectedData[0].deptCd = formData.value.deptCd;
-          selectedData[0].catgCd = formData.value.catgCd;
-          selectedData[0].pstnCd = formData.value.pstnCd;
-          selectedData[0].titlCd = formData.value.titlCd;
-          selectedData[0].evtgCd = formData.value.evtgCd;
-          selectedData[0].gender = formData.value.gender;
-          selectedData[0].birthday = formData.value.birthday;
-          selectedData[0].mobile = formData.value.mobile;
-          selectedData[0].email = formData.value.email;
-          selectedData[0].inDay = formData.value.inDay;
-          selectedData[0].outDay = formData.value.outDay;
-          gridApi.value.applyTransaction({
-            update: selectedData,
-          });
-        } else if (isSaveFg === 'D') {
-          const selectedData = gridApi.value.getSelectedRows();
-          gridApi.value.applyTransaction({ remove: selectedData });
-        }
-      }
       let saveStatus = {};
       saveStatus.rtn = res.data.rtn;
       saveStatus.rtnMsg = res.data.rtnMsg;
@@ -517,7 +464,6 @@ const getData = async () => {
       paramSearchWord: searchParam.word,
     });
     rowData.rows = response.data.data;
-    rowData.backup = JSON.parse(JSON.stringify(response.data.data));
   } catch (error) {
     console.error('Error fetching users:', error);
   }

@@ -10,14 +10,14 @@
         <apexchart
           class="col-6"
           type="radialBar"
-          :height="$q.screen.xs ? '180' : '280'"
+          :height="$q.screen.xs ? '180' : '220'"
           :options="getChartOptions('1차역량 진행율', isXsScreen)"
           :series="series1"
         ></apexchart>
         <apexchart
           class="col-6"
           type="radialBar"
-          :height="$q.screen.xs ? '180' : '280'"
+          :height="$q.screen.xs ? '180' : '220'"
           :options="getChartOptions('2차역량 진행율', isXsScreen)"
           :series="series2"
         ></apexchart>
@@ -47,7 +47,7 @@ watch(
 
 const getChartOptions = (label, isXs) => ({
   chart: {
-    height: isXs ? 180 : 280,
+    height: isXs ? 180 : 220,
     type: 'radialBar',
     offsetY: -10,
   },
@@ -59,10 +59,10 @@ const getChartOptions = (label, isXs) => ({
         name: {
           fontSize: isXs ? '15px' : '25px',
           color: undefined,
-          offsetY: 120,
+          offsetY: 100,
         },
         value: {
-          offsetY: 76,
+          offsetY: 55,
           fontSize: isXs ? '20px' : '30px',
           color: undefined,
           formatter: function (val) {

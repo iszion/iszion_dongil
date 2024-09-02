@@ -3,7 +3,11 @@
     <q-item>
       <q-item-section avatar>
         <q-avatar square size="xl">
-          <q-img v-if="rowData" :src="`https://hr.energyshop.co.kr/imagesThumbnail/${rowData.imageFileNm}?${new Date().getTime()}`" />
+          <q-img
+            v-if="rowData"
+            :src="`https://hr.energyshop.co.kr/imagesThumbnail/${rowData.imageFileNm}?${new Date().getTime()}`"
+            style="object-fit: cover; width: 100%; height: 100%"
+          />
           <q-img v-else src="https://cdn.quasar.dev/img/boy-avatar.png" />
         </q-avatar>
       </q-item-section>

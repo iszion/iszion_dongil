@@ -34,6 +34,7 @@
                             class="cursor-pointer"
                             v-if="data.imageFileNm"
                             :src="`https://hr.energyshop.co.kr/imagesThumbnail/${data.imageFileNm}`"
+                            style="object-fit: cover; width: 100%; height: 100%"
                             @click="handleShowImage(data)"
                           />
                           <q-icon v-else name="face" color="teal" size="md" />
@@ -144,10 +145,10 @@ const storeYear = useYearInfoStore();
 
 const rowDataDeptEmp = ref();
 const rowDataDept = ref();
-const rowData = reactive({ office: '', sale: '' });
+const rowData = reactive({ office: '' });
 
 const handleRowClick = data => {
-  console.log('Row clicked:', data);
+  // console.log('Row clicked:', data);
   getDeptEmpData(data.deptCd, data.empCd);
   // Your logic to handle the row click goes here
   // For example, you might show a dialog, navigate to another page, or perform an API call
@@ -182,43 +183,20 @@ const options_office = reactive({
   siblingSpacing: 50,
   direction: 'top',
   enableExpandCollapse: true,
-  nodeTemplate: content =>
-    `<div class='node-content' style='display: flex; flex-direction: column; gap: 10px; justify-content: center; align-items: center; height: 100%;' data-empCd=${content.empCd} data-deptCd=${content.deptCd}>
-          <div class='q-gutter-y-none text-center cursor-pointer' id='node-${content.id}'>
-            <img style='width: 50px;height: 50px;border-radius: 50%;' src='${content.imageURL}' alt='' />
-            <div style="font-weight: bold; font-family: Arial; font-size: 14px" data-name=${content.name}>${content.name}</div>
-            <div style="font-weight: bold; font-family: Arial; font-size: 12px" data-dept=${content.deptCd}'> ${content.deptNm} / ${content.titlNm}</div>
-          </div>
-         </div>`,
-  canvasStyle: '',
-  // canvasStyle: 'border: 1px solid black;background: #f6f6f6;',
-  enableToolbar: true,
-});
-const options_sale = reactive({
-  contentKey: 'data',
-  width: '100%',
-  height: 500,
-  nodeWidth: 100,
-  nodeHeight: 150,
-  fontColor: '#000',
-  borderColor: '#333',
-  childrenSpacing: 250,
-  siblingSpacing: 10,
-  direction: 'top',
-  enableExpandCollapse: true,
-  nodeTemplate: content =>
-    `<div class='node-content' style='display: flex; flex-direction: column; gap: 10px; justify-content: center; align-items: center; height: 100%;' data-empCd=${content.empCd} data-deptCd=${content.deptCd}>
-          <div class='q-gutter-y-none text-center cursor-pointer' id='node-${content.id}'>
-            <img style='width: 50px;height: 50px;border-radius: 50%;' src='${content.imageURL}' alt='' />
-            <div style="font-weight: bold; font-family: Arial; font-size: 14px" data-name=${content.name}>${content.name}</div>
-            <div style="font-weight: bold; font-family: Arial; font-size: 12px" data-dept=${content.deptCd}'> ${content.deptNm} / ${content.titlNm}</div>
-          </div>
-         </div>`,
-  canvasStyle: '',
 
+  nodeTemplate: content =>
+    `<div class='node-content' style='display: flex; flex-direction: column; gap: 10px; justify-content: center; align-items: center; height: 100%;' data-empCd=${content.empCd} data-deptCd=${content.deptCd}>
+          <div class='q-gutter-y-none text-center cursor-pointer' id='node-${content.id}'>
+            <img style='width: 50px;height: 50px;border-radius: 50%;' src='${content.imageURL}' alt='' />
+            <div style="font-weight: bold; font-family; Arial; font-size: 14px" data-name=${content.empNm}>${content.deptNm}</div>
+            <div style="font-weight: bold; font-family; Arial; font-size: 12px" data-dept=${content.deptCd}'> ${content.titlNm} / ${content.empNm}</div>
+          </div>
+         </div>`,
+  canvasStyle: '',
   // canvasStyle: 'border: 1px solid black;background: #f6f6f6;',
-  enableToolbar: true,
+  enableToolbar: false,
 });
+
 const deptDetailView = (resDeptCd, resEmpCd) => {
   getDeptEmpData(resDeptCd, resEmpCd).then(() => {});
 };
@@ -235,13 +213,18 @@ onMounted(() => {
         const empCd = node.getAttribute('data-empCd');
         const deptCd = node.getAttribute('data-deptCd');
         if (deptCd.substring(0, 2) === '99') {
-          let callDeptCd1 = deptCd === '991' ? '2' : '3';
-          getDeptData(callDeptCd1);
+          let callDeptCd1 = deptCd === '991' ? '3' : '2';
+          getDeptData(callDeptCd1).then(() => {
+            getDeptEmpData(rowDataDept.value[0].deptCd, rowDataDept.value[0].empCd);
+          });
         } else {
           rowDataDept.value = [];
           deptDetailView(deptCd, empCd);
         }
       });
+    });
+    getDeptData('3').then(() => {
+      getDeptEmpData(rowDataDept.value[0].deptCd, rowDataDept.value[0].empCd);
     });
   });
 });
@@ -293,19 +276,6 @@ const getDeptOfficeTreeData = async param => {
   }
 };
 
-const getDeptSaleTreeData = async param => {
-  try {
-    const response = await api.post('/api/aux/dashboard_dept_sale_tree_list', { paramSetYear: storeYear.setYear });
-
-    // console.log('data ; ', JSON.stringify(response.data.data));
-    const tmpData = buildTree(response.data.data);
-    // console.log('tmpData ; ', JSON.stringify(tmpData[0]));
-    rowData.sale = tmpData[0];
-  } catch (error) {
-    console.error('Error fetching users:', error);
-  }
-};
-
 function buildTree(data, parentDeptCd = '000') {
   const tree = [];
   data.forEach(item => {
@@ -325,10 +295,11 @@ function buildTree(data, parentDeptCd = '000') {
         id: item.deptCd,
         data: {
           imageURL: tmpURL,
-          name: item.empNm || '',
+          empNm: item.empNm || '',
           empCd: item.empCd,
           deptCd: item.deptCd,
           deptNm: item.deptNm,
+          catgCd: item.catgCd,
           titlNm: item.catgNm || item.titlNm || '',
         },
         options: {

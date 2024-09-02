@@ -37,10 +37,10 @@
                   {{ props.row.titlNm }}
                 </q-td>
                 <q-td key="evaP1X" :props="props">
-                  {{ props.row.evaP1X }}
+                  {{ props.row.evaP1X }}<span class="text-caption">({{ props.row.evaPer1 }}%)</span>
                 </q-td>
                 <q-td key="evaP2Xx" :props="props">
-                  {{ props.row.evaP2Xx }}
+                  {{ props.row.evaP2Xx }}<span class="text-caption">({{ props.row.evaPer2 }}%)</span>
                 </q-td>
                 <q-td key="finalPoint" :props="props">
                   <span class="text-primary">
@@ -119,7 +119,7 @@ onMounted(() => {
 const getData = async () => {
   try {
     const response = await api.post('/api/aux/dashboard_eva_info_list', {
-      paramSetYear: storeYear.setYear - 1,
+      paramSetYear: storeYear.setYear,
       paramEmpCd: storeUser.setEmpCd,
       paramBasicDay: storeYear.setYear + '0430',
     });
@@ -143,7 +143,9 @@ const getData = async () => {
 /* 테이블 셀 스타일 */
 .q-table .q-td {
   font-family: 'Arial', sans-serif; /* 셀 폰트 */
-  font-size: 18px; /* 셀 폰트 크기 */
+  font-size: 15px; /* 셀 폰트 크기 */
   color: #555; /* 셀 텍스트 색상 */
+  padding-left: 0px;
+  padding-right: 0px;
 }
 </style>

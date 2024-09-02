@@ -121,14 +121,14 @@
             <q-scroll-area :style="contentZoneStyle">
               <div style="width: 100%" v-for="data in rowData.rowsSel" :key="data.workNo" class="q-mb-sm row">
                 <q-card class="col-xs-12 col-sm-1">
-                  <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">순번</div>
+                  <div class="text-center text-subtitle2 text-bold q-px-xs" :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-deep-orange-3'">순번</div>
                   <div class="text-center q-pa-xs" :class="$q.screen.xs ? '' : 'row flex-center'" style="height: 100%">
                     <div class="flex flex-center">
                       <q-img
                         v-if="data.imageFileNm"
                         class="cursor-pointer"
                         :src="`https://hr.energyshop.co.kr/imagesThumbnail/${data.imageFileNm}?${new Date().getTime()}`"
-                        style="max-height: 130px"
+                        style="object-fit: cover; width: 100%; height: 100%"
                         @click="handleShowImage(data)"
                       />
                       <q-icon v-if="!data.imageFileNm" name="face" color="teal" size="50px" style="height: 130px" />
@@ -147,7 +147,9 @@
                   </div>
                 </q-card>
                 <q-card class="col-xs-12 col-sm-7">
-                  <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">목표설정</div>
+                  <div class="text-center text-subtitle2 text-bold q-px-xs" :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-deep-orange-3'">
+                    목표설정
+                  </div>
                   <div :class="$q.dark.isActive ? 'q-pa-xs bg-grey-8' : 'q-pa-xs bg-grey-4'">
                     <span :class="$q.dark.isActive ? 'text-orange' : 'text-deep-orange'"> 평가지표 : </span>
                     <span class="text-bold"> {{ data.eidcNm }}</span>
@@ -155,7 +157,9 @@
                   <div class="q-pa-xs" v-html="data.targetDoc.replace(/\n/g, '<br>')"></div>
                 </q-card>
                 <q-card class="col-xs-12 col-sm-3">
-                  <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">기준설정</div>
+                  <div class="text-center text-subtitle2 text-bold q-px-xs" :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-deep-orange-3'">
+                    기준설정
+                  </div>
                   <div class="q-pa-xs">
                     <span v-if="data.evaS" class="q-px-sm"> <span class="text-blue"> S(100점) :</span> {{ data.evaS }}<br /> </span>
                     <span v-if="data.evaA" class="q-px-sm"> <span class="text-blue"> A(90점) :</span> {{ data.evaA }}<br /> </span>
@@ -165,7 +169,7 @@
                   </div>
                 </q-card>
                 <q-card class="col-xs-12 col-sm-1">
-                  <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">가중치</div>
+                  <div class="text-center text-subtitle2 text-bold q-px-xs" :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-deep-orange-3'">가중치</div>
                   <div class="text-center q-pa-xs" :class="$q.screen.xs ? '' : 'row flex-center'" style="height: 100%">
                     {{ data.weight }}
                   </div>
