@@ -87,4 +87,26 @@ export default {
       timeout: resTime,
     });
   },
+  notifyUserView(res) {
+    Notify.create({
+      type: 'my-notify',
+      position: 'top-right',
+      color: res.msgColor,
+      textColor: res.msgTextColor,
+      caption: res.msgCaption,
+      message: res.msgMessage,
+      group: true,
+      html: true,
+      actions: [
+        {
+          label: '닫기',
+          color: 'dark',
+          handler: () => {
+            /* ... */
+          },
+        },
+      ],
+      timeout: 3000,
+    });
+  },
 };

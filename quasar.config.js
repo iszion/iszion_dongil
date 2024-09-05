@@ -76,8 +76,8 @@ module.exports = configure(function (/* ctx */) {
       // publicPath: process.env.NODE_ENV === 'production' ? '/production-sub-path/' : '/',
       // analyze: true,
       env: {
-        // SERVER_URL: 'http://192.168.141.13:8080',
-        SERVER_URL: 'https://hr.energyshop.co.kr:8080',
+        SERVER_URL: 'http://192.168.141.13:8080',
+        // SERVER_URL: 'https://hr.energyshop.co.kr:8080',
         // SERVER_URL: 'https://www.iszion.com:8080',
         // SERVER_URL: 'https://211.235.225.3:8080',
         // SERVER_URL: 'http://localhost:8080',

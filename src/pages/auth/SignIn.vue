@@ -6,8 +6,9 @@
         <!--        <div>-->
         <!--          <q-img src="~assets/images/dongil_bg.jpeg"> </q-img>-->
         <!--        </div>-->
-        <div style="padding: 100px; height: calc(98vh)" :class="$q.dark.isActive ? 'bg-white' : 'bg-white'" class="flex flex-center">
-          <q-img src="~assets/images/dongil_bg.jpeg"></q-img>
+        <div style="padding: 50px; height: 97vh" class="flex flex-center">
+          <!--          <q-img :style="imageStyle" src="~assets/images/dongil_bg_001.png"></q-img>-->
+          <q-img src="~assets/images/dongil_bg_001.png"></q-img>
         </div>
       </div>
 
@@ -75,6 +76,24 @@ const form = ref({
   id: '',
   password: '',
   idSave: false,
+});
+
+const imageStyle = computed(() => {
+  return window.innerWidth > 1900
+    ? { height: '910px', width: '900px' }
+    : window.innerWidth > 1700
+    ? { height: '810px', width: '800px' }
+    : window.innerWidth > 1500
+    ? { height: '710px', width: '700px' } // Style for width <= 1700
+    : window.innerWidth > 1400
+    ? { height: '610px', width: '600px' } // Style for width <= 1700
+    : window.innerWidth > 1300
+    ? { height: '510px', width: '500px' } // Style for width <= 1700
+    : window.innerWidth > 1200
+    ? { height: '405px', width: '400px' } // Style for width <= 1700
+    : window.innerWidth > 1100
+    ? { height: '310px', width: '300px' } // Style for width <= 1700
+    : { height: '295x', width: '290px' }; // Style for width <= 1700
 });
 
 const onSubmit = () => {

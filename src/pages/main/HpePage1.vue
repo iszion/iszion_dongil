@@ -119,7 +119,7 @@ onMounted(() => {
 const getData = async () => {
   try {
     const response = await api.post('/api/aux/dashboard_eva_info_list', {
-      paramSetYear: storeYear.setYear,
+      paramSetYear: storeYear.setYear - 1,
       paramEmpCd: storeUser.setEmpCd,
       paramBasicDay: storeYear.setYear + '0430',
     });

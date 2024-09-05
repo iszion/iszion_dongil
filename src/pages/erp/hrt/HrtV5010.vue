@@ -93,6 +93,7 @@ import { api } from '/src/boot/axios';
 import commUtil from 'src/js_comm/comm-util';
 
 import { useYearInfoStore } from 'src/store/setYearInfo';
+import notifySave from 'src/js_comm/notify-save';
 
 const storeYear = useYearInfoStore();
 
@@ -282,13 +283,7 @@ const handleGetProcedure = () => {
   calculatorVisible.value = true;
   showSimulatedReturnData.value = false;
 
-  getProcedure().then(() => {
-    setTimeout(() => {
-      calculatorVisible.value = false;
-      showSimulatedReturnData.value = true;
-      getData();
-    }, 1000);
-  });
+  getProcedure();
 };
 // **************************************************************//
 // ***** DataBase 연결부분    *************************************//
@@ -328,6 +323,24 @@ const getProcedure = async () => {
       paramSetYear: searchParam.pYear,
       paramEvaFg: searchParam.evaFg,
     });
+
+    // console.log('res :: ', response.data.success);
+
+    setTimeout(() => {
+      calculatorVisible.value = false;
+      showSimulatedReturnData.value = true;
+
+      let procStatus = {};
+      response.data.success ? (procStatus.msgColor = 'positive') : (procStatus.msgColor = 'negative');
+      response.data.success ? (procStatus.msgTextColor = 'dark') : (procStatus.msgTextColor = 'white');
+      response.data.success ? (procStatus.msgCaption = '정상처리') : (procStatus.msgCaption = '처리실패');
+      response.data.success
+        ? (procStatus.msgMessage = '작업을 모두 끝났습니다.')
+        : (procStatus.msgMessage = '착업에 문제가 있습니다.(관리자에게 문의)');
+      notifySave.notifyUserView(procStatus);
+
+      getData();
+    }, 1000);
   } catch (error) {
     console.error('Error fetching users:', error);
     calculatorVisible.value = false;

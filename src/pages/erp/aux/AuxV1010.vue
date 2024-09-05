@@ -613,13 +613,21 @@ const saveDataAndHandleResult = resFormData => {
 
 const getProcYearCreate = async () => {
   try {
-    const response = await api
-      .post('/api/aux/proc_next_year_create', {
-        paramSetYear: formData.value.stdYear,
-      })
-      .then(() => {
-        console.log('response : ', JSON.stringify(response));
-      });
+    const response = await api.post('/api/aux/proc_next_year_create', {
+      paramSetYear: formData.value.stdYear,
+    });
+    // console.log('res :: ', response.data.success);
+
+    setTimeout(() => {
+      let procStatus = {};
+      response.data.success ? (procStatus.msgColor = 'positive') : (procStatus.msgColor = 'negative');
+      response.data.success ? (procStatus.msgTextColor = 'dark') : (procStatus.msgTextColor = 'white');
+      response.data.success ? (procStatus.msgCaption = '정상처리') : (procStatus.msgCaption = '처리실패');
+      response.data.success
+        ? (procStatus.msgMessage = '작업을 모두 끝났습니다.')
+        : (procStatus.msgMessage = '착업에 문제가 있습니다.(관리자에게 문의)');
+      notifySave.notifyUserView(procStatus);
+    }, 1000);
   } catch (error) {
     console.error('Error fetching users:', error);
   }
@@ -627,13 +635,20 @@ const getProcYearCreate = async () => {
 
 const getProcYearDelete = async () => {
   try {
-    const response = await api
-      .post('/api/aux/proc_next_year_delete', {
-        paramSetYear: formData.value.stdYear,
-      })
-      .then(() => {
-        console.log('response : ', JSON.stringify(response));
-      });
+    const response = await api.post('/api/aux/proc_next_year_delete', {
+      paramSetYear: formData.value.stdYear,
+    });
+
+    setTimeout(() => {
+      let procStatus = {};
+      response.data.success ? (procStatus.msgColor = 'positive') : (procStatus.msgColor = 'negative');
+      response.data.success ? (procStatus.msgTextColor = 'dark') : (procStatus.msgTextColor = 'white');
+      response.data.success ? (procStatus.msgCaption = '정상처리') : (procStatus.msgCaption = '처리실패');
+      response.data.success
+        ? (procStatus.msgMessage = '작업을 모두 끝났습니다.')
+        : (procStatus.msgMessage = '착업에 문제가 있습니다.(관리자에게 문의)');
+      notifySave.notifyUserView(procStatus);
+    }, 1000);
   } catch (error) {
     console.error('Error fetching users:', error);
   }
