@@ -8,7 +8,7 @@
     <q-card-section class="q-pa-none">
       <div class="row q-col-gutter-sm-x-xs">
         <div class="col-xs-12">
-          <q-scroll-area style="height: 360px; max-width: 100%">
+          <q-scroll-area style="height: 320px; max-width: 100%">
             <q-list bordered separator>
               <q-item v-for="(data, index) in rowData" :key="index">
                 <q-item-section avatar>
@@ -65,7 +65,7 @@ const getData = async () => {
     });
 
     rowData.value = response.data.data;
-    console.log('data ; ', JSON.stringify(rowData.value));
+    // console.log('data ; ', JSON.stringify(rowData.value));
   } catch (error) {
     console.error('Error fetching users:', error);
   }

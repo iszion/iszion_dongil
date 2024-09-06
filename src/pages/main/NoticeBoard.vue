@@ -202,7 +202,7 @@ const dayFormat = resDay => {
 const dataId = ref(null);
 const onDelayedClick = e => {
   dataId.value = e.currentTarget.querySelector('.data-id').dataset.id;
-  console.log('dataId: ', dataId.value);
+  // console.log('dataId: ', dataId.value);
   getNoticeBoardSelectData();
   setTimeout(() => {
     readonly.value = true;
@@ -212,7 +212,7 @@ const onDelayedClick = e => {
 onBeforeMount(() => {
   const resDayValue = '2024-02-06 15:30:30';
   const formattedResult = dayFormat(resDayValue);
-  console.log('Formatted Result: ', formattedResult);
+  // console.log('Formatted Result: ', formattedResult);
 });
 
 // Dialog Section =========================================================== //
@@ -270,7 +270,7 @@ const searchFgOptions = [
 const boardData = ref(null);
 
 const getNoticeBoardData = async () => {
-  console.log('aa: ', searchFg.value);
+  // console.log('aa: ', searchFg.value);
   try {
     const response = await api.post('/api/sys/noticeBoard_list', {
       paramSearchFg: searchFg.value,

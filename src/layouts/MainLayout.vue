@@ -14,11 +14,12 @@
 
         <div style="max-width: 300px">
           <q-select
-            style="width: 125px; font-size: 1.04em"
             dense
+            style="width: 130px; font-size: 1.2em"
             :bg-color="ev_set_color"
             standout="text-white"
-            label-color="orange"
+            :label-color="ev_set_label_color"
+            :label="ev_set_label"
             class="super-small"
             v-model="ev_set_year_group"
             :options="ev_set_year_options"
@@ -117,7 +118,7 @@
               style="object-fit: cover; width: 100%; height: 100%"
             />
             <!--            <q-img loading="eager" :src="`https://www.iszion.com/images/${userImageName}?${new Date().getTime()}`" />-->
-            <q-icon v-if="!userImageName" name="face" color="teal" size="50px" style="height: 50px" />
+            <q-icon v-if="!userImageName" name="face" color="teal" size="40px" style="height: 40px" />
           </q-avatar>
           <q-menu :offset="[0, 10]" transition-show="scale" transition-hide="scale">
             <q-list style="min-width: 100px">
@@ -375,7 +376,8 @@ const rootView = () => {
   pageTitleBarVisible.value = false;
   activeTab.value = null;
   menuList.value = [];
-  router.push('/main');
+
+  router.push({ path: '/main' });
 };
 /* ******************************************************************************* */
 /* ************  end of Head Main Control select  ******************************** */
@@ -458,10 +460,6 @@ const logout = () => {
 /* ******  end of  token 처리 부분   ************************************************ */
 /* ******************************************************************************** */
 
-// ***** DataBase 설정기간자료 가져오기 부분 *****************************//
-const ev_set_year_group = ref(null);
-const ev_set_color = ref(null);
-const ev_set_year_options = ref([]);
 // **************************************************************//
 // ***** DataBase 연결부분  ***************************************//
 // **************************************************************//
@@ -598,7 +596,7 @@ const getFavMenuData = async param => {
 
     menuList.value = buildTreeMenuData(response.data.data);
     menuList.value.forEach(item => addDisabled(item));
-    console.log('get :: ', JSON.stringify(menuList.value));
+    // console.log('get :: ', JSON.stringify(menuList.value));
 
     leftDrawerOpen.value = true;
     pageTitleBarVisible.value = true;
@@ -623,8 +621,15 @@ function addDisabled(obj) {
 // ***** DataBase 연결부분 끝  *************************************//
 // **************************************************************//
 
+// ***** DataBase 설정기간자료 가져오기 부분 *****************************//
+const ev_set_year_group = ref(null);
+const ev_set_color = ref(null);
+const ev_set_label = ref(null);
+const ev_set_label_color = ref(null);
+const ev_set_year_options = ref([]);
+
 const handleSelectedSetYear = resSelected => {
-  console.log('selected SetYear: ', resSelected.locCh);
+  // console.log('selected SetYear: ', resSelected.locCh);
   handle_ev_set_color(resSelected.locCh);
   storgeYearGroupSave(resSelected.stdYear + '|' + resSelected.stdFg + '|' + resSelected.locCh);
   rootView();
@@ -633,15 +638,23 @@ const handle_ev_set_color = val => {
   switch (val) {
     case '0':
       ev_set_color.value = 'teal';
+      ev_set_label.value = '평가준비';
+      ev_set_label_color.value = 'white';
       break;
     case '1':
       ev_set_color.value = 'blue';
+      ev_set_label.value = '평가진행';
+      ev_set_label_color.value = 'white';
       break;
     case '2':
       ev_set_color.value = 'red';
+      ev_set_label.value = '평가집계';
+      ev_set_label_color.value = 'white';
       break;
     case '3':
       ev_set_color.value = 'orange';
+      ev_set_label.value = '평가마감';
+      ev_set_label_color.value = 'dark';
       break;
     default:
       ev_set_color.value = null;
@@ -670,7 +683,7 @@ const addFavorites = () => {
       // console.log(JSON.stringify(nodeValue.value.menuData));
       // favoritesSaveSection(resMsgProp.message.menuData);
       const resData = nodeValue.value.menuData;
-      console.log(JSON.stringify(resData));
+      // console.log(JSON.stringify(resData));
 
       let iu = [];
       let iuD = [];
@@ -757,7 +770,7 @@ const getStorgeSetYearGroup = () => {
   storeYear.setYear = _value[0];
   storeYear.setFg = _value[1];
   storeYear.setLocCh = _value[2];
-  console.log('Main SetYear Group :: ', storeYear.setYear, storeYear.setFg, storeYear.setLocCh);
+  // console.log('Main SetYear Group :: ', storeYear.setYear, storeYear.setFg, storeYear.setLocCh);
 };
 </script>
 

@@ -137,7 +137,7 @@ const getData = async () => {
       paramEmpCd: props.message.setEmpCd,
     });
     rowData.value = response.data.data[0];
-    console.log('data ; ', JSON.stringify(rowData.value));
+    // console.log('data ; ', JSON.stringify(rowData.value));
   } catch (error) {
     console.error('Error fetching users:', error);
   }

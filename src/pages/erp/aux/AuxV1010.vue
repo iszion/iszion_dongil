@@ -626,7 +626,7 @@ const getProcYearCreate = async () => {
       response.data.success
         ? (procStatus.msgMessage = '작업을 모두 끝났습니다.')
         : (procStatus.msgMessage = '착업에 문제가 있습니다.(관리자에게 문의)');
-      notifySave.notifyUserView(procStatus);
+      notifySave.notifyUserView(procStatus, 3000);
     }, 1000);
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -647,7 +647,7 @@ const getProcYearDelete = async () => {
       response.data.success
         ? (procStatus.msgMessage = '작업을 모두 끝났습니다.')
         : (procStatus.msgMessage = '착업에 문제가 있습니다.(관리자에게 문의)');
-      notifySave.notifyUserView(procStatus);
+      notifySave.notifyUserView(procStatus, 3000);
     }, 1000);
   } catch (error) {
     console.error('Error fetching users:', error);

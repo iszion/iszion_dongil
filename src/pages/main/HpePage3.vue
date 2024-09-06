@@ -1,28 +1,17 @@
 <template>
   <q-card bordered class="q-pa-xs">
-    <q-bar class="q-py-xs text-subtitle1 text-bold">
+    <q-bar class="text-subtitle1 text-bold">
       역량평가 진행율
       <q-space />
     </q-bar>
-    <q-separator />
-    <q-card-section class="q-py-sm q-px-none">
-      <div class="row q-pa-xs">
-        <apexchart
-          class="col-6"
-          type="radialBar"
-          :height="$q.screen.xs ? '180' : '220'"
-          :options="getChartOptions('1차역량 진행율', isXsScreen)"
-          :series="series1"
-        ></apexchart>
-        <apexchart
-          class="col-6"
-          type="radialBar"
-          :height="$q.screen.xs ? '180' : '220'"
-          :options="getChartOptions('2차역량 진행율', isXsScreen)"
-          :series="series2"
-        ></apexchart>
-      </div>
-    </q-card-section>
+    <q-card class="flex flex-center" style="height: 320px">
+      <q-card-section class="q-py-sm q-px-none">
+        <div class="row q-pa-xs">
+          <apexchart class="col-6" type="radialBar" :height="$q.screen.xs ? '180' : '220'" :options="chartOptions1" :series="series1"></apexchart>
+          <apexchart class="col-6" type="radialBar" :height="$q.screen.xs ? '180' : '220'" :options="chartOptions2" :series="series2"></apexchart>
+        </div>
+      </q-card-section>
+    </q-card>
   </q-card>
 </template>
 
@@ -45,7 +34,22 @@ watch(
   },
 );
 
-const getChartOptions = (label, isXs) => ({
+watch(
+  () => $q.dark.isActive,
+  () => {
+    updateChartOptions(); // 다크모드 변경 시 차트 옵션 업데이트
+  },
+);
+
+const chartOptions1 = ref({});
+const chartOptions2 = ref({});
+const updateChartOptions = () => {
+  const isDarkMode = $q.dark.isActive;
+  chartOptions1.value = getChartOptions('1차역량 진행율', isXsScreen.value, isDarkMode);
+  chartOptions2.value = getChartOptions('2차역량 진행율', isXsScreen.value, isDarkMode);
+};
+
+const getChartOptions = (label, isXs, isDarkMode) => ({
   chart: {
     height: isXs ? 180 : 220,
     type: 'radialBar',
@@ -57,14 +61,14 @@ const getChartOptions = (label, isXs) => ({
       endAngle: 130,
       dataLabels: {
         name: {
-          fontSize: isXs ? '15px' : '25px',
-          color: undefined,
+          fontSize: isXs ? '15px' : '20px',
+          color: isDarkMode ? '#00bcc2' : '#00bcc2',
           offsetY: 100,
         },
         value: {
           offsetY: 55,
-          fontSize: isXs ? '20px' : '30px',
-          color: undefined,
+          fontSize: isXs ? '20px' : '25px',
+          color: isDarkMode ? '#00bcc2' : '#028d91',
           formatter: function (val) {
             return val + '%';
           },
@@ -103,6 +107,7 @@ onBeforeMount(async () => {
     if (data2) {
       series2.value = [data2]; // Ensure it's an array
     }
+    updateChartOptions();
   } catch (error) {
     console.error('Error initializing data:', error);
   }
@@ -119,7 +124,7 @@ const fetchData = async endpoint => {
       paramEmpCd: storeUser.setEmpCd,
     });
     const data = response.data.data[0].maxPer;
-    console.log(`Data2 from ${endpoint}:`, data);
+    // console.log(`Data2 from ${endpoint}:`, data);
     return data;
   } catch (error) {
     console.error(`Error fetching data from ${endpoint}:`, error);

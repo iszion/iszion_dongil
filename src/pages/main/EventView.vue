@@ -137,7 +137,7 @@ const saveDataSection = () => {
         // 확인/취소 모두 실행되었을때
       });
   } else {
-    console.log('form: ', JSON.stringify(formData.value));
+    // console.log('form: ', JSON.stringify(formData.value));
     formData.value.regDay = formData.value.regDay.replace(/\//g, '');
     formData.value.oldRegDay = formData.value.oldRegDay.replace(/\//g, '');
     saveEventDataAndHandleResult(jsonUtil.dataJsonParse(isSaveFg, formData.value));
@@ -165,9 +165,9 @@ const deleteDataSection = () => {
     .onOk(() => {
       // console.log('>>>> OK')
       isSaveFg = 'D';
-      console.log('oldRegDay1: ', formData.value.oldRegDay);
+      // console.log('oldRegDay1: ', formData.value.oldRegDay);
       formData.value.oldRegDay = formData.value.oldRegDay.replace(/\//g, '');
-      console.log('oldRegDay2: ', formData.value.oldRegDay);
+      // console.log('oldRegDay2: ', formData.value.oldRegDay);
       saveEventDataAndHandleResult(jsonUtil.dataJsonParse(isSaveFg, formData.value));
     })
     .onCancel(() => {})

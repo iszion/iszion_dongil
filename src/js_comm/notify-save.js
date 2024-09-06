@@ -87,7 +87,7 @@ export default {
       timeout: resTime,
     });
   },
-  notifyUserView(res) {
+  notifyUserView(res, resTime) {
     Notify.create({
       type: 'my-notify',
       position: 'top-right',
@@ -106,7 +106,7 @@ export default {
           },
         },
       ],
-      timeout: 3000,
+      timeout: resTime,
     });
   },
 };

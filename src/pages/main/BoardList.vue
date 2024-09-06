@@ -215,7 +215,7 @@ const getNoticeBoardSelectData = async () => {
 // ***** 자료저장 및 삭제 처리부분 *****************************//
 // saveStatus = 0=수정성공 1=신규성공 2=삭제성공 3=수정에러 4=시스템에러
 const saveDataAndHandleResult = resFormData => {
-  console.log('saveData: ', JSON.stringify(resFormData));
+  // console.log('saveData: ', JSON.stringify(resFormData));
   api
     .post('/api/sys/noticeBoard_save', resFormData)
     .then(res => {

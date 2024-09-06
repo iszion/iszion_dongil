@@ -6,20 +6,22 @@
     </q-bar>
     <q-card-section class="">
       <div class="row">
-        <div class="col-10">
+        <div class="col-xs-9 col-sm-9 col-md-10">
           <q-table
             flat
             bordered
-            class="text-bold my-sticky-header-table"
+            square
+            class="text-bold"
             title="평가정보"
             :rows="rowData"
             :columns="columns"
             row-key="stdYear"
             :rows-per-page-options="[]"
+            hide-bottom
           >
             <template v-slot:header="props">
               <q-tr :props="props">
-                <q-th v-for="col in props.cols" :key="col.name" :props="props" class="text-purple">
+                <q-th v-for="col in props.cols" :key="col.name" :props="props" :class="$q.dark.isActive ? 'text-grey-3' : 'text-grey-10'">
                   {{ col.label }}
                 </q-th>
               </q-tr>
@@ -28,19 +30,23 @@
             <template v-slot:body="props">
               <q-tr>
                 <q-td key="stdYear" :props="props">
-                  {{ props.row.stdYear }}
+                  <span :class="$q.dark.isActive ? 'text-white' : 'text-dark'">{{ props.row.stdYear }}</span>
                 </q-td>
                 <q-td key="deptNm" :props="props">
-                  {{ props.row.deptNm }}
+                  <span :class="$q.dark.isActive ? 'text-white' : 'text-dark'">{{ props.row.deptNm }}</span>
                 </q-td>
                 <q-td key="titlNm" :props="props">
-                  {{ props.row.titlNm }}
+                  <span :class="$q.dark.isActive ? 'text-white' : 'text-dark'">{{ props.row.titlNm }}</span>
                 </q-td>
                 <q-td key="evaP1X" :props="props">
-                  {{ props.row.evaP1X }}<span class="text-caption">({{ props.row.evaPer1 }}%)</span>
+                  <span :class="$q.dark.isActive ? 'text-white' : 'text-dark'"
+                    >{{ props.row.evaP1X }}<span class="text-caption">({{ props.row.evaPer1 }}%)</span></span
+                  >
                 </q-td>
                 <q-td key="evaP2Xx" :props="props">
-                  {{ props.row.evaP2Xx }}<span class="text-caption">({{ props.row.evaPer2 }}%)</span>
+                  <span :class="$q.dark.isActive ? 'text-white' : 'text-dark'"
+                    >{{ props.row.evaP2Xx }}<span class="text-caption">({{ props.row.evaPer2 }}%)</span></span
+                  >
                 </q-td>
                 <q-td key="finalPoint" :props="props">
                   <span class="text-primary">
@@ -56,8 +62,8 @@
             </template>
           </q-table>
         </div>
-        <div class="col-2">
-          <q-card flat bordered style="height: 200px">
+        <div class="col-xs-3 col-sm-3 col-md-2">
+          <q-card flat square bordered style="height: 197px">
             <q-card-section>
               <div class="text-subtitle1 text-bold text-center">년차</div>
             </q-card-section>
@@ -145,6 +151,8 @@ const getData = async () => {
   font-family: 'Arial', sans-serif; /* 셀 폰트 */
   font-size: 15px; /* 셀 폰트 크기 */
   color: #555; /* 셀 텍스트 색상 */
+  padding-top: 40px;
+  padding-bottom: 30px;
   padding-left: 0px;
   padding-right: 0px;
 }

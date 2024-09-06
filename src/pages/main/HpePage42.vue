@@ -1,12 +1,12 @@
 <template>
-  <q-card bordered class="q-pa-xs">
+  <q-card bordered class="q-pa-xs" style="height: 362px">
     <q-bar class="q-py-xs text-subtitle1 text-bold">
       진급대상 정보
       <q-space />
     </q-bar>
     <q-card-section class="q-pa-xs">
       <div class="row q-col-gutter-x-xs">
-        <div class="col-6">
+        <div class="col-5">
           <q-table
             flat
             bordered
@@ -15,13 +15,20 @@
             :rows="rowData1"
             :columns="columns1"
             row-key="titlNmNnextTitlNm"
-            :rows-per-page-options="[]"
+            :rows-per-page-options="[0]"
             hide-bottom
+            virtual-scroll
           >
             <template v-slot:header="props">
               <q-tr :props="props">
-                <q-th v-for="col in props.cols" :key="col.name" :props="props" class="text-purple">
-                  <span class="text-bold text-subtitle1 text-deep-orange"> {{ col.label }}</span>
+                <q-th
+                  v-for="col in props.cols"
+                  :key="col.name"
+                  :props="props"
+                  :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-3'"
+                  style="padding: 0"
+                >
+                  <span class="text-bold text-subtitle1" :class="$q.dark.isActive ? 'text-grey-5' : 'text-grey-9'"> {{ col.label }}</span>
                 </q-th>
               </q-tr>
             </template>
@@ -38,7 +45,7 @@
             </template>
           </q-table>
         </div>
-        <div class="col-6">
+        <div class="col-7">
           <q-table
             flat
             bordered
@@ -47,13 +54,20 @@
             :rows="rowData2"
             :columns="columns2"
             row-key="titlNmNnextTitlNm"
-            :rows-per-page-options="[]"
+            :rows-per-page-options="[0]"
             hide-bottom
+            virtual-scroll
           >
             <template v-slot:header="props">
               <q-tr :props="props">
-                <q-th v-for="col in props.cols" :key="col.name" :props="props" class="text-purple">
-                  <span class="text-bold text-subtitle1 text-deep-orange"> {{ col.label }}</span>
+                <q-th
+                  v-for="col in props.cols"
+                  :key="col.name"
+                  :props="props"
+                  :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-3'"
+                  style="padding-left: 0"
+                >
+                  <span class="text-bold text-subtitle1" :class="$q.dark.isActive ? 'text-grey-5' : 'text-grey-9'"> {{ col.label }}</span>
                 </q-th>
               </q-tr>
             </template>
@@ -267,7 +281,7 @@ const getDataPage42EmpList = async resEmpCdList => {
       paramEmpList: resEmpCdList,
     });
 
-    console.log('data1 ; ', JSON.stringify(response.data.data));
+    // console.log('data1 ; ', JSON.stringify(response.data.data));
     rowDataEmpList.value = response.data.data;
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -276,21 +290,21 @@ const getDataPage42EmpList = async resEmpCdList => {
 </script>
 
 <style scoped>
-.q-table .q-th {
-  font-family: 'Arial', sans-serif; /* 컬럼 헤더 폰트 */
-  font-size: 10px; /* 컬럼 헤더 폰트 크기 */
-  font-weight: bold; /* 컬럼 헤더 굵기 */
-  color: #444; /* 컬럼 헤더 색상 */
-}
-
 /* 테이블 셀 스타일 */
 .q-table .q-td {
   font-family: 'Arial', sans-serif; /* 셀 폰트 */
   font-size: 13px; /* 셀 폰트 크기 */
   //color: #002bf8; /* 셀 텍스트 색상 */
-  padding-top: 0px;
-  padding-bottom: 0px;
-  padding-left: 4px;
-  padding-right: 0px;
+  padding: 0 0 0 0;
+}
+.my-sticky-header-table {
+  max-height: 310px; /* 테이블의 최대 높이를 설정 */
+  overflow-y: auto; /* 수직 스크롤 활성화 */
+}
+.my-sticky-header-table thead th {
+  position: sticky; /* Enable sticky positioning */
+  top: 0; /* Stick to the top */
+  z-index: 1; /* Ensure headers are above other content */
+  background: white; /* Set a background to avoid overlap issues */
 }
 </style>

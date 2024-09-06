@@ -11,14 +11,14 @@
           class="col-xs-12 col-sm-12 col-md-5"
           type="line"
           :height="$q.screen.xs ? '180' : '280'"
-          :options="getChartOptions('일반직', label1, isXsScreen)"
+          :options="chartOptions1"
           :series="series1"
         ></apexchart>
         <apexchart
           class="col-xs-12 col-sm-12 col-md-7"
           type="line"
           :height="$q.screen.xs ? '180' : '280'"
-          :options="getChartOptions('전문직', label2, isXsScreen)"
+          :options="chartOptions2"
           :series="series2"
         ></apexchart>
       </div>
@@ -129,7 +129,23 @@ watch(
   },
 );
 
-const getChartOptions = (title, label, isXs) => ({
+watch(
+  () => $q.dark.isActive,
+  () => {
+    updateChartOptions(); // 다크모드 변경 시 차트 옵션 업데이트
+  },
+);
+
+const chartOptions1 = ref({});
+const chartOptions2 = ref({});
+const updateChartOptions = () => {
+  const isDarkMode = $q.dark.isActive;
+  chartOptions1.value = getChartOptions('일반직', label1.value, isXsScreen.value, isDarkMode);
+  chartOptions2.value = getChartOptions('전문직', label2.value, isXsScreen.value, isDarkMode);
+  // chartOptions2.value = getChartOptions('전문직 (업무지원직: ' + series3.value.hrCnt + '명)', label2.value, isXsScreen.value, isDarkMode);
+};
+
+const getChartOptions = (title, label, isXs, isDarkMode) => ({
   chart: {
     height: 280,
     type: 'line',
@@ -139,7 +155,7 @@ const getChartOptions = (title, label, isXs) => ({
     events: {
       dataPointSelection: function (event, chartContext, config) {
         // Handle the click event here
-        console.log('Index :  ', config.dataPointIndex);
+        // console.log('Index :  ', config.dataPointIndex);
         // console.log('Data Point Clicked:', config.seriesIndex, config.dataPointIndex);
         // Access the clicked data point value
         // const seriesName = config.w.config.series[config.seriesIndex].name;
@@ -158,6 +174,17 @@ const getChartOptions = (title, label, isXs) => ({
         getDataPage41EmpList(result).then(() => {
           isDialogView1.value = true;
         });
+      },
+      click: function (event, chartContext, config) {
+        // Custom click event handler for the entire chart
+        const chartElement = event.target;
+        if (chartElement.classList.contains('apexcharts-title-text') && title !== '일반직') {
+          // Handle title click event here
+          let result = '^(' + empList3.value[0].replace(/,/g, '|').replace(/\s+/g, '') + ')$';
+          getDataPage41EmpList(result).then(() => {
+            isDialogView1.value = true;
+          });
+        }
       },
     },
   },
@@ -178,7 +205,16 @@ const getChartOptions = (title, label, isXs) => ({
     width: [0, 4],
   },
   title: {
-    text: title,
+    text: title === '일반직' ? title : title + ' (업무지원직: ' + series3.value.hrCnt + '명)',
+    align: 'center', // 원하는 위치에 따라 설정 가능
+    style: {
+      color: isDarkMode ? '#afafaf' : '#2c61ff', // 원하는 텍스트 색상 지정
+      fontSize: '20px', // 폰트 크기 설정
+      fontFamily: 'Arial, sans-serif', // 폰트 설정
+      fontWeight: 'bold', // Make the title bold
+      lineHeight: '1.5', // Line height for better spacing
+      letterSpacing: '1px', // Adjust letter spacing for aesthetics
+    },
   },
   dataLabels: {
     enabled: true,
@@ -186,9 +222,29 @@ const getChartOptions = (title, label, isXs) => ({
       return value; // Display the value
     },
     enabledOnSeries: [1],
+    style: {
+      colors: ['#ff0000', '#016701'], // Color for data labels
+    },
+  },
+  xaxis: {
+    labels: {
+      style: {
+        colors: isDarkMode ? '#ffffff' : '#000000', // Ensure good contrast
+        fontSize: '12px',
+        fontFamily: 'Arial, sans-serif',
+      },
+    },
+  },
+  yaxis: {
+    labels: {
+      style: {
+        colors: isDarkMode ? '#ffffff' : '#000000', // Ensure good contrast
+        fontSize: '12px',
+        fontFamily: 'Arial, sans-serif',
+      },
+    },
   },
   labels: label,
-  yaxis: [],
   plotOptions: {
     bar: {
       columnWidth: '40%', // 막대의 너비를 설정하는 부분
@@ -197,10 +253,12 @@ const getChartOptions = (title, label, isXs) => ({
   legend: {
     show: false, // This line hides the legend
   },
+  colors: isDarkMode ? ['#969696', '#02cb1a'] : ['#0080ff', '#ff8383'],
 });
 
 const empList1 = ref([]);
 const empList2 = ref([]);
+const empList3 = ref([]);
 const label1 = ref(['M1', 'M2', 'M3', 'J', 'A1', 'A2']);
 const label2 = ref(['SM1(A)', 'SM1(B)', 'M3', 'J', 'A1', 'A2']);
 const series1 = ref([
@@ -228,7 +286,11 @@ const series2 = ref([
     data: [],
   },
 ]);
-
+const series3 = ref({
+  name: '',
+  hrCnt: 0,
+  data: [],
+});
 onBeforeMount(async () => {
   try {
     const data = await fetchData('/api/aux/dashboard_page41_list');
@@ -245,6 +307,11 @@ onBeforeMount(async () => {
           series1.value[1].data.push(data[i].hrCnt);
           label1.value.push(data[i].titlNm);
           empList1.value.push(data[i].empCdList);
+        } else if (data[i].titlCd === '201') {
+          series3.value.name = data[i].titlNm;
+          series3.value.hrCnt = data[i].hrCnt;
+          empList3.value.push(data[i].empCdList);
+          console.log('aa : ', JSON.stringify(data[i]));
         } else {
           series2.value[0].data.push(data[i].hrCnt);
           series2.value[1].data.push(data[i].hrCnt);
@@ -252,9 +319,10 @@ onBeforeMount(async () => {
           empList2.value.push(data[i].empCdList);
         }
       }
-      console.log('emplist1 : ', empList1.value);
-      console.log('emplist2 : ', empList2.value);
+      // console.log('emplist1 : ', empList1.value);
+      // console.log('emplist2 : ', empList2.value);
     }
+    updateChartOptions();
   } catch (error) {
     console.error('Error initializing data:', error);
   }
@@ -287,7 +355,7 @@ const getDataPage41EmpList = async resEmpCdList => {
       paramEmpList: resEmpCdList,
     });
 
-    console.log('data1 ; ', JSON.stringify(response.data.data));
+    // console.log('data1 ; ', JSON.stringify(response.data.data));
     rowDataEmpList.value = response.data.data;
   } catch (error) {
     console.error('Error fetching users:', error);
