@@ -135,6 +135,12 @@ const columnDefs = reactive({
       minWidth: 150,
     },
     {
+      headerName: '구분',
+      field: 'titlFg',
+      maxWidth: 80,
+      minWidth: 80,
+    },
+    {
       headerName: '처리순서',
       field: 'seq',
       maxWidth: 100,
@@ -219,6 +225,7 @@ const addDataSection = () => {
     titlCd: '',
     oldTitlCd: '',
     titlNm: '',
+    titlFg: '',
     seq: rowData.rows.length + 1,
     iuD: 'I',
   };

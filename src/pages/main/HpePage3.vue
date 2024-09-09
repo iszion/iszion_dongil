@@ -4,7 +4,7 @@
       역량평가 진행율
       <q-space />
     </q-bar>
-    <q-card class="flex flex-center" style="height: 320px">
+    <q-card v-if="storeUser.setTitlCd === '101'" class="flex flex-center" style="height: 320px">
       <q-card-section class="q-py-sm q-px-none">
         <div class="row q-pa-xs">
           <apexchart class="col-6" type="radialBar" :height="$q.screen.xs ? '180' : '220'" :options="chartOptions1" :series="series1"></apexchart>
@@ -12,6 +12,12 @@
         </div>
       </q-card-section>
     </q-card>
+    <q-card-section v-if="storeUser.setTitlCd !== '101'" class="q-py-sm q-px-none">
+      <div class="row q-pa-xs">
+        <apexchart class="col-6" type="radialBar" :height="$q.screen.xs ? '180' : '220'" :options="chartOptions1" :series="series1"></apexchart>
+        <apexchart class="col-6" type="radialBar" :height="$q.screen.xs ? '180' : '220'" :options="chartOptions2" :series="series2"></apexchart>
+      </div>
+    </q-card-section>
   </q-card>
 </template>
 
@@ -68,7 +74,7 @@ const getChartOptions = (label, isXs, isDarkMode) => ({
         value: {
           offsetY: 55,
           fontSize: isXs ? '20px' : '25px',
-          color: isDarkMode ? '#00bcc2' : '#028d91',
+          color: isDarkMode ? '#f37a02' : '#017fc2',
           formatter: function (val) {
             return val + '%';
           },
@@ -86,9 +92,11 @@ const getChartOptions = (label, isXs, isDarkMode) => ({
       opacityTo: 1,
       stops: [0, 50, 65, 91],
     },
+    colors: isDarkMode ? ['rgb(0,43,248)'] : ['rgba(3,147,5,0.99)'],
   },
   stroke: {
     dashArray: 4,
+    colors: isDarkMode ? ['#FFFFFF'] : ['#000000'],
   },
   labels: [label],
 });

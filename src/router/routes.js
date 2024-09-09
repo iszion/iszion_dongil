@@ -22,6 +22,7 @@ const routes = [
       { path: 'hce2010', component: () => import('pages/erp/hce/HceV2010.vue') },
       { path: 'hce2020', component: () => import('pages/erp/hce/HceV2020.vue') },
       { path: 'hce3010', component: () => import('pages/erp/hce/HceV3010.vue') },
+      { path: 'hce3020', component: () => import('pages/erp/hce/HceV3020.vue') },
 
       { path: 'hrt1010', component: () => import('pages/erp/hrt/HrtV1010.vue') },
       { path: 'hrt1020', component: () => import('pages/erp/hrt/HrtV1020.vue') },

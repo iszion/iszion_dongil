@@ -64,6 +64,11 @@
                 </q-input>
               </div>
               <q-space />
+              <q-toggle left-label v-model="systemSave" checked-icon="check" color="red" label="시스템정보에 적용" unchecked-icon="clear">
+                <q-tooltip>적용선택 시 시스템 사용자정보에도 같이 적용됩니다. (최종 작업년도에만 적용하세요)</q-tooltip>
+              </q-toggle>
+
+              <q-space />
               <div class="q-gutter-xs">
                 <q-btn outline color="positive" dense @click="getData"><q-icon name="search" size="xs" /> 조회 </q-btn>
                 <q-btn v-if="isShowDeleteBtn" outline color="negative" dense @click="deleteDataSection">
@@ -540,6 +545,7 @@ const columnDefs = reactive({
   ],
 });
 
+const systemSave = ref(false);
 const oldFormData = ref(null);
 const formData = ref({
   empCd: '',
@@ -559,6 +565,7 @@ const formData = ref({
   finalSchool: '',
   imageFileNm: '',
   imageFileNmFull: '',
+  systemSave: '',
 });
 
 const selectedRows = ref();
@@ -654,6 +661,12 @@ const saveDataSection = () => {
   formData.value.inDay = commUtil.unFormatDate(formData.value.inDay);
   formData.value.outDay = commUtil.unFormatDate(formData.value.outDay);
 
+  if (systemSave.value) {
+    formData.value.systemSave = 'Y';
+  } else {
+    formData.value.systemSave = 'N';
+  }
+
   if (isEqual(formData.value, oldFormData.value)) {
     $q.dialog({
       dark: true,
@@ -667,6 +680,7 @@ const saveDataSection = () => {
         // 확인/취소 모두 실행되었을때
       });
   } else {
+    // alert(JSON.stringify(formData.value));
     saveDataAndHandleResult(jsonUtil.dataJsonParse(isSaveFg, formData.value));
   }
 };

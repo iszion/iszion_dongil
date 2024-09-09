@@ -150,73 +150,9 @@
               <div class="col-xs-12 col-sm-12 col-md-6 q-mb-sm">
                 <q-card square class="bg-grey" style="height: 60px">
                   <div class="bg-deep-orange-3 text-center text-subtitle2 text-bold q-px-xs">평가하기</div>
-                  <div v-if="setTotEva" class="q-pa-sm text-subtitle1 text-bold flex flex-center q-gutter-x-lg">
-                    <span class="text-blue-9 q-mr-xs">S </span> ( {{ pointValue.cnt.S }} ) <span class="text-cyan-9 q-mr-xs">A</span> (
-                    {{ pointValue.cnt.A }} ) <span class="text-teal-8 q-mr-xs">B</span> ( {{ pointValue.cnt.B }} )
-                    <span class="text-green-8 q-mr-xs">C</span> ( {{ pointValue.cnt.C }} ) <span class="text-deep-orange-9 q-mr-xs">D</span> (
-                    {{ pointValue.cnt.D }} )
-                  </div>
-                  <div v-if="!setTotEva" class="q-pa-sm text-subtitle1 text-bold flex flex-center q-gutter-x-lg">
+
+                  <div class="q-pa-sm text-subtitle1 text-bold flex flex-center q-gutter-x-lg">
                     S선택시 사유 입력 후 저장 (전체점수 80% 선에서 처리)
-                  </div>
-                  <div v-if="setTotEva" class="row">
-                    <div class="col-md-9 text-center">
-                      <q-radio
-                        keep-color
-                        left-label
-                        v-model="tmpMark.markCh"
-                        :disable="formReadonly"
-                        val="S"
-                        :label="`S(${pointValue.cnt.S})`"
-                        color="blue"
-                        class="text-subtitle1 text-bold"
-                        @update:model-value="val => handlePointClickAll(val)"
-                      />
-                      <q-radio
-                        keep-color
-                        left-label
-                        v-model="tmpMark.markCh"
-                        :disable="formReadonly"
-                        val="A"
-                        :label="`A(${pointValue.cnt.A})`"
-                        color="cyan"
-                        class="text-subtitle1 text-bold"
-                        @update:model-value="val => handlePointClickAll(val)"
-                      />
-                      <q-radio
-                        keep-color
-                        left-label
-                        v-model="tmpMark.markCh"
-                        :disable="formReadonly"
-                        val="B"
-                        :label="`B(${pointValue.cnt.B})`"
-                        color="teal"
-                        class="text-subtitle1 text-bold"
-                        @update:model-value="val => handlePointClickAll(val)"
-                      />
-                      <q-radio
-                        keep-color
-                        left-label
-                        v-model="tmpMark.markCh"
-                        :disable="formReadonly"
-                        val="C"
-                        :label="`C(${pointValue.cnt.C})`"
-                        color="green"
-                        class="text-subtitle1 text-bold"
-                        @update:model-value="val => handlePointClickAll(val)"
-                      />
-                      <q-radio
-                        keep-color
-                        left-label
-                        v-model="tmpMark.markCh"
-                        :disable="formReadonly"
-                        val="D"
-                        :label="`D(${pointValue.cnt.D})`"
-                        color="deep-orange"
-                        class="text-subtitle1 text-bold"
-                        @update:model-value="val => handlePointClickAll(val)"
-                      />
-                    </div>
                   </div>
                 </q-card>
               </div>
@@ -522,7 +458,6 @@ onBeforeMount(() => {
   } else {
     setItemFg.value = null;
   }
-  getDataSetB();
   getData();
 });
 
@@ -608,49 +543,6 @@ const handleResize = () => {
   // contentZoneHeight.value = window.innerHeight - state.height - 680;
 };
 // ======================================================
-
-const handlePointClickAll = resMarkCh => {
-  switch (resMarkCh) {
-    case 'S':
-      tmpMark.value.markPoint = 100;
-      break;
-    case 'A':
-      tmpMark.value.markPoint = 90;
-      break;
-    case 'B':
-      tmpMark.value.markPoint = 80;
-      break;
-    case 'C':
-      tmpMark.value.markPoint = 70;
-      break;
-    case 'D':
-      tmpMark.value.markPoint = 60;
-      break;
-    default:
-      tmpMark.value.markPoint = 0;
-      break;
-  }
-
-  let iu = [];
-  let iuD = [];
-  for (let i = 0; i < rowData.rowsSel.length; i++) {
-    rowData.rowsSel[i].markCh = resMarkCh;
-    rowData.rowsSel[i].markPoint = tmpMark.value.markPoint;
-    let tmpJson = '{"mode":"I","data":' + JSON.stringify(rowData.rowsSel[i]) + '}';
-    // console.log('all save : ', JSON.stringify(rowData.rowsSel));
-    iu.push(tmpJson);
-  }
-  saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD))
-    .then(saveStatus => {
-      if (saveStatus.rtn === '0') {
-        const markPointCount = rowData.rowsSel.filter(item => item.markPoint > 0).length;
-        statusMessageUpdate(markPointCount);
-      }
-    })
-    .catch(error => {
-      console.error('Error saving data: ', error);
-    });
-};
 
 const handlePointClick = (resMarkCh, resData) => {
   // alert(JSON.stringify(resData));
@@ -768,6 +660,7 @@ const percentOverCheck = resData => {
     return true;
   }
 };
+
 const statusMessageUpdate = resEvalCount => {
   let selectedRow = gridApi.value.getSelectedNodes()[0];
   // console.log('sel : ', selectedRow.data);
@@ -901,76 +794,7 @@ const saveDataLockSendSection = () => {
 // **************************************************************//
 // ***** DataBase 연결부분    *************************************//
 // **************************************************************//
-// ***** 기본설정자료 가져오기 부분  *****************************//
-const setTotEva = ref(false);
-const pointValue = ref({
-  per1: {
-    S: 0,
-    A: 0,
-    B: 0,
-    C: 0,
-    D: 0,
-  },
-  per2: {
-    S: 0,
-    A: 0,
-    B: 0,
-    C: 0,
-    D: 0,
-  },
-  cnt: {
-    S: 0,
-    A: 0,
-    B: 0,
-    C: 0,
-    D: 0,
-  },
-  cnt1: {
-    S: 0,
-    A: 0,
-    B: 0,
-    C: 0,
-    D: 0,
-  },
-  cnt2: {
-    S: 0,
-    A: 0,
-    B: 0,
-    C: 0,
-    D: 0,
-  },
-});
-const getDataSetB = async () => {
-  try {
-    const response = await api.post('/api/aux/aux1020_select', {
-      paramStdYear: storeYear.setYear,
-    });
-    setTotEva.value = response.data.data[0].eva1bYn === 'Y'; // 1차역량평가 항목기준 체크유무
-    pointValue.value.per1.S = response.data.data[0].team1PerPointS;
-    pointValue.value.per1.A = response.data.data[0].team1PerPointA;
-    pointValue.value.per1.B = response.data.data[0].team1PerPointB;
-    pointValue.value.per1.C = response.data.data[0].team1PerPointC;
-    pointValue.value.per1.D = response.data.data[0].team1PerPointD;
-    pointValue.value.per2.S = response.data.data[0].team2PerPointS;
-    pointValue.value.per2.A = response.data.data[0].team2PerPointA;
-    pointValue.value.per2.B = response.data.data[0].team2PerPointB;
-    pointValue.value.per2.C = response.data.data[0].team2PerPointC;
-    pointValue.value.per2.D = response.data.data[0].team2PerPointD;
-    // console.log('point : ', JSON.stringify(response.data.data[0]));
-    formReadonly.value = true;
-  } catch (error) {
-    console.error('Error fetching users:', error);
-  }
-};
 
-// ***** 목표승인대상자 집계리스트 가져오기 부분  *****************************//
-const viewStatus = ref({
-  totalCnt: 0,
-  status_0: 0,
-  status_3: 0,
-  status_4: 0,
-  status_5: 0,
-});
 const getData = async () => {
   try {
     const response = await api.post('/api/hce/hce2010_list', {
@@ -1017,22 +841,6 @@ const getDataSelectList = async resRow => {
     });
 
     rowData.rowsSel = response.data.data;
-
-    if (resRow.itemFg === '2021101') {
-      pointValue.value.cnt.S = Math.round((rowData.rowsSel.length * pointValue.value.per1.S) / 100);
-      pointValue.value.cnt.A = Math.round((rowData.rowsSel.length * pointValue.value.per1.A) / 100);
-      pointValue.value.cnt.C = Math.round((rowData.rowsSel.length * pointValue.value.per1.C) / 100);
-      pointValue.value.cnt.D = Math.round((rowData.rowsSel.length * pointValue.value.per1.D) / 100);
-      pointValue.value.cnt.B =
-        rowData.rowsSel.length - (pointValue.value.cnt.S + pointValue.value.cnt.A + pointValue.value.cnt.C + pointValue.value.cnt.D);
-    } else {
-      pointValue.value.cnt.S = Math.round((rowData.rowsSel.length * pointValue.value.per2.S) / 100);
-      pointValue.value.cnt.A = Math.round((rowData.rowsSel.length * pointValue.value.per2.A) / 100);
-      pointValue.value.cnt.C = Math.round((rowData.rowsSel.length * pointValue.value.per2.C) / 100);
-      pointValue.value.cnt.D = Math.round((rowData.rowsSel.length * pointValue.value.per2.D) / 100);
-      pointValue.value.cnt.B =
-        rowData.rowsSel.length - (pointValue.value.cnt.S + pointValue.value.cnt.A + pointValue.value.cnt.C + pointValue.value.cnt.D);
-    }
 
     // console.log('getDataSel : ', JSON.stringify(rowData.rowsSel));
   } catch (error) {

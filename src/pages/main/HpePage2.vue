@@ -25,7 +25,6 @@
         </q-tooltip>
       </q-btn>
     </q-bar>
-    <q-separator />
     <q-card-section class="q-py-sm q-px-none">
       <div class="row q-pa-xs">
         <apexchart class="col-4" type="radialBar" :height="$q.screen.xs ? '180' : '220'" :options="chartOptions1" :series="series1"> </apexchart>
@@ -89,12 +88,13 @@ const getChartOptions = (label, isXs, isDarkMode) => ({
       endAngle: 130,
       dataLabels: {
         name: {
-          fontSize: isXs ? '15px' : '25px',
+          fontSize: isXs ? '15px' : '20px',
+          color: isDarkMode ? '#00bcc2' : '#00bcc2',
           offsetY: 100,
         },
         value: {
           offsetY: 55,
-          fontSize: isXs ? '20px' : '30px',
+          fontSize: isXs ? '20px' : '25px',
           color: isDarkMode ? '#f37a02' : '#017fc2',
           formatter: function (val) {
             return val + '%';

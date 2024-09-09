@@ -64,8 +64,11 @@
                 </q-input>
               </div>
               <q-space />
-              <div class="q-gutter-xs">
-                <q-btn outline color="positive" dense @click="getData"><q-icon name="search" size="xs" /> 조회 </q-btn>
+              <div class="q-gutter-lg">
+                <q-btn v-if="formData.userId" outline color="negative" dense @click="passwordReset">
+                  <q-icon name="lock_reset" size="xs" class="q-mr-xs" /> 패스워드 Reset
+                </q-btn>
+                <q-btn outline color="positive" dense @click="getData"><q-icon name="search" size="xs" class="q-mr-xs" /> 조회 </q-btn>
                 <!--                <q-btn v-if="isShowDeleteBtn" outline color="negative" dense @click="deleteDataSection">-->
                 <!--                  <q-icon name="delete" size="xs" /> 삭제</q-btn-->
                 <!--                >-->
@@ -590,6 +593,33 @@ const handleResize = () => {
   contentZoneHeight.value = window.innerHeight - screenSizeHeight.value - 180;
 };
 
+// ***** 사용자 패스워드 리셋 부분  *****************************//
+const passwordReset = () => {
+  $q.dialog({
+    dark: true,
+    title: '패스워드 리셋',
+    message: `<p>[ <span class="text-orange text-bold">${formData.value.userNm}</span> ] 의 패스워드를 <span class='text-red text-bold'>초기화</span> 합니다. </p> <p><span class='text-orange'>( 초기화 시 패스워드는 사번으로 저장됩니다. )</span></p>`,
+    html: true,
+    // persistent: true,
+    cancel: {
+      push: true,
+      label: '닫기',
+      color: 'grey-7',
+    },
+    ok: {
+      push: true,
+      label: '진행',
+      color: 'negative',
+    },
+  })
+    .onOk(() => {
+      savePasswordDataAndHandleResult(jsonUtil.dataJsonParse('U', formData.value));
+    })
+    .onCancel(() => {})
+    .onDismiss(() => {
+      // 확인/취소 모두 실행되었을때
+    });
+};
 // **************************************************************//
 // ***** DataBase 연결부분    *************************************//
 // **************************************************************//
@@ -643,6 +673,21 @@ const saveDataAndHandleResult = resFormData => {
       console.log('error: ', error);
     });
 };
+// ***** 패스워드 초기화 처리부분 *****************************//
+const savePasswordDataAndHandleResult = resFormData => {
+  api
+    .post('/api/sys/sys1010_save_passwordReset', resFormData)
+    .then(res => {
+      let saveStatus = {};
+      saveStatus.rtn = res.data.rtn;
+      saveStatus.rtnMsg = res.data.rtnMsg;
+      notifySave.notifyView(saveStatus);
+    })
+    .catch(error => {
+      console.log('error: ', error);
+    });
+};
+
 // ***** 사용자정보 목록 자료 가져오기 부분  *****************************//
 const getData = async () => {
   try {

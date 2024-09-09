@@ -28,7 +28,7 @@
   <!--  게시글 조회 부분 -->
 
   <q-dialog v-model="isDialogView1">
-    <q-card style="width: 700px; max-width: 80vw">
+    <q-card style="width: 700px; max-width: 100vw">
       <q-card-section>
         <div class="text-h6">평가대상자 목록</div>
       </q-card-section>
@@ -150,7 +150,35 @@ const getChartOptions = (title, label, isXs, isDarkMode) => ({
     height: 280,
     type: 'line',
     toolbar: {
-      show: false, // Disable the toolbar to remove zoom and pan buttons
+      show: true, // Disable the toolbar to remove zoom and pan buttons
+      tools: {
+        download: false, // 다운로드 버튼 숨기기
+        selection: false, // 선택 버튼 숨기기
+        zoom: false, // 줌 버튼 숨기기
+        zoomin: false, // 줌인 버튼 숨기기
+        zoomout: false, // 줌아웃 버튼 숨기기
+        pan: false, // 팬 버튼 숨기기
+        reset: true, // 리셋 줌 버튼만 보이도록 설정
+        customIcons:
+          title === '전문직'
+            ? [
+                {
+                  icon: '<img src="https://hr.energyshop.co.kr/images/systemImg/s11.png" width="60" />', // Icon HTML
+                  index: -1, // Position in the toolbar
+                  title: '( S1 업무지원직: ' + series3.value.hrCnt + '명 )',
+                  class: 'custom-icon q-mr-xl q-mt-sm',
+                  click: function (chart, options, e) {
+                    // Action when the custom icon is clicked
+                    // alert('Custom icon clicked!');
+                    let result = '^(' + empList3.value[0].replace(/,/g, '|').replace(/\s+/g, '') + ')$'; // ,를 |로 대치하고 공백을 제거 하고 ()감싸기
+                    getDataPage41EmpList(result).then(() => {
+                      isDialogView1.value = true;
+                    });
+                  },
+                },
+              ]
+            : [],
+      },
     },
     events: {
       dataPointSelection: function (event, chartContext, config) {
@@ -177,14 +205,6 @@ const getChartOptions = (title, label, isXs, isDarkMode) => ({
       },
       click: function (event, chartContext, config) {
         // Custom click event handler for the entire chart
-        const chartElement = event.target;
-        if (chartElement.classList.contains('apexcharts-title-text') && title !== '일반직') {
-          // Handle title click event here
-          let result = '^(' + empList3.value[0].replace(/,/g, '|').replace(/\s+/g, '') + ')$';
-          getDataPage41EmpList(result).then(() => {
-            isDialogView1.value = true;
-          });
-        }
       },
     },
   },
@@ -205,7 +225,7 @@ const getChartOptions = (title, label, isXs, isDarkMode) => ({
     width: [0, 4],
   },
   title: {
-    text: title === '일반직' ? title : title + ' (업무지원직: ' + series3.value.hrCnt + '명)',
+    text: title,
     align: 'center', // 원하는 위치에 따라 설정 가능
     style: {
       color: isDarkMode ? '#afafaf' : '#2c61ff', // 원하는 텍스트 색상 지정
