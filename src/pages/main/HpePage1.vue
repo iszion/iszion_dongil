@@ -130,7 +130,7 @@ const getData = async () => {
       paramBasicDay: storeYear.setYear + '0430',
     });
 
-    // console.log('data ; ', JSON.stringify(response.data.data));
+    // console.log('data page1 ; ', JSON.stringify(response.data.data));
     rowData.value = response.data.data;
   } catch (error) {
     console.error('Error fetching users:', error);

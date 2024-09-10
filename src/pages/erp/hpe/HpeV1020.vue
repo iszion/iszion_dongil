@@ -140,10 +140,10 @@
                   <q-icon name="checklist" style="width: 20px" size="sm" />
                 </template>
                 <span v-if="formData.evaS"><span class="text-blue"> S(100점) : </span>{{ formData.evaS }}<br /></span>
-                <span v-if="formData.evaS"><span class="text-blue"> A(90점) : </span>{{ formData.evaA }}<br /></span>
-                <span v-if="formData.evaS"><span class="text-blue"> B(80점) : </span>{{ formData.evaB }}<br /></span>
-                <span v-if="formData.evaS"><span class="text-blue"> C(70점) : </span>{{ formData.evaC }}<br /></span>
-                <span v-if="formData.evaS"><span class="text-blue"> D(60점) : </span>{{ formData.evaD }}<br /></span>
+                <span v-if="formData.evaA"><span class="text-blue"> A(90점) : </span>{{ formData.evaA }}<br /></span>
+                <span v-if="formData.evaB"><span class="text-blue"> B(80점) : </span>{{ formData.evaB }}<br /></span>
+                <span v-if="formData.evaC"><span class="text-blue"> C(70점) : </span>{{ formData.evaC }}<br /></span>
+                <span v-if="formData.evaD"><span class="text-blue"> D(60점) : </span>{{ formData.evaD }}<br /></span>
                 <template v-slot:action>
                   <span class="text-bold text-subtitle1 text-teal"> 평가기준 </span>
                 </template>

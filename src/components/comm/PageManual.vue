@@ -223,7 +223,7 @@ import { useUserInfoStore } from 'src/store/setUserInfo';
 const storeUser = useUserInfoStore();
 
 const resMsgProp = defineProps(['message']);
-console.log('aa : ', JSON.stringify(resMsgProp.message));
+// console.log('aa : ', JSON.stringify(resMsgProp.message));
 
 const $q = useQuasar();
 

@@ -948,7 +948,7 @@ const deleteDataSection = () => {
 
       const formData = rowData.rowsSel.filter(item => item.markPoint2 > 0);
       for (let i = 0; i < formData.length; i++) {
-        console.log('aaaa :: ', JSON.stringify(formData[i]));
+        // console.log('aaaa :: ', JSON.stringify(formData[i]));
         let tmpJson = '{"mode": "' + isSaveFg + '","data":' + JSON.stringify(formData[i]) + '}';
         iuD.push(tmpJson);
       }

@@ -673,7 +673,7 @@ const onSelectionChangedSel = event => {
   // viewPoint.value.markPoint = (tmpMarkAddPoint / tmpMarkAddCnt).toFixed(1);
   viewPoint.value.selfPoint = tmpSelfAddCnt !== 0 ? parseFloat((tmpSelfAddPoint / tmpSelfAddCnt).toFixed(1)) : 0.0;
   viewPoint.value.markPoint = tmpMarkAddCnt !== 0 ? parseFloat((tmpMarkAddPoint / tmpMarkAddCnt).toFixed(1)) : 0.0;
-  console.log('aa : ', viewPoint.value.markPoint, tmpMarkAddPoint, ' / ', tmpMarkAddCnt);
+  // console.log('aa : ', viewPoint.value.markPoint, tmpMarkAddPoint, ' / ', tmpMarkAddCnt);
 };
 // ======================================================
 const screenSizeHeight = ref(0);

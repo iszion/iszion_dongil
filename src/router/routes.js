@@ -3,7 +3,7 @@ const routes = [
     path: '/main',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/main/DashboardPage.vue') },
+      { path: '', component: () => import('pages/main/DashboardPage.vue'), props: true },
       { path: 'noticeboard', name: 'noticeBoard', component: () => import('pages/main/NoticeBoard.vue'), props: true },
 
       { path: 'aux1010', component: () => import('pages/erp/aux/AuxV1010.vue') },

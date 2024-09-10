@@ -434,7 +434,7 @@ const formDisable = ref(true);
 
 const onSelectionChangedSel = event => {
   selectedRowsSel.value = event.api.getSelectedRows();
-  console.log('aaa : ', JSON.stringify(selectedRowsSel.value));
+  // console.log('aaa : ', JSON.stringify(selectedRowsSel.value));
   if (selectedRowsSel.value.length > 0) {
     getData(selectedRowsSel.value[0].commCd);
   }
@@ -580,7 +580,7 @@ const getData = async resItemFg => {
 // ***** 선택한 성과/목표정보 목록 자료 가져오기 부분  *****************************//
 const oldWeight = ref(0);
 const getDataSelect = async (resYear, resItemFg, resWorkNo) => {
-  console.log('aa ::: ', resYear, resItemFg, resWorkNo);
+  // console.log('aa ::: ', resYear, resItemFg, resWorkNo);
   try {
     const response = await api.post('/api/mst/mst1520_select', {
       paramStdYear: resYear,

@@ -48,12 +48,11 @@
         <board-list :message="boardParams.dataComp" />
       </div>
     </div>
-    {{}}
   </q-page>
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue';
+import { reactive } from 'vue';
 import BoardList from 'pages/main/BoardList.vue';
 import EventView from 'pages/main/EventView.vue';
 import DeptTree from 'pages/main/DeptTree.vue';
@@ -65,15 +64,12 @@ import HpePage42 from 'pages/main/HpePage42.vue';
 import HpePage43 from 'pages/main/HpePage43.vue';
 import HpePage5 from 'pages/main/HpePage5.vue';
 import { useUserInfoStore } from 'src/store/setUserInfo';
-import { useYearInfoStore } from 'src/store/setYearInfo';
 const storeUser = useUserInfoStore();
-const storeYear = useYearInfoStore();
 
 const boardParams = reactive({
   dataComp: { deptCd: '0000000', deptNm: '전체' },
   dataTeam: { deptCd: '7011002', deptNm: '관리부' },
 });
-const text = ref('');
 </script>
 
 <style lang="sass" scoped></style>

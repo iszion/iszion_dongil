@@ -146,9 +146,7 @@
           <i class="fas fa-fw fa-asterisk"></i>
           <span class="text-inverse">asterisk</span>
         </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="fas fa-fw fa-at"></i> <span class="text-inverse">at</span>
-        </div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="fas fa-fw fa-at"></i> <span class="text-inverse">at</span></div>
         <div class="m-b-10 m-r-10 text-ellipsis">
           <i class="fas fa-fw fa-audio-description"></i>
           <span class="text-inverse">audio-description</span>
@@ -161,9 +159,7 @@
           <i class="fas fa-fw fa-balance-scale"></i>
           <span class="text-inverse">balance-scale</span>
         </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="fas fa-fw fa-ban"></i> <span class="text-inverse">ban</span>
-        </div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="fas fa-fw fa-ban"></i> <span class="text-inverse">ban</span></div>
         <div class="m-b-10 m-r-10 text-ellipsis">
           <i class="fas fa-fw fa-barcode"></i>
           <span class="text-inverse">barcode</span>
@@ -196,9 +192,7 @@
           <i class="fas fa-fw fa-battery-three-quarters"></i>
           <span class="text-inverse">battery-three-quarters</span>
         </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="fas fa-fw fa-bed"></i> <span class="text-inverse">bed</span>
-        </div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="fas fa-fw fa-bed"></i> <span class="text-inverse">bed</span></div>
         <div class="m-b-10 m-r-10 text-ellipsis">
           <i class="fas fa-fw fa-beer"></i>
           <span class="text-inverse">beer</span>
@@ -255,9 +249,7 @@
           <i class="fas fa-fw fa-briefcase"></i>
           <span class="text-inverse">briefcase</span>
         </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="fas fa-fw fa-bug"></i> <span class="text-inverse">bug</span>
-        </div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="fas fa-fw fa-bug"></i> <span class="text-inverse">bug</span></div>
         <div class="m-b-10 m-r-10 text-ellipsis">
           <i class="fas fa-fw fa-building"></i>
           <span class="text-inverse">building</span>
@@ -270,9 +262,7 @@
           <i class="fas fa-fw fa-bullseye"></i>
           <span class="text-inverse">bullseye</span>
         </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="fas fa-fw fa-bus"></i> <span class="text-inverse">bus</span>
-        </div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="fas fa-fw fa-bus"></i> <span class="text-inverse">bus</span></div>
         <div class="m-b-10 m-r-10 text-ellipsis">
           <i class="fas fa-fw fa-calculator"></i>
           <span class="text-inverse">calculator</span>
@@ -309,9 +299,7 @@
           <i class="fas fa-fw fa-camera-retro"></i>
           <span class="text-inverse">camera-retro</span>
         </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="fas fa-fw fa-car"></i> <span class="text-inverse">car</span>
-        </div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="fas fa-fw fa-car"></i> <span class="text-inverse">car</span></div>
         <div class="m-b-10 m-r-10 text-ellipsis">
           <i class="fas fa-fw fa-caret-down"></i>
           <span class="text-inverse">caret-down</span>
@@ -468,9 +456,7 @@
           <i class="fas fa-fw fa-coffee"></i>
           <span class="text-inverse">coffee</span>
         </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="fas fa-fw fa-cog"></i> <span class="text-inverse">cog</span>
-        </div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="fas fa-fw fa-cog"></i> <span class="text-inverse">cog</span></div>
         <div class="m-b-10 m-r-10 text-ellipsis">
           <i class="fas fa-fw fa-cogs"></i>
           <span class="text-inverse">cogs</span>
@@ -527,9 +513,7 @@
           <i class="fas fa-fw fa-cubes"></i>
           <span class="text-inverse">cubes</span>
         </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="fas fa-fw fa-cut"></i> <span class="text-inverse">cut</span>
-        </div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="fas fa-fw fa-cut"></i> <span class="text-inverse">cut</span></div>
         <div class="m-b-10 m-r-10 text-ellipsis">
           <i class="fas fa-fw fa-database"></i>
           <span class="text-inverse">database</span>
@@ -622,9 +606,7 @@
           <i class="fas fa-fw fa-external-link-square-alt"></i>
           <span class="text-inverse">external-link-square-alt</span>
         </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="fas fa-fw fa-eye"></i> <span class="text-inverse">eye</span>
-        </div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="fas fa-fw fa-eye"></i> <span class="text-inverse">eye</span></div>
         <div class="m-b-10 m-r-10 text-ellipsis">
           <i class="fas fa-fw fa-eye-dropper"></i>
           <span class="text-inverse">eye-dropper</span>
@@ -641,9 +623,7 @@
           <i class="fas fa-fw fa-fast-forward"></i>
           <span class="text-inverse">fast-forward</span>
         </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="fas fa-fw fa-fax"></i> <span class="text-inverse">fax</span>
-        </div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="fas fa-fw fa-fax"></i> <span class="text-inverse">fax</span></div>
         <div class="m-b-10 m-r-10 text-ellipsis">
           <i class="fas fa-fw fa-female"></i>
           <span class="text-inverse">female</span>
@@ -756,9 +736,7 @@
           <i class="fas fa-fw fa-gavel"></i>
           <span class="text-inverse">gavel</span>
         </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="fas fa-fw fa-gem"></i> <span class="text-inverse">gem</span>
-        </div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="fas fa-fw fa-gem"></i> <span class="text-inverse">gem</span></div>
         <div class="m-b-10 m-r-10 text-ellipsis">
           <i class="fas fa-fw fa-genderless"></i>
           <span class="text-inverse">genderless</span>
@@ -835,9 +813,7 @@
           <i class="fas fa-fw fa-hashtag"></i>
           <span class="text-inverse">hashtag</span>
         </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="fas fa-fw fa-hdd"></i> <span class="text-inverse">hdd</span>
-        </div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="fas fa-fw fa-hdd"></i> <span class="text-inverse">hdd</span></div>
         <div class="m-b-10 m-r-10 text-ellipsis">
           <i class="fas fa-fw fa-heading"></i>
           <span class="text-inverse">heading</span>
@@ -926,9 +902,7 @@
           <i class="fas fa-fw fa-italic"></i>
           <span class="text-inverse">italic</span>
         </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="fas fa-fw fa-key"></i> <span class="text-inverse">key</span>
-        </div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="fas fa-fw fa-key"></i> <span class="text-inverse">key</span></div>
         <div class="m-b-10 m-r-10 text-ellipsis">
           <i class="fas fa-fw fa-keyboard"></i>
           <span class="text-inverse">keyboard</span>
@@ -1033,9 +1007,7 @@
           <i class="fas fa-fw fa-male"></i>
           <span class="text-inverse">male</span>
         </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="fas fa-fw fa-map"></i> <span class="text-inverse">map</span>
-        </div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="fas fa-fw fa-map"></i> <span class="text-inverse">map</span></div>
         <div class="m-b-10 m-r-10 text-ellipsis">
           <i class="fas fa-fw fa-map-marker"></i>
           <span class="text-inverse">map-marker</span>
@@ -1076,9 +1048,7 @@
           <i class="fas fa-fw fa-medkit"></i>
           <span class="text-inverse">medkit</span>
         </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="fas fa-fw fa-meh"></i> <span class="text-inverse">meh</span>
-        </div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="fas fa-fw fa-meh"></i> <span class="text-inverse">meh</span></div>
         <div class="m-b-10 m-r-10 text-ellipsis">
           <i class="fas fa-fw fa-mercury"></i>
           <span class="text-inverse">mercury</span>
@@ -1183,9 +1153,7 @@
           <i class="fas fa-fw fa-pause-circle"></i>
           <span class="text-inverse">pause-circle</span>
         </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="fas fa-fw fa-paw"></i> <span class="text-inverse">paw</span>
-        </div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="fas fa-fw fa-paw"></i> <span class="text-inverse">paw</span></div>
         <div class="m-b-10 m-r-10 text-ellipsis">
           <i class="fas fa-fw fa-pen-square"></i>
           <span class="text-inverse">pen-square</span>
@@ -1318,9 +1286,7 @@
           <i class="fas fa-fw fa-rocket"></i>
           <span class="text-inverse">rocket</span>
         </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="fas fa-fw fa-rss"></i> <span class="text-inverse">rss</span>
-        </div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="fas fa-fw fa-rss"></i> <span class="text-inverse">rss</span></div>
         <div class="m-b-10 m-r-10 text-ellipsis">
           <i class="fas fa-fw fa-rss-square"></i>
           <span class="text-inverse">rss-square</span>
@@ -1533,9 +1499,7 @@
           <i class="fas fa-fw fa-suitcase"></i>
           <span class="text-inverse">suitcase</span>
         </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="fas fa-fw fa-sun"></i> <span class="text-inverse">sun</span>
-        </div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="fas fa-fw fa-sun"></i> <span class="text-inverse">sun</span></div>
         <div class="m-b-10 m-r-10 text-ellipsis">
           <i class="fas fa-fw fa-superscript"></i>
           <span class="text-inverse">superscript</span>
@@ -1564,9 +1528,7 @@
           <i class="fas fa-fw fa-tachometer-alt"></i>
           <span class="text-inverse">tachometer-alt</span>
         </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="fas fa-fw fa-tag"></i> <span class="text-inverse">tag</span>
-        </div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="fas fa-fw fa-tag"></i> <span class="text-inverse">tag</span></div>
         <div class="m-b-10 m-r-10 text-ellipsis">
           <i class="fas fa-fw fa-tags"></i>
           <span class="text-inverse">tags</span>
@@ -1591,9 +1553,7 @@
           <i class="fas fa-fw fa-text-width"></i>
           <span class="text-inverse">text-width</span>
         </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="fas fa-fw fa-th"></i> <span class="text-inverse">th</span>
-        </div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="fas fa-fw fa-th"></i> <span class="text-inverse">th</span></div>
         <div class="m-b-10 m-r-10 text-ellipsis">
           <i class="fas fa-fw fa-th-large"></i>
           <span class="text-inverse">th-large</span>
@@ -1694,12 +1654,8 @@
           <i class="fas fa-fw fa-truck"></i>
           <span class="text-inverse">truck</span>
         </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="fas fa-fw fa-tty"></i> <span class="text-inverse">tty</span>
-        </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="fas fa-fw fa-tv"></i> <span class="text-inverse">tv</span>
-        </div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="fas fa-fw fa-tty"></i> <span class="text-inverse">tty</span></div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="fas fa-fw fa-tv"></i> <span class="text-inverse">tv</span></div>
         <div class="m-b-10 m-r-10 text-ellipsis">
           <i class="fas fa-fw fa-umbrella"></i>
           <span class="text-inverse">umbrella</span>
@@ -2067,9 +2023,7 @@
           <i class="far fa-fw fa-futbol"></i>
           <span class="text-inverse">futbol</span>
         </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="far fa-fw fa-gem"></i> <span class="text-inverse">gem</span>
-        </div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="far fa-fw fa-gem"></i> <span class="text-inverse">gem</span></div>
         <div class="m-b-10 m-r-10 text-ellipsis">
           <i class="far fa-fw fa-hand-lizard"></i>
           <span class="text-inverse">hand-lizard</span>
@@ -2118,9 +2072,7 @@
           <i class="far fa-fw fa-handshake"></i>
           <span class="text-inverse">handshake</span>
         </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="far fa-fw fa-hdd"></i> <span class="text-inverse">hdd</span>
-        </div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="far fa-fw fa-hdd"></i> <span class="text-inverse">hdd</span></div>
         <div class="m-b-10 m-r-10 text-ellipsis">
           <i class="far fa-fw fa-heart"></i>
           <span class="text-inverse">heart</span>
@@ -2169,12 +2121,8 @@
           <i class="far fa-fw fa-list-alt"></i>
           <span class="text-inverse">list-alt</span>
         </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="far fa-fw fa-map"></i> <span class="text-inverse">map</span>
-        </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="far fa-fw fa-meh"></i> <span class="text-inverse">meh</span>
-        </div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="far fa-fw fa-map"></i> <span class="text-inverse">map</span></div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="far fa-fw fa-meh"></i> <span class="text-inverse">meh</span></div>
         <div class="m-b-10 m-r-10 text-ellipsis">
           <i class="far fa-fw fa-minus-square"></i>
           <span class="text-inverse">minus-square</span>
@@ -2259,9 +2207,7 @@
           <i class="far fa-fw fa-stop-circle"></i>
           <span class="text-inverse">stop-circle</span>
         </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="far fa-fw fa-sun"></i> <span class="text-inverse">sun</span>
-        </div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="far fa-fw fa-sun"></i> <span class="text-inverse">sun</span></div>
         <div class="m-b-10 m-r-10 text-ellipsis">
           <i class="far fa-fw fa-thumbs-down"></i>
           <span class="text-inverse">thumbs-down</span>
@@ -2317,9 +2263,7 @@
           <i class="fab fa-fw fa-accusoft"></i>
           <span class="text-inverse">accusoft</span>
         </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="fab fa-fw fa-adn"></i> <span class="text-inverse">adn</span>
-        </div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="fab fa-fw fa-adn"></i> <span class="text-inverse">adn</span></div>
         <div class="m-b-10 m-r-10 text-ellipsis">
           <i class="fab fa-fw fa-adversal"></i>
           <span class="text-inverse">adversal</span>
@@ -2400,9 +2344,7 @@
           <i class="fab fa-fw fa-aviato"></i>
           <span class="text-inverse">aviato</span>
         </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="fab fa-fw fa-aws"></i> <span class="text-inverse">aws</span>
-        </div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="fab fa-fw fa-aws"></i> <span class="text-inverse">aws</span></div>
         <div class="m-b-10 m-r-10 text-ellipsis">
           <i class="fab fa-fw fa-bandcamp"></i>
           <span class="text-inverse">bandcamp</span>
@@ -2455,9 +2397,7 @@
           <i class="fab fa-fw fa-bluetooth-b"></i>
           <span class="text-inverse">bluetooth-b</span>
         </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="fab fa-fw fa-btc"></i> <span class="text-inverse">btc</span>
-        </div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="fab fa-fw fa-btc"></i> <span class="text-inverse">btc</span></div>
         <div class="m-b-10 m-r-10 text-ellipsis">
           <i class="fab fa-fw fa-buromobelexperte"></i>
           <span class="text-inverse">buromobelexperte</span>
@@ -2706,9 +2646,7 @@
           <i class="fab fa-fw fa-flickr"></i>
           <span class="text-inverse">flickr</span>
         </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="fab fa-fw fa-fly"></i> <span class="text-inverse">fly</span>
-        </div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="fab fa-fw fa-fly"></i> <span class="text-inverse">fly</span></div>
         <div class="m-b-10 m-r-10 text-ellipsis">
           <i class="fab fa-fw fa-font-awesome"></i>
           <span class="text-inverse">font-awesome</span>
@@ -2757,16 +2695,12 @@
           <i class="fab fa-fw fa-get-pocket"></i>
           <span class="text-inverse">get-pocket</span>
         </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="fab fa-fw fa-gg"></i> <span class="text-inverse">gg</span>
-        </div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="fab fa-fw fa-gg"></i> <span class="text-inverse">gg</span></div>
         <div class="m-b-10 m-r-10 text-ellipsis">
           <i class="fab fa-fw fa-gg-circle"></i>
           <span class="text-inverse">gg-circle</span>
         </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="fab fa-fw fa-git"></i> <span class="text-inverse">git</span>
-        </div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="fab fa-fw fa-git"></i> <span class="text-inverse">git</span></div>
         <div class="m-b-10 m-r-10 text-ellipsis">
           <i class="fab fa-fw fa-git-square"></i>
           <span class="text-inverse">git-square</span>
@@ -2931,9 +2865,7 @@
           <i class="fab fa-fw fa-joomla"></i>
           <span class="text-inverse">joomla</span>
         </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="fab fa-fw fa-js"></i> <span class="text-inverse">js</span>
-        </div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="fab fa-fw fa-js"></i> <span class="text-inverse">js</span></div>
         <div class="m-b-10 m-r-10 text-ellipsis">
           <i class="fab fa-fw fa-js-square"></i>
           <span class="text-inverse">js-square</span>
@@ -3034,9 +2966,7 @@
           <i class="fab fa-fw fa-microsoft"></i>
           <span class="text-inverse">microsoft</span>
         </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="fab fa-fw fa-mix"></i> <span class="text-inverse">mix</span>
-        </div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="fab fa-fw fa-mix"></i> <span class="text-inverse">mix</span></div>
         <div class="m-b-10 m-r-10 text-ellipsis">
           <i class="fab fa-fw fa-mixcloud"></i>
           <span class="text-inverse">mixcloud</span>
@@ -3069,12 +2999,8 @@
           <i class="fab fa-fw fa-node-js"></i>
           <span class="text-inverse">node-js</span>
         </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="fab fa-fw fa-npm"></i> <span class="text-inverse">npm</span>
-        </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="fab fa-fw fa-ns8"></i> <span class="text-inverse">ns8</span>
-        </div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="fab fa-fw fa-npm"></i> <span class="text-inverse">npm</span></div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="fab fa-fw fa-ns8"></i> <span class="text-inverse">ns8</span></div>
         <div class="m-b-10 m-r-10 text-ellipsis">
           <i class="fab fa-fw fa-nutritionix"></i>
           <span class="text-inverse">nutritionix</span>
@@ -3103,9 +3029,7 @@
           <i class="fab fa-fw fa-optin-monster"></i>
           <span class="text-inverse">optin-monster</span>
         </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="fab fa-fw fa-osi"></i> <span class="text-inverse">osi</span>
-        </div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="fab fa-fw fa-osi"></i> <span class="text-inverse">osi</span></div>
         <div class="m-b-10 m-r-10 text-ellipsis">
           <i class="fab fa-fw fa-page4"></i>
           <span class="text-inverse">page4</span>
@@ -3178,9 +3102,7 @@
           <i class="fab fa-fw fa-python"></i>
           <span class="text-inverse">python</span>
         </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="fab fa-fw fa-qq"></i> <span class="text-inverse">qq</span>
-        </div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="fab fa-fw fa-qq"></i> <span class="text-inverse">qq</span></div>
         <div class="m-b-10 m-r-10 text-ellipsis">
           <i class="fab fa-fw fa-quora"></i>
           <span class="text-inverse">quora</span>
@@ -3449,9 +3371,7 @@
           <i class="fab fa-fw fa-untappd"></i>
           <span class="text-inverse">untappd</span>
         </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="fab fa-fw fa-usb"></i> <span class="text-inverse">usb</span>
-        </div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="fab fa-fw fa-usb"></i> <span class="text-inverse">usb</span></div>
         <div class="m-b-10 m-r-10 text-ellipsis">
           <i class="fab fa-fw fa-ussunnah"></i>
           <span class="text-inverse">ussunnah</span>
@@ -3492,12 +3412,8 @@
           <i class="fab fa-fw fa-vine"></i>
           <span class="text-inverse">vine</span>
         </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="fab fa-fw fa-vk"></i> <span class="text-inverse">vk</span>
-        </div>
-        <div class="m-b-10 m-r-10 text-ellipsis">
-          <i class="fab fa-fw fa-vnv"></i> <span class="text-inverse">vnv</span>
-        </div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="fab fa-fw fa-vk"></i> <span class="text-inverse">vk</span></div>
+        <div class="m-b-10 m-r-10 text-ellipsis"><i class="fab fa-fw fa-vnv"></i> <span class="text-inverse">vnv</span></div>
         <div class="m-b-10 m-r-10 text-ellipsis">
           <i class="fab fa-fw fa-vuejs"></i>
           <span class="text-inverse">vuejs</span>
@@ -3603,15 +3519,15 @@ const emit = defineEmits(['update']);
 console.log('props: ', props.iconValue);
 const iconClick = event => {
   const clickedElement = event.target; // Get the clicked element
-  console.log('aa : ', clickedElement);
+  // console.log('aa : ', clickedElement);
 
   if (clickedElement.tagName.toLowerCase() === 'i') {
     // || clickedElement.classList.contains('your-icon-class')) {
     iconClass.value = clickedElement.className;
-    console.log('icon class : ', iconClass.value);
-    console.log('icon props : ', props.iconValue);
+    // console.log('icon class : ', iconClass.value);
+    // console.log('icon props : ', props.iconValue);
     emit('update', iconClass.value);
-    console.log('icon class : ', iconClass);
+    // console.log('icon class : ', iconClass);
     // let ref = $('#menuTree').jstree(true);
     // let sel = ref.get_selected();
     // this.old_icon = ref.get_icon(sel);

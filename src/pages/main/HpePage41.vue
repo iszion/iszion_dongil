@@ -25,7 +25,7 @@
     </q-card-section>
   </q-card>
 
-  <!--  게시글 조회 부분 -->
+  <!--  상세인원현황 부분 -->
 
   <q-dialog v-model="isDialogView1">
     <q-card style="width: 700px; max-width: 100vw">
@@ -107,7 +107,7 @@
     </q-card>
   </q-dialog>
 
-  <!--  게시글 조회부분 끝-->
+  <!--  상세 인원현황 끝-->
 </template>
 
 <script setup>
@@ -331,7 +331,7 @@ onBeforeMount(async () => {
           series3.value.name = data[i].titlNm;
           series3.value.hrCnt = data[i].hrCnt;
           empList3.value.push(data[i].empCdList);
-          console.log('aa : ', JSON.stringify(data[i]));
+          // console.log('aa : ', JSON.stringify(data[i]));
         } else {
           series2.value[0].data.push(data[i].hrCnt);
           series2.value[1].data.push(data[i].hrCnt);

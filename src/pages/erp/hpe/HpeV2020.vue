@@ -178,7 +178,7 @@
                       <div class="text-center text-subtitle2 text-bold q-px-xs" :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-deep-orange-3'">
                         자기평가
                       </div>
-                      <div class="text-center q-pa-xs" :class="$q.screen.xs ? '' : 'row flex-center'" style="height: 100%">
+                      <div class="text-center text-subtitle2 text-bold q-pa-xs" :class="$q.screen.xs ? '' : 'row flex-center'" style="height: 100%">
                         {{ data.selfPoint }}(<span class="text-bold text-orange"> {{ data.selfCh }}</span
                         >)
                       </div>

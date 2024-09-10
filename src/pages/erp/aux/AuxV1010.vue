@@ -21,10 +21,13 @@
                 <q-btn outline color="positive" dense @click="getData"><q-icon name="refresh" size="xs" class="q-mr-xs" /> 다시 불러오기 </q-btn>
                 <q-space />
                 <div class="q-gutter-xs">
-                  <q-btn v-if="formData.locCh === '0'" outline color="primary" dense @click="handleProcYearCreate"
-                    ><q-icon name="library_add" size="xs" class="q-mr-xs" /> 당년자료 생성하기
+                  <q-btn v-if="isLocCh === '0'" outline color="primary" dense @click="handleProcYearCreate">
+                    <q-icon name="library_add" size="xs" class="q-mr-xs" /> 당년자료 생성하기
                   </q-btn>
-                  <q-btn v-if="formData.locCh === '0'" outline color="negative" dense @click="handleProcYearDelete">
+                  <q-btn v-if="isLocCh === '0'" outline color="negative" dense @click="handleProcYearDelete">
+                    <q-icon name="replay" size="xs" class="q-mr-xs" /> 당년자료 삭제하기
+                  </q-btn>
+                  <q-btn v-if="isLocCh === '0'" outline color="negative" dense @click="handleProcYearClear">
                     <q-icon name="replay" size="xs" class="q-mr-xs" /> 당년자료 초기화
                   </q-btn>
                 </div>
@@ -45,30 +48,22 @@
               <q-card flat bordered class="q-ma-xs">
                 <div class="row">
                   <div class="col-12 col-sm-5 q-pa-md q-col-gutter-y-lg">
-                    <div class="row q-gutter-xl">
-                      <div style="max-width: 100px">
-                        <q-input
-                          ref="stdYearFocus"
-                          stack-label
-                          v-model="formData.stdYear"
-                          type="text"
-                          label="기준년도"
-                          label-color="orange"
-                          :disable="formDisable"
-                          :rules="[val => (val >= '2000' && val <= '2100') || '2000년 ~ 2100년']"
-                          class="custom-font-size"
-                        >
-                          <template v-slot:append>
-                            <q-avatar class="q-mt-md"> 년 </q-avatar>
-                          </template>
-                        </q-input>
-                      </div>
-
-                      <!--                      <div class="q-gutter-sm q-pt-lg">-->
-                      <!--                        <q-radio dense v-model="formData.stdFg" val="0" label="년" :disable="formDisable" />-->
-                      <!--                        <q-radio dense v-model="formData.stdFg" val="1" label="상반기" :disable="formDisable" />-->
-                      <!--                        <q-radio dense v-model="formData.stdFg" val="2" label="하반기" :disable="formDisable" />-->
-                      <!--                      </div>-->
+                    <div style="max-width: 100px">
+                      <q-input
+                        ref="stdYearFocus"
+                        stack-label
+                        v-model="formData.stdYear"
+                        type="text"
+                        label="기준년도"
+                        label-color="orange"
+                        :disable="formDisable"
+                        :rules="[val => (val >= '2000' && val <= '2100') || '2000년 ~ 2100년']"
+                        class="custom-font-size"
+                      >
+                        <template v-slot:append>
+                          <q-avatar class="q-mt-md"> 년 </q-avatar>
+                        </template>
+                      </q-input>
                     </div>
                     <div class="row q-gutter-xl">
                       <q-input v-model="formData.sDay" type="date" label="기준시작일" label-color="orange" :disable="formDisable" />
@@ -297,6 +292,8 @@ const columnDefs = reactive({
   ],
 });
 
+let isLocCh = null;
+
 const oldFormData = ref(null);
 const formData = ref({
   stdYear: '',
@@ -393,17 +390,31 @@ const addDataSection = () => {
   }, 100);
 };
 const handleProcYearCreate = () => {
+  let beforeYear = formData.value.stdYear - 1;
   $q.dialog({
     dark: true,
     title: formData.value.stdYear + '년도 기준자료 생성',
-    message: '해당년도의 기준자료를 생성하시겠습니까? ',
+    message:
+      '<p><span class="text-blue text-bold">' +
+      beforeYear +
+      '년도</span>의 기준정보자료가 <span class="text-blue text-bold">' +
+      formData.value.stdYear +
+      '년도</span>로 자동 생성됩니다.</p><p>기준정보 자료를 모두 생성 하시겠습니까?</p>',
+    options: {
+      type: 'toggle',
+      model: [],
+      isValid: model => model.includes('opt1'),
+      // inline: true,
+      items: [{ label: '생성을 원하면 선택하세요', value: 'opt1', color: 'secondary' }],
+    },
+    html: true,
     ok: {
-      label: '확인',
+      label: '생성하기',
       push: true,
       color: 'primary',
     },
     cancel: {
-      label: '닫기',
+      label: '취소',
       push: true,
       color: 'grey-7',
     },
@@ -418,15 +429,23 @@ const handleProcYearCreate = () => {
 const handleProcYearDelete = () => {
   $q.dialog({
     dark: true,
-    title: formData.value.stdYear + '년도 기준자료 초기화',
-    message: '해당년도의 기준자료를 초기화 하시겠습니까? ',
+    title: formData.value.stdYear + '년도 자료삭제',
+    message: '<p>해당년도의 모든자료가 삭제 됩니다.(기준정보 포함)</p><p>자료를 모두 삭제 하시겠습니까?</p>',
+    options: {
+      type: 'toggle',
+      model: [],
+      isValid: model => model.includes('opt1'),
+      // inline: true,
+      items: [{ label: '삭제를 원하면 선택하세요', value: 'opt1', color: 'secondary' }],
+    },
+    html: true,
     ok: {
-      label: '확인',
+      label: '삭제하기',
       push: true,
       color: 'primary',
     },
     cancel: {
-      label: '닫기',
+      label: '취소',
       push: true,
       color: 'grey-7',
     },
@@ -438,6 +457,42 @@ const handleProcYearDelete = () => {
     .onCancel(() => {})
     .onDismiss(() => {});
 };
+
+const handleProcYearClear = () => {
+  $q.dialog({
+    dark: true,
+    title: formData.value.stdYear + '년도 자료 초기화',
+    message: '<p>해당년도의 성과 및 역량평가자료가 모두 초기화 됩니다.</p><p>기준정보자료는 삭제되지 않습니다.</p><p>초기화 하시겠습니까?</p>',
+    options: {
+      type: 'radio',
+      model: '',
+      isValid: val => val === '0' || val === '1',
+      inline: true,
+      items: [
+        { label: '전체초기화', value: '0', color: 'secondary' },
+        { label: '목표성과자료는 제외', value: '1' },
+      ],
+    },
+    html: true,
+
+    ok: {
+      label: '초기화',
+      push: true,
+      color: 'primary',
+    },
+    cancel: {
+      label: '취소',
+      push: true,
+      color: 'grey-7',
+    },
+  })
+    .onOk(val => {
+      getProcYearClear(val);
+    })
+    .onCancel(() => {})
+    .onDismiss(() => {});
+};
+
 const deleteDataSection = () => {
   $q.dialog({
     dark: true,
@@ -531,6 +586,7 @@ const getData = async () => {
     const response = await api.post('/api/aux/aux1010_list', {});
     rowData.rows = response.data.data;
     gridKey.value += 1;
+    isLocCh = rowData.rows[0].locCh;
   } catch (error) {
     console.error('Error fetching users:', error);
   }
@@ -637,6 +693,28 @@ const getProcYearDelete = async () => {
   try {
     const response = await api.post('/api/aux/proc_next_year_delete', {
       paramSetYear: formData.value.stdYear,
+    });
+
+    setTimeout(() => {
+      let procStatus = {};
+      response.data.success ? (procStatus.msgColor = 'positive') : (procStatus.msgColor = 'negative');
+      response.data.success ? (procStatus.msgTextColor = 'dark') : (procStatus.msgTextColor = 'white');
+      response.data.success ? (procStatus.msgCaption = '정상처리') : (procStatus.msgCaption = '처리실패');
+      response.data.success
+        ? (procStatus.msgMessage = '작업을 모두 끝났습니다.')
+        : (procStatus.msgMessage = '착업에 문제가 있습니다.(관리자에게 문의)');
+      notifySave.notifyUserView(procStatus, 3000);
+    }, 1000);
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+};
+
+const getProcYearClear = async val => {
+  try {
+    const response = await api.post('/api/aux/proc_next_year_clear', {
+      paramSetYear: formData.value.stdYear,
+      paramSelectFg: val,
     });
 
     setTimeout(() => {
