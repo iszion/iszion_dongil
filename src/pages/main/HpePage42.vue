@@ -1,5 +1,5 @@
 <template>
-  <q-card bordered class="q-pa-xs" style="height: 362px">
+  <q-card bordered class="q-pa-xs" style="height: 100%">
     <q-bar class="q-py-xs text-subtitle1 text-bold">
       진급대상 정보
       <q-space />

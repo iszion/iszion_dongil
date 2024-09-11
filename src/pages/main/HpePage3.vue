@@ -1,32 +1,10 @@
 <template>
-  <q-card bordered class="q-pa-xs">
+  <q-card bordered class="q-pa-xs" style="height: 100%">
     <q-bar class="text-subtitle1 text-bold">
       역량평가 진행율
       <q-space />
     </q-bar>
-    <q-card v-if="storeUser.setTitlCd === '101'" class="q-pt-xl" style="height: 320px">
-      <q-card-section class="q-py-sm q-px-none">
-        <div class="row q-pa-xs">
-          <apexchart
-            v-if="chartOptions1"
-            class="col-6"
-            type="radialBar"
-            :height="$q.screen.xs ? '180' : '220'"
-            :options="chartOptions1"
-            :series="series1"
-          ></apexchart>
-          <apexchart
-            v-if="chartOptions2"
-            class="col-6"
-            type="radialBar"
-            :height="$q.screen.xs ? '180' : '220'"
-            :options="chartOptions2"
-            :series="series2"
-          ></apexchart>
-        </div>
-      </q-card-section>
-    </q-card>
-    <q-card-section v-if="storeUser.setTitlCd !== '101'" class="q-py-sm q-px-none">
+    <q-card-section class="q-px-none" :class="storeUser.setTitlCd === '101' ? 'q-pt-xl' : 'q-py-sm'">
       <div class="row q-pa-xs">
         <apexchart
           v-if="chartOptions1"

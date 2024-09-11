@@ -1,10 +1,10 @@
 <template>
-  <q-card bordered class="q-pa-xs">
+  <q-card bordered class="q-pa-xs" style="height: 100%">
     <q-bar class="q-py-xs text-subtitle1 text-bold">
       전년 평가 정보
       <q-space />
     </q-bar>
-    <q-card-section class="">
+    <q-card-section class="q-pt-lg">
       <div class="row">
         <div class="col-xs-9 col-sm-9 col-md-10">
           <q-table

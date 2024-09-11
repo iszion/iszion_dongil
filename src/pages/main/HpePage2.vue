@@ -1,5 +1,5 @@
 <template>
-  <q-card bordered class="q-pa-xs">
+  <q-card bordered class="q-pa-xs" style="height: 100%">
     <q-bar class="q-py-xs text-subtitle1 text-bold">
       성과평가 진행율
       <q-space />

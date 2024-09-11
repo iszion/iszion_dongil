@@ -1,31 +1,19 @@
 <template>
-  <q-card bordered class="q-pa-xs">
-    <q-bar class="q-py-xs text-subtitle1 text-bold">
-      평가대상자
-      <q-space />
-    </q-bar>
-    <q-separator />
-    <q-card-section class="q-py-sm q-px-none">
-      <div class="row q-pa-xs q-col-gutter-x-lg">
-        <apexchart
-          v-if="chartOptions1"
-          class="col-xs-12 col-sm-12 col-md-5"
-          type="line"
-          :height="$q.screen.xs ? '180' : '280'"
-          :options="chartOptions1"
-          :series="series1"
-        ></apexchart>
-        <apexchart
-          v-if="chartOptions2"
-          class="col-xs-12 col-sm-12 col-md-7"
-          type="line"
-          :height="$q.screen.xs ? '180' : '280'"
-          :options="chartOptions2"
-          :series="series2"
-        ></apexchart>
-      </div>
-    </q-card-section>
-  </q-card>
+  <div class="row" style="height: 100%">
+    <q-card bordered class="col-xs-12 col-sm-5 q-pa-xs">
+      <q-bar class="text-subtitle1 text-bold"> 평가대상자 (일반직) </q-bar>
+      <q-card-section class="q-pb-none">
+        <apexchart v-if="chartOptions1" type="line" :height="$q.screen.xs ? '180' : '280'" :options="chartOptions1" :series="series1"></apexchart>
+      </q-card-section>
+    </q-card>
+
+    <q-card bordered class="col-xs-12 col-sm-7 q-pa-xs">
+      <q-bar class="text-subtitle1 text-bold"> 평가대상자 (전문직) </q-bar>
+      <q-card-section class="q-pb-none">
+        <apexchart v-if="chartOptions2" type="line" :height="$q.screen.xs ? '180' : '280'" :options="chartOptions2" :series="series2"></apexchart>
+      </q-card-section>
+    </q-card>
+  </div>
 
   <!--  상세인원현황 부분 -->
 

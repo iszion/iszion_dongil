@@ -1,5 +1,5 @@
 <template>
-  <q-card bordered class="q-pa-xs">
+  <q-card bordered class="q-pa-xs" style="height: 100%">
     <q-bar class="q-py-xs text-subtitle1 text-bold">
       소속팀 조직도
       <q-space />
@@ -13,7 +13,7 @@
         </div>
 
         <div class="col-xs-12 col-sm-4 q-pa-sm-sm q-pa-xs-none">
-          <q-card bordered>
+          <q-card bordered style="height: 100%">
             <span class="text-bold flex flex-center q-pa-sm text-h6">사업장 현황</span>
             <div class="q-pa-sm">
               <q-scroll-area style="height: 430px">
@@ -62,7 +62,7 @@
         </div>
 
         <div class="col-xs-12 col-sm-3 q-pa-sm-sm q-pa-xs-none">
-          <q-card bordered>
+          <q-card bordered style="height: 100%">
             <span class="text-bold flex flex-center q-pa-sm text-h6">소속팀 현황</span>
             <div class="q-pa-sm">
               <q-list bordered class="rounded-borders">

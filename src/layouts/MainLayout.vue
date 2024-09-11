@@ -6,7 +6,7 @@
           <img src="../assets/images/dongil_logo.png" />
         </q-avatar>
 
-        <div v-if="!$q.screen.lt.lg" class="text-h6 text-bold text-deep-orange q-pl-sm self-center cursor-pointer" @click="handleHomeClick">
+        <div v-show="$q.screen.gt.md" class="text-h6 text-bold text-deep-orange q-pl-sm self-center cursor-pointer" @click="handleHomeClick">
           {{ $t('project_name') }}
         </div>
 
@@ -107,7 +107,9 @@
         <!-- 사용자 관리 ICON   -->
         <q-btn flat size="sm" class="q-pa-none q-ml-sm">
           <div v-if="!$q.screen.xs">
-            <div class="text-subtitle2 text-bold q-mr-sm text-orange" style="font-size: 1.2em">{{ storeUser.setDeptNm }}</div>
+            <div v-show="$q.screen.gt.md" class="text-subtitle2 text-bold q-mr-sm text-orange" style="font-size: 1.2em">
+              {{ storeUser.setDeptNm }}
+            </div>
             <div class="text-subtitle2 text-bold q-mr-sm">{{ storeUser.setEmpNm }}</div>
           </div>
           <q-avatar rounded color="white" class="flex flex-center">
