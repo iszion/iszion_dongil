@@ -5,15 +5,15 @@
       <q-space />
       <RouterLink :to="{ name: 'noticeBoard', query: { paramDeptCd: message.deptCd, paramDeptNm: message.deptNm } }">
         <q-avatar size="sm" color="primary" text-color="white"><q-icon name="edit_note" size="1rem" /></q-avatar>
-        <!--        <q-tooltip class="bg-amber text-black shadow-4" anchor="center left" self="center right">-->
-        <!--          <q-icon name="edit_note" size="0.8rem" />-->
-        <!--          <strong> 게시글 관리 </strong>-->
-        <!--        </q-tooltip>-->
+        <q-tooltip class="bg-amber text-black shadow-4" anchor="center left" self="center right">
+          <q-icon name="edit_note" size="0.8rem" />
+          <strong> 게시글 관리 (등록/수정/삭제) </strong>
+        </q-tooltip>
       </RouterLink>
     </q-bar>
     <q-separator />
     <q-card-section class="q-py-sm q-px-none">
-      <q-scroll-area style="height: 360px; max-width: 100%">
+      <q-scroll-area style="height: 290px; max-width: 100%">
         <q-list>
           <div v-for="data in boardData" :key="data.boardNo">
             <q-item clickable v-ripple @click="onDelayedClick">
@@ -29,7 +29,7 @@
               </q-item-section>
             </q-item>
 
-            <q-separator spaced inset />
+            <q-separator inset />
           </div>
         </q-list>
       </q-scroll-area>
@@ -120,7 +120,8 @@ const dayFormat = resDay => {
   } else if (timeDifference < 62 * 60) {
     formattedDate = '그제';
   } else {
-    formattedDate = parsedDate.format('MMM DD, YYYY');
+    // formattedDate = parsedDate.format('MMM DD, YYYY');
+    formattedDate = parsedDate.format('YYYY-MM-DD');
   }
 
   // console.log('reg_day: ', formattedDate);

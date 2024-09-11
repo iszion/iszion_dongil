@@ -25,11 +25,35 @@
         </q-tooltip>
       </q-btn>
     </q-bar>
-    <q-card-section class="q-py-sm q-px-none">
+    <q-card-section class="q-pt-xs q-pb-none q-px-none">
       <div class="row q-pa-xs">
-        <apexchart class="col-4" type="radialBar" :height="$q.screen.xs ? '180' : '220'" :options="chartOptions1" :series="series1"> </apexchart>
-        <apexchart class="col-4" type="radialBar" :height="$q.screen.xs ? '180' : '220'" :options="chartOptions2" :series="series2"> </apexchart>
-        <apexchart class="col-4" type="radialBar" :height="$q.screen.xs ? '180' : '220'" :options="chartOptions3" :series="series3"> </apexchart>
+        <apexchart
+          v-if="chartOptions1"
+          class="col-4"
+          type="radialBar"
+          :height="$q.screen.xs ? '180' : '220'"
+          :options="chartOptions1"
+          :series="series1"
+        >
+        </apexchart>
+        <apexchart
+          v-if="chartOptions2"
+          class="col-4"
+          type="radialBar"
+          :height="$q.screen.xs ? '180' : '220'"
+          :options="chartOptions2"
+          :series="series2"
+        >
+        </apexchart>
+        <apexchart
+          v-if="chartOptions3"
+          class="col-4"
+          type="radialBar"
+          :height="$q.screen.xs ? '180' : '220'"
+          :options="chartOptions3"
+          :series="series3"
+        >
+        </apexchart>
       </div>
     </q-card-section>
   </q-card>
@@ -73,19 +97,22 @@ watch(
     isXsScreen.value = newVal;
   },
 );
-const chartOptions1 = ref({});
-const chartOptions2 = ref({});
-const chartOptions3 = ref({});
+const chartOptions1 = ref(null);
+const chartOptions2 = ref(null);
+const chartOptions3 = ref(null);
 const getChartOptions = (label, isXs, isDarkMode) => ({
   chart: {
     height: isXs ? 180 : 220,
     type: 'radialBar',
-    offsetY: -10,
+    offsetY: 0,
   },
   plotOptions: {
     radialBar: {
       startAngle: -130,
       endAngle: 130,
+      hollow: {
+        size: '40%', // Customize the size of the hollow area if needed
+      },
       dataLabels: {
         name: {
           fontSize: isXs ? '15px' : '20px',

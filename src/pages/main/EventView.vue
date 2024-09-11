@@ -6,14 +6,14 @@
       <q-btn rounded dense color="primary" icon="edit_note" size="0.6rem" class="q-pa-xs" @click="isEventInsert(date)">
         <q-tooltip class="bg-amber text-black shadow-4" anchor="center left" self="center right">
           <q-icon name="edit_note" size="0.8rem" />
-          <strong> 이벤트 등록 </strong>
+          <strong> 이벤트 등록/수정/삭제 </strong>
         </q-tooltip>
       </q-btn>
     </q-bar>
     <q-splitter>
       <template v-slot:before>
-        <div class="q-pa-xs">
-          <q-date v-model="date" :events="eventDays" :event-color="date => (date[9] % 2 === 0 ? 'teal' : 'orange')" />
+        <div class="q-pa-sm">
+          <q-date minimal color="orange" v-model="date" :events="eventDays" :event-color="date => (date[9] % 2 === 0 ? 'teal' : 'blue')" />
         </div>
       </template>
 
@@ -31,26 +31,21 @@
 
   <!--  게시글 등록 조회 부분 -->
   <q-dialog v-model="isDialogView">
-    <q-card>
+    <q-card style="width: 700px; max-width: 80vw">
       <q-bar class="q-py-xs text-subtitle1 text-bold">
         이벤트 등록
         <q-space />
         <q-btn rounded dense color="dark" icon="close" size="xs" class="q-pa-xs" v-close-popup />
       </q-bar>
       <q-card-section>
-        <q-input v-model="formData.regDay" mask="date" :rules="['date']">
-          <template v-slot:append>
-            <q-icon name="event" class="cursor-pointer">
-              <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                <q-date v-model="formData.regDay">
-                  <div class="row items-center justify-end">
-                    <q-btn v-close-popup label="Close" color="primary" flat />
-                  </div>
-                </q-date>
-              </q-popup-proxy>
-            </q-icon>
+        <q-field color="purple-12" label="이벤트일" stack-label label-color="purple-12">
+          <template v-slot:prepend>
+            <q-icon name="event" />
           </template>
-        </q-input>
+          <template v-slot:control>
+            <div class="self-center text-bold text-subtitle1 full-width no-outline" tabindex="0">{{ formatRegDay(formData.regDay) }}</div>
+          </template>
+        </q-field>
       </q-card-section>
 
       <q-card-section>
@@ -85,7 +80,7 @@ const isDialogView = ref(false);
 
 // 오늘날자 setting
 const today = new Date();
-const formattedDate = `${today.getFullYear()}/${(today.getMonth() + 1).toString().padStart(2, '0')}/${today.getDate().toString().padStart(2, '0')}`;
+const formattedDate = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`;
 const date = ref(formattedDate);
 let isSaveFg = '';
 // 오늘날자 setting 끝

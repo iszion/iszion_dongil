@@ -4,18 +4,46 @@
       역량평가 진행율
       <q-space />
     </q-bar>
-    <q-card v-if="storeUser.setTitlCd === '101'" class="flex flex-center" style="height: 320px">
+    <q-card v-if="storeUser.setTitlCd === '101'" class="q-pt-xl" style="height: 320px">
       <q-card-section class="q-py-sm q-px-none">
         <div class="row q-pa-xs">
-          <apexchart class="col-6" type="radialBar" :height="$q.screen.xs ? '180' : '220'" :options="chartOptions1" :series="series1"></apexchart>
-          <apexchart class="col-6" type="radialBar" :height="$q.screen.xs ? '180' : '220'" :options="chartOptions2" :series="series2"></apexchart>
+          <apexchart
+            v-if="chartOptions1"
+            class="col-6"
+            type="radialBar"
+            :height="$q.screen.xs ? '180' : '220'"
+            :options="chartOptions1"
+            :series="series1"
+          ></apexchart>
+          <apexchart
+            v-if="chartOptions2"
+            class="col-6"
+            type="radialBar"
+            :height="$q.screen.xs ? '180' : '220'"
+            :options="chartOptions2"
+            :series="series2"
+          ></apexchart>
         </div>
       </q-card-section>
     </q-card>
     <q-card-section v-if="storeUser.setTitlCd !== '101'" class="q-py-sm q-px-none">
       <div class="row q-pa-xs">
-        <apexchart class="col-6" type="radialBar" :height="$q.screen.xs ? '180' : '220'" :options="chartOptions1" :series="series1"></apexchart>
-        <apexchart class="col-6" type="radialBar" :height="$q.screen.xs ? '180' : '220'" :options="chartOptions2" :series="series2"></apexchart>
+        <apexchart
+          v-if="chartOptions1"
+          class="col-6"
+          type="radialBar"
+          :height="$q.screen.xs ? '180' : '220'"
+          :options="chartOptions1"
+          :series="series1"
+        ></apexchart>
+        <apexchart
+          v-if="chartOptions2"
+          class="col-6"
+          type="radialBar"
+          :height="$q.screen.xs ? '180' : '220'"
+          :options="chartOptions2"
+          :series="series2"
+        ></apexchart>
       </div>
     </q-card-section>
   </q-card>
@@ -47,8 +75,8 @@ watch(
   },
 );
 
-const chartOptions1 = ref({});
-const chartOptions2 = ref({});
+const chartOptions1 = ref(null);
+const chartOptions2 = ref(null);
 const updateChartOptions = () => {
   const isDarkMode = $q.dark.isActive;
   chartOptions1.value = getChartOptions('1차역량 진행율', isXsScreen.value, isDarkMode);
@@ -65,6 +93,9 @@ const getChartOptions = (label, isXs, isDarkMode) => ({
     radialBar: {
       startAngle: -130,
       endAngle: 130,
+      hollow: {
+        size: '40%', // Customize the size of the hollow area if needed
+      },
       dataLabels: {
         name: {
           fontSize: isXs ? '15px' : '20px',

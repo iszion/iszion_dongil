@@ -8,6 +8,7 @@
     <q-card-section class="q-py-sm q-px-none">
       <div class="row q-pa-xs q-col-gutter-x-lg">
         <apexchart
+          v-if="chartOptions1"
           class="col-xs-12 col-sm-12 col-md-5"
           type="line"
           :height="$q.screen.xs ? '180' : '280'"
@@ -15,6 +16,7 @@
           :series="series1"
         ></apexchart>
         <apexchart
+          v-if="chartOptions2"
           class="col-xs-12 col-sm-12 col-md-7"
           type="line"
           :height="$q.screen.xs ? '180' : '280'"
@@ -136,8 +138,8 @@ watch(
   },
 );
 
-const chartOptions1 = ref({});
-const chartOptions2 = ref({});
+const chartOptions1 = ref(null);
+const chartOptions2 = ref(null);
 const updateChartOptions = () => {
   const isDarkMode = $q.dark.isActive;
   chartOptions1.value = getChartOptions('일반직', label1.value, isXsScreen.value, isDarkMode);

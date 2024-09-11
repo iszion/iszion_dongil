@@ -72,7 +72,7 @@
 
             <q-card-section class="flex flex-center items-center" style="height: 130px">
               <q-avatar size="60px" color="orange">
-                <span class="q-pa-sm text-h5"> {{ rowData[0].yearDiff }}</span>
+                <span class="text-h6"> {{ rowData[0].yearDiff }}</span>
               </q-avatar>
             </q-card-section>
           </q-card>
