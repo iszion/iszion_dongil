@@ -184,14 +184,18 @@ const options_office = reactive({
   direction: 'top',
   enableExpandCollapse: true,
 
-  nodeTemplate: content =>
-    `<div class='node-content' style='display: flex; flex-direction: column; gap: 10px; justify-content: center; align-items: center; height: 100%;' data-empCd=${content.empCd} data-deptCd=${content.deptCd}>
-          <div class='q-gutter-y-none text-center cursor-pointer' id='node-${content.id}'>
-            <img style='width: 50px;height: 50px;border-radius: 50%;' src='${content.imageURL}' alt='' />
-            <div style="font-weight: bold; font-family; Arial; font-size: 14px" data-name=${content.empNm}>${content.deptNm}</div>
-            <div style="font-weight: bold; font-family; Arial; font-size: 12px" data-dept=${content.deptCd}'> ${content.titlNm} / ${content.empNm}</div>
-          </div>
-         </div>`,
+  // <img style='width: 30px;height: 30px;border-radius: 50%;' src='${content.imageURL}' alt='' />
+  nodeTemplate: content => {
+    const empNameDisplay = content.deptCd.substring(0, 2) === '99' || content.deptCd === '102' ? '' : `${content.titlNm} / `;
+    return `
+    <div class='node-content' style='display: flex; flex-direction: column; gap: 10px; justify-content: center; align-items: center; height: 100%;' data-empCd=${content.empCd} data-deptCd=${content.deptCd}>
+        <div class='q-gutter-y-none text-center cursor-pointer' id='node-${content.id}'>
+
+          <div style="font-weight: bold; font-family: Arial; font-size: 24px" data-name=${content.empNm}>${content.deptNm}</div>
+          <div style="font-weight: bold; font-family: Arial; font-size: 20px" data-dept=${content.deptCd}>${empNameDisplay}${content.empNm}</div>
+        </div>
+         </div>`;
+  },
   canvasStyle: '',
   // canvasStyle: 'border: 1px solid black;background: #f6f6f6;',
   enableToolbar: false,
@@ -284,6 +288,9 @@ function buildTree(data, parentDeptCd = '000') {
     if (item.imageFileNm === '' || item.imageFileNm === null) {
       if (item.titlCd === '101') {
         tmpURL = '/icons/dongil_logo.png';
+      } else if (item.deptCd.substring(0, 2) === '99') {
+        // tmpURL = '/icons/favicon-96x96.png';
+        tmpURL = '/icons/dongil_logo_192.png';
       } else {
         tmpURL = '/icons/favicon-96x96.png';
       }

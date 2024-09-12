@@ -82,7 +82,7 @@
             <span v-if="rowData">{{ rowData.evaP2Xx }}</span>
           </td>
           <td>
-            <span v-if="rowData">{{ rowData.evaFinalPoint }}</span>
+            <span v-if="rowData">{{ rowData.finalPoint }}</span>
           </td>
           <td>
             <span v-if="rowData">{{ rowData.evaGrade }}</span>

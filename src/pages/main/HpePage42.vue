@@ -6,6 +6,7 @@
     </q-bar>
     <q-card-section class="q-pa-xs">
       <div class="row q-col-gutter-x-xs">
+        {{ JSON.stringify(rowData2.value) }}
         <div class="col-5">
           <q-table
             flat
@@ -14,7 +15,7 @@
             title=""
             :rows="rowData1"
             :columns="columns1"
-            row-key="titlNmNnextTitlNm"
+            row-key="titlCd"
             :rows-per-page-options="[0]"
             hide-bottom
             virtual-scroll
@@ -35,8 +36,12 @@
 
             <template v-slot:body="props">
               <q-tr :props="props" @click="onRowClick1(props.row)" class="cursor-pointer">
-                <q-td key="titlNmNnextTitlNm" :props="props">
-                  {{ props.row.titlNmNnextTitlNm }}
+                <q-td key="titlNm" :props="props">
+                  <span class="text-orange">{{ props.row.titlNm }}</span>
+                  >
+                  <span :class="props.row.nextFgNm === '승격' ? 'text-light-blue' : 'text-green'">{{ props.row.nextFgNm }}</span>
+                  >
+                  <span class="text-deep-orange">{{ props.row.nextTitlNm }}</span>
                 </q-td>
                 <q-td key="hrCnt" :props="props">
                   <span class="text-bold text-subtitle1 text-primary"> {{ props.row.hrCnt }}</span>
@@ -74,8 +79,12 @@
 
             <template v-slot:body="props">
               <q-tr :props="props" @click="onRowClick2(props.row)" class="cursor-pointer">
-                <q-td key="titlNmNnextTitlNm" :props="props">
-                  {{ props.row.titlNmNnextTitlNm }}
+                <q-td key="titlNm" :props="props">
+                  <span class="text-orange">{{ props.row.titlNm }}</span>
+                  >
+                  <span :class="props.row.nextFgNm === '승격' ? 'text-light-blue' : 'text-green'">{{ props.row.nextFgNm }}</span>
+                  >
+                  <span class="text-deep-orange">{{ props.row.nextTitlNm }}</span>
                 </q-td>
                 <q-td key="hrCnt" :props="props">
                   <span class="text-bold text-subtitle1 text-primary"> {{ props.row.hrCnt }}</span>
@@ -202,23 +211,44 @@ const storeUser = useUserInfoStore();
 const rowDataEmpList = ref(null);
 
 const columns1 = [
-  { name: 'titlNmNnextTitlNm', align: 'center', label: '일반직', field: 'titlNmNnextTitlNm', sortable: false },
+  {
+    name: 'titlNm',
+    align: 'center',
+    label: '일반직',
+    field: 'titlNm',
+    sortable: false,
+  },
+
   { name: 'hrCnt', align: 'center', label: '인원', field: 'hrCnt', sortable: false },
 ];
 
 const columns2 = [
-  { name: 'titlNmNnextTitlNm', align: 'center', label: '전문직', field: 'titlNmNnextTitlNm', sortable: false },
+  {
+    name: 'titlNm',
+    align: 'center',
+    label: '전문직',
+    field: 'titlNm',
+    sortable: false,
+  },
   { name: 'hrCnt', align: 'center', label: '인원', field: 'hrCnt', sortable: false },
 ];
 
 const rowData1 = ref([
   {
+    titlCd: '',
+    titlNm: '',
+    nextTitlNm: '',
+    nextFgNm: '',
     titlNmNnextTitlNm: '',
     hrCnt: '',
   },
 ]);
 const rowData2 = ref([
   {
+    titlCd: '',
+    titlNm: '',
+    nextTitlNm: '',
+    nextFgNm: '',
     titlNmNnextTitlNm: '',
     hrCnt: '',
   },
@@ -230,11 +260,13 @@ onMounted(() => {
     rowData2.value = [];
     for (let i = 0; i < resData.length; i++) {
       if (resData[i].titlCd.substring(0, 1) === '1') {
-        let tmpJSON = { titlNmNnextTitlNm: resData[i].titlNmNnextTitlNm, hrCnt: resData[i].hrCnt, empCdList: resData[i].empCdList };
-        rowData1.value.push(tmpJSON);
+        // let tmpJSON = { titlCd: resData[i].titlCd, titlNm: resData[i].titlNm, titlNmNnextTitlNm: resData[i].titlNmNnextTitlNm, hrCnt: resData[i].hrCnt, empCdList: resData[i].empCdList };
+        // let tmpJSON = resData[i];
+        rowData1.value.push(resData[i]);
       } else {
-        let tmpJSON = { titlNmNnextTitlNm: resData[i].titlNmNnextTitlNm, hrCnt: resData[i].hrCnt, empCdList: resData[i].empCdList };
-        rowData2.value.push(tmpJSON);
+        // let tmpJSON = { titlNmNnextTitlNm: resData[i].titlNmNnextTitlNm, hrCnt: resData[i].hrCnt, empCdList: resData[i].empCdList };
+        // let tmpJSON = resData[i];
+        rowData2.value.push(resData[i]);
       }
     }
     // console.log('json 1 : ', JSON.stringify(rowData1.value));
@@ -306,5 +338,9 @@ const getDataPage42EmpList = async resEmpCdList => {
   top: 0; /* Stick to the top */
   z-index: 1; /* Ensure headers are above other content */
   background: white; /* Set a background to avoid overlap issues */
+}
+
+.hidden-column {
+  display: none;
 }
 </style>
