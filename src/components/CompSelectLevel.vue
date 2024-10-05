@@ -4,7 +4,7 @@
       dense
       options-dense
       v-model="value.levelCd"
-      :options="options"
+      :options="valueOptions"
       option-value="commCd"
       option-label="commNm"
       emit-value
@@ -21,30 +21,9 @@ import { onBeforeMount, ref } from 'vue';
 
 const props = defineProps(['params']);
 const value = ref(props.params.data);
-const { updateSelectedValue } = props.params;
-const options = ref(null);
+const { updateSelectedValue, valueOptions } = props.params;
 
 const handleUpdate = () => {
   updateSelectedValue(value);
 };
-
-onBeforeMount(() => {
-  getData();
-});
-
-// **************************************************************//
-// ***** DataBase 연결부분    *************************************//
-// **************************************************************//
-
-// ***** 공통코드(보안레벨) 자료 가져오기 부분  *****************************//
-const getData = async () => {
-  try {
-    const response = await api.post('/api/mst/comm_option_list', { paramCommCd1: '901' });
-    options.value = response.data.data;
-    // console.log('getData1: ', JSON.stringify(response.data.data));
-  } catch (error) {
-    console.error('Error fetching users:', error);
-  }
-};
-// ***** 사용정보 선택된 자료 가져오기 부분  *****************************//
 </script>

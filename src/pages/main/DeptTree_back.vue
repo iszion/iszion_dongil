@@ -261,7 +261,7 @@ function buildTree(data, parentDeptCd = '000') {
     let tmpURL = '';
     if (item.imageFileNm === '' || item.imageFileNm === null) {
       if (item.titlCd === '101') {
-        tmpURL = '/icons/dongil_logo.png';
+        tmpURL = '/icons/iszion_logo.png';
       } else {
         tmpURL = '/icons/favicon-96x96.png';
       }

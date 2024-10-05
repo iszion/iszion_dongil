@@ -28,73 +28,83 @@
     <q-card-section>
       <div class="text-h6">1. 인사정보</div>
       <table class="table-1">
-        <tr>
-          <th rowspan="1" colspan="1">소속</th>
-          <th rowspan="1" colspan="1">직급</th>
-          <th rowspan="1" colspan="1">직위</th>
-        </tr>
-        <tr>
-          <td>
-            <span v-if="rowData">{{ rowData.deptNm }}</span>
-          </td>
-          <td>
-            <span v-if="rowData">{{ rowData.titlNm }}</span>
-          </td>
-          <td>
-            <span v-if="rowData">{{ rowData.pstnNm }}</span>
-          </td>
-        </tr>
+        <thead>
+          <tr>
+            <th rowspan="1" colspan="1">소속</th>
+            <th rowspan="1" colspan="1">직급</th>
+            <th rowspan="1" colspan="1">직위</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <span v-if="rowData">{{ rowData.deptNm }}</span>
+            </td>
+            <td>
+              <span v-if="rowData">{{ rowData.titlNm }}</span>
+            </td>
+            <td>
+              <span v-if="rowData">{{ rowData.pstnNm }}</span>
+            </td>
+          </tr>
+        </tbody>
       </table>
     </q-card-section>
     <q-card-section>
       <div class="text-h6">2. 평가자</div>
       <table class="table-2">
-        <tr>
-          <th rowspan="1" colspan="1">1차평가자</th>
-          <th rowspan="1" colspan="1">
-            <span v-if="rowData">{{ rowData.evsEmpNm1 }}</span>
-          </th>
-          <th rowspan="1" colspan="1">2차평가자</th>
-          <th rowspan="1" colspan="1">
-            <span v-if="rowData">{{ rowData.evsEmpNm2 }}</span>
-          </th>
-        </tr>
+        <tbody>
+          <tr>
+            <th rowspan="1" colspan="1">1차평가자</th>
+            <th rowspan="1" colspan="1">
+              <span v-if="rowData">{{ rowData.evsEmpNm1 }}</span>
+            </th>
+            <th rowspan="1" colspan="1">2차평가자</th>
+            <th rowspan="1" colspan="1">
+              <span v-if="rowData">{{ rowData.evsEmpNm2 }}</span>
+            </th>
+          </tr>
+        </tbody>
       </table>
     </q-card-section>
     <q-card-section>
       <div class="text-h6">3. 종합결과</div>
       <table class="table-3">
-        <tr>
-          <th rowspan="1" colspan="1">근태</th>
-          <th rowspan="1" colspan="1">성과평과</th>
-          <th rowspan="1" colspan="1">역량평가</th>
-          <th rowspan="1" colspan="1">최종점수</th>
-          <th rowspan="1" colspan="1">등급</th>
-        </tr>
-        <tr v-if="rowData">
-          <td>
-            <span v-if="rowData">{{ rowData.evaAtt }}</span>
-          </td>
-          <td>
-            <span v-if="rowData">{{ rowData.evaP1X }}</span>
-          </td>
-          <td>
-            <span v-if="rowData">{{ rowData.evaP2Xx }}</span>
-          </td>
-          <td>
-            <span v-if="rowData">{{ rowData.finalPoint }}</span>
-          </td>
-          <td>
-            <span v-if="rowData">{{ rowData.evaGrade }}</span>
-          </td>
-        </tr>
-        <tr v-else>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-        </tr>
+        <thead>
+          <tr>
+            <th rowspan="1" colspan="1">근태</th>
+            <th rowspan="1" colspan="1">성과평과</th>
+            <th rowspan="1" colspan="1">역량평가</th>
+            <th rowspan="1" colspan="1">최종점수</th>
+            <th rowspan="1" colspan="1">등급</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-if="rowData">
+            <td>
+              <span v-if="rowData">{{ rowData.evaAtt }}</span>
+            </td>
+            <td>
+              <span v-if="rowData">{{ rowData.evaP1X }}</span>
+            </td>
+            <td>
+              <span v-if="rowData">{{ rowData.evaP2Xx }}</span>
+            </td>
+            <td>
+              <span v-if="rowData">{{ rowData.finalPoint }}</span>
+            </td>
+            <td>
+              <span v-if="rowData">{{ rowData.evaGrade }}</span>
+            </td>
+          </tr>
+          <tr v-else>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+        </tbody>
       </table>
     </q-card-section>
     <q-card-section>

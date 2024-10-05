@@ -23,8 +23,8 @@
                   label-color="orange"
                   v-model="selectedDept"
                   :options="deptOptions"
-                  option-value="deptCd"
-                  option-label="deptNm"
+                  option-value="commCd"
+                  option-label="commNm"
                   option-disable="inactive"
                   emit-value
                   map-options
@@ -59,14 +59,10 @@
           <q-card-section class="q-pa-xs">
             <div :style="contentZoneStyle">
               <ag-grid-vue
+                ref="myGrid"
                 style="width: 100%; height: 100%"
                 :class="$q.dark.isActive ? 'ag-theme-alpine-dark' : 'ag-theme-alpine'"
-                :columnDefs="columnDefsUser.columns"
-                :rowData="rowDataUser.rows"
-                :defaultColDef="defaultColDefUser.def"
-                :rowSelection="rowSelectionUser"
-                @selection-changed="onSelectionChangedUser"
-                @grid-ready="onGridReadyUser"
+                :grid-options="gridOptionsUser"
               >
               </ag-grid-vue>
             </div>
@@ -92,7 +88,7 @@
               </div>
               <q-space />
               <div class="q-gutter-xs">
-                <q-btn v-if="isShowSaveBtn" outline color="primary" dense @click="saveDataSection">
+                <q-btn v-if="rowData.rows.length > 0" outline color="primary" dense @click="saveDataSection">
                   <q-icon name="content_copy" size="xs" class="q-mr-sm" /> 권한복사 시작</q-btn
                 >
               </div>
@@ -104,12 +100,10 @@
           <q-card-section class="q-pa-xs">
             <div :style="contentZoneStyle">
               <ag-grid-vue
+                ref="myGrid1"
                 style="width: 100%; height: 100%"
                 :class="$q.dark.isActive ? 'ag-theme-alpine-dark' : 'ag-theme-alpine'"
-                :columnDefs="columnDefs.columns"
-                :rowData="rowData.rows"
-                :defaultColDef="defaultColDef.def"
-                @grid-ready="onGridReady"
+                :grid-options="gridOptions"
               >
               </ag-grid-vue>
             </div>
@@ -141,6 +135,9 @@ const $q = useQuasar();
 
 let isSaveFg = 'I';
 
+const myGrid = ref(null);
+const myGrid1 = ref(null);
+
 const searchValue = ref('');
 const selectedSourceUserId = ref('');
 
@@ -149,8 +146,6 @@ const contentZoneStyle = computed(() => ({
   height: `${contentZoneHeight.value}px`,
 }));
 
-const gridApi = ref(null);
-const gridApiUser = ref(null);
 const rowData = reactive({ rows: [] });
 const rowDataUser = reactive({ rows: [] });
 
@@ -159,145 +154,120 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', handleResize);
 });
 onBeforeMount(() => {
-  rowSelectionUser.value = 'single';
   getDataUser();
 });
 
 onMounted(() => {
   window.addEventListener('resize', handleResize);
   handleResize();
-  getDataDeptOption();
+  getDataCommOption('501');
 });
 
-const onGridReadyUser = params => {
-  gridApiUser.value = params.api;
-};
-
-const defaultColDefUser = reactive({
-  def: {
-    flex: 1,
-    sortable: false,
-    filter: false,
-    floatingFilter: false,
-    editable: false,
+const columnDefsUser = ref([
+  {
+    headerName: '#',
+    minWidth: 60,
+    maxWidth: 60,
+    pinned: 'left',
+    cellStyle: { textAlign: 'center' },
+    valueGetter: function (params) {
+      // Customize row numbers as needed
+      return params.node.rowIndex + 1;
+    },
   },
-});
-
-const columnDefsUser = reactive({
-  columns: [
-    {
-      headerName: '#',
-      minWidth: 60,
-      maxWidth: 60,
-      pinned: 'left',
-      cellStyle: { textAlign: 'center' },
-      valueGetter: function (params) {
-        // Customize row numbers as needed
-        return params.node.rowIndex + 1;
-      },
-    },
-    {
-      headerName: '주는쪽',
-      field: '',
-      maxWidth: 70,
-      minWidth: 70,
-      pinned: 'left',
-      cellStyle: { textAlign: 'center' },
-      checkboxSelection: true,
-    },
-    {
-      headerName: '받는쪽',
-      field: 'targetYn',
-      maxWidth: 70,
-      minWidth: 70,
-      pinned: 'left',
-      cellRenderer: CompToggleAuth,
-      cellRendererParams: {
-        // paramSourceUserId: sourceUserId.value,
-        updateSelectedValue: row => {
-          if (isEmpty(selectedSourceUserId.value)) {
-            row.value.targetYn = 'N';
-            $q.dialog({
-              dark: true,
-              title: '안내',
-              message: '주는쪽을 먼저 선택하세요',
-            });
-          } else {
-            if (row.value.targetYn === 'Y' && selectedSourceUserId.value === row.value.targetUserId) {
-              Notify.create({
-                type: 'my-notify',
-                position: 'top-right',
-                color: 'negative',
-                message: '주는쪽 ID와 받는쪽 ID가 같으면 안됩니다.',
-                group: false,
-                actions: [
-                  {
-                    label: '닫기',
-                    color: 'dark',
-                    handler: () => {
-                      /* ... */
-                    },
+  {
+    headerName: '주는쪽',
+    field: '',
+    maxWidth: 70,
+    minWidth: 70,
+    pinned: 'left',
+    cellStyle: { textAlign: 'center' },
+    checkboxSelection: true,
+  },
+  {
+    headerName: '받는쪽',
+    field: 'targetYn',
+    maxWidth: 70,
+    minWidth: 70,
+    pinned: 'left',
+    sortable: true,
+    cellRenderer: CompToggleAuth,
+    cellRendererParams: {
+      // paramSourceUserId: sourceUserId.value,
+      updateSelectedValue: row => {
+        if (isEmpty(selectedSourceUserId.value)) {
+          row.value.targetYn = 'N';
+          $q.dialog({
+            dark: true,
+            title: '안내',
+            message: '주는쪽을 먼저 선택하세요',
+          });
+        } else {
+          if (row.value.targetYn === 'Y' && selectedSourceUserId.value === row.value.targetUserId) {
+            Notify.create({
+              type: 'my-notify',
+              position: 'top-right',
+              color: 'negative',
+              message: '주는쪽 ID와 받는쪽 ID가 같으면 안됩니다.',
+              group: false,
+              actions: [
+                {
+                  label: '닫기',
+                  color: 'dark',
+                  handler: () => {
+                    /* ... */
                   },
-                ],
-                timeout: 5000,
-              });
-              row.value.targetYn = 'N';
-            } else {
-              onCellValueChanged();
-            }
+                },
+              ],
+              timeout: 5000,
+            });
+            row.value.targetYn = 'N';
+          } else {
+            targetUpdateChange();
           }
-        },
+        }
       },
     },
-    {
-      headerName: '아이디',
-      field: 'userId',
-      maxWidth: 100,
-      minWidth: 100,
-      pinned: 'left',
-    },
-    {
-      headerName: '성명',
-      field: 'userNm',
-      minWidth: 100,
-      maxWidth: 100,
-      pinned: 'left',
-    },
-    {
-      headerName: '소속팀',
-      field: 'deptNm',
-      maxWidth: 100,
-      minWidth: 100,
-    },
-    {
-      headerName: '직위',
-      field: 'pstnNm',
-      maxWidth: 100,
-      minWidth: 100,
-    },
-    {
-      headerName: '사원번호',
-      field: 'empCd',
-      maxWidth: 100,
-      minWidth: 100,
-      cellStyle: { textAlign: 'center' },
-    },
-  ],
-});
-
-const onGridReady = params => {
-  gridApi.value = params.api;
-};
-
-const defaultColDef = reactive({
-  def: {
-    flex: 1,
-    sortable: false,
-    filter: false,
-    floatingFilter: false,
-    editable: false,
   },
-});
+  {
+    headerName: '아이디',
+    field: 'userId',
+    maxWidth: 100,
+    minWidth: 100,
+    pinned: 'left',
+    sortable: true,
+  },
+  {
+    headerName: '성명',
+    field: 'userNm',
+    minWidth: 100,
+    maxWidth: 100,
+    pinned: 'left',
+    sortable: true,
+  },
+  {
+    headerName: '소속팀',
+    field: 'deptNm',
+    maxWidth: 100,
+    minWidth: 100,
+    sortable: true,
+  },
+  {
+    headerName: '직위',
+    field: 'pstnNm',
+    maxWidth: 100,
+    minWidth: 100,
+    sortable: true,
+  },
+  {
+    headerName: '사원번호',
+    field: 'empCd',
+    maxWidth: 100,
+    minWidth: 100,
+    sortable: true,
+    cellStyle: { textAlign: 'center' },
+  },
+]);
 
 const columnDefs = reactive({
   columns: [
@@ -316,52 +286,44 @@ const columnDefs = reactive({
       field: 'targetUserId',
       maxWidth: 100,
       minWidth: 100,
+      sortable: true,
     },
     {
       headerName: '성명',
       field: 'userNm',
       minWidth: 100,
       maxWidth: 100,
+      sortable: true,
     },
     {
       headerName: '소속팀',
       field: 'deptNm',
       maxWidth: 100,
       minWidth: 100,
+      sortable: true,
     },
     {
       headerName: '직위',
       field: 'pstnNm',
       maxWidth: 100,
       minWidth: 100,
+      sortable: true,
     },
     {
       headerName: '사원번호',
       field: 'empCd',
       maxWidth: 100,
       minWidth: 100,
+      sortable: true,
+
       cellStyle: { textAlign: 'center' },
     },
   ],
 });
 
 const selectedRows = ref();
-const isShowSaveBtn = ref(false);
 
-const onSelectionChangedUser = event => {
-  selectedRows.value = event.api.getSelectedRows();
-  if (!isEmpty(selectedRows.value)) {
-    selectedSourceUserId.value = selectedRows.value[0].sourceUserId;
-    for (let i = 0; updateData.value.length > i; i++) {
-      if (selectedSourceUserId.value === updateData.value[i].targetUserId) {
-        rowData.rows[i].targetYn = 'N';
-      }
-    }
-    onCellValueChanged();
-  }
-};
-
-const onCellValueChanged = () => {
+const targetUpdateChange = () => {
   updateData.value = [];
   for (let i = 0; rowDataUser.rows.length > i; i++) {
     if (rowDataUser.rows[i].targetYn === 'Y') {
@@ -369,18 +331,20 @@ const onCellValueChanged = () => {
     }
   }
   rowData.rows = updateData.value;
+  if (myGrid1.value && myGrid1.value.api) {
+    myGrid1.value.api.setRowData(rowData.rows); // this should trigger the grid to reload data
+  }
+
   console.log(JSON.stringify(rowData.rows));
-  isShowSaveBtn.value = updateData.value.length > 0;
   let messageV = null;
   if (updateData.value.length > 0) {
     messageV = updateData.value.length + ' 명이 선택 되었습니다.';
 
-    Notify.create({
+    $q.notify({
       type: 'my-notify',
       position: 'bottom',
       color: 'primary',
       message: messageV,
-      group: false,
       actions: [
         {
           label: '닫기',
@@ -390,11 +354,10 @@ const onCellValueChanged = () => {
           },
         },
       ],
-      timeout: 5000,
+      timeout: 500,
     });
   }
 };
-const rowSelectionUser = ref(null);
 
 const updateData = ref([]);
 const showSaveBtn = ref(false);
@@ -455,6 +418,13 @@ const getDataUser = async () => {
       paramSearchValue: searchValue.value,
     });
     rowDataUser.rows = response.data.data;
+    if (myGrid.value && myGrid.value.api) {
+      myGrid.value.api.setRowData(rowDataUser.rows); // this should trigger the grid to reload data
+    }
+    rowData.rows = [];
+    if (myGrid1.value && myGrid1.value.api) {
+      myGrid1.value.api.setRowData(rowData.rows); // this should trigger the grid to reload data
+    }
   } catch (error) {
     console.error('Error fetching users:', error);
   }
@@ -482,17 +452,219 @@ const saveDataAndHandleResult = resFormData => {
 const deptOptions = ref([]);
 const selectedDept = ref('');
 // ***** 공통코드정보 가져오기 부분  *****************************//
-async function getDataDeptOption(resParamCommCd1) {
+async function getDataCommOption(resCommCd1) {
   try {
-    const response = await api.post('/api/mst/dept_option_list', { paramSetYear: storeYear.setYear });
+    const response = await api.post('/api/mst/comm_option_list', { paramCommCd1: resCommCd1 });
+    switch (resCommCd1) {
+      case '501':
+        deptOptions.value = JSON.parse(JSON.stringify(response.data.data));
+        deptOptions.value.unshift({ commCd: '', commNm: '전체' });
+        break;
+      default:
+        deptOptions.value = [];
+    }
 
-    deptOptions.value = response.data.data;
-    deptOptions.value.push({ deptCd: '', deptNm: '전체' });
+    // console.log('getData1: ', JSON.stringify(response.data.data));
   } catch (error) {
     console.error('Error fetching users:', error);
   }
 }
+
 // **************************************************************//
 // ***** DataBase 연결부분 끝  *************************************//
 // **************************************************************//
+
+const gridOptionsUser = {
+  columnDefs: columnDefsUser.value,
+  rowData: rowDataUser.rows,
+  defaultColDef: {
+    flex: 1,
+    sortable: false,
+    filter: false,
+    floatingFilter: false,
+    editable: false,
+  },
+  rowSelection: 'single' /* 'single' or 'multiple',*/,
+  enableColResize: true,
+  enableSorting: true,
+  enableFilter: false,
+  enableRangeSelection: true,
+  suppressRowClickSelection: false,
+  animateRows: true,
+  suppressHorizontalScroll: true,
+  localeText: { noRowsToShow: '조회 결과가 없습니다.' },
+  getRowStyle: function (param) {
+    if (param.node.rowPinned) {
+      return { 'font-weight': 'bold', background: '#dddddd' };
+    }
+    return { 'text-align': 'left' };
+  },
+  getRowHeight: function (param) {
+    // 고정된 행의 높이
+    if (param.node.rowPinned) {
+      return 45;
+    }
+    return 35;
+  },
+  // GRID READY 이벤트, 사이즈 자동조정
+  onGridReady: function (event) {
+    console.log('Grid is ready'); // Check if grid initializes
+    event.api.sizeColumnsToFit();
+  },
+  // 창 크기 변경 되었을 때 이벤트
+  onGridSizeChanged: function (event) {
+    event.api.sizeColumnsToFit();
+  },
+  onRowEditingStarted: function (event) {
+    console.log('never called - not doing row editing');
+  },
+  onRowEditingStopped: function (event) {
+    console.log('never called - not doing row editing');
+  },
+  onCellEditingStarted: function (event) {
+    console.log('cellEditingStarted');
+  },
+  onCellEditingStopped: function (event) {
+    console.log('cellEditingStopped');
+  },
+  onRowClicked: function (event) {
+    console.log('onRowClicked');
+    // selectedRows.value = event.api.getSelectedRows();
+    // console.log('sel: ', JSON.stringify(selectedRows.value));
+  },
+  onCellClicked: function (event) {
+    console.log('onCellClicked');
+  },
+  isRowSelectable: function (event) {
+    // console.log('isRowSelectable');
+    return true;
+  },
+  onSelectionChanged: function (event) {
+    console.log('onSelectionChanged1');
+    selectedRows.value = event.api.getSelectedRows();
+    if (!isEmpty(selectedRows.value)) {
+      selectedSourceUserId.value = selectedRows.value[0].sourceUserId;
+      for (let i = 0; updateData.value.length > i; i++) {
+        if (selectedSourceUserId.value === updateData.value[i].targetUserId) {
+          rowData.rows[i].targetYn = 'N';
+        }
+      }
+      targetUpdateChange();
+    }
+  },
+  onSortChanged: function (event) {
+    console.log('onSortChanged');
+  },
+  onCellValueChanged: function (event) {
+    console.log('onCellValueChanged');
+  },
+  getRowNodeId: function (data) {
+    return null;
+  },
+  // 리드 상단 고정
+  setPinnedTopRowData: function (data) {
+    return null;
+  },
+  // 그리드 하단 고정
+  setPinnedBottomRowData: function (data) {
+    return null;
+  },
+  // components: {
+  //   numericCellEditor: NumericCellEditor,
+  //   moodEditor: MoodEditor,
+  // },
+  debug: false,
+};
+
+const gridOptions = {
+  columnDefs: columnDefs.columns,
+  rowData: rowData.rows,
+  defaultColDef: {
+    flex: 1,
+    sortable: false,
+    filter: false,
+    floatingFilter: false,
+    editable: false,
+  },
+  rowSelection: 'single' /* 'single' or 'multiple',*/,
+  enableColResize: true,
+  enableSorting: true,
+  enableFilter: false,
+  enableRangeSelection: true,
+  suppressRowClickSelection: false,
+  animateRows: true,
+  suppressHorizontalScroll: true,
+  localeText: { noRowsToShow: '조회 결과가 없습니다.' },
+  getRowStyle: function (param) {
+    if (param.node.rowPinned) {
+      return { 'font-weight': 'bold', background: '#dddddd' };
+    }
+    return { 'text-align': 'left' };
+  },
+  getRowHeight: function (param) {
+    // 고정된 행의 높이
+    if (param.node.rowPinned) {
+      return 45;
+    }
+    return 35;
+  },
+  // GRID READY 이벤트, 사이즈 자동조정
+  onGridReady: function (event) {
+    console.log('Grid is ready'); // Check if grid initializes
+    event.api.sizeColumnsToFit();
+  },
+  // 창 크기 변경 되었을 때 이벤트
+  onGridSizeChanged: function (event) {
+    event.api.sizeColumnsToFit();
+  },
+  onRowEditingStarted: function (event) {
+    console.log('never called - not doing row editing');
+  },
+  onRowEditingStopped: function (event) {
+    console.log('never called - not doing row editing');
+  },
+  onCellEditingStarted: function (event) {
+    console.log('cellEditingStarted');
+  },
+  onCellEditingStopped: function (event) {
+    console.log('cellEditingStopped');
+  },
+  onRowClicked: function (event) {
+    console.log('onRowClicked');
+    // selectedRows.value = event.api.getSelectedRows();
+    // console.log('sel: ', JSON.stringify(selectedRows.value));
+  },
+  onCellClicked: function (event) {
+    console.log('onCellClicked');
+  },
+  isRowSelectable: function (event) {
+    // console.log('isRowSelectable');
+    return true;
+  },
+  onSelectionChanged: function (event) {
+    console.log('onSelectionChanged1');
+  },
+  onSortChanged: function (event) {
+    console.log('onSortChanged');
+  },
+  onCellValueChanged: function (event) {
+    console.log('onCellValueChanged');
+  },
+  getRowNodeId: function (data) {
+    return null;
+  },
+  // 리드 상단 고정
+  setPinnedTopRowData: function (data) {
+    return null;
+  },
+  // 그리드 하단 고정
+  setPinnedBottomRowData: function (data) {
+    return null;
+  },
+  // components: {
+  //   numericCellEditor: NumericCellEditor,
+  //   moodEditor: MoodEditor,
+  // },
+  debug: false,
+};
 </script>

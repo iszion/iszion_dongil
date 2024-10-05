@@ -21,8 +21,8 @@
                 label-color="orange"
                 v-model="selectedDept"
                 :options="deptOptions"
-                option-value="deptCd"
-                option-label="deptNm"
+                option-value="commCd"
+                option-label="commNm"
                 options-dense
                 option-disable="inactive"
                 emit-value
@@ -65,13 +65,7 @@
                 ref="myGrid"
                 style="width: 100%; height: 100%"
                 :class="$q.dark.isActive ? 'ag-theme-alpine-dark' : 'ag-theme-alpine'"
-                :columnDefs="columnDefs.columns"
-                :rowData="rowData.rows"
-                :defaultColDef="defaultColDef.def"
-                :rowSelection="rowSelection"
-                @selection-changed="onSelectionChanged"
-                @cell-value-changed="onCellValueChanged"
-                @grid-ready="onGridReady"
+                :grid-options="gridOptions"
               >
               </ag-grid-vue>
             </div>
@@ -130,13 +124,7 @@
             ref="myGrid1"
             style="width: 100%; height: 100%"
             :class="$q.dark.isActive ? 'ag-theme-alpine-dark' : 'ag-theme-alpine'"
-            :columnDefs="columnDefsDialog.columns"
-            :rowData="rowDataDialog.rows"
-            :defaultColDef="defaultColDefDialog.def"
-            :rowSelection="rowSelectionDialog"
-            @selection-changed="onSelectionChangedDialog"
-            @cell-value-changed="onCellValueChangedDialog"
-            @grid-ready="onGridReadyDialog"
+            :grid-options="gridOptions1"
           >
           </ag-grid-vue>
         </div>
@@ -158,14 +146,10 @@ import { isEmpty, isEqual } from 'lodash';
 import jsonUtil from 'src/js_comm/json-util';
 import notifySave from 'src/js_comm/notify-save';
 
-import CompToggleHpe from 'components/CompToggleHpe.vue';
-import CompToggleHce from 'components/CompToggleHce.vue';
-import CompToggleHrt from 'components/CompToggleHrt.vue';
-import CompToggleHpr from 'components/CompToggleHpr.vue';
+import CompToggleMkt from 'components/CompToggleMkt.vue';
 import CompToggleAux from 'components/CompToggleAux.vue';
 import CompToggleMst from 'components/CompToggleMst.vue';
 import CompToggleSys from 'components/CompToggleSys.vue';
-import CompSelectLevel from 'components/CompSelectLevel.vue';
 import CompButtonUser from 'components/CompButtonUser.vue';
 import CompCheckHeader from 'components/CompCheckHeader.vue';
 import CompToggleScr from 'components/CompToggleScr.vue';
@@ -176,7 +160,9 @@ import CompToggleApp from 'components/CompToggleApp.vue';
 import CompToggleRpt from 'components/CompToggleRpt.vue';
 import CompToggleExc from 'components/CompToggleExc.vue';
 import CompToggleLoc from 'components/CompToggleLoc.vue';
+import CompSelectComm from 'components/CompSelectTeam.vue';
 import { useYearInfoStore } from 'src/store/setYearInfo';
+import CompSelectLevel from 'components/CompSelectLevel.vue';
 const storeYear = useYearInfoStore();
 
 const $q = useQuasar();
@@ -185,18 +171,12 @@ const isDialogVisible = ref(false);
 
 let isSaveFg = null;
 const searchValue = ref('');
-const searchParam = reactive({
-  deptCd: '',
-  word: '',
-});
 
 const contentZoneHeight = ref(500);
 const contentZoneStyle = computed(() => ({
   height: `${contentZoneHeight.value}px`,
 }));
 
-const gridApi = ref(null);
-const gridApiDialog = ref(null);
 const rowData = reactive({ rows: [] });
 const rowDataDialog = reactive({ rows: [] });
 const rowDataBack = ref([]);
@@ -206,33 +186,23 @@ const showSaveBtn = ref(false);
 const showSaveDialogBtn = ref(false);
 const selectedRows = ref();
 const isSelectedDialog = ref();
+
+const selectedDept = ref('');
+const deptOptions = ref([]);
+const levelOptions = ref([]);
+
 const showDialogTitle = ref({
   userId: '',
   userNm: '',
 });
 
-const onGridReady = params => {
-  gridApi.value = params.api;
-};
-const onGridReadyDialog = params => {
-  gridApiDialog.value = params.api;
-};
-
-const defaultColDef = reactive({
-  def: {
-    flex: 1,
-    sortable: true,
-    filter: false,
-    floatingFilter: false,
-    editable: false,
-  },
-});
-
-const columnDefs = reactive({
-  columns: [
+const columnDefs = ref([]);
+const columnDefsSet = () => {
+  columnDefs.value = [
     {
       headerName: '#',
-      width: 60,
+      minWidth: 60,
+      maxWidth: 60,
       pinned: 'left',
       valueGetter: function (params) {
         // Customize row numbers as needed
@@ -243,7 +213,7 @@ const columnDefs = reactive({
       headerName: '아이디',
       field: 'userId',
       minWidth: 120,
-      maxWidth: 120,
+      maxWidth: 200,
       filter: true,
       pinned: 'left',
       cellRenderer: CompButtonUser,
@@ -276,7 +246,7 @@ const columnDefs = reactive({
       headerName: '부서',
       field: 'deptNm',
       minWidth: 110,
-      maxWidth: 110,
+      maxWidth: 150,
       filter: true,
     },
     {
@@ -295,87 +265,28 @@ const columnDefs = reactive({
       cellRenderer: CompSelectLevel,
       cellRendererParams: {
         updateSelectedValue: row => {
-          onCellValueChanged();
+          handleCellValueChanged();
         },
+        valueOptions: levelOptions.value,
       },
     },
     {
-      headerName: '성과평가',
+      headerName: '영업관리',
       headerComponent: CompCheckHeader,
       headerComponentParams: {
         headerCheckYn: false,
         updateSelectedValue: row => {
-          checkAll('gnHpe', row.value ? 'Y' : 'N');
+          checkAll('gnMkt', row.value ? 'Y' : 'N');
         },
       },
-      field: 'gnHpe',
+      field: 'gnMkt',
       maxWidth: 110,
       minWidth: 110,
       cellStyle: { textAlign: 'center' },
-      cellRenderer: CompToggleHpe,
+      cellRenderer: CompToggleMkt,
       cellRendererParams: {
         updateSelectedValue: row => {
-          onCellValueChanged();
-        },
-      },
-    },
-    {
-      headerName: '역량평가',
-      headerComponent: CompCheckHeader,
-      headerComponentParams: {
-        headerCheckYn: false,
-        updateSelectedValue: row => {
-          checkAll('gnHce', row.value ? 'Y' : 'N');
-        },
-      },
-      field: 'gnHce',
-      maxWidth: 110,
-      minWidth: 110,
-      cellStyle: { textAlign: 'center' },
-      cellRenderer: CompToggleHce,
-      cellRendererParams: {
-        updateSelectedValue: row => {
-          onCellValueChanged();
-        },
-      },
-    },
-    {
-      headerName: '평가보고',
-      headerComponent: CompCheckHeader,
-      headerComponentParams: {
-        headerCheckYn: false,
-        updateSelectedValue: row => {
-          checkAll('gnHrt', row.value ? 'Y' : 'N');
-        },
-      },
-      field: 'gnHrt',
-      maxWidth: 110,
-      minWidth: 110,
-      cellStyle: { textAlign: 'center' },
-      cellRenderer: CompToggleHrt,
-      cellRendererParams: {
-        updateSelectedValue: row => {
-          onCellValueChanged();
-        },
-      },
-    },
-    {
-      headerName: '승격심사',
-      headerComponent: CompCheckHeader,
-      headerComponentParams: {
-        headerCheckYn: false,
-        updateSelectedValue: row => {
-          checkAll('gnHpr', row.value ? 'Y' : 'N');
-        },
-      },
-      field: 'gnHpr',
-      maxWidth: 110,
-      minWidth: 110,
-      cellStyle: { textAlign: 'center' },
-      cellRenderer: CompToggleHpr,
-      cellRendererParams: {
-        updateSelectedValue: row => {
-          onCellValueChanged();
+          handleCellValueChanged();
         },
       },
     },
@@ -395,7 +306,7 @@ const columnDefs = reactive({
       cellRenderer: CompToggleAux,
       cellRendererParams: {
         updateSelectedValue: row => {
-          onCellValueChanged();
+          handleCellValueChanged();
         },
       },
     },
@@ -415,7 +326,7 @@ const columnDefs = reactive({
       cellRenderer: CompToggleMst,
       cellRendererParams: {
         updateSelectedValue: row => {
-          onCellValueChanged();
+          handleCellValueChanged();
         },
       },
     },
@@ -435,220 +346,203 @@ const columnDefs = reactive({
       cellRenderer: CompToggleSys,
       cellRendererParams: {
         updateSelectedValue: row => {
-          onCellValueChanged();
+          handleCellValueChanged();
         },
       },
     },
-  ],
-});
-const defaultColDefDialog = reactive({
-  def: {
-    flex: 1,
-    sortable: true,
-    filter: false,
-    floatingFilter: false,
-    editable: false,
+  ];
+};
+
+const columnDefsDialog = ref([
+  {
+    headerName: '#',
+    width: 60,
+    pinned: 'left',
+    valueGetter: function (params) {
+      // Customize row numbers as needed
+      return params.node.rowIndex + 1;
+    },
   },
-});
+  {
+    headerName: '코드',
+    field: 'progId',
+    minWidth: 100,
+    maxWidth: 100,
+    filter: true,
+    sortable: true,
+    resizable: true,
+    pinned: 'left',
+  },
+  {
+    headerName: '프로그램명',
+    field: 'progNm',
+    minWidth: 170,
+    filter: true,
+    pinned: 'left',
+  },
+  {
+    headerName: '조회',
+    headerComponent: CompCheckHeader,
+    headerComponentParams: {
+      headerCheckYn: false,
+      updateSelectedValue: row => {
+        checkAllProg('scrYn', row.value ? 'Y' : 'N');
+      },
+    },
+    field: 'scrYn',
+    maxWidth: 100,
+    minWidth: 100,
+    cellStyle: { textAlign: 'center' },
+    cellRenderer: CompToggleScr,
+    cellRendererParams: {
+      updateSelectedValue: row => {
+        handleCellValueChangedDialog();
+      },
+    },
+  },
+  {
+    headerName: '입력',
+    headerComponent: CompCheckHeader,
+    headerComponentParams: {
+      headerCheckYn: false,
+      updateSelectedValue: row => {
+        checkAllProg('newYn', row.value ? 'Y' : 'N');
+      },
+    },
+    field: 'newYn',
+    maxWidth: 100,
+    minWidth: 100,
+    cellStyle: { textAlign: 'center' },
+    cellRenderer: CompToggleNew,
+    cellRendererParams: {
+      updateSelectedValue: row => {
+        handleCellValueChangedDialog();
+      },
+    },
+  },
+  {
+    headerName: '수정',
+    headerComponent: CompCheckHeader,
+    headerComponentParams: {
+      headerCheckYn: false,
+      updateSelectedValue: row => {
+        checkAllProg('dbgYn', row.value ? 'Y' : 'N');
+      },
+    },
+    field: 'dbgYn',
+    maxWidth: 100,
+    minWidth: 100,
+    cellStyle: { textAlign: 'center' },
+    cellRenderer: CompToggleDbg,
+    cellRendererParams: {
+      updateSelectedValue: row => {
+        handleCellValueChangedDialog();
+      },
+    },
+  },
+  {
+    headerName: '삭제',
+    headerComponent: CompCheckHeader,
+    headerComponentParams: {
+      headerCheckYn: false,
+      updateSelectedValue: row => {
+        checkAllProg('delYn', row.value ? 'Y' : 'N');
+      },
+    },
+    field: 'delYn',
+    maxWidth: 100,
+    minWidth: 100,
+    cellStyle: { textAlign: 'center' },
+    cellRenderer: CompToggleDel,
+    cellRendererParams: {
+      updateSelectedValue: row => {
+        handleCellValueChangedDialog();
+      },
+    },
+  },
+  {
+    headerName: '출력',
+    headerComponent: CompCheckHeader,
+    headerComponentParams: {
+      headerCheckYn: false,
+      updateSelectedValue: row => {
+        checkAllProg('rptYn', row.value ? 'Y' : 'N');
+      },
+    },
+    field: 'rptYn',
+    maxWidth: 100,
+    minWidth: 100,
+    cellStyle: { textAlign: 'center' },
+    cellRenderer: CompToggleRpt,
+    cellRendererParams: {
+      updateSelectedValue: row => {
+        handleCellValueChangedDialog();
+      },
+    },
+  },
+  {
+    headerName: '엑셀',
+    headerComponent: CompCheckHeader,
+    headerComponentParams: {
+      headerCheckYn: false,
+      updateSelectedValue: row => {
+        checkAllProg('excYn', row.value ? 'Y' : 'N');
+      },
+    },
+    field: 'excYn',
+    maxWidth: 100,
+    minWidth: 100,
+    cellStyle: { textAlign: 'center' },
+    cellRenderer: CompToggleExc,
+    cellRendererParams: {
+      updateSelectedValue: row => {
+        handleCellValueChangedDialog();
+      },
+    },
+  },
+  {
+    headerName: '마감 ',
+    headerComponent: CompCheckHeader,
+    headerComponentParams: {
+      headerCheckYn: false,
+      updateSelectedValue: row => {
+        checkAllProg('locYn', row.value ? 'Y' : 'N');
+      },
+    },
+    field: 'locYn',
+    maxWidth: 100,
+    minWidth: 100,
+    cellStyle: { textAlign: 'center' },
+    cellRenderer: CompToggleLoc,
+    cellRendererParams: {
+      updateSelectedValue: row => {
+        handleCellValueChangedDialog();
+      },
+    },
+  },
+  {
+    headerName: '승인',
+    headerComponent: CompCheckHeader,
+    headerComponentParams: {
+      headerCheckYn: false,
+      updateSelectedValue: row => {
+        checkAllProg('appYn', row.value ? 'Y' : 'N');
+      },
+    },
+    field: 'appYn',
+    maxWidth: 100,
+    minWidth: 100,
+    cellStyle: { textAlign: 'center' },
+    cellRenderer: CompToggleApp,
+    cellRendererParams: {
+      updateSelectedValue: row => {
+        handleCellValueChangedDialog();
+      },
+    },
+  },
+]);
 
-const columnDefsDialog = reactive({
-  columns: [
-    {
-      headerName: '#',
-      width: 60,
-      pinned: 'left',
-      valueGetter: function (params) {
-        // Customize row numbers as needed
-        return params.node.rowIndex + 1;
-      },
-    },
-    {
-      headerName: '코드',
-      field: 'progId',
-      minWidth: 100,
-      maxWidth: 100,
-      filter: true,
-      sortable: true,
-      resizable: true,
-      pinned: 'left',
-    },
-    {
-      headerName: '프로그램명',
-      field: 'progNm',
-      minWidth: 170,
-      filter: true,
-      pinned: 'left',
-    },
-    {
-      headerName: '조회',
-      headerComponent: CompCheckHeader,
-      headerComponentParams: {
-        headerCheckYn: false,
-        updateSelectedValue: row => {
-          checkAllProg('scrYn', row.value ? 'Y' : 'N');
-        },
-      },
-      field: 'scrYn',
-      maxWidth: 100,
-      minWidth: 100,
-      cellStyle: { textAlign: 'center' },
-      cellRenderer: CompToggleScr,
-      cellRendererParams: {
-        updateSelectedValue: row => {
-          onCellValueChangedDialog();
-        },
-      },
-    },
-    {
-      headerName: '입력',
-      headerComponent: CompCheckHeader,
-      headerComponentParams: {
-        headerCheckYn: false,
-        updateSelectedValue: row => {
-          checkAllProg('newYn', row.value ? 'Y' : 'N');
-        },
-      },
-      field: 'newYn',
-      maxWidth: 100,
-      minWidth: 100,
-      cellStyle: { textAlign: 'center' },
-      cellRenderer: CompToggleNew,
-      cellRendererParams: {
-        updateSelectedValue: row => {
-          onCellValueChangedDialog();
-        },
-      },
-    },
-    {
-      headerName: '수정',
-      headerComponent: CompCheckHeader,
-      headerComponentParams: {
-        headerCheckYn: false,
-        updateSelectedValue: row => {
-          checkAllProg('dbgYn', row.value ? 'Y' : 'N');
-        },
-      },
-      field: 'dbgYn',
-      maxWidth: 100,
-      minWidth: 100,
-      cellStyle: { textAlign: 'center' },
-      cellRenderer: CompToggleDbg,
-      cellRendererParams: {
-        updateSelectedValue: row => {
-          onCellValueChangedDialog();
-        },
-      },
-    },
-    {
-      headerName: '삭제',
-      headerComponent: CompCheckHeader,
-      headerComponentParams: {
-        headerCheckYn: false,
-        updateSelectedValue: row => {
-          checkAllProg('delYn', row.value ? 'Y' : 'N');
-        },
-      },
-      field: 'delYn',
-      maxWidth: 100,
-      minWidth: 100,
-      cellStyle: { textAlign: 'center' },
-      cellRenderer: CompToggleDel,
-      cellRendererParams: {
-        updateSelectedValue: row => {
-          onCellValueChangedDialog();
-        },
-      },
-    },
-    {
-      headerName: '출력',
-      headerComponent: CompCheckHeader,
-      headerComponentParams: {
-        headerCheckYn: false,
-        updateSelectedValue: row => {
-          checkAllProg('rptYn', row.value ? 'Y' : 'N');
-        },
-      },
-      field: 'rptYn',
-      maxWidth: 100,
-      minWidth: 100,
-      cellStyle: { textAlign: 'center' },
-      cellRenderer: CompToggleRpt,
-      cellRendererParams: {
-        updateSelectedValue: row => {
-          onCellValueChangedDialog();
-        },
-      },
-    },
-    {
-      headerName: '엑셀',
-      headerComponent: CompCheckHeader,
-      headerComponentParams: {
-        headerCheckYn: false,
-        updateSelectedValue: row => {
-          checkAllProg('excYn', row.value ? 'Y' : 'N');
-        },
-      },
-      field: 'excYn',
-      maxWidth: 100,
-      minWidth: 100,
-      cellStyle: { textAlign: 'center' },
-      cellRenderer: CompToggleExc,
-      cellRendererParams: {
-        updateSelectedValue: row => {
-          onCellValueChangedDialog();
-        },
-      },
-    },
-    {
-      headerName: '마감 ',
-      headerComponent: CompCheckHeader,
-      headerComponentParams: {
-        headerCheckYn: false,
-        updateSelectedValue: row => {
-          checkAllProg('locYn', row.value ? 'Y' : 'N');
-        },
-      },
-      field: 'locYn',
-      maxWidth: 100,
-      minWidth: 100,
-      cellStyle: { textAlign: 'center' },
-      cellRenderer: CompToggleLoc,
-      cellRendererParams: {
-        updateSelectedValue: row => {
-          onCellValueChangedDialog();
-        },
-      },
-    },
-    {
-      headerName: '승인',
-      headerComponent: CompCheckHeader,
-      headerComponentParams: {
-        headerCheckYn: false,
-        updateSelectedValue: row => {
-          checkAllProg('appYn', row.value ? 'Y' : 'N');
-        },
-      },
-      field: 'appYn',
-      maxWidth: 100,
-      minWidth: 100,
-      cellStyle: { textAlign: 'center' },
-      cellRenderer: CompToggleApp,
-      cellRendererParams: {
-        updateSelectedValue: row => {
-          onCellValueChangedDialog();
-        },
-      },
-    },
-  ],
-});
-
-const onSelectionChanged = event => {
-  selectedRows.value = event.api.getSelectedRows();
-};
-const onSelectionChangedDialog = event => {
-  selectedRows.value = event.api.getSelectedRows();
-};
-const onCellValueChanged = () => {
+const handleCellValueChanged = () => {
   updateData.value = [];
   for (let i = 0; rowDataBack.value.length > i; i++) {
     if (JSON.stringify(rowDataBack.value[i]) !== JSON.stringify(rowData.rows[i])) {
@@ -657,7 +551,7 @@ const onCellValueChanged = () => {
   }
   showSaveBtn.value = updateData.value.length > 0;
 };
-const onCellValueChangedDialog = () => {
+const handleCellValueChangedDialog = () => {
   updateData.value = [];
   for (let i = 0; rowDataDialogBack.value.length > i; i++) {
     if (JSON.stringify(rowDataDialogBack.value[i]) !== JSON.stringify(rowDataDialog.rows[i])) {
@@ -666,9 +560,6 @@ const onCellValueChangedDialog = () => {
   }
   showSaveDialogBtn.value = updateData.value.length > 0;
 };
-
-const rowSelection = ref(null);
-const rowSelectionDialog = ref(null);
 
 const saveDataSection = () => {
   let iu = [];
@@ -740,11 +631,16 @@ onBeforeUnmount(() => {
   // Remove the resize event listener when the component is destroyed
   window.removeEventListener('resize', handleResize);
 });
-onBeforeMount(() => {
-  rowSelection.value = 'multiple';
-  getData();
-  getDataDeptOption();
-  getGroupData();
+onBeforeMount(async () => {
+  getDataCommOption('501').then(() => {
+    getDataCommOption('901').then(() => {
+      columnDefsSet();
+      myGrid.value.api.setColumnDefs(columnDefs.value);
+      getGroupData().then(() => {
+        getData();
+      });
+    });
+  });
 });
 
 onMounted(() => {
@@ -756,7 +652,7 @@ const checkAll = (resId, resCheck) => {
   for (let i = 0; i < rowData.rows.length; i++) {
     rowData.rows[i][resId] = resCheck;
   }
-  onCellValueChanged();
+  handleCellValueChanged();
 };
 
 const checkAllProg = (resId, resCheck) => {
@@ -765,7 +661,7 @@ const checkAllProg = (resId, resCheck) => {
       rowDataDialog.rows[i][resId] = resCheck;
     }
   }
-  onCellValueChangedDialog();
+  handleCellValueChangedDialog();
 };
 
 // **************************************************************//
@@ -798,6 +694,7 @@ const getData = async () => {
       paramSearchValue: searchValue.value,
     });
     rowData.rows = response.data.data;
+    myGrid.value.api.setGridOption('rowData', rowData.rows);
     rowDataBack.value = JSON.parse(JSON.stringify(response.data.data));
     updateData.value = [];
   } catch (error) {
@@ -828,6 +725,7 @@ const getDataDialog = async () => {
   try {
     const response = await api.post('/api/sys/sys1110_grntp_list', { paramUserId: showDialogTitle.value.userId, paramGroupCd: selectedGroup.value });
     rowDataDialog.rows = response.data.data;
+    myGrid1.value.api.setGridOption('rowData', rowDataDialog.rows);
     rowDataDialogBack.value = JSON.parse(JSON.stringify(response.data.data));
     updateData.value = [];
     showSaveDialogBtn.value = false;
@@ -837,14 +735,24 @@ const getDataDialog = async () => {
 };
 // ***** 프로그램 선택된 자료 가져오기 부분  *****************************//
 
-/// ***** 부서코드정보 가져오기 부분  *****************************//
-const selectedDept = ref('');
-const deptOptions = ref([]);
-async function getDataDeptOption() {
+async function getDataCommOption(resCommCd1) {
   try {
-    const response = await api.post('/api/mst/dept_option_list', { paramSetYear: storeYear.setYear });
-    deptOptions.value = response.data.data;
-    deptOptions.value.push({ deptNm: '전체', deptCd: '' });
+    const response = await api.post('/api/mst/comm_option_list', { paramCommCd1: resCommCd1 });
+    switch (resCommCd1) {
+      case '501':
+        deptOptions.value = JSON.parse(JSON.stringify(response.data.data));
+        deptOptions.value.unshift({ commCd: '', commNm: '전체' });
+        break;
+      case '901':
+        levelOptions.value = response.data.data;
+        // console.log('level : ', JSON.stringify(levelOptions.value));
+        break;
+      default:
+        deptOptions.value = [];
+        levelOptions.value = [];
+    }
+
+    // console.log('getData1: ', JSON.stringify(response.data.data));
   } catch (error) {
     console.error('Error fetching users:', error);
   }
@@ -871,6 +779,196 @@ const getGroupData = async () => {
 // **************************************************************//
 // ***** DataBase 연결부분 끝  *************************************//
 // **************************************************************//
+
+const myGrid = ref(null);
+const gridOptions = {
+  columnDefs: columnDefs.value,
+  rowData: rowData.rows,
+  defaultColDef: {
+    flex: 1,
+    sortable: true,
+    filter: false,
+    floatingFilter: false,
+    editable: false,
+  },
+  rowSelection: 'multiple' /* 'single' or 'multiple',*/,
+  enableColResize: true,
+  enableSorting: true,
+  enableFilter: false,
+  enableRangeSelection: true,
+  suppressRowClickSelection: false,
+  animateRows: true,
+  suppressHorizontalScroll: true,
+  localeText: { noRowsToShow: '조회 결과가 없습니다.' },
+  getRowStyle: function (param) {
+    if (param.node.rowPinned) {
+      return { 'font-weight': 'bold', background: '#dddddd' };
+    }
+    return { 'text-align': 'left' };
+  },
+  getRowHeight: function (param) {
+    // 고정된 행의 높이
+    if (param.node.rowPinned) {
+      return 45;
+    }
+    return 40;
+  },
+  // GRID READY 이벤트, 사이즈 자동조정
+  onGridReady: function (event) {
+    // console.log('Grid is ready'); // Check if grid initializes
+    event.api.sizeColumnsToFit();
+  },
+  // 창 크기 변경 되었을 때 이벤트
+  onGridSizeChanged: function (event) {
+    event.api.sizeColumnsToFit();
+  },
+  onRowEditingStarted: function (event) {
+    // console.log('never called - not doing row editing');
+  },
+  onRowEditingStopped: function (event) {
+    // console.log('never called - not doing row editing');
+  },
+  onCellEditingStarted: function (event) {
+    // console.log('cellEditingStarted');
+  },
+  onCellEditingStopped: function (event) {
+    // console.log('cellEditingStopped');
+  },
+  onRowClicked: function (event) {
+    // console.log('onRowClicked');
+    // selectedRows.value = event.api.getSelectedRows();
+    // console.log('sel: ', JSON.stringify(selectedRows.value));
+  },
+  onCellClicked: function (event) {
+    // console.log('onCellClicked');
+  },
+  isRowSelectable: function (event) {
+    // console.log('isRowSelectable');
+    return true;
+  },
+  onSelectionChanged: function (event) {
+    // console.log('onSelectionChanged1');
+    selectedRows.value = event.api.getSelectedRows();
+  },
+  onSortChanged: function (event) {
+    // console.log('onSortChanged');
+  },
+  onCellValueChanged: function (event) {
+    // console.log('onCellValueChanged');
+    handleCellValueChanged();
+  },
+  getRowNodeId: function (data) {
+    return null;
+  },
+  // 리드 상단 고정
+  setPinnedTopRowData: function (data) {
+    return null;
+  },
+  // 그리드 하단 고정
+  setPinnedBottomRowData: function (data) {
+    return null;
+  },
+  // components: {
+  //   numericCellEditor: NumericCellEditor,
+  //   moodEditor: MoodEditor,
+  // },
+  debug: false,
+};
+
+const myGrid1 = ref(null);
+const gridOptions1 = {
+  columnDefs: columnDefsDialog.value,
+  rowData: rowDataDialog.rows,
+  defaultColDef: {
+    flex: 1,
+    sortable: true,
+    filter: false,
+    floatingFilter: false,
+    editable: false,
+  },
+  rowSelection: 'multiple' /* 'single' or 'multiple',*/,
+  enableColResize: true,
+  enableSorting: true,
+  enableFilter: false,
+  enableRangeSelection: true,
+  suppressRowClickSelection: false,
+  animateRows: true,
+  suppressHorizontalScroll: true,
+  localeText: { noRowsToShow: '조회 결과가 없습니다.' },
+  getRowStyle: function (param) {
+    if (param.node.rowPinned) {
+      return { 'font-weight': 'bold', background: '#dddddd' };
+    }
+    return { 'text-align': 'left' };
+  },
+  getRowHeight: function (param) {
+    // 고정된 행의 높이
+    if (param.node.rowPinned) {
+      return 45;
+    }
+    return 40;
+  },
+  // GRID READY 이벤트, 사이즈 자동조정
+  onGridReady: function (event) {
+    // console.log('Grid is ready'); // Check if grid initializes
+    event.api.sizeColumnsToFit();
+  },
+  // 창 크기 변경 되었을 때 이벤트
+  onGridSizeChanged: function (event) {
+    event.api.sizeColumnsToFit();
+  },
+  onRowEditingStarted: function (event) {
+    // console.log('never called - not doing row editing');
+  },
+  onRowEditingStopped: function (event) {
+    // console.log('never called - not doing row editing');
+  },
+  onCellEditingStarted: function (event) {
+    // console.log('cellEditingStarted');
+  },
+  onCellEditingStopped: function (event) {
+    // console.log('cellEditingStopped');
+  },
+  onRowClicked: function (event) {
+    // console.log('onRowClicked');
+    // selectedRows.value = event.api.getSelectedRows();
+    // console.log('sel: ', JSON.stringify(selectedRows.value));
+  },
+  onCellClicked: function (event) {
+    // console.log('onCellClicked');
+  },
+  isRowSelectable: function (event) {
+    // console.log('isRowSelectable');
+    return true;
+  },
+  onSelectionChanged: function (event) {
+    // console.log('onSelectionChanged1');
+    selectedRows.value = event.api.getSelectedRows();
+  },
+  onSortChanged: function (event) {
+    // console.log('onSortChanged');
+  },
+  onCellValueChanged: function (event) {
+    // console.log('onCellValueChanged');
+    handleCellValueChangedDialog();
+  },
+  getRowNodeId: function (data) {
+    return null;
+  },
+  // 리드 상단 고정
+  setPinnedTopRowData: function (data) {
+    return null;
+  },
+  // 그리드 하단 고정
+  setPinnedBottomRowData: function (data) {
+    return null;
+  },
+  // components: {
+  //   numericCellEditor: NumericCellEditor,
+  //   moodEditor: MoodEditor,
+  // },
+  debug: false,
+};
 </script>
 <style scoped>
 .ag-body-viewport [col-id='userNm'] {

@@ -8,7 +8,7 @@
           <!-- contents list title bar -->
           <q-bar class="q-px-sm">
             <q-icon name="list_alt" />
-            <span class="text-subtitle2 q-px-sm">인사기본정보 리스트</span>
+            <span class="q-px-sm text-bold text-subtitle1" :class="$q.dark.isActive ? 'text-orange' : 'text-primary'">{{ menuLabel }}</span>
             <q-space />
             <q-btn
               class="q-pa-xs"
@@ -39,8 +39,8 @@
                   label-color="orange"
                   v-model="searchParam.deptCd"
                   :options="deptOptionsSearch"
-                  option-value="deptCd"
-                  option-label="deptNm"
+                  option-value="commCd"
+                  option-label="commNm"
                   option-disable="inactive"
                   emit-value
                   map-options
@@ -64,9 +64,6 @@
                 </q-input>
               </div>
               <q-space />
-              <q-toggle left-label v-model="systemSave" checked-icon="check" color="red" label="시스템정보에 적용" unchecked-icon="clear">
-                <q-tooltip>적용선택 시 시스템 사용자정보에도 같이 적용됩니다. (최종 작업년도에만 적용하세요)</q-tooltip>
-              </q-toggle>
 
               <q-space />
               <div class="q-gutter-xs">
@@ -83,14 +80,11 @@
           <q-card-section class="q-pa-xs">
             <div :style="contentZoneStyle">
               <ag-grid-vue
+                ref="myGrid"
                 style="width: 100%; height: 100%"
                 :class="$q.dark.isActive ? 'ag-theme-alpine-dark' : 'ag-theme-alpine'"
-                :columnDefs="columnDefs.columns"
                 :rowData="rowData.rows"
-                :defaultColDef="defaultColDef.def"
-                :rowSelection="rowSelection"
-                @selection-changed="onSelectionChanged"
-                @grid-ready="onGridReady"
+                :grid-options="gridOptions"
               >
               </ag-grid-vue>
             </div>
@@ -134,23 +128,26 @@
                         <q-img :src="`https://hr.energyshop.co.kr/images/${formData.imageFileNm}?${new Date().getTime()}`" />
                         <!--                        <q-img :src="`https://www.iszion.com/images/${formData.imageFileNm}?${new Date().getTime()}`" />-->
                         <div class="row q-pa-xs">
-                          <q-avatar
+                          <q-btn
                             v-if="!formDisable"
-                            color="blue"
+                            round
+                            color="primary"
+                            glossy
                             text-color="white"
                             icon="photo_camera"
-                            size="md"
-                            class="q-pa-none cursor-pointer"
+                            class="cursor-pointer"
                             @click="handleImageUpload"
                           />
                           <q-space />
-                          <q-avatar
+                          <q-btn
                             v-if="!formDisable"
+                            round
+                            :disable="isImageDelete"
                             color="red"
+                            glossy
                             text-color="white"
                             icon="delete_forever"
-                            size="md"
-                            class="q-pa-none cursor-pointer"
+                            class="cursor-pointer"
                             @click="handleImageDelete"
                           />
                         </div>
@@ -158,7 +155,14 @@
                       </q-card>
                     </div>
                     <div class="col-12 col-md-6">
-                      <q-input ref="empCdFocus" v-model="formData.empCd" label="사원 ID" label-color="orange" :disable="formDisableEmpCd">
+                      <q-input
+                        class="text-bold text-subtitle1"
+                        ref="empCdFocus"
+                        v-model="formData.empCd"
+                        label="사원번호"
+                        label-color="orange"
+                        :disable="formDisableEmpCd"
+                      >
                         <template v-slot:append>
                           <q-icon size="0.8em" name="done" class="cursor-pointer q-mt-lg" @click="getDataEmpCdCheck">
                             <q-tooltip transition-show="rotate" transition-hide="rotate" class="bg-amber text-black shadow-4">
@@ -175,8 +179,8 @@
                         :options="deptOptions"
                         label="소속팀"
                         label-color="orange"
-                        option-value="deptCd"
-                        option-label="deptNm"
+                        option-value="commCd"
+                        option-label="commNm"
                         options-dense
                         emit-value
                         map-options
@@ -184,7 +188,7 @@
                         <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
                           <q-item v-bind="itemProps">
                             <q-item-section>
-                              <q-item-label v-html="opt.deptNm" />
+                              <q-item-label v-html="opt.commNm" />
                             </q-item-section>
                             <q-item-section side>
                               <q-toggle :model-value="selected" @update:model-value="toggleOption(opt)" />
@@ -198,44 +202,21 @@
                   <div class="row q-col-gutter-xl">
                     <div class="col-12 col-md-6">
                       <q-select
-                        options-dense
                         :disable="formDisable"
                         v-model="formData.titlCd"
                         :options="titlOptions"
-                        option-value="titlCd"
-                        option-label="titlNm"
                         label="직급"
                         label-color="orange"
-                        emit-value
-                        map-options
-                      >
-                        <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
-                          <q-item v-bind="itemProps">
-                            <q-item-section>
-                              <q-item-label v-html="opt.titlNm" />
-                            </q-item-section>
-                            <q-item-section side>
-                              <q-toggle :model-value="selected" @update:model-value="toggleOption(opt)" />
-                            </q-item-section>
-                          </q-item>
-                        </template>
-                      </q-select>
-                      <q-select
+                        option-value="commCd"
+                        option-label="commNm"
                         options-dense
-                        :disable="formDisable"
-                        v-model="formData.catgCd"
-                        :options="catgOptions"
-                        option-value="catgCd"
-                        option-label="catgNm"
-                        label="직분류"
-                        label-color="orange"
                         emit-value
                         map-options
                       >
                         <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
                           <q-item v-bind="itemProps">
                             <q-item-section>
-                              <q-item-label v-html="opt.catgNm" />
+                              <q-item-label v-html="opt.commNm" />
                             </q-item-section>
                             <q-item-section side>
                               <q-toggle :model-value="selected" @update:model-value="toggleOption(opt)" />
@@ -243,6 +224,7 @@
                           </q-item>
                         </template>
                       </q-select>
+
                       <q-input v-model="formData.mobile" label="Mobile" label-color="orange" :disable="formDisable" />
                       <q-input v-model="formData.inDay" type="date" label="입사일" label-color="orange" :disable="formDisable" />
                       <q-input v-model="formData.outDay" type="date" label="퇴사일" label-color="orange" :disable="formDisable" />
@@ -254,8 +236,8 @@
                         :disable="formDisable"
                         v-model="formData.pstnCd"
                         :options="pstnOptions"
-                        option-value="pstnCd"
-                        option-label="pstnNm"
+                        option-value="commCd"
+                        option-label="commNm"
                         label="직위"
                         label-color="orange"
                         emit-value
@@ -264,31 +246,7 @@
                         <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
                           <q-item v-bind="itemProps">
                             <q-item-section>
-                              <q-item-label v-html="opt.pstnNm" />
-                            </q-item-section>
-                            <q-item-section side>
-                              <q-toggle :model-value="selected" @update:model-value="toggleOption(opt)" />
-                            </q-item-section>
-                          </q-item>
-                        </template>
-                      </q-select>
-
-                      <q-select
-                        options-dense
-                        :disable="formDisable"
-                        v-model="formData.evtgCd"
-                        :options="evtgOptions"
-                        option-value="evtgCd"
-                        option-label="evtgNm"
-                        label="평가대상그룹"
-                        label-color="orange"
-                        emit-value
-                        map-options
-                      >
-                        <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
-                          <q-item v-bind="itemProps">
-                            <q-item-section>
-                              <q-item-label v-html="opt.evtgNm" />
+                              <q-item-label v-html="opt.commNm" />
                             </q-item-section>
                             <q-item-section side>
                               <q-toggle :model-value="selected" @update:model-value="toggleOption(opt)" />
@@ -299,14 +257,13 @@
 
                       <q-input v-model="formData.email" label="이메일" label-color="orange" :disable="formDisable" />
 
-                      <div class="q-mt-xs q-gutter-sm">
-                        <q-radio keep-color v-model="formData.gender" val="M" label="남자" color="teal" :disable="formDisable" />
-                        <q-radio keep-color v-model="formData.gender" val="F" label="여자" color="orange" :disable="formDisable" />
-                      </div>
                       <q-input v-model="formData.eduLevel" label="최종학력" label-color="orange" :disable="formDisable" />
                       <q-input v-model="formData.finalSchool" label="최종학교" label-color="orange" :disable="formDisable" />
                       <q-separator class="q-mb-xs" />
                     </div>
+                  </div>
+                  <div class="col-12">
+                    <q-input type="textarea" autogrow v-model="formData.explains" label="참고사항" label-color="orange" :disable="formDisable" />
                   </div>
                 </div>
               </q-card>
@@ -334,9 +291,7 @@ import jsonUtil from 'src/js_comm/json-util';
 import notifySave from 'src/js_comm/notify-save';
 import commUtil from 'src/js_comm/comm-util';
 
-import { useYearInfoStore } from 'src/store/setYearInfo';
 import ImageView from 'components/ImageView.vue';
-const storeYear = useYearInfoStore();
 
 const $q = useQuasar();
 
@@ -344,10 +299,9 @@ let isSaveFg = null;
 
 const deptOptionsSearch = ref(null);
 const deptOptions = ref(null);
-const titlOptions = ref(null);
 const pstnOptions = ref(null);
-const catgOptions = ref(null);
-const evtgOptions = ref(null);
+const titlOptions = ref(null);
+const isImageDelete = ref(true);
 
 const searchParam = reactive({
   deptCd: '',
@@ -365,17 +319,16 @@ onBeforeUnmount(() => {
 });
 
 onBeforeMount(() => {
-  rowSelection.value = 'multiple';
   getData();
-  getDataDeptOption();
-  getDataPstnOption();
-  getDataTitlOption();
-  getDataCatgOption();
-  getDataEvtgOption();
+  getDataCommOption('501'); // 부서
+  getDataCommOption('502'); // 직위
+  getDataCommOption('503'); // 직급
 });
 
+const menuLabel = ref('');
 onMounted(() => {
   window.addEventListener('resize', handleResize);
+  menuLabel.value = window.history.state.label;
   handleResize();
 });
 
@@ -393,7 +346,6 @@ const contentZoneStyle = computed(() => ({
   height: `${contentZoneHeight.value}px`,
 }));
 
-const gridApi = ref(null);
 const rowData = reactive({ rows: [] });
 
 const dateFormatter = params => {
@@ -403,22 +355,18 @@ const dateFormatter = params => {
   }
   return dateStr;
 };
-const onGridReady = params => {
-  gridApi.value = params.api;
-};
-
-const defaultColDef = reactive({
-  def: {
-    flex: 1,
-    sortable: true,
-    filter: true,
-    floatingFilter: false,
-    editable: false,
-  },
-});
 
 const columnDefs = reactive({
   columns: [
+    {
+      headerName: '#',
+      width: 60,
+      pinned: 'left',
+      valueGetter: function (params) {
+        // Customize row numbers as needed
+        return params.node.rowIndex + 1;
+      },
+    },
     {
       headerName: '',
       field: '',
@@ -430,16 +378,29 @@ const columnDefs = reactive({
       pinned: 'left',
     },
     {
-      headerName: '#',
-      width: 60,
+      headerName: '',
+      field: 'imageFileNm',
+      minWidth: 70,
+      maxWidth: 70,
+      filter: false,
       pinned: 'left',
-      valueGetter: function (params) {
-        // Customize row numbers as needed
-        return params.node.rowIndex + 1;
+      cellRenderer: ImageView,
+      cellRendererParams: params => {
+        // console.log('param: ', JSON.stringify(params.data));
+        return {
+          // imageData: params.data.imageFileNm, // imageFileNm 필드 데이터 전달
+          rowData: {
+            empCd: params.data.empCd,
+            empNm: params.data.empNm,
+            deptNm: params.data.deptNm,
+            pstnNm: params.data.pstnNm,
+            imageFileNm: params.data.imageFileNm,
+          }, // 전체 row 데이터 전달 (필요 시)
+        };
       },
     },
     {
-      headerName: 'ID',
+      headerName: '사원번호',
       field: 'empCd',
       pinned: 'left',
       maxWidth: 100,
@@ -453,49 +414,19 @@ const columnDefs = reactive({
       pinned: 'left',
     },
     {
-      headerName: '',
-      field: 'imageFileNm',
-      minWidth: 70,
-      maxWidth: 70,
-      filter: false,
-      pinned: 'left',
-      cellRenderer: ImageView,
-    },
-    {
       headerName: '소속팀',
       field: 'deptNm',
-      maxWidth: 100,
       minWidth: 100,
     },
     {
       headerName: '직위',
       field: 'pstnNm',
-      maxWidth: 100,
       minWidth: 100,
     },
     {
       headerName: '직급',
       field: 'titlNm',
-      maxWidth: 100,
       minWidth: 100,
-    },
-    {
-      headerName: '직분류',
-      field: 'catgNm',
-      maxWidth: 120,
-      minWidth: 120,
-    },
-    {
-      headerName: '평가대상그룹',
-      field: 'evtgNm',
-      maxWidth: 120,
-      minWidth: 120,
-    },
-    {
-      headerName: '성별',
-      field: 'gender',
-      maxWidth: 80,
-      minWidth: 80,
     },
     {
       headerName: '생년월일',
@@ -507,25 +438,11 @@ const columnDefs = reactive({
     {
       headerName: 'Mobile',
       field: 'mobile',
-      maxWidth: 150,
       minWidth: 150,
     },
     {
       headerName: '이메일',
       field: 'email',
-      maxWidth: 150,
-      minWidth: 150,
-    },
-    {
-      headerName: '최종학력',
-      field: 'eduLevel',
-      maxWidth: 100,
-      minWidth: 100,
-    },
-    {
-      headerName: '최종학교',
-      field: 'finalSchool',
-      maxWidth: 150,
       minWidth: 150,
     },
     {
@@ -540,22 +457,17 @@ const columnDefs = reactive({
       headerName: '이미지파일명',
       field: 'imageFileNm',
       minWidth: 150,
-      cellStyle: { textAlign: 'center' },
     },
   ],
 });
 
-const systemSave = ref(false);
 const oldFormData = ref(null);
 const formData = ref({
   empCd: '',
   empNm: '',
   deptCd: '',
-  catgCd: '',
   pstnCd: '',
   titlCd: '',
-  evtgCd: '',
-  gender: '',
   birthday: '',
   mobile: '',
   email: '',
@@ -565,46 +477,27 @@ const formData = ref({
   finalSchool: '',
   imageFileNm: '',
   imageFileNmFull: '',
-  systemSave: '',
+});
+
+const selectedDept = computed(() => {
+  const selectedOption = deptOptions.value.find(option => option.commCd === formData.value.deptCd);
+  return selectedOption ? selectedOption.commNm : null;
+});
+
+const selectedPstn = computed(() => {
+  const selectedOption = pstnOptions.value.find(option => option.commCd === formData.value.pstnCd);
+  return selectedOption ? selectedOption.commNm : null;
+});
+
+const selectedTitl = computed(() => {
+  const selectedOption = titlOptions.value.find(option => option.commCd === formData.value.titlCd);
+  return selectedOption ? selectedOption.commNm : null;
 });
 
 const selectedRows = ref();
 const isShowStatusEdit = ref(false);
 const isShowDeleteBtn = ref(false);
 const isShowSaveBtn = ref(false);
-
-const onSelectionChanged = event => {
-  selectedRows.value = event.api.getSelectedRows();
-  isShowStatusEdit.value = false;
-  isShowDeleteBtn.value = selectedRows.value.length > 0;
-  isShowSaveBtn.value = isShowDeleteBtn.value;
-
-  if (selectedRows.value.length === 1) {
-    getDataSelect(selectedRows.value[0].stdYear, selectedRows.value[0].empCd);
-    isShowStatusEdit.value = true;
-    statusEdit.icon = 'edit_note';
-    statusEdit.message = '수정/삭제모드 입니다';
-    statusEdit.color = 'accent';
-    isSaveFg = 'U';
-    formDisableEmpCd.value = true;
-    formDisable.value = false;
-  } else if (selectedRows.value.length > 1) {
-    isSaveFg = 'D';
-    isShowStatusEdit.value = true;
-    statusEdit.icon = 'delete';
-    statusEdit.message = '삭제모드 입니다';
-    statusEdit.color = 'negative';
-    formDisable.value = true;
-    formData.value = initializeFormData.value;
-  } else {
-    formData.value = {};
-    isShowStatusEdit.value = false;
-    isSaveFg = '';
-    formDisable.value = true;
-  }
-};
-
-const rowSelection = ref(null);
 
 const empCdFocus = ref(null);
 const empNmFocus = ref(null);
@@ -619,7 +512,6 @@ const addDataSection = () => {
   isShowSaveBtn.value = true;
   formDisableEmpCd.value = false;
   formDisable.value = true;
-  formData.value.stdYear = storeYear.setYear;
   formData.value.outDay = '9999-12-31';
   setTimeout(() => {
     empCdFocus.value.focus();
@@ -646,7 +538,8 @@ const deleteDataSection = () => {
       let iu = [];
       let iuD = [];
       for (let i = 0; i < selectedRows.value.length; i++) {
-        let tmpJson = '{"mode":"U","data":' + JSON.stringify(selectedRows.value[i]) + '}';
+        // console.log('del : ', JSON.stringify(selectedRows.value[i]));
+        let tmpJson = '{"mode":"D","data":' + JSON.stringify(selectedRows.value[i]) + '}';
         iuD.push(tmpJson);
       }
       saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
@@ -660,12 +553,6 @@ const saveDataSection = () => {
   formData.value.birthday = commUtil.unFormatDate(formData.value.birthday);
   formData.value.inDay = commUtil.unFormatDate(formData.value.inDay);
   formData.value.outDay = commUtil.unFormatDate(formData.value.outDay);
-
-  if (systemSave.value) {
-    formData.value.systemSave = 'Y';
-  } else {
-    formData.value.systemSave = 'N';
-  }
 
   if (isEqual(formData.value, oldFormData.value)) {
     $q.dialog({
@@ -742,28 +629,62 @@ const uploadFile = async file => {
     formData.value.imageFileNm = formData.value.empCd + '_' + file.name;
     await nextTick(); // Ensure Vue reactivity updates the view
 
-    console.log('File uploaded successfully:', response.data);
+    // console.log('File uploaded successfully:', response.data);
   } catch (error) {
     // 오류 처리
     console.error('Error uploading file:', error);
   }
 };
 
-const handleImageDelete = async () => {
+const handleImageDelete = () => {
+  $q.dialog({
+    dark: true,
+    title: '사진삭제',
+    message: '이미지를 삭제 하시겠습니까?',
+    ok: {
+      label: '삭제하기',
+      push: true,
+      color: 'negative',
+    },
+    cancel: {
+      label: '취소',
+      push: true,
+      color: 'grey-7',
+    },
+  })
+    .onOk(() => {
+      imageDeleteCall();
+    })
+    .onCancel(() => {})
+    .onDismiss(() => {
+      // 확인/취소 모두 실행되었을때
+    });
+};
+const imageDeleteCall = async () => {
   const response = await api.delete('/api/mst/mst1010_fileDelete', {
     params: {
       filename: formData.value.imageFileNm,
       empCd: formData.value.empCd,
     },
   });
-  // console.log('delete : ' + response);
-  if (response.data.success) {
+  if (response.data === 'SUCCESS') {
     formData.value.imageFileNm = ''; // 이미지 삭제 후 이미지 파일명을 비움
+    let saveStatus = {
+      rtn: '0',
+      rtnMsg: '삭제되었습니다',
+    };
+    notifySave.notifyView1(saveStatus, 1000);
+  } else {
+    let saveStatus = {
+      rtn: '3',
+      rtnMsg: '삭제실패~~~',
+    };
+    notifySave.notifyView1(saveStatus, 1000);
   }
 };
 
 const saveDataAndHandleResult = resFormData => {
-  console.log('save::: ', JSON.stringify(resFormData));
+  // console.log('save::: ', JSON.stringify(resFormData));
   api
     .post('/api/mst/mst1010_save', resFormData)
     .then(res => {
@@ -772,23 +693,21 @@ const saveDataAndHandleResult = resFormData => {
           formData.value.oldUserId = formData.value.empCd;
 
           let newData = [formData.value];
-          gridApi.value.applyTransaction({
+          newData[0].deptNm = selectedDept.value;
+          newData[0].pstnNm = selectedPstn.value;
+          newData[0].titlNm = selectedTitl.value;
+          myGrid.value.api.applyTransaction({
             add: newData,
             addIndex: 0,
           });
         } else if (isSaveFg === 'U') {
-          const selectedData = gridApi.value.getSelectedRows();
-
+          const selectedData = myGrid.value.api.getSelectedRows();
           // selectedData[0] = { ...formData.value };
           selectedData[0].empCd = formData.value.empCd;
           selectedData[0].oldEmpCd = formData.value.empCd;
           selectedData[0].empNm = formData.value.empNm;
           selectedData[0].deptCd = formData.value.deptCd;
-          selectedData[0].catgCd = formData.value.catgCd;
           selectedData[0].pstnCd = formData.value.pstnCd;
-          selectedData[0].titlCd = formData.value.titlCd;
-          selectedData[0].evtgCd = formData.value.evtgCd;
-          selectedData[0].gender = formData.value.gender;
           selectedData[0].birthday = formData.value.birthday;
           selectedData[0].mobile = formData.value.mobile;
           selectedData[0].email = formData.value.email;
@@ -798,12 +717,18 @@ const saveDataAndHandleResult = resFormData => {
           selectedData[0].outDay = formData.value.outDay;
           selectedData[0].imageFileNm = formData.value.imageFileNm;
           selectedData[0].imageFileNmFull = formData.value.imageFileNmFull;
-          gridApi.value.applyTransaction({
+
+          selectedData[0].deptNm = selectedDept.value;
+          selectedData[0].pstnNm = selectedPstn.value;
+          selectedData[0].titlNm = selectedTitl.value;
+
+          myGrid.value.api.applyTransaction({
             update: selectedData,
           });
+          myGrid.value.api.deselectAll();
         } else if (isSaveFg === 'D') {
-          const selectedData = gridApi.value.getSelectedRows();
-          gridApi.value.applyTransaction({ remove: selectedData });
+          const selectedData = myGrid.value.api.getSelectedRows();
+          myGrid.value.api.applyTransaction({ remove: selectedData });
         }
       }
       let saveStatus = {};
@@ -819,22 +744,22 @@ const saveDataAndHandleResult = resFormData => {
 const getData = async () => {
   try {
     const response = await api.post('/api/mst/mst1010_list', {
-      paramSetYear: storeYear.setYear,
       paramDeptCd: searchParam.deptCd,
       paramSearchWord: searchParam.word,
     });
     rowData.rows = response.data.data;
+    myGrid.value.api.setGridOption('rowData', rowData.rows);
   } catch (error) {
     console.error('Error fetching users:', error);
   }
 };
 
 // ***** 인사정보 선택된 자료 가져오기 부분  *****************************//
-const imageSrc = ref('');
 const getDataSelect = async (resStdYear, resEmpCd) => {
   try {
     const response = await api.post('/api/mst/mst1010_select', { paramStdYear: resStdYear, paramEmpCd: resEmpCd });
     formData.value = response.data.data[0];
+
     oldFormData.value = JSON.parse(JSON.stringify(formData.value)); // 초기자료 저장
     formData.value.birthday = commUtil.formatDate(response.data.data[0].birthday);
     formData.value.inDay = commUtil.formatDate(response.data.data[0].inDay);
@@ -851,8 +776,7 @@ const getDataSelect = async (resStdYear, resEmpCd) => {
 // ***** 사원번호 중복체크 부분  *****************************//
 const getDataEmpCdCheck = async () => {
   try {
-    const response = await api.post('/api/mst/mst1010_empCd_check', { paramStdYear: storeYear.setYear, paramEmpCd: formData.value.empCd });
-    // console.log('check :: ', response.data.data[0].ch);
+    const response = await api.post('/api/mst/mst1010_empCd_check', { paramEmpCd: formData.value.empCd });
     if (response.data.data[0].ch === 0) {
       formDisable.value = false;
       setTimeout(() => {
@@ -874,49 +798,28 @@ const getDataEmpCdCheck = async () => {
   }
 };
 
-// ***** 소속팀정보 가져오기 부분  *****************************//
-async function getDataDeptOption() {
+async function getDataCommOption(resCommCd1) {
   try {
-    const response = await api.post('/api/mst/dept_option_list', { paramSetYear: storeYear.setYear });
-    deptOptions.value = response.data.data;
-    deptOptionsSearch.value = JSON.parse(JSON.stringify(deptOptions.value));
-    deptOptionsSearch.value.push({ deptCd: '', deptNm: '전체' });
-  } catch (error) {
-    console.error('Error fetching users:', error);
-  }
-}
-// ***** 직위정보 가져오기 부분  *****************************//
-async function getDataPstnOption() {
-  try {
-    const response = await api.post('/api/mst/pstn_option_list', { paramSetYear: storeYear.setYear });
-    pstnOptions.value = response.data.data;
-  } catch (error) {
-    console.error('Error fetching users:', error);
-  }
-}
-// ***** 직급정보 가져오기 부분  *****************************//
-async function getDataTitlOption() {
-  try {
-    const response = await api.post('/api/mst/titl_option_list', { paramSetYear: storeYear.setYear });
-    titlOptions.value = response.data.data;
-  } catch (error) {
-    console.error('Error fetching users:', error);
-  }
-}
-// ***** 직분류정보 가져오기 부분  *****************************//
-async function getDataCatgOption() {
-  try {
-    const response = await api.post('/api/mst/catg_option_list', { paramSetYear: storeYear.setYear });
-    catgOptions.value = response.data.data;
-  } catch (error) {
-    console.error('Error fetching users:', error);
-  }
-}
-// ***** 평가대상그룹정보 가져오기 부분  *****************************//
-async function getDataEvtgOption() {
-  try {
-    const response = await api.post('/api/mst/evtg_option_list', { paramSetYear: storeYear.setYear });
-    evtgOptions.value = response.data.data;
+    const response = await api.post('/api/mst/comm_option_list', { paramCommCd1: resCommCd1 });
+    switch (resCommCd1) {
+      case '501':
+        deptOptions.value = response.data.data;
+        deptOptionsSearch.value = JSON.parse(JSON.stringify(deptOptions.value));
+        deptOptionsSearch.value.unshift({ commCd: '', commNm: '전체' });
+        break;
+      case '502':
+        pstnOptions.value = response.data.data;
+        break;
+      case '503':
+        titlOptions.value = response.data.data;
+        break;
+      default:
+        deptOptions.value = [];
+        pstnOptions.value = [];
+        titlOptions.value = [];
+    }
+
+    // console.log('getData1: ', JSON.stringify(response.data.data));
   } catch (error) {
     console.error('Error fetching users:', error);
   }
@@ -925,29 +828,130 @@ async function getDataEvtgOption() {
 // **************************************************************//
 // ***** DataBase 연결부분 끝  *************************************//
 // **************************************************************//
-//
-// const handleImageUpload = () => {
-//   // 파일 선택 대화 상자 열기
-//   const input = document.createElement('input');
-//   input.type = 'file';
-//   input.accept = 'image/*'; // 이미지 파일만 선택 가능하도록 설정 (선택 사항)
-//   input.onchange = event => {
-//     const file = event.target.files[0];
-//     if (file) {
-//       // 파일이 선택된 경우, 여기에서 파일 업로드 로직을 추가할 수 있습니다.
-//       uploadFile(file);
-//     }
-//   };
-//   input.click();
-// };
-// const uploadFile = file => {
-//   // 파일 업로드 로직을 작성하세요.
-//   insaFileName.value = file.name;
-//   console.log('Selected file:', file);
-//   // 여기에서 파일을 업로드하는 코드를 추가하세요.
-// };
-//
-// const handleImageDelete = () => {};
+
+const myGrid = ref(null);
+const gridOptions = {
+  columnDefs: columnDefs.columns,
+  rowData: rowData.rows,
+  defaultColDef: {
+    flex: 1,
+    sortable: true,
+    filter: true,
+    floatingFilter: false,
+    editable: false,
+  },
+  rowSelection: 'multiple' /* 'single' or 'multiple',*/,
+  enableColResize: true,
+  enableSorting: true,
+  enableFilter: false,
+  enableRangeSelection: true,
+  suppressRowClickSelection: false,
+  animateRows: true,
+  suppressHorizontalScroll: true,
+  localeText: { noRowsToShow: '조회 결과가 없습니다.' },
+  getRowStyle: function (param) {
+    if (param.node.rowPinned) {
+      return { 'font-weight': 'bold', background: '#dddddd' };
+    }
+    return { 'text-align': 'left' };
+  },
+  getRowHeight: function (param) {
+    // 고정된 행의 높이
+    if (param.node.rowPinned) {
+      return 45;
+    }
+    return 40;
+  },
+  // GRID READY 이벤트, 사이즈 자동조정
+  onGridReady: function (event) {
+    // console.log('Grid is ready'); // Check if grid initializes
+    event.api.sizeColumnsToFit();
+  },
+  // 창 크기 변경 되었을 때 이벤트
+  onGridSizeChanged: function (event) {
+    event.api.sizeColumnsToFit();
+  },
+  onRowEditingStarted: function (event) {
+    // console.log('never called - not doing row editing');
+  },
+  onRowEditingStopped: function (event) {
+    // console.log('never called - not doing row editing');
+  },
+  onCellEditingStarted: function (event) {
+    // console.log('cellEditingStarted');
+  },
+  onCellEditingStopped: function (event) {
+    // console.log('cellEditingStopped');
+  },
+  onRowClicked: function (event) {
+    // console.log('onRowClicked');
+    // selectedRows.value = event.api.getSelectedRows();
+    // console.log('sel: ', JSON.stringify(selectedRows.value));
+  },
+  onCellClicked: function (event) {
+    // console.log('onCellClicked');
+  },
+  isRowSelectable: function (event) {
+    // console.log('isRowSelectable');
+    return true;
+  },
+  onSelectionChanged: function (event) {
+    // console.log('onSelectionChanged1');
+    selectedRows.value = event.api.getSelectedRows();
+    isShowStatusEdit.value = false;
+    isShowDeleteBtn.value = selectedRows.value.length > 0;
+    isShowSaveBtn.value = false;
+
+    if (selectedRows.value.length === 1) {
+      getDataSelect(selectedRows.value[0].stdYear, selectedRows.value[0].empCd);
+      isImageDelete.value = !selectedRows.value[0].imageFileNm;
+      isShowStatusEdit.value = true;
+      isShowSaveBtn.value = true;
+      statusEdit.icon = 'edit_note';
+      statusEdit.message = '수정/삭제모드 입니다';
+      statusEdit.color = 'accent';
+      isSaveFg = 'U';
+      formDisableEmpCd.value = true;
+      formDisable.value = false;
+    } else if (selectedRows.value.length > 1) {
+      isSaveFg = 'D';
+      isShowStatusEdit.value = true;
+      statusEdit.icon = 'delete';
+      statusEdit.message = '삭제모드 입니다';
+      statusEdit.color = 'negative';
+      formDisable.value = true;
+      formData.value = {};
+    } else {
+      formData.value = {};
+      isShowStatusEdit.value = false;
+      isSaveFg = '';
+      formDisable.value = true;
+    }
+  },
+  onSortChanged: function (event) {
+    // console.log('onSortChanged');
+  },
+  onCellValueChanged: function (event) {
+    // console.log('onCellValueChanged');
+    onCellValueChanged();
+  },
+  getRowNodeId: function (data) {
+    return null;
+  },
+  // 리드 상단 고정
+  setPinnedTopRowData: function (data) {
+    return null;
+  },
+  // 그리드 하단 고정
+  setPinnedBottomRowData: function (data) {
+    return null;
+  },
+  // components: {
+  //   numericCellEditor: NumericCellEditor,
+  //   moodEditor: MoodEditor,
+  // },
+  debug: false,
+};
 </script>
 
 <style scoped></style>

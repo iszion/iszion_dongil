@@ -1,0 +1,187 @@
+CREATE DEFINER=`iszion`@`%` TRIGGER `db_renew`.`HEMPTB_AFTER_INSERT` AFTER INSERT ON `HEMPTB` FOR EACH ROW
+BEGIN
+
+		INSERT INTO XUSERTB
+						(
+							  USER_ID
+							, PASSWD
+							, USER_NM
+							, USER_NMX
+							, EMP_CD
+							, DEPT_CD
+							, PSTN_CD
+							, TITL_CD
+							, MOBILE
+							, EMAIL
+							, IN_DAY
+							, OUT_DAY
+							, ROLE
+							, LEVEL_CD
+							, EXPLAINS
+							, USE_YN
+							, IMAGE_FILE_NM
+							, IMAGE_FILE_NM_FULL
+							, REG_DATE
+							, REG_ID
+							, UPDATE_DATE
+							, UPDATE_ID
+						) VALUES (
+							  NEW.EMP_CD
+							, NEW.PASSWD
+							, NEW.EMP_NM
+							, NEW.EMP_NM
+							, NEW.EMP_CD
+							, NEW.DEPT_CD
+							, NEW.PSTN_CD
+							, NEW.TITL_CD
+							, NEW.MOBILE
+							, NEW.EMAIL
+							, NEW.IN_DAY
+							, NEW.OUT_DAY
+							, 'ROLE_USER'
+							, '9011004'
+							, '인사정보연동자료'
+							, 'Y'
+							, NULL
+							, NULL
+							, NEW.REG_DATE
+							, NEW.REG_ID
+							, NEW.UPDATE_DATE
+							, NEW.UPDATE_ID
+						)
+					ON DUPLICATE KEY UPDATE
+					  USER_NM       =   NEW.EMP_NM
+					, USER_NMX      =   NEW.EMP_NM
+					, DEPT_CD       =   NEW.DEPT_CD
+					, PSTN_CD       =   NEW.PSTN_CD
+					, TITL_CD       =   NEW.TITL_CD
+					, MOBILE        =   NEW.MOBILE
+					, EMAIL         =   NEW.EMAIL
+					, IN_DAY        =   NEW.IN_DAY
+					, OUT_DAY       =   NEW.OUT_DAY
+					, EXPLAINS      =   '인사정보 조정연동'
+					, UPDATE_DATE   =   NEW.UPDATE_DATE
+					, UPDATE_ID     =   NEW.UPDATE_ID
+
+					;
+
+		INSERT INTO XMFAVTB (
+								USER_ID,
+								LOCATION,
+								SEQ,
+								MENU_ID,
+								MENU_PARENT,
+								PROG_NM,
+								PROG_ID,
+								ICON,
+								STATE_OPENED,
+								TYPE,
+								REG_DATE,
+								REG_ID,
+								UPDATE_DATE,
+								UPDATE_ID
+						) VALUES (
+								  NEW.EMP_CD
+								, ''
+								, 0
+								, 'j1_1'
+								, '#'
+								, '즐겨찾기 목록'
+								, ''
+								, 'fa fa-folder-open'
+								, 0
+								, 'folder'
+								, NOW()
+								, NEW.REG_ID
+								, NOW()
+								, NEW.UPDATE_ID
+						)
+					ON DUPLICATE KEY UPDATE
+					  UPDATE_DATE   =   NOW()
+					, UPDATE_ID     =   NEW.UPDATE_ID
+                    ;
+END
+
+CREATE DEFINER=`iszion`@`%` TRIGGER `db_renew`.`HEMPTB_AFTER_UPDATE` AFTER UPDATE ON `HEMPTB` FOR EACH ROW
+BEGIN
+
+		INSERT INTO XUSERTB
+						(
+							  USER_ID
+							, PASSWD
+							, USER_NM
+							, USER_NMX
+							, EMP_CD
+							, DEPT_CD
+							, PSTN_CD
+							, TITL_CD
+							, MOBILE
+							, EMAIL
+							, IN_DAY
+							, OUT_DAY
+							, ROLE
+							, LEVEL_CD
+							, EXPLAINS
+							, USE_YN
+							, IMAGE_FILE_NM
+							, IMAGE_FILE_NM_FULL
+							, REG_DATE
+							, REG_ID
+							, UPDATE_DATE
+							, UPDATE_ID
+						) VALUES (
+							  NEW.EMP_CD
+							, NEW.PASSWD
+							, NEW.EMP_NM
+							, NEW.EMP_NM
+							, NEW.EMP_CD
+							, NEW.DEPT_CD
+							, NEW.PSTN_CD
+							, NEW.TITL_CD
+							, NEW.MOBILE
+							, NEW.EMAIL
+							, NEW.IN_DAY
+							, NEW.OUT_DAY
+							, 'ROLE_USER'
+							, '9011004'
+							, '인사정보연동자료'
+							, 'Y'
+							, NULL
+							, NULL
+							, NOW()
+							, NEW.REG_ID
+							, NOW()
+							, NEW.UPDATE_ID
+						)
+					ON DUPLICATE KEY UPDATE
+
+					  USER_NM       =   NEW.EMP_NM
+					, USER_NMX      =   NEW.EMP_NM
+					, DEPT_CD       =   NEW.DEPT_CD
+					, PSTN_CD       =   NEW.PSTN_CD
+					, TITL_CD       =   NEW.TITL_CD
+					, MOBILE        =   NEW.MOBILE
+					, EMAIL         =   NEW.EMAIL
+					, IN_DAY        =   NEW.IN_DAY
+					, OUT_DAY       =   NEW.OUT_DAY
+					, EXPLAINS      =   '인사정보 조정연동'
+					, UPDATE_DATE   =   NOW()
+					, UPDATE_ID     =   NEW.UPDATE_ID
+
+					;
+
+
+END
+
+
+CREATE DEFINER=`iszion`@`%` TRIGGER `db_renew`.`HEMPTB_AFTER_DELETE` AFTER DELETE ON `HEMPTB` FOR EACH ROW
+BEGIN
+
+
+		DELETE FROM XUSERTB
+					WHERE EMP_CD   =   OLD.EMP_CD;
+
+		DELETE FROM XMFAVTB
+					WHERE USER_ID  =	OLD.EMP_CD;
+
+END

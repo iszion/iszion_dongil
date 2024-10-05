@@ -16,9 +16,18 @@
             </q-avatar>
             <!--            <q-avatar square size="180px"> <q-img :src="`https://www.iszion.com/images/${formData.imageFileNm}`" /></q-avatar>-->
             <div class="row q-py-md">
-              <q-avatar color="blue" text-color="white" icon="photo_camera" size="md" class="q-pa-none cursor-pointer" @click="handleImageUpload" />
+              <q-btn round color="primary" glossy text-color="white" icon="photo_camera" class="cursor-pointer" @click="handleImageUpload" />
               <q-space />
-              <q-avatar color="red" text-color="white" icon="delete_forever" size="md" class="q-pa-none cursor-pointer" @click="handleImageDelete" />
+              <q-btn
+                round
+                :disable="formData.imageFileNm"
+                color="red"
+                glossy
+                text-color="white"
+                icon="delete_forever"
+                class="cursor-pointer"
+                @click="handleImageDelete"
+              />
             </div>
           </div>
         </div>
@@ -300,7 +309,31 @@ const uploadFile = async file => {
   }
 };
 
-const handleImageDelete = async () => {
+const handleImageDelete = () => {
+  $q.dialog({
+    dark: true,
+    title: '사진삭제',
+    message: '이미지를 삭제 하시겠습니까?',
+    ok: {
+      label: '삭제하기',
+      push: true,
+      color: 'negative',
+    },
+    cancel: {
+      label: '취소',
+      push: true,
+      color: 'grey-7',
+    },
+  })
+    .onOk(() => {
+      imageDeleteCall();
+    })
+    .onCancel(() => {})
+    .onDismiss(() => {
+      // 확인/취소 모두 실행되었을때
+    });
+};
+const imageDeleteCall = async () => {
   const response = await api.delete('/api/mst/mst1010_fileDelete', {
     params: {
       filename: formData.value.imageFileNm,
@@ -308,8 +341,19 @@ const handleImageDelete = async () => {
     },
   });
   // console.log('delete : ' + response);
-  if (response.data.success) {
+  if (response.data === 'SUCCESS') {
     formData.value.imageFileNm = ''; // 이미지 삭제 후 이미지 파일명을 비움
+    let saveStatus = {
+      rtn: '0',
+      rtnMsg: '삭제되었습니다',
+    };
+    notifySave.notifyView1(saveStatus, 1000);
+  } else {
+    let saveStatus = {
+      rtn: '3',
+      rtnMsg: '삭제실패~~~',
+    };
+    notifySave.notifyView1(saveStatus, 1000);
   }
 };
 </script>

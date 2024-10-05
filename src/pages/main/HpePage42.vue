@@ -326,7 +326,6 @@ const getDataPage42EmpList = async resEmpCdList => {
 .q-table .q-td {
   font-family: 'Arial', sans-serif; /* 셀 폰트 */
   font-size: 13px; /* 셀 폰트 크기 */
-  //color: #002bf8; /* 셀 텍스트 색상 */
   padding: 0 0 0 0;
 }
 .my-sticky-header-table {

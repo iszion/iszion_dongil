@@ -287,10 +287,10 @@ function buildTree(data, parentDeptCd = '000') {
     let tmpURL = '';
     if (item.imageFileNm === '' || item.imageFileNm === null) {
       if (item.titlCd === '101') {
-        tmpURL = '/icons/dongil_logo.png';
+        tmpURL = '/icons/iszion_logo.png';
       } else if (item.deptCd.substring(0, 2) === '99') {
         // tmpURL = '/icons/favicon-96x96.png';
-        tmpURL = '/icons/dongil_logo_192.png';
+        tmpURL = '/icons/iszion_logo_192.png';
       } else {
         tmpURL = '/icons/favicon-96x96.png';
       }

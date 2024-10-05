@@ -1,65 +1,6 @@
 <template>
   <q-page padding class="q-col-gutter-y-sm">
     <div class="row q-col-gutter-md">
-      <div v-if="storeUser.setEvtgCd > '01'" class="col-xs-12 col-sm-6" style="height: 300px">
-        <!-- 성과평가 진행율 -->
-        <hpe-page2 />
-      </div>
-      <div v-if="storeUser.setEvtgCd > '01'" class="col-xs-12 col-sm-6" style="height: 300px">
-        <!-- 전년 평가 정보 -->
-        <hpe-page1 />
-      </div>
-
-      <div v-if="storeUser.setEvtgCd === '01'" class="col-xs-12 col-sm-4" style="height: 300px">
-        <!-- 성과평가 진행율 -->
-        <hpe-page2 />
-      </div>
-      <div v-if="storeUser.setEvtgCd === '01'" class="col-xs-12 col-sm-3" style="height: 300px">
-        <!-- 역량평가 진행율 -->
-        <hpe-page3 />
-      </div>
-      <div v-if="storeUser.setEvtgCd === '01'" class="col-xs-12 col-sm-5" style="height: 300px">
-        <!-- 전년 평가 정보 -->
-        <hpe-page1 />
-      </div>
-
-      <div
-        v-if="storeUser.setTitlCd === '101' || storeUser.setLevelCd === '2'"
-        class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6"
-        :style="$q.screen.xs ? 'height: 550px' : 'height: 370px'"
-      >
-        <!-- 평가대상자 -->
-        <hpe-page41 />
-      </div>
-      <div v-if="storeUser.setTitlCd === '101'" class="col-xs-12 col-sm-3" style="height: 370px">
-        <!-- 역량평가 진행율 -->
-        <hpe-page3 />
-      </div>
-
-      <div
-        v-if="storeUser.setTitlCd === '101' || storeUser.setLevelCd === '2'"
-        class="col-xs-12 col-sm-6 col-md-6 col-lg-3 col-xl-3"
-        style="height: 370px"
-      >
-        <!-- 진급대상 정보 -->
-        <hpe-page42 />
-      </div>
-      <div v-if="storeUser.setLevelCd === '2'" class="col-xs-12 col-sm-6 col-md-6 col-lg-3 col-xl-3" style="height: 370px">
-        <!-- 성과평가 사유내역 리스트 -->
-        <hpe-page5 />
-      </div>
-      <div v-if="storeUser.setTitlCd === '101' || storeUser.setLevelCd === '2'" class="col-xs-12 col-sm-12">
-        <!-- 소속팀 조직도 -->
-        <dept-tree />
-      </div>
-
-      <div v-if="storeUser.setTitlCd === '101' || storeUser.setLevelCd === '2'" class="col-xs-12 col-sm-12">
-        <!-- 인사평가 최종 집계내역 -->
-        <hpe-page43 />
-      </div>
-    </div>
-
-    <div v-if="storeUser.setTitlCd !== '101'" class="row q-col-gutter-md">
       <div class="col-12 col-md-6">
         <!-- 나의일정 -->
         <event-view />

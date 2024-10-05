@@ -23,9 +23,6 @@ module.exports = configure(function (/* ctx */) {
         open: true,
         proxy: {
           '/api': {
-            // target: 'http://192.168.141.254:8080',
-            // target: 'https://125.250.69.237:8080',
-            // target: 'http://192.168.141.13:8080',
             changeOrigin: true,
           },
         },
@@ -38,7 +35,7 @@ module.exports = configure(function (/* ctx */) {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli/boot-files
-    boot: ['initialization', 'constants', 'loading-plugin', 'loadingBar-plugin', 'quasar-lang-pack', 'i18n', 'axios', 'apexcharts'],
+    boot: ['initialization', 'constants', 'loading-plugin', 'loadingBar-plugin', 'quasar-lang-pack', 'i18n', 'axios', 'apexcharts', 'pinia'],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css
     css: ['app.scss'],
@@ -102,8 +99,8 @@ module.exports = configure(function (/* ctx */) {
     devServer: {
       // https: true
       //host: '192.168.141.13',
-      //port: 9000,
-      //open: true, // opens browser window automatically
+      port: 9000,
+      open: true, // opens browser window automatically
       // host: 'https://www.iszion.com', // 이 IP 주소를 원하는 주소로 변경
       // port: 9000,
       // open: false, // 서버 시작 시 브라우저를 자동으로 열지 않음
@@ -177,7 +174,7 @@ module.exports = configure(function (/* ctx */) {
 
     // https://v2.quasar.dev/quasar-cli/developing-pwa/configuring-pwa
     pwa: {
-      workboxMode: 'generateSW', // or 'injectManifest'
+      workboxMode: 'generateSW', // 'generateSW',  or 'injectManifest'
       injectPwaMetaTags: true,
       swFilename: 'sw.js',
       manifestFilename: 'manifest.json',

@@ -12,12 +12,12 @@
 
       <q-card-section class="q-pa-xs">
         <div class="row q-col-gutter-x-xs">
-          <div class="col-xs-12 col-md-3">
+          <div class="col-xs-12 col-md-4">
             <q-card bordered class="q-pa-xs">
               <apexchart type="radar" :height="chartHeight_radar" :options="chartOptions_radar" :series="series_radar"></apexchart>
             </q-card>
           </div>
-          <div class="col-xs-12 col-md-9">
+          <div class="col-xs-12 col-md-8">
             <div :style="{ height: chartHeight_radar + 25 + 'px' }">
               <ag-grid-vue
                 style="width: 100%; height: 100%"
@@ -133,6 +133,19 @@ const columnDefs = reactive({
       maxWidth: 70,
       filter: false,
       cellRenderer: ImageView,
+      cellRendererParams: params => {
+        // console.log('param: ', JSON.stringify(params.data));
+        return {
+          // imageData: params.data.imageFileNm, // imageFileNm 필드 데이터 전달
+          rowData: {
+            empCd: params.data.empCd,
+            empNm: params.data.empNm,
+            deptNm: params.data.deptNm,
+            titlNm: params.data.titlNm,
+            imageFileNm: params.data.imageFileNm,
+          }, // 전체 row 데이터 전달 (필요 시)
+        };
+      },
     },
 
     {
@@ -318,7 +331,7 @@ const chartOptions_radar = ref({
   yaxis: {
     min: 0, // Y축의 최소값 설정
     max: 100, // Y축의 최대값 설정
-    tickAmount: 10, // 눈금 개수 설정
+    tickAmount: 5, // 눈금 개수 설정
     // stepSize: 30,
     labels: {
       formatter: value => `${value}%`, // Y축 값 포맷팅

@@ -26,7 +26,7 @@
                     dense
                     stack-label
                     options-dense
-                    class="q-px-md q-mr-sm"
+                    class="q-px-md"
                     label-color="orange"
                     v-model="selectedDeptH"
                     :options="deptOptionsX"
@@ -39,21 +39,12 @@
                     label="소속팀"
                     @update:model-value="getDataEmp"
                   />
-                  <q-select
-                    dense
-                    stack-label
-                    options-dense
-                    class="q-px-md q-mr-sm"
-                    label-color="orange"
-                    v-model="selectedCatgH"
-                    :options="catgOptionsX"
-                    option-value="catgCd"
-                    option-label="catgNm"
-                    option-disable="inactive"
-                    emit-value
-                    map-options
-                    style="min-width: 150px; max-width: 150px"
-                    label="직분류"
+                  <q-toggle
+                    :label="`${selectedCatgCh}`"
+                    color="orange"
+                    false-value="전체"
+                    true-value="평가자"
+                    v-model="selectedCatgCh"
                     @update:model-value="getDataEmp"
                   />
                   <q-input
@@ -63,7 +54,7 @@
                     v-model="searchValue"
                     label="검색"
                     dense
-                    class="q-pb-none"
+                    class="q-ml-sm q-pb-none"
                     style="width: 120px"
                   >
                     <template v-slot:append>
@@ -81,15 +72,10 @@
             <q-card-section class="q-pa-xs">
               <div :style="contentZoneStyle">
                 <ag-grid-vue
+                  ref="myGrid"
                   style="width: 100%; height: 100%"
                   :class="$q.dark.isActive ? 'ag-theme-alpine-dark' : 'ag-theme-alpine'"
-                  :columnDefs="columnDefsEmp.columns"
-                  :rowData="rowDataEmp.rows"
-                  :defaultColDef="defaultColDefEmp.def"
-                  :rowSelection="rowSelectionEmp"
-                  @selection-changed="onSelectionChangedEmp"
-                  @grid-ready="onGridReadyEmp"
-                  suppressRowClickSelection="true"
+                  :grid-options="gridOptions"
                 >
                 </ag-grid-vue>
               </div>
@@ -214,17 +200,12 @@
             <q-separator size="3px" />
 
             <q-card-section class="q-pa-xs">
-              <div :key="gridKey" :style="contentZoneStyle">
+              <div :style="contentZoneStyle">
                 <ag-grid-vue
+                  ref="myGrid1"
                   style="width: 100%; height: 100%"
                   :class="$q.dark.isActive ? 'ag-theme-alpine-dark' : 'ag-theme-alpine'"
-                  :columnDefs="columnDefs.columns"
-                  :rowData="rowData.rows"
-                  :rowSelection="rowSelection"
-                  :defaultColDef="defaultColDef.def"
-                  @selection-changed="onSelectionTargetEmp"
-                  @grid-ready="onGridReady"
-                  suppressRowClickSelection="true"
+                  :grid-options="gridOptionsTarget"
                 >
                 </ag-grid-vue>
               </div>
@@ -246,7 +227,7 @@ import { AgGridVue } from 'ag-grid-vue3';
 import { Notify, QBtn, QIcon, useQuasar } from 'quasar';
 import { computed, onBeforeMount, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 import { api } from '/src/boot/axios';
-import { isEmpty, isEqual } from 'lodash';
+import { isEmpty } from 'lodash';
 import jsonUtil from 'src/js_comm/json-util';
 import notifySave from 'src/js_comm/notify-save';
 import { useYearInfoStore } from 'src/store/setYearInfo';
@@ -256,33 +237,25 @@ const $q = useQuasar();
 
 let isSaveFg = 'I';
 const isDesableEvs = ref(true);
+const selectedCatgCh = ref('평가자');
 
 const searchValue = ref('');
-const selectedSourceUserId = ref('');
-const gridKey = ref(0);
 
 const contentZoneHeight = ref(500);
 const contentZoneStyle = computed(() => ({
   height: `${contentZoneHeight.value}px`,
 }));
 
-const gridApi = ref(null);
-const gridApiEmp = ref(null);
 const rowData = reactive({ rows: [] });
 const rowDataEmp = reactive({ rows: [] });
-const rowSelectionEmp = ref(null);
-const rowSelection = ref(null);
 
 const updateData = ref([]);
 const showSaveBtn = ref(false);
 
 onBeforeUnmount(() => {
-  // Remove the resize event listener when the component is destroyed
   window.removeEventListener('resize', handleResize);
 });
 onBeforeMount(() => {
-  rowSelectionEmp.value = 'single';
-  rowSelection.value = 'multiple';
   getDataEmp();
 });
 
@@ -295,20 +268,6 @@ onMounted(() => {
   getDataTitlOption();
   getDataCatgOption();
   getDataCommOption('201');
-});
-
-const onGridReadyEmp = params => {
-  gridApiEmp.value = params.api;
-};
-
-const defaultColDefEmp = reactive({
-  def: {
-    flex: 1,
-    sortable: true,
-    filter: true,
-    floatingFilter: false,
-    editable: false,
-  },
 });
 
 const columnDefsEmp = reactive({
@@ -359,20 +318,6 @@ const columnDefsEmp = reactive({
       minWidth: 140,
     },
   ],
-});
-
-const onGridReady = params => {
-  gridApi.value = params.api;
-};
-
-const defaultColDef = reactive({
-  def: {
-    flex: 1,
-    sortable: true,
-    filter: true,
-    floatingFilter: false,
-    editable: false,
-  },
 });
 
 const columnDefs = reactive({
@@ -448,49 +393,29 @@ const selectedRows = ref();
 const selectedRowsTarget = ref([]);
 const isShowSaveBtn1 = ref(false);
 const isShowSaveBtn3 = ref(false);
-const oldRowCount = ref();
+const oldRowCount = ref(0);
 
-const onSelectionChangedEmp = event => {
-  selectedRows.value = event.api.getSelectedRows();
-  if (!isEmpty(selectedRows.value)) {
-    // console.log('year : ', selectedRows.value[0].stdYear);
-    getDataSelectEmpCall();
-
-    isDesableEvs.value = false;
-  } else {
-    isDesableEvs.value = true;
-    rowData.rows = [];
-  }
-};
 const getDataSelectEmpCall = () => {
-  getDataSelectEmp().then(() => {
+  getDataSelectEmp().then(resData => {
     selectedRowsTarget.value = [];
-    gridApi.value.forEachNode(node => {
+    oldRowCount.value = 0;
+    myGrid1.value.api.forEachNode(node => {
       // console.log('node : ', node.data.iuD);
       // 타겟 평가자와 선택한 평가자가 같은면 체크
       if (node.data.iuD === 'U') {
         node.setSelected(true);
+        oldRowCount.value++;
       }
     });
     if (isEmpty(selectedRowsTarget.value)) {
       isShowSaveBtn1.value = false;
       isShowSaveBtn3.value = false;
     }
-
-    oldRowCount.value = rowData.rows.filter(item => item.iuD === 'U').length;
+    oldRowCount.value = rowData.rows.length;
+    // console.log('oldRowCount : ', oldRowCount.value);
   });
 };
-const onSelectionTargetEmp = event => {
-  selectedRowsTarget.value = event.api.getSelectedRows();
-  if (isEmpty(selectedRowsTarget.value)) {
-    isShowSaveBtn1.value = false;
-    isShowSaveBtn3.value = true;
-  } else {
-    isShowSaveBtn3.value = false;
-    isShowSaveBtn1.value = true;
-  }
-  // console.log('data :: ', JSON.stringify(selectedRowsTarget.value));
-};
+
 const saveDataSection = () => {
   let iu = [];
   let iuD = [];
@@ -498,17 +423,19 @@ const saveDataSection = () => {
   for (let i = 0; i < rowData.rows.length; i++) {
     if (rowData.rows[i].iuD === 'U') {
       let tmpJson = '{"mode": "D","data":' + JSON.stringify(rowData.rows[i]) + '}';
-      // console.log('row : ', JSON.stringify(rowData.rows[i]));
+      // console.log('row Del : ', JSON.stringify(rowData.rows[i]));
       iuD.push(tmpJson);
     }
   }
 
   for (let i = 0; i < selectedRowsTarget.value.length; i++) {
     let tmpJson = '{"mode": "I","data":' + JSON.stringify(selectedRowsTarget.value[i]) + '}';
-    // console.log('row : ', JSON.stringify(selectedRowsTarget.value[i]));
+    // console.log('row Ins : ', JSON.stringify(selectedRowsTarget.value[i]));
     iu.push(tmpJson);
   }
 
+  // console.log('row Del : ', JSON.stringify(iuD));
+  // console.log('row Ins : ', JSON.stringify(iu));
   saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
 };
 
@@ -524,6 +451,8 @@ const handleResize = () => {
 // **************************************************************//
 // ***** DataBase 연결부분    *************************************//
 // **************************************************************//
+const myGrid = ref(null);
+const myGrid1 = ref(null);
 
 // ***** 사용자정보 목록 자료 가져오기 부분  *****************************//
 const getDataEmp = async () => {
@@ -531,10 +460,13 @@ const getDataEmp = async () => {
     const response = await api.post('/api/aux/aux2010_list', {
       paramSetYear: storeYear.setYear,
       paramDeptCd: selectedDeptH.value,
-      paramCatgCd: selectedCatgH.value,
+      paramCatgCh: selectedCatgCh.value,
       paramSearchValue: searchValue.value,
     });
     rowDataEmp.rows = response.data.data;
+    if (myGrid.value && myGrid.value.api) {
+      myGrid.value.api.setRowData(rowDataEmp.rows); // this should trigger the grid to reload data
+    }
   } catch (error) {
     console.error('Error fetching users:', error);
   }
@@ -552,6 +484,10 @@ const getDataSelectEmp = async () => {
       paramEvsCd: selectedEvs.value,
     });
     rowData.rows = response.data.data;
+    if (myGrid1.value && myGrid1.value.api) {
+      myGrid1.value.api.setRowData(rowData.rows); // this should trigger the grid to reload data
+    }
+
     // console.log('seleData : ', JSON.stringify(rowData.rows));
   } catch (error) {
     console.error('Error fetching users:', error);
@@ -559,7 +495,6 @@ const getDataSelectEmp = async () => {
 };
 
 // ***** 자료저장 및 삭제 처리부분 *****************************//
-// saveStatus = 0=수정성공 1=신규성공 2=삭제성공 3=수정에러 4=시스템에러
 const saveDataAndHandleResult = resFormData => {
   api
     .post('/api/aux/aux2010_save', resFormData)
@@ -643,4 +578,205 @@ async function getDataCommOption(resParamCommCd1) {
 // **************************************************************//
 // ***** DataBase 연결부분 끝  *************************************//
 // **************************************************************//
+
+const gridOptions = {
+  columnDefs: columnDefsEmp.columns,
+  rowData: rowDataEmp.rows,
+  defaultColDef: {
+    flex: 1,
+    sortable: true,
+    filter: true,
+    floatingFilter: false,
+    editable: false,
+  },
+  rowSelection: 'single' /* 'single' or 'multiple',*/,
+  enableColResize: true,
+  enableSorting: true,
+  enableFilter: false,
+  enableRangeSelection: true,
+  suppressRowClickSelection: true,
+  animateRows: true,
+  suppressHorizontalScroll: true,
+  localeText: { noRowsToShow: '조회 결과가 없습니다.' },
+  getRowStyle: function (param) {
+    if (param.node.rowPinned) {
+      return { 'font-weight': 'bold', background: '#dddddd' };
+    }
+    return { 'text-align': 'left' };
+  },
+  getRowHeight: function (param) {
+    // 고정된 행의 높이
+    if (param.node.rowPinned) {
+      return 45;
+    }
+    return 40;
+  },
+  // GRID READY 이벤트, 사이즈 자동조정
+  onGridReady: function (event) {
+    // console.log('Grid is ready'); // Check if grid initializes
+    event.api.sizeColumnsToFit();
+  },
+  // 창 크기 변경 되었을 때 이벤트
+  onGridSizeChanged: function (event) {
+    event.api.sizeColumnsToFit();
+  },
+  onRowEditingStarted: function (event) {
+    // console.log('never called - not doing row editing');
+  },
+  onRowEditingStopped: function (event) {
+    // console.log('never called - not doing row editing');
+  },
+  onCellEditingStarted: function (event) {
+    // console.log('cellEditingStarted');
+  },
+  onCellEditingStopped: function (event) {
+    // console.log('cellEditingStopped');
+  },
+  onRowClicked: function (event) {
+    // console.log('onRowClicked');
+  },
+  onCellClicked: function (event) {
+    // console.log('onCellClicked');
+  },
+  isRowSelectable: function (event) {
+    // console.log('isRowSelectable');
+    return true;
+  },
+  onSelectionChanged: function (event) {
+    // console.log('onSelectionChanged');
+    selectedRows.value = event.api.getSelectedRows();
+    if (!isEmpty(selectedRows.value)) {
+      // console.log('year : ', selectedRows.value[0].stdYear);
+      getDataSelectEmpCall();
+      isDesableEvs.value = false;
+    } else {
+      isDesableEvs.value = true;
+      oldRowCount.value = 0;
+      rowData.rows = [];
+      myGrid1.value.api.setRowData(rowData.rows);
+    }
+  },
+  onSortChanged: function (event) {
+    // console.log('onSortChanged');
+  },
+  onCellValueChanged: function (event) {
+    // console.log('onCellValueChanged');
+  },
+  getRowNodeId: function (data) {
+    return null;
+  },
+  // 리드 상단 고정
+  setPinnedTopRowData: function (data) {
+    return null;
+  },
+  // 그리드 하단 고정
+  setPinnedBottomRowData: function (data) {
+    return null;
+  },
+  // components: {
+  //   numericCellEditor: NumericCellEditor,
+  //   moodEditor: MoodEditor,
+  // },
+  debug: false,
+};
+
+const gridOptionsTarget = {
+  columnDefs: columnDefs.columns,
+  rowData: rowData.rows,
+  defaultColDef: {
+    flex: 1,
+    sortable: true,
+    filter: true,
+    floatingFilter: false,
+    editable: false,
+  },
+  rowSelection: 'multiple' /* 'single' or 'multiple',*/,
+  enableColResize: true,
+  enableSorting: true,
+  enableFilter: false,
+  enableRangeSelection: true,
+  suppressRowClickSelection: true,
+  animateRows: true,
+  suppressHorizontalScroll: true,
+  localeText: { noRowsToShow: '조회 결과가 없습니다.' },
+  getRowStyle: function (param) {
+    if (param.node.rowPinned) {
+      return { 'font-weight': 'bold', background: '#dddddd' };
+    }
+    return { 'text-align': 'left' };
+  },
+  getRowHeight: function (param) {
+    // 고정된 행의 높이
+    if (param.node.rowPinned) {
+      return 45;
+    }
+    return 40;
+  },
+  // GRID READY 이벤트, 사이즈 자동조정
+  onGridReady: function (event) {
+    // console.log('Grid is ready'); // Check if grid initializes
+    event.api.sizeColumnsToFit();
+  },
+  // 창 크기 변경 되었을 때 이벤트
+  onGridSizeChanged: function (event) {
+    event.api.sizeColumnsToFit();
+  },
+  onRowEditingStarted: function (event) {
+    // console.log('never called - not doing row editing');
+  },
+  onRowEditingStopped: function (event) {
+    // console.log('never called - not doing row editing');
+  },
+  onCellEditingStarted: function (event) {
+    // console.log('cellEditingStarted');
+  },
+  onCellEditingStopped: function (event) {
+    // console.log('cellEditingStopped');
+  },
+  onRowClicked: function (event) {
+    // console.log('onRowClicked');
+    // selectedRows.value = event.api.getSelectedRows();
+    // console.log('sel: ', JSON.stringify(selectedRows.value));
+  },
+  onCellClicked: function (event) {
+    // console.log('onCellClicked');
+  },
+  isRowSelectable: function (event) {
+    // console.log('isRowSelectable');
+    return true;
+  },
+  onSelectionChanged: function (event) {
+    // console.log('onSelectionChanged1');
+    selectedRowsTarget.value = event.api.getSelectedRows();
+    if (isEmpty(selectedRowsTarget.value)) {
+      isShowSaveBtn1.value = false;
+      isShowSaveBtn3.value = true;
+    } else {
+      isShowSaveBtn3.value = false;
+      isShowSaveBtn1.value = true;
+    }
+  },
+  onSortChanged: function (event) {
+    // console.log('onSortChanged');
+  },
+  onCellValueChanged: function (event) {
+    // console.log('onCellValueChanged');
+  },
+  getRowNodeId: function (data) {
+    return null;
+  },
+  // 리드 상단 고정
+  setPinnedTopRowData: function (data) {
+    return null;
+  },
+  // 그리드 하단 고정
+  setPinnedBottomRowData: function (data) {
+    return null;
+  },
+  // components: {
+  //   numericCellEditor: NumericCellEditor,
+  //   moodEditor: MoodEditor,
+  // },
+  debug: false,
+};
 </script>

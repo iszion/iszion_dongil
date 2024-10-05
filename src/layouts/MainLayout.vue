@@ -3,39 +3,10 @@
     <q-header class="shadow-1 bg-grey-8">
       <q-toolbar>
         <q-avatar square size="sm" @click="handleHomeClick" class="cursor-pointer">
-          <img src="../assets/images/dongil_logo.png" />
+          <img src="../assets/images/iszion_logo.png" />
         </q-avatar>
-
         <div v-show="$q.screen.gt.md" class="text-h6 text-bold text-deep-orange q-pl-sm self-center cursor-pointer" @click="handleHomeClick">
           {{ $t('project_name') }}
-        </div>
-
-        <q-separator class="q-mx-xs-sm q-mx-sm-md" dark vertical inset />
-
-        <div style="max-width: 300px">
-          <q-select
-            dense
-            style="width: 130px; font-size: 1.2em"
-            :bg-color="ev_set_color"
-            standout="text-white"
-            :label-color="ev_set_label_color"
-            :label="ev_set_label"
-            class="super-small"
-            v-model="ev_set_year_group"
-            :options="ev_set_year_options"
-            option-value="stdSetYear"
-            option-label="stdYearNm"
-            options-dense
-            emit-value
-            map-options
-            @update:model-value="handleSelectedSetYear"
-          >
-            <template v-slot:append>
-              <q-icon size="xs" name="refresh" @click="getDataSetYear()">
-                <q-tooltip class="bg-indigo" :offset="[10, 10]"> 기준년도 Reset </q-tooltip>
-              </q-icon>
-            </template>
-          </q-select>
         </div>
 
         <q-separator class="q-mx-xs-sm q-mx-sm-md" dark vertical inset />
@@ -136,17 +107,6 @@
         </q-btn>
         <!-- 사용자 관리 ICON 끝  -->
       </q-toolbar>
-
-      <!--      <q-separator class="bg-grey" />-->
-      <!--      <div v-if="pageTitleBarVisible" class="row" :class="$q.dark.isActive ? 'bg-grey-8 text-white' : 'bg-grey-4 text-dark'">-->
-      <!--        <div v-if="!$q.screen.lt.md" style="width: 230px" class="text-center self-center bg-grey-5">-->
-      <!--          <q-icon :name="menuIcon" size="sm" class="q-pb-xs q-pr-sm" />-->
-      <!--          <span v-if="mainMenuTitle.titleName" class="text-h6 text-weight-bold">{{ $t(mainMenuTitle.titleName) }}</span>-->
-      <!--        </div>-->
-      <!--        <div class="col">-->
-      <!--                <page-titlebar v-if="pageTitleBarVisible" :message="nodeValue" />-->
-      <!--        </div>-->
-      <!--      </div>-->
     </q-header>
 
     <q-drawer v-model="leftDrawerOpen" show-if-above bordered :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-3'" :width="230">
@@ -238,9 +198,9 @@
 </template>
 
 <script setup>
-import { nextTick, onBeforeMount, onMounted, reactive, ref, watch } from 'vue';
+import { onBeforeMount, onMounted, reactive, ref } from 'vue';
 import FooterBar from 'layouts/FooterBar.vue';
-import { QIcon, useQuasar, Cookies, SessionStorage, QBtn } from 'quasar';
+import { QIcon, useQuasar, SessionStorage, QBtn } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { api } from '/src/boot/axios';
@@ -251,7 +211,6 @@ import notifySave from 'src/js_comm/notify-save';
 import JsonUtil from 'src/js_comm/json-util';
 
 const storeUser = useUserInfoStore();
-const storeYear = useYearInfoStore();
 
 const $q = useQuasar();
 const router = useRouter();
@@ -357,7 +316,7 @@ const { locale } = useI18n();
 onBeforeMount(() => {
   selectLanguage('ko-KR');
   storeUser.setEmpCd = SessionStorage.getItem('empCd');
-  getDataSetYear().then(() => {
+  getDataSetUserInfo().then(() => {
     getDataMainMenu();
   });
 });
@@ -440,24 +399,6 @@ const logout = () => {
     });
 };
 
-/*const handleBeforeUnload = event => {
-  const confirmationMessage = 'Are you sure you want to leave?';
-  event.returnValue = confirmationMessage;
-
-  api
-    .post('/api/auth/logout', form.value)
-    .then(res => {
-      localStorage.removeItem('token');
-      router.push({ path: '/' });
-    })
-    .catch(res => {
-      console.log('Error');
-    });
-  return confirmationMessage;
-};*/
-
-// window.addEventListener('beforeunload', handleBeforeUnload);
-
 /* ******************************************************************************** */
 /* ******  end of  token 처리 부분   ************************************************ */
 /* ******************************************************************************** */
@@ -469,9 +410,8 @@ const logout = () => {
 // ***** 유저정보 처리 부분 *****************************//
 const userImageName = ref(null);
 const getDataSetUserInfo = async () => {
-  // storeUser.setEmpCd = SessionStorage.getItem('empCd');
   try {
-    const response = await api.post('/api/sys/user_info', { paramSetYear: storeYear.setYear, paramUserId: storeUser.setEmpCd });
+    const response = await api.post('/api/sys/user_info', { paramUserId: storeUser.setEmpCd });
     // console.log('data: ', JSON.stringify(response.data.data));
     userImageName.value = response.data.data[0].imageFileNm;
     storgeUserInfoGroupSave(
@@ -481,29 +421,13 @@ const getDataSetUserInfo = async () => {
         '|' +
         response.data.data[0].empNmx +
         '|' +
-        response.data.data[0].depgCd +
-        '|' +
-        response.data.data[0].depgNm +
-        '|' +
         response.data.data[0].deptCd +
         '|' +
         response.data.data[0].deptNm +
         '|' +
-        response.data.data[0].titlCd +
-        '|' +
-        response.data.data[0].titlNm +
-        '|' +
         response.data.data[0].pstnCd +
         '|' +
         response.data.data[0].pstnNm +
-        '|' +
-        response.data.data[0].catgCd +
-        '|' +
-        response.data.data[0].catgNm +
-        '|' +
-        response.data.data[0].evtgCd +
-        '|' +
-        response.data.data[0].evtgNm +
         '|' +
         response.data.data[0].levelCd.charAt(response.data.data[0].levelCd.length - 1) +
         '|' +
@@ -515,25 +439,6 @@ const getDataSetUserInfo = async () => {
 };
 // ***** 유저정보 처리 부분 끝 *****************************//
 
-const getDataSetYear = async () => {
-  try {
-    const response = await api.post('/api/aux/aux1010_list', {});
-
-    ev_set_year_options.value = [];
-    ev_set_year_group.value = null;
-    response.data.data.forEach(val => {
-      if (!ev_set_year_group.value) {
-        ev_set_year_group.value = val.stdYearNm;
-        handle_ev_set_color(val.locCh);
-      }
-      ev_set_year_options.value.push(val);
-    });
-    storgeYearGroupSave(ev_set_year_options.value[0].stdYear + '|' + ev_set_year_options.value[0].stdFg + '|' + ev_set_year_options.value[0].locCh);
-    getDataSetUserInfo();
-  } catch (error) {
-    console.error('Error fetching users:', error);
-  }
-};
 // ***** DataBase 메인메뉴자료 가져오기 부분 *****************************//
 const menuListData = reactive({
   mainMenu: {},
@@ -568,9 +473,9 @@ const getSubMenuData = async param => {
 
     // 평가기간 작업 유형에 따른 메뉴 셋팅부분
     let _disable = false;
-    if (storeUser.setLevelCd > '2' || storeUser.setLevelCd === '') {
-      _disable = storeYear.setLocCh !== '1';
-    }
+    // if (storeUser.setLevelCd > '2' || storeUser.setLevelCd === '') {
+    //   _disable = storeYear.setLocCh !== '1';
+    // }
     const _menuList = setMenuList.map(item => {
       if (item.progId !== '') {
         return { ...item, disabled: _disable };
@@ -609,9 +514,9 @@ const getFavMenuData = async param => {
 };
 function addDisabled(obj) {
   let _disable = false;
-  if (storeUser.setLevelCd > '2' || storeUser.setLevelCd === '') {
-    _disable = storeYear.setLocCh !== '1';
-  }
+  // if (storeUser.setLevelCd > '2' || storeUser.setLevelCd === '') {
+  //   _disable = storeYear.setLocCh !== '1';
+  // }
   if (obj.progId !== '') {
     obj.disabled = _disable;
   }
@@ -622,47 +527,6 @@ function addDisabled(obj) {
 // **************************************************************//
 // ***** DataBase 연결부분 끝  *************************************//
 // **************************************************************//
-
-// ***** DataBase 설정기간자료 가져오기 부분 *****************************//
-const ev_set_year_group = ref(null);
-const ev_set_color = ref(null);
-const ev_set_label = ref(null);
-const ev_set_label_color = ref(null);
-const ev_set_year_options = ref([]);
-
-const handleSelectedSetYear = resSelected => {
-  // console.log('selected SetYear: ', resSelected.locCh);
-  handle_ev_set_color(resSelected.locCh);
-  storgeYearGroupSave(resSelected.stdYear + '|' + resSelected.stdFg + '|' + resSelected.locCh);
-  rootView();
-};
-const handle_ev_set_color = val => {
-  switch (val) {
-    case '0':
-      ev_set_color.value = 'teal';
-      ev_set_label.value = '평가준비';
-      ev_set_label_color.value = 'white';
-      break;
-    case '1':
-      ev_set_color.value = 'blue';
-      ev_set_label.value = '평가진행';
-      ev_set_label_color.value = 'white';
-      break;
-    case '2':
-      ev_set_color.value = 'red';
-      ev_set_label.value = '평가집계';
-      ev_set_label_color.value = 'white';
-      break;
-    case '3':
-      ev_set_color.value = 'orange';
-      ev_set_label.value = '평가마감';
-      ev_set_label_color.value = 'dark';
-      break;
-    default:
-      ev_set_color.value = null;
-  }
-};
-// ***** 검색 선택 자동 처리 부분 끝 *****************************//
 
 // ***** 즐겨찾기 정보저장 설정 부분 *****************************//
 const addFavorites = () => {
@@ -733,20 +597,12 @@ const getStorgeSetUserInfoGroup = () => {
   storeUser.setEmpCd = _value[0];
   storeUser.setEmpNm = _value[1];
   storeUser.setEmpNmx = _value[2];
-  storeUser.setDepgCd = _value[3];
-  storeUser.setDepgNm = _value[4];
-  storeUser.setDeptCd = _value[5];
-  storeUser.setDeptNm = _value[6];
-  storeUser.setTitlCd = _value[7];
-  storeUser.setTitlNm = _value[8];
-  storeUser.setPstnCd = _value[9];
-  storeUser.setPstnNm = _value[10];
-  storeUser.setCatgCd = _value[11];
-  storeUser.setCatgNm = _value[12];
-  storeUser.setEvtgCd = _value[13];
-  storeUser.setEvtgNm = _value[14];
-  storeUser.setLevelCd = _value[15];
-  storeUser.setLevelNm = _value[16];
+  storeUser.setDeptCd = _value[3];
+  storeUser.setDeptNm = _value[4];
+  storeUser.setPstnCd = _value[5];
+  storeUser.setPstnNm = _value[6];
+  storeUser.setLevelCd = _value[7];
+  storeUser.setLevelNm = _value[8];
   // console.log(
   //   'Main SetUser Info Group :: ',
   //   storeUser.setEmpCd,
@@ -762,18 +618,6 @@ const getStorgeSetUserInfoGroup = () => {
   //   storeUser.setPstnNm,
   // );
 };
-const storgeYearGroupSave = resSetYearGroup => {
-  SessionStorage.set('setYearGroup', resSetYearGroup);
-  getStorgeSetYearGroup();
-};
-
-const getStorgeSetYearGroup = () => {
-  const _value = SessionStorage.getItem('setYearGroup').split('|');
-  storeYear.setYear = _value[0];
-  storeYear.setFg = _value[1];
-  storeYear.setLocCh = _value[2];
-  // console.log('Main SetYear Group :: ', storeYear.setYear, storeYear.setFg, storeYear.setLocCh);
-};
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="sass"></style>

@@ -31,13 +31,7 @@
                 ref="myGrid"
                 style="width: 100%; height: 100%"
                 :class="$q.dark.isActive ? 'ag-theme-alpine-dark' : 'ag-theme-alpine'"
-                :columnDefs="columnDefs.columns"
-                :rowData="rowData.rows"
-                :defaultColDef="defaultColDef.def"
-                :rowSelection="rowSelection"
-                @selection-changed="onSelectionChanged"
-                @cell-value-changed="onCellValueChanged"
-                @grid-ready="onGridReady"
+                :grid-options="gridOptions"
               >
               </ag-grid-vue>
             </div>
@@ -75,7 +69,6 @@ const contentZoneStyle = computed(() => ({
   height: `${contentZoneHeight.value}px`,
 }));
 
-const gridApi = ref(null);
 const rowData = reactive({ rows: [] });
 const rowDataBack = ref([]);
 const updateData = ref([]);
@@ -86,26 +79,11 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', handleResize);
 });
 onBeforeMount(() => {
-  rowSelection.value = 'multiple';
   getData();
 });
 onMounted(() => {
   window.addEventListener('resize', handleResize);
   handleResize();
-});
-
-const onGridReady = params => {
-  gridApi.value = params.api;
-};
-
-const defaultColDef = reactive({
-  def: {
-    flex: 1,
-    sortable: true,
-    filter: true,
-    floatingFilter: false,
-    editable: true,
-  },
 });
 
 const columnDefs = reactive({
@@ -187,22 +165,6 @@ const columnDefs = reactive({
 
 const selectedRows = ref();
 
-const onSelectionChanged = event => {
-  selectedRows.value = event.api.getSelectedRows();
-
-  if (selectedRows.value.length === 1) {
-    showDeleteBtn.value = true;
-    showSaveBtn.value = true;
-  } else if (selectedRows.value.length > 1) {
-    isSaveFg = 'D';
-    showDeleteBtn.value = true;
-    showSaveBtn.value = false;
-  } else {
-    isSaveFg = '';
-    showDeleteBtn.value = false;
-  }
-};
-
 const onCellValueChanged = () => {
   updateData.value = [];
   for (let i = 0; rowDataBack.value.length > i; i++) {
@@ -217,8 +179,6 @@ const onCellValueChanged = () => {
     showSaveBtn.value = true;
   }
 };
-
-const rowSelection = ref(null);
 
 //*******************************************************//
 //****  신규 자료 추가부분     ******************************//
@@ -239,9 +199,9 @@ const addDataSection = () => {
   };
   rowData.rows.splice(addIndex, 0, newItems);
   // Refresh the grid
-  gridApi.value.setRowData(rowData.rows);
+  myGrid.value.api.setRowData(rowData.rows);
   // 첫컬럼에 focus
-  gridApi.value.setFocusedCell(addIndex, 'deptCd');
+  myGrid.value.api.setFocusedCell(addIndex, 'deptCd');
 };
 //****  신규 자료 추가부분 끝    ******************************//
 
@@ -271,8 +231,8 @@ const deleteDataSection = () => {
       }
       saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
 
-      const selectedData = gridApi.value.getSelectedRows();
-      gridApi.value.applyTransaction({ remove: selectedData });
+      const selectedData = myGrid.value.api.getSelectedRows();
+      myGrid.value.api.applyTransaction({ remove: selectedData });
     })
     .onCancel(() => {})
     .onDismiss(() => {
@@ -334,7 +294,7 @@ const handleResize = () => {
 // **************************************************************//
 // ***** DataBase 연결부분    *************************************//
 // **************************************************************//
-
+const myGrid = ref(null);
 // ***** 소속팀정보 가저오기 부분  **************************//
 const getData = async () => {
   try {
@@ -342,6 +302,10 @@ const getData = async () => {
     rowData.rows = response.data.data;
     rowDataBack.value = JSON.parse(JSON.stringify(response.data.data));
     updateData.value = [];
+    showSaveBtn.value = false;
+    if (myGrid.value && myGrid.value.api) {
+      myGrid.value.api.setRowData(rowData.rows); // this should trigger the grid to reload data
+    }
   } catch (error) {
     console.error('Error fetching users:', error);
   }
@@ -367,4 +331,110 @@ const saveDataAndHandleResult = resFormData => {
 // **************************************************************//
 // ***** DataBase 연결부분 끝  *************************************//
 // **************************************************************//
+
+const gridOptions = {
+  columnDefs: columnDefs.columns,
+  rowData: rowData.rows,
+  defaultColDef: {
+    flex: 1,
+    sortable: true,
+    filter: true,
+    floatingFilter: false,
+    editable: true,
+  },
+  rowSelection: 'multiple' /* 'single' or 'multiple',*/,
+  enableColResize: true,
+  enableSorting: true,
+  enableFilter: false,
+  enableRangeSelection: true,
+  suppressRowClickSelection: false,
+  animateRows: true,
+  suppressHorizontalScroll: true,
+  localeText: { noRowsToShow: '조회 결과가 없습니다.' },
+  getRowStyle: function (param) {
+    if (param.node.rowPinned) {
+      return { 'font-weight': 'bold', background: '#dddddd' };
+    }
+    return { 'text-align': 'left' };
+  },
+  getRowHeight: function (param) {
+    // 고정된 행의 높이
+    if (param.node.rowPinned) {
+      return 45;
+    }
+    return 40;
+  },
+  // GRID READY 이벤트, 사이즈 자동조정
+  onGridReady: function (event) {
+    console.log('Grid is ready'); // Check if grid initializes
+    event.api.sizeColumnsToFit();
+  },
+  // 창 크기 변경 되었을 때 이벤트
+  onGridSizeChanged: function (event) {
+    event.api.sizeColumnsToFit();
+  },
+  onRowEditingStarted: function (event) {
+    console.log('never called - not doing row editing');
+  },
+  onRowEditingStopped: function (event) {
+    console.log('never called - not doing row editing');
+  },
+  onCellEditingStarted: function (event) {
+    console.log('cellEditingStarted');
+  },
+  onCellEditingStopped: function (event) {
+    console.log('cellEditingStopped');
+  },
+  onRowClicked: function (event) {
+    console.log('onRowClicked');
+    // selectedRows.value = event.api.getSelectedRows();
+    // console.log('sel: ', JSON.stringify(selectedRows.value));
+  },
+  onCellClicked: function (event) {
+    console.log('onCellClicked');
+  },
+  isRowSelectable: function (event) {
+    // console.log('isRowSelectable');
+    return true;
+  },
+  onSelectionChanged: function (event) {
+    console.log('onSelectionChanged1');
+    selectedRows.value = event.api.getSelectedRows();
+
+    if (selectedRows.value.length === 1) {
+      showDeleteBtn.value = true;
+      showSaveBtn.value = true;
+    } else if (selectedRows.value.length > 1) {
+      isSaveFg = 'D';
+      showDeleteBtn.value = true;
+      showSaveBtn.value = false;
+    } else {
+      isSaveFg = '';
+      showDeleteBtn.value = false;
+    }
+  },
+  onSortChanged: function (event) {
+    console.log('onSortChanged');
+  },
+  onCellValueChanged: function (event) {
+    console.log('onCellValueChanged');
+    onCellValueChanged();
+  },
+  getRowNodeId: function (data) {
+    return null;
+  },
+  // 리드 상단 고정
+  setPinnedTopRowData: function (data) {
+    return null;
+  },
+  // 그리드 하단 고정
+  setPinnedBottomRowData: function (data) {
+    return null;
+  },
+  // components: {
+  //   numericCellEditor: NumericCellEditor,
+  //   moodEditor: MoodEditor,
+  // },
+  debug: false,
+};
 </script>

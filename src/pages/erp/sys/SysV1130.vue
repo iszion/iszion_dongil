@@ -75,8 +75,8 @@
                 label-color="orange"
                 v-model="searchValue.deptCd"
                 :options="searchValue.deptOptions"
-                option-value="deptCd"
-                option-label="deptNm"
+                option-value="commCd"
+                option-label="commNm"
                 option-disable="inactive"
                 emit-value
                 map-options
@@ -168,14 +168,8 @@ const showSaveUserBtn = ref(false);
 
 const searchValue = ref({
   textValue: '',
-  evsCd: null,
   deptCd: null,
-  titlCd: null,
-  catgCd: null,
-  evsOptions: [],
   deptOptions: [],
-  titlOptions: [],
-  catgOptions: [],
 });
 
 const onGridReadyProg = params => {
@@ -504,12 +498,13 @@ onMounted(() => {
   handleResize();
   rowSelectionProg.value = 'single';
   reloadDataSection();
-  getDataDeptOption();
+  getDataCommOption('501');
 });
 
 const reloadDataSection = () => {
-  getDataGroup();
-  getDataProg();
+  getDataGroup().then(() => {
+    getDataProg();
+  });
 };
 
 const saveDataUserSection = () => {
@@ -565,7 +560,7 @@ const getDataProg = async () => {
     console.error('Error fetching users:', error);
   }
   selectedProg.value = null;
-  rowDataUser.rows = [];
+  // rowDataUser.rows = [];
 };
 
 // ***** 프로그램 권한정보 선택된 자료 가져오기 부분  *****************************//
@@ -616,13 +611,19 @@ const getDataGroup = async () => {
 
 // ***** DataBase 소속자료 가져오기 부분 *****************************//
 
-async function getDataDeptOption() {
+async function getDataCommOption(resCommCd1) {
   try {
-    const response = await api.post('/api/mst/dept_option_list', { paramSetYear: storeYear.setYear });
-
-    searchValue.value.deptOptions = response.data.data;
-    searchValue.value.deptOptions.unshift({ deptCd: '', deptNm: '전체' });
-    searchValue.value.deptCd = '';
+    const response = await api.post('/api/mst/comm_option_list', { paramCommCd1: resCommCd1 });
+    switch (resCommCd1) {
+      case '501':
+        searchValue.value.deptOptions = response.data.data;
+        searchValue.value.deptOptions.unshift({ commCd: '', commNm: '전체' });
+        searchValue.value.deptCd = '';
+        break;
+      default:
+        searchValue.value.deptOptions = [];
+    }
+    // console.log('getData1: ', JSON.stringify(response.data.data));
   } catch (error) {
     console.error('Error fetching users:', error);
   }

@@ -102,17 +102,18 @@ const chartOptions2 = ref(null);
 const chartOptions3 = ref(null);
 const getChartOptions = (label, isXs, isDarkMode) => ({
   chart: {
-    height: isXs ? 180 : 220,
+    height: isXs ? 280 : 220,
     type: 'radialBar',
-    offsetY: 0,
+    offsetY: 10,
   },
   plotOptions: {
     radialBar: {
       startAngle: -130,
       endAngle: 130,
       hollow: {
-        size: '40%', // Customize the size of the hollow area if needed
+        size: isXs ? '30%' : '40%', // Customize the size of the hollow area if needed
       },
+      strokeWidth: '50%', // 원형 바의 두께
       dataLabels: {
         name: {
           fontSize: isXs ? '15px' : '20px',

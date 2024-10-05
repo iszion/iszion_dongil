@@ -17,7 +17,7 @@ export default {
   login_check_message: 'ID or password does not match.',
 
   /* *****  Header 부분 *****  */
-  project_name: 'Store Sale',
+  project_name: 'Sales Marketing System',
   header_menu_profile: 'My information',
   header_menu_logout: 'Logout',
 
@@ -25,7 +25,7 @@ export default {
   main_menu_fav: 'Favorites',
   main_menu_aux: 'Operation',
   main_menu_man: 'DashBoard',
-  main_menu_hpr: 'elevation of status',
+  main_menu_mkt: 'sales Marketing',
   main_menu_hrt: 'evaluate report',
   main_menu_hce: 'evaluate ability',
   main_menu_hpe: 'performance evaluation',

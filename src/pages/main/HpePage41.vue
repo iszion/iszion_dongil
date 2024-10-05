@@ -1,18 +1,21 @@
 <template>
-  <div class="row" style="height: 100%">
-    <q-card bordered class="col-xs-12 col-sm-5 q-pa-xs">
-      <q-bar class="text-subtitle1 text-bold"> 평가대상자 (일반직) </q-bar>
-      <q-card-section class="q-pb-none">
-        <apexchart v-if="chartOptions1" type="line" :height="$q.screen.xs ? '180' : '280'" :options="chartOptions1" :series="series1"></apexchart>
-      </q-card-section>
-    </q-card>
-
-    <q-card bordered class="col-xs-12 col-sm-7 q-pa-xs">
-      <q-bar class="text-subtitle1 text-bold"> 평가대상자 (전문직) </q-bar>
-      <q-card-section class="q-pb-none">
-        <apexchart v-if="chartOptions2" type="line" :height="$q.screen.xs ? '180' : '280'" :options="chartOptions2" :series="series2"></apexchart>
-      </q-card-section>
-    </q-card>
+  <div class="row q-col-gutter-x-md">
+    <div class="col-xs-12 col-sm-5">
+      <q-card bordered class="q-pa-xs">
+        <q-bar class="text-subtitle1 text-bold"> 평가대상자 (일반직) </q-bar>
+        <q-card-section class="q-pb-none">
+          <apexchart v-if="chartOptions1" type="line" :height="$q.screen.xs ? '180' : '280'" :options="chartOptions1" :series="series1"></apexchart>
+        </q-card-section>
+      </q-card>
+    </div>
+    <div class="col-xs-12 col-sm-7">
+      <q-card bordered class="q-pa-xs">
+        <q-bar class="text-subtitle1 text-bold"> 평가대상자 (전문직) </q-bar>
+        <q-card-section class="q-pb-none">
+          <apexchart v-if="chartOptions2" type="line" :height="$q.screen.xs ? '180' : '280'" :options="chartOptions2" :series="series2"></apexchart>
+        </q-card-section>
+      </q-card>
+    </div>
   </div>
 
   <!--  상세인원현황 부분 -->
@@ -101,7 +104,7 @@
 </template>
 
 <script setup>
-import { onBeforeMount, ref, watch } from 'vue';
+import { onBeforeMount, onMounted, ref, watch } from 'vue';
 import { QBtn, QIcon, useQuasar } from 'quasar';
 import { api } from 'boot/axios';
 import { useUserInfoStore } from 'src/store/setUserInfo';
@@ -336,6 +339,9 @@ onBeforeMount(async () => {
   } catch (error) {
     console.error('Error initializing data:', error);
   }
+});
+onMounted(() => {
+  updateChartOptions();
 });
 // **************************************************************//
 // ***** DataBase 연결부분    *************************************//

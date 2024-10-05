@@ -2,21 +2,19 @@
   <q-page>
     <div class="row">
       <div class="col-sm-6 col-md-8 col-lg-9" :class="leftColStyle">
-        <!--        <q-img height="98vh" src="~assets/images/dongil_bg.jpeg" fit="fill"> </q-img>-->
-        <!--        <div>-->
-        <!--          <q-img src="~assets/images/dongil_bg.jpeg"> </q-img>-->
-        <!--        </div>-->
         <div style="padding: 50px; height: 97vh" class="flex flex-center">
-          <!--          <q-img :style="imageStyle" src="~assets/images/dongil_bg_001.png"></q-img>-->
-          <q-img src="~assets/images/dongil_bg_001.png"></q-img>
+          <q-img src="~assets/images/renew_bg_001.jpg"></q-img>
         </div>
       </div>
 
-      <div class="col-12 col-sm-6 col-md-4 col-lg-3 flex flex-center q-pt-xs-xl q-px-xl" :class="$q.dark.isActive ? 'bg-dark' : 'bg-grey-3'">
-        <q-card flat :class="$q.dark.isActive ? 'bg-dark' : 'bg-grey-3'">
-          <q-card-section class="q-mb-lg">
-            <q-img v-if="$q.dark.mode" src="~assets/images/dongil_auth_logo2.png" style="width: 180px" />
-            <q-img v-else src="~assets/images/dongil_auth_logo1.png" style="width: 180px" />
+      <div
+        class="col-12 col-sm-6 col-md-4 col-lg-3 flex flex-center q-pt-xs-xl q-px-xl"
+        :class="$q.dark.isActive ? 'bg-dark' : $q.screen.gt.xs ? 'bg-grey-3' : 'bg-white'"
+      >
+        <q-card flat :class="$q.dark.isActive ? 'bg-dark' : $q.screen.gt.xs ? 'bg-grey-3' : 'bg-white'" class="q-px-xl">
+          <q-card-section class="q-mb-lg flex flex-center">
+            <q-img v-if="$q.dark.mode" src="~assets/images/renew_auth_logo2.png" style="width: 220px" />
+            <q-img v-else src="~assets/images/renew_auth_logo1.png" style="width: 220px" />
             <q-item-label>
               <div class="text-bold q-mt-lg text-deep-orange" style="font-size: 1.65em">{{ $t('project_name') }}</div>
             </q-item-label>

@@ -17,7 +17,7 @@ export default {
   login_check_message: '아이디 또는 패스워드가 일치하지않습니다.',
 
   /* *****  Header 부분 *****  */
-  project_name: '인사평가관리시스템',
+  project_name: '영업마케팅관리시스템',
   header_menu_profile: '나의정보',
   header_menu_logout: '로그아웃',
 
@@ -25,10 +25,7 @@ export default {
   main_menu_fav: '즐겨찾기',
   main_menu_aux: '관리운영',
   main_menu_man: '대시보드',
-  main_menu_hpr: '승격심사',
-  main_menu_hce: '역량평가',
-  main_menu_hrt: '평가보고',
-  main_menu_hpe: '성과평가',
+  main_menu_mkt: '영업관리',
   main_menu_mst: '기준정보',
   main_menu_sys: '시스템',
 
