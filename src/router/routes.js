@@ -16,6 +16,10 @@ const routes = [
       { path: 'mkt1010', component: () => import('pages/erp/mkt/MktV1010.vue') },
       { path: 'mkt1020', component: () => import('pages/erp/mkt/MktV1020.vue') },
       { path: 'mkt2010', component: () => import('pages/erp/mkt/MktV2010.vue') },
+      { path: 'mkt3010', component: () => import('pages/erp/mkt/MktV3010.vue') },
+      { path: 'mkt3020', component: () => import('pages/erp/mkt/MktV3020.vue') },
+      { path: 'mkt4010', component: () => import('pages/erp/mkt/MktV4010.vue') },
+      { path: 'stepEdit', component: () => import('pages/erp/mkt/STEP_EDIT.vue') },
 
       { path: 'mst1010', component: () => import('pages/erp/mst/MstV1010.vue') },
       { path: 'mst1210', component: () => import('pages/erp/mst/MstV1210.vue') },
@@ -33,6 +37,7 @@ const routes = [
       { path: 'mstgrid', component: () => import('pages/erp/mst/MstVgrid.vue') },
       { path: 'mstprint', component: () => import('pages/erp/mst/MstVprint.vue') },
       { path: 'mstexcel', component: () => import('pages/erp/mst/MstVexcel.vue') },
+      { path: 'mstgps', component: () => import('pages/erp/mst/MstVgps.vue') },
 
       { path: 'sys1010', component: () => import('pages/erp/sys/SysV1010.vue') },
       { path: 'sys1110', component: () => import('pages/erp/sys/SysV1110.vue') },

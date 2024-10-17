@@ -125,7 +125,7 @@
                   <div class="row q-col-gutter-xl">
                     <div class="col-12 col-md-6">
                       <q-card class="q-ma-xs q-pa-sm">
-                        <q-img :src="`https://hr.energyshop.co.kr/images/${formData.imageFileNm}?${new Date().getTime()}`" />
+                        <q-img :src="`https://www.iszion.com/images/${formData.imageFileNm}?${new Date().getTime()}`" />
                         <!--                        <q-img :src="`https://www.iszion.com/images/${formData.imageFileNm}?${new Date().getTime()}`" />-->
                         <div class="row q-pa-xs">
                           <q-btn
@@ -764,7 +764,6 @@ const getDataSelect = async (resStdYear, resEmpCd) => {
     formData.value.birthday = commUtil.formatDate(response.data.data[0].birthday);
     formData.value.inDay = commUtil.formatDate(response.data.data[0].inDay);
     formData.value.outDay = commUtil.formatDate(response.data.data[0].outDay);
-    // imageSrc.value = `https://hr.energyshop.co.kr/images/${formData.value.imageFileNm}`;
     // imageSrc.value = `https://www.iszion.com/images/${formData.value.imageFileNm}`;
     // console.log('imgSrc : ' + imageSrc.value);
     // console.log('formData : ' + formData.value.imageFileNm);
@@ -841,7 +840,7 @@ const gridOptions = {
     editable: false,
   },
   rowSelection: 'multiple' /* 'single' or 'multiple',*/,
-  enableColResize: true,
+  enableColResize: false,
   enableSorting: true,
   enableFilter: false,
   enableRangeSelection: true,

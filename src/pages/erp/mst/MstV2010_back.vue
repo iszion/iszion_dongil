@@ -8,7 +8,7 @@
           <!-- contents list title bar -->
           <q-bar class="q-px-sm">
             <q-icon name="list_alt" />
-            <span class="text-subtitle2 q-px-sm">직위정보리스트</span>
+            <span class="text-subtitle2 q-px-sm">소속팀정보리스트</span>
           </q-bar>
           <!--  end of contents list title bar -->
           <q-card-actions align="right" class="q-pa-none">
@@ -16,7 +16,9 @@
               <q-btn outline color="positive" dense @click="getData"><q-icon name="refresh" size="xs" class="q-mr-sm" />다시불러오기</q-btn>
               <q-space />
               <div class="q-gutter-xs">
-                <q-btn v-if="showDeleteBtn" outline color="negative" dense @click="deleteDataSection"> <q-icon name="delete" size="xs" /> 삭제</q-btn>
+                <q-btn v-if="selectedRows.length > 0" outline color="negative" dense @click="deleteDataSection">
+                  <q-icon name="delete" size="xs" /> 삭제</q-btn
+                >
                 <q-btn v-if="showSaveBtn" outline color="primary" dense @click="saveDataSection"><q-icon name="save" size="xs" /> 저장 </q-btn>
                 <q-btn outline color="positive" dense @click="addDataSection"><q-icon name="add" size="xs" /> 신규 </q-btn>
               </div>
@@ -55,9 +57,7 @@ import { api } from '/src/boot/axios';
 import { isEmpty } from 'lodash';
 import jsonUtil from 'src/js_comm/json-util';
 import notifySave from 'src/js_comm/notify-save';
-
-import { useYearInfoStore } from 'src/store/setYearInfo';
-const storeYear = useYearInfoStore();
+import CompSelectTeam from 'components/CompSelectTeam.vue';
 
 const $q = useQuasar();
 
@@ -78,15 +78,21 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', handleResize);
 });
 onBeforeMount(() => {
-  getData();
+  getDataCommOption('201').then(() => {
+    columnDefsSet();
+    myGrid.value.api.setColumnDefs(columnDefs.value);
+    getData();
+  });
 });
 onMounted(() => {
   window.addEventListener('resize', handleResize);
   handleResize();
 });
 
-const columnDefs = reactive({
-  columns: [
+const teamOptions = ref([]);
+const columnDefs = ref([]);
+const columnDefsSet = () => {
+  columnDefs.value = [
     {
       headerName: '',
       field: '',
@@ -99,7 +105,7 @@ const columnDefs = reactive({
     },
     {
       headerName: '코드',
-      field: 'pstnCd',
+      field: 'salesCd',
       maxWidth: 80,
       minWidth: 80,
       cellEditorParams: {
@@ -107,27 +113,54 @@ const columnDefs = reactive({
       },
     },
     {
-      headerName: '직위명',
-      field: 'pstnNm',
+      headerName: '담당자명',
+      field: 'salesNm',
       maxWidth: 150,
       minWidth: 150,
     },
     {
-      headerName: '처리순서',
-      field: 'seq',
-      maxWidth: 100,
-      minWidth: 100,
-      cellEditor: 'agNumberCellEditor',
-      cellEditorParams: {
-        precision: 2,
-        step: 1,
-        showStepperButtons: true,
+      headerName: '팀명',
+      field: 'teamCd',
+      minWidth: 150,
+      maxWidth: 220,
+      filter: true,
+      editable: false,
+      cellRenderer: CompSelectTeam,
+      cellRendererParams: {
+        updateSelectedValue: row => {
+          handleCellValueChanged();
+        },
+        valueOptions: teamOptions.value,
       },
     },
-  ],
-});
+    {
+      headerName: '팀구호',
+      field: 'explains',
+      minWidth: 120,
+      filter: true,
+    },
+    {
+      headerName: '순서',
+      field: 'seq',
+      minWidth: 100,
+      maxWidth: 100,
+      filter: true,
+    },
+  ];
+};
 
-const selectedRows = ref();
+const selectedRows = ref([]);
+
+const handleCellValueChanged = () => {
+  updateData.value = [];
+  for (let i = 0; rowDataBack.value.length > i; i++) {
+    if (JSON.stringify(rowDataBack.value[i]) !== JSON.stringify(rowData.rows[i])) {
+      updateData.value.push(rowData.rows[i]);
+    }
+  }
+  // console.log('up ; ', JSON.stringify(updateData.value));
+  showSaveBtn.value = updateData.value.length > 0;
+};
 
 //*******************************************************//
 //****  신규 자료 추가부분     ******************************//
@@ -136,10 +169,11 @@ const addDataSection = () => {
   updateData.value = [];
   const addIndex = 0;
   const newItems = {
-    stdYear: storeYear.setYear,
-    pstnCd: '',
-    oldPstnCd: '',
-    pstnNm: '',
+    salesCd: '',
+    oldSalesCd: '',
+    salesNm: '',
+    teamCd: '',
+    explains: '',
     seq: rowData.rows.length + 1,
     iuD: 'I',
   };
@@ -147,7 +181,7 @@ const addDataSection = () => {
   // Refresh the grid
   myGrid.value.api.setRowData(rowData.rows);
   // 첫컬럼에 focus
-  myGrid.value.api.setFocusedCell(addIndex, 'pstnCd');
+  myGrid.value.api.setFocusedCell(addIndex, 'deptCd');
 };
 //****  신규 자료 추가부분 끝    ******************************//
 
@@ -191,7 +225,7 @@ const saveDataSection = () => {
   let iuD = [];
   // 신규 추가 부분
   for (let i = 0; i < rowData.rows.length; i++) {
-    if (!isEmpty(rowData.rows[i].pstnCd)) {
+    if (!isEmpty(rowData.rows[i].salesCd)) {
       if (rowData.rows[i].iuD === 'I') {
         let tmpJson = '{"mode": "' + rowData.rows[i].iuD + '","data":' + JSON.stringify(rowData.rows[i]) + '}';
         iu.push(tmpJson);
@@ -200,7 +234,7 @@ const saveDataSection = () => {
   }
   // 자료 수정 부분
   for (let i = 0; i < updateData.value.length; i++) {
-    if (!isEmpty(updateData.value[i].pstnCd)) {
+    if (!isEmpty(updateData.value[i].salesCd)) {
       if (updateData.value[i].iuD === 'U') {
         let tmpJson = '{"mode": "' + updateData.value[i].iuD + '","data":' + JSON.stringify(updateData.value[i]) + '}';
         iu.push(tmpJson);
@@ -236,6 +270,7 @@ const myTweak = offset => {
 const handleResize = () => {
   contentZoneHeight.value = window.innerHeight - screenSizeHeight.value - 180;
 };
+
 // **************************************************************//
 // ***** DataBase 연결부분    *************************************//
 // **************************************************************//
@@ -243,14 +278,12 @@ const myGrid = ref(null);
 // ***** 소속팀정보 가저오기 부분  **************************//
 const getData = async () => {
   try {
-    const response = await api.post('/api/mst/mst2030_list', { paramSetYear: storeYear.setYear });
+    const response = await api.post('/api/mst/mst2010_list', {});
     rowData.rows = response.data.data;
     rowDataBack.value = JSON.parse(JSON.stringify(response.data.data));
     updateData.value = [];
     showSaveBtn.value = false;
-    if (myGrid.value && myGrid.value.api) {
-      myGrid.value.api.setRowData(rowData.rows); // this should trigger the grid to reload data
-    }
+    myGrid.value.api.setGridOption('rowData', rowData.rows);
   } catch (error) {
     console.error('Error fetching users:', error);
   }
@@ -259,7 +292,7 @@ const getData = async () => {
 // ***** 소속팀정보 저장하기 부분  **************************//
 const saveDataAndHandleResult = resFormData => {
   api
-    .post('/api/mst/mst2030_save', resFormData)
+    .post('/api/mst/mst2010_save', resFormData)
     .then(res => {
       let saveStatus = {};
       saveStatus.rtn = res.data.rtn;
@@ -267,18 +300,36 @@ const saveDataAndHandleResult = resFormData => {
       notifySave.notifyView(saveStatus);
 
       showSaveBtn.value = false;
+      getData();
     })
     .catch(error => {
       console.log('error: ', error);
     });
 };
 
+async function getDataCommOption(resCommCd1) {
+  try {
+    const response = await api.post('/api/mst/comm_option_list', { paramCommCd1: resCommCd1 });
+    switch (resCommCd1) {
+      case '201':
+        teamOptions.value = response.data.data;
+        // console.log('level : ', JSON.stringify(levelOptions.value));
+        break;
+      default:
+        teamOptions.value = [];
+    }
+
+    // console.log('getData1: ', JSON.stringify(response.data.data));
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+}
 // **************************************************************//
 // ***** DataBase 연결부분 끝  *************************************//
 // **************************************************************//
 
 const gridOptions = {
-  columnDefs: columnDefs.columns,
+  columnDefs: columnDefs.value,
   rowData: rowData.rows,
   defaultColDef: {
     flex: 1,
@@ -311,7 +362,7 @@ const gridOptions = {
   },
   // GRID READY 이벤트, 사이즈 자동조정
   onGridReady: function (event) {
-    console.log('Grid is ready'); // Check if grid initializes
+    // console.log('Grid is ready'); // Check if grid initializes
     event.api.sizeColumnsToFit();
   },
   // 창 크기 변경 되었을 때 이벤트
@@ -319,62 +370,39 @@ const gridOptions = {
     event.api.sizeColumnsToFit();
   },
   onRowEditingStarted: function (event) {
-    console.log('never called - not doing row editing');
+    // console.log('never called - not doing row editing');
   },
   onRowEditingStopped: function (event) {
-    console.log('never called - not doing row editing');
+    // console.log('never called - not doing row editing');
   },
   onCellEditingStarted: function (event) {
-    console.log('cellEditingStarted');
+    // console.log('cellEditingStarted');
   },
   onCellEditingStopped: function (event) {
-    console.log('cellEditingStopped');
+    // console.log('cellEditingStopped');
   },
   onRowClicked: function (event) {
-    console.log('onRowClicked');
+    // console.log('onRowClicked');
     // selectedRows.value = event.api.getSelectedRows();
     // console.log('sel: ', JSON.stringify(selectedRows.value));
   },
   onCellClicked: function (event) {
-    console.log('onCellClicked');
+    // console.log('onCellClicked');
   },
   isRowSelectable: function (event) {
     // console.log('isRowSelectable');
     return true;
   },
   onSelectionChanged: function (event) {
-    console.log('onSelectionChanged1');
+    // console.log('onSelectionChanged1');
     selectedRows.value = event.api.getSelectedRows();
-
-    if (selectedRows.value.length === 1) {
-      showDeleteBtn.value = true;
-      showSaveBtn.value = true;
-    } else if (selectedRows.value.length > 1) {
-      isSaveFg = 'D';
-      showDeleteBtn.value = true;
-      showSaveBtn.value = false;
-    } else {
-      isSaveFg = '';
-      showDeleteBtn.value = false;
-    }
   },
   onSortChanged: function (event) {
-    console.log('onSortChanged');
+    // console.log('onSortChanged');
   },
   onCellValueChanged: function (event) {
-    console.log('onCellValueChanged');
-    updateData.value = [];
-    for (let i = 0; rowDataBack.value.length > i; i++) {
-      if (JSON.stringify(rowDataBack.value[i]) !== JSON.stringify(rowData.rows[i])) {
-        if (rowData.rows[i].iuD === 'U') {
-          updateData.value.push(rowData.rows[i]);
-        }
-      }
-    }
-
-    if (updateData.value.length > 0) {
-      showSaveBtn.value = true;
-    }
+    // console.log('onCellValueChanged');
+    handleCellValueChanged();
   },
   getRowNodeId: function (data) {
     return null;

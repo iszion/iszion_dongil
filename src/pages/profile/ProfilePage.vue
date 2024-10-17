@@ -9,7 +9,7 @@
           <div>
             <q-avatar square size="180px">
               <q-img
-                :src="`https://hr.energyshop.co.kr/images/${formData.imageFileNm}?${new Date().getTime()}`"
+                :src="`https://www.iszion.com/images/${formData.imageFileNm}?${new Date().getTime()}`"
                 style="object-fit: cover; width: 100%; height: 100%"
               />
               <!--              <q-img :src="`https://www.iszion.com/images/${formData.imageFileNm}?${new Date().getTime()}?${new Date().getTime()}`" />-->
@@ -39,6 +39,7 @@
             <div class="q-gutter-x-sm">
               <!--              <q-btn outline color="secondary" label="프로필 수정" />-->
               <q-btn outline color="secondary" label="패스워드 변경" @click="isDialogVisible = true" />
+              <q-btn @click="promptInstall" id="installButton" label="App 홈화면추가" color="primary" />
             </div>
           </div>
           <!--          <div class="q-gutter-x-lg">-->
@@ -354,6 +355,34 @@ const imageDeleteCall = async () => {
       rtnMsg: '삭제실패~~~',
     };
     notifySave.notifyView1(saveStatus, 1000);
+  }
+};
+
+// ******** 홈 화면 추가 설정 **************
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', e => {
+  // 모바일에 미니 정보 표시줄이 나타나지 않도록 합니다.
+  e.preventDefault();
+  // 나중에 트리거할 수 있도록 이벤트를 보관합니다.
+  deferredPrompt = e;
+
+  // 선택적으로 사용자가 설치를 수동으로 트리거할 수 있는 버튼을 만들 수 있습니다.
+  document.querySelector('#installButton').style.display = 'block';
+});
+
+const promptInstall = async () => {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      console.log('User accepted the installation');
+    } else {
+      console.log('User dismissed the installation');
+    }
+    deferredPrompt = null;
+  } else {
+    console.log('err : ', deferredPrompt);
   }
 };
 </script>

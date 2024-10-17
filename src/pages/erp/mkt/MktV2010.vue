@@ -1,5 +1,5 @@
 <template>
-  <q-page class="q-pa-xs-xs q-pa-sm-md" :style-fn="myTweak">
+  <q-page class="q-pa-xs-xs q-pa-sm-md">
     <!-- contents zone -->
     <div class="row q-col-gutter-md">
       <!-- contents List -->
@@ -12,15 +12,44 @@
           </q-bar>
           <!--  end of contents list title bar -->
           <q-card-actions align="right" class="q-pa-none">
-            <q-toolbar class="row">
-              <q-btn outline color="positive" dense @click="getData"><q-icon name="refresh" size="xs" class="q-mr-sm" />다시불러오기</q-btn>
+            <q-toolbar>
+              <div class="row q-gutter-x-sm">
+                <q-input
+                  v-model="inputValue.year"
+                  type="number"
+                  label="기준년도"
+                  label-color="orange"
+                  class="text-bold text-subtitle1"
+                  style="width: 70px"
+                  @click="getData"
+                />
+                <q-select
+                  stack-label
+                  options-dense
+                  class="q-pb-sm q-mr-lg"
+                  label-color="orange"
+                  v-model="inputValue.divCd"
+                  :options="divOptionsSearch"
+                  option-value="commCd"
+                  option-label="commNm"
+                  option-disable="inactive"
+                  emit-value
+                  map-options
+                  style="min-width: 130px; max-width: 130px"
+                  label="발주유형"
+                  @update:model-value="getData"
+                />
+              </div>
+              <q-btn outline color="positive" @click="getData"><q-icon name="search" size="xs" class="q-mr-sm" />조회</q-btn>
               <q-space />
               <div class="q-gutter-xs">
                 <q-btn v-if="selectedRows.length > 0" outline color="negative" dense @click="deleteDataSection">
                   <q-icon name="delete" size="xs" /> 삭제</q-btn
                 >
-                <q-btn v-if="showSaveBtn" outline color="primary" dense @click="saveDataSection"><q-icon name="save" size="xs" /> 저장 </q-btn>
-                <q-btn outline color="positive" dense @click="addDataSection"><q-icon name="add" size="xs" /> 신규 </q-btn>
+                <q-btn v-if="selectedRows.length === 0 && showSaveBtn" outline color="primary" dense @click="saveDataSection"
+                  ><q-icon name="save" size="xs" /> 저장
+                </q-btn>
+                <!--                <q-btn outline color="positive" dense @click="addDataSection"><q-icon name="add" size="xs" /> 신규 </q-btn>-->
               </div>
             </q-toolbar>
           </q-card-actions>
@@ -58,12 +87,21 @@ import { isEmpty } from 'lodash';
 import jsonUtil from 'src/js_comm/json-util';
 import notifySave from 'src/js_comm/notify-save';
 import CompSelectTeam from 'components/CompSelectTeam.vue';
+import commUtil from 'src/js_comm/comm-util';
 
 const $q = useQuasar();
 
 let isSaveFg = null;
+const inputValue = reactive({
+  year: commUtil.getTodayYear(),
+  divCd: '',
+});
+const divOptionsSearch = ref(null);
 
 const contentZoneHeight = ref(500);
+const handleResize = () => {
+  contentZoneHeight.value = window.innerHeight - 210;
+};
 const contentZoneStyle = computed(() => ({
   height: `${contentZoneHeight.value}px`,
 }));
@@ -77,9 +115,10 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', handleResize);
 });
 onBeforeMount(() => {
-  getDataCommOption('201').then(() => {
+  getDataCommOption('103').then(() => {
     columnDefsSet();
-    myGrid.value.api.setColumnDefs(columnDefs.value);
+    // myGrid.value.api.setColumnDefs(columnDefs.value);
+    myGrid.value.api.setGridOption('columnDefs', columnDefs.value);
     getData();
   });
 });
@@ -92,7 +131,7 @@ watch(
   () => $q.dark.isActive,
   () => {
     if (myGrid.value && myGrid.value.api) {
-      myGrid.value.api.refreshCells(); // Refresh the ag-Grid cells
+      getData();
     }
   },
 );
@@ -395,38 +434,40 @@ const handleCellValueChanged = event => {
   const valueAmt = event.newValue;
   const rowDataItem = event.data;
 
-  // Log the field name for debugging
   if (changedField.substring(0, 1) === 'o') {
     const valueMonth = changedField.substring(1, 3);
-    const fiendNm = 'U' + valueMonth;
-    const valueUID = rowDataItem[fiendNm] === 'Y' ? 'U' : 'I';
+    const iuD = 'U' + valueMonth;
+    const valueStdYymm = inputValue.year + '' + valueMonth;
+    let valueIud = rowDataItem[iuD] === 'Y' ? 'U' : 'I';
     const valueSalesCd = rowDataItem['salesCd'];
     const valueDivCd = rowDataItem['divCd'];
-    console.log('month :', valueMonth);
-    console.log('salesCd :', valueSalesCd);
-    console.log('divCd :', valueDivCd);
-    console.log('UID :', valueUID);
-    console.log('amt :', valueAmt);
 
     let ch = true;
     for (let i = 0; i < updateData.value.length; i++) {
-      if (updateData.value[i].salesCd === valueSalesCd) {
-        updateData.value[i].targetAmt = valueAmt;
-      } else {
-        updateData.value.push({
-          mode: valueUID,
-          stdYymm: '2024' + '' + valueMonth,
-          salesCd: valueSalesCd,
-          divCd: valueDivCd,
-          targetAmt: valueAmt,
-        });
+      if (updateData.value[i].stdYymm === valueStdYymm && updateData.value[i].salesCd === valueSalesCd) {
+        if (updateData.value[i].iuD === 'U' && valueAmt === 0) {
+          updateData.value[i].iuD = 'D';
+          updateData.value[i].targetAmt = valueAmt;
+          i = updateData.value.length;
+          ch = false;
+        } else if (valueAmt === 0) {
+          updateData.value = updateData.value.filter(item => !(item.stdYymm === valueStdYymm && item.salesCd === valueSalesCd));
+          i = updateData.value.length;
+          ch = false;
+        } else {
+          updateData.value[i].targetAmt = valueAmt;
+          i = updateData.value.length;
+          ch = false;
+        }
       }
-      ch = false;
     }
     if (ch) {
+      if (valueIud === 'U' && valueAmt === 0) {
+        valueIud = 'D';
+      }
       updateData.value.push({
-        mode: valueUID,
-        stdYymm: '2024' + '' + valueMonth,
+        iuD: valueIud,
+        stdYymm: valueStdYymm,
         salesCd: valueSalesCd,
         divCd: valueDivCd,
         targetAmt: valueAmt,
@@ -434,7 +475,7 @@ const handleCellValueChanged = event => {
     }
   }
 
-  console.log('up ; ', JSON.stringify(updateData.value));
+  // console.log('up ; ', JSON.stringify(updateData.value));
   showSaveBtn.value = updateData.value.length > 0;
 };
 
@@ -477,18 +518,32 @@ const deleteDataSection = () => {
     // persistent: true,
   })
     .onOk(() => {
-      isSaveFg = 'D';
-
       let iu = [];
       let iuD = [];
       for (let i = 0; i < selectedRows.value.length; i++) {
-        let tmpJson = '{"mode":"D","data":' + JSON.stringify(selectedRows.value[i]) + '}';
-        iuD.push(tmpJson);
-      }
-      saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
+        for (let m = 0; m < 13; m++) {
+          let mm = '';
+          if (m < 10) {
+            mm = '0' + '' + m;
+          } else {
+            mm = m;
+          }
+          let dynamicKey = 'U' + mm;
+          if (selectedRows.value[i][dynamicKey] === 'Y') {
+            const formData = {
+              stdYymm: inputValue.year + '' + mm,
+              salesCd: selectedRows.value[i].salesCd,
+              divCd: selectedRows.value[i].divCd,
+            };
+            let tmpJson = '{"mode":"D", "data":' + JSON.stringify(formData) + '}';
 
-      const selectedData = myGrid.value.api.getSelectedRows();
-      myGrid.value.api.applyTransaction({ remove: selectedData });
+            iuD.push(tmpJson);
+          }
+        }
+      }
+      // console.log('iu : ', JSON.stringify(iu));
+      // console.log('iuD : ', JSON.stringify(iuD));
+      saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
     })
     .onCancel(() => {})
     .onDismiss(() => {
@@ -499,25 +554,16 @@ const deleteDataSection = () => {
 const saveDataSection = () => {
   let iu = [];
   let iuD = [];
-  // 신규 추가 부분
-  for (let i = 0; i < rowData.rows.length; i++) {
-    if (!isEmpty(rowData.rows[i].salesCd)) {
-      if (rowData.rows[i].iuD === 'I') {
-        let tmpJson = '{"mode": "' + rowData.rows[i].iuD + '","data":' + JSON.stringify(rowData.rows[i]) + '}';
-        iu.push(tmpJson);
-      }
-    }
-  }
-  // 자료 수정 부분
   for (let i = 0; i < updateData.value.length; i++) {
-    if (!isEmpty(updateData.value[i].salesCd)) {
-      if (updateData.value[i].iuD === 'U') {
-        let tmpJson = '{"mode": "' + updateData.value[i].iuD + '","data":' + JSON.stringify(updateData.value[i]) + '}';
-        iu.push(tmpJson);
-      }
+    let tmpJson = '{"mode": "' + updateData.value[i].iuD + '","data":' + JSON.stringify(updateData.value[i]) + '}';
+    if (updateData.value[i].iuD === 'D') {
+      iuD.push(tmpJson);
+    } else {
+      iu.push(tmpJson);
     }
   }
   // console.log('iu ::: ', JSON.stringify(iu));
+  // console.log('iuD ::: ', JSON.stringify(iuD));
   if (isEmpty(iu) && isEmpty(iuD)) {
     $q.dialog({
       dark: true,
@@ -532,19 +578,7 @@ const saveDataSection = () => {
       });
   } else {
     saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
-    setTimeout(() => {
-      getData();
-    }, 500);
   }
-};
-
-const screenSizeHeight = ref(0);
-const myTweak = offset => {
-  screenSizeHeight.value = offset;
-  return { minHeight: offset ? `calc(100vh - ${offset}px)` : '100vh' };
-};
-const handleResize = () => {
-  contentZoneHeight.value = window.innerHeight - screenSizeHeight.value - 180;
 };
 
 // **************************************************************//
@@ -555,8 +589,8 @@ const myGrid = ref(null);
 const getData = async () => {
   try {
     const response = await api.post('/api/mkt/mkt2010_list', {
-      paramYear: '2024',
-      paramDivCd: '1100',
+      paramYear: inputValue.year,
+      paramDivCd: inputValue.divCd,
     });
     rowData.rows = response.data.data;
     rowDataBack.value = JSON.parse(JSON.stringify(response.data.data));
@@ -565,7 +599,9 @@ const getData = async () => {
     updateData.value = [];
     showSaveBtn.value = false;
     myGrid.value.api.setGridOption('rowData', rowData.rows);
-    myGrid.value.api.setPinnedBottomRowData([calculateTotal()]);
+    // myGrid.value.api.setPinnedBottomRowData([calculateTotal()]);
+    myGrid.value.api.setGridOption('pinnedBottomRowData', [calculateTotal()]);
+    calculateInitialTotals();
   } catch (error) {
     console.error('Error fetching users:', error);
   }
@@ -574,7 +610,7 @@ const getData = async () => {
 // ***** 소속팀정보 저장하기 부분  **************************//
 const saveDataAndHandleResult = resFormData => {
   api
-    .post('/api/mst/mst2010_save', resFormData)
+    .post('/api/mkt/mkt2010_save', resFormData)
     .then(res => {
       let saveStatus = {};
       saveStatus.rtn = res.data.rtn;
@@ -593,12 +629,13 @@ async function getDataCommOption(resCommCd1) {
   try {
     const response = await api.post('/api/mst/comm_option_list', { paramCommCd1: resCommCd1 });
     switch (resCommCd1) {
-      case '201':
-        teamOptions.value = response.data.data;
+      case '103':
+        divOptionsSearch.value = response.data.data;
+        inputValue.divCd = divOptionsSearch.value[0].commCd; // 첫번째 코드 set
         // console.log('level : ', JSON.stringify(levelOptions.value));
         break;
       default:
-        teamOptions.value = [];
+        divOptionsSearch.value = [];
     }
 
     // console.log('getData1: ', JSON.stringify(response.data.data));
@@ -716,11 +753,11 @@ const gridOptions = {
   },
 
   rowSelection: 'multiple' /* 'single' or 'multiple',*/,
-  enableColResize: true,
+  enableColResize: false,
   enableSorting: true,
   enableFilter: false,
   enableRangeSelection: true,
-  suppressRowClickSelection: false,
+  suppressRowClickSelection: true, // row 선택해도 check박스 체크안되게 하려면 true
   animateRows: true,
   suppressHorizontalScroll: true,
 
@@ -785,7 +822,7 @@ const gridOptions = {
     // console.log('onCellValueChanged');
     handleCellValueChanged(event);
     handleRowSum(event); // row 합 구하기
-    event.api.setPinnedBottomRowData([calculateTotal()]); // row전체 합 구하기
+    event.api.setGridOption('pinnedBottomRowData', [calculateTotal()]); // row전체 합 구하기
   },
   getRowNodeId: function (data) {
     return null;

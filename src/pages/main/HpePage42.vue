@@ -151,7 +151,7 @@
                   <q-img
                     class="cursor-pointer"
                     v-if="data.imageFileNm"
-                    :src="`https://hr.energyshop.co.kr/imagesThumbnail/${data.imageFileNm}`"
+                    :src="`https://www.iszion.com/imagesThumbnail/${data.imageFileNm}`"
                     style="object-fit: cover; width: 100%; height: 100%"
                   />
                   <q-icon v-else name="face" color="teal" size="md" />

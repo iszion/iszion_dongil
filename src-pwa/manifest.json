@@ -1,7 +1,7 @@
 {
-  "name": "인사평가관리시스템",
-  "short_name": "인사평가(동일)",
-  "description": "인사평가관리시스템 app",
+  "name": "영업관리시스템",
+  "short_name": "영업관리(리뉴)",
+  "description": "영업관리시스템 app",
   "display": "fullscreen",
   "orientation": "portrait",
   "start_url": ".",

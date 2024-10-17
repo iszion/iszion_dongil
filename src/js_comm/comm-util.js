@@ -80,6 +80,24 @@ export default {
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   },
 
+  formatWeekDate(dateString) {
+    // Convert the date string 'YYYYMMDD' into a JavaScript Date object
+    const year = dateString.slice(0, 4);
+    const month = dateString.slice(4, 6) - 1;
+    const day = dateString.slice(6, 8);
+
+    const date = new Date(year, month, day);
+
+    // Create an array for weekday and month names
+    const daysOfWeek = ['일', '월', '화', '수', '목', '금', '토'];
+    const monthsOfYear = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+
+    // Format the output string
+    const formattedDate = `${year}년 ${monthsOfYear[month]}월 ${day}일  (${daysOfWeek[date.getDay()]})`;
+
+    return formattedDate;
+  },
+
   textByteLength(str) {
     let strLength1 = 0;
     let strLength2 = 0;

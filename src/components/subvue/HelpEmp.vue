@@ -70,7 +70,7 @@ import commUtil from 'src/js_comm/comm-util';
 const { dialogRef, onDialogHide, onDialogOK, onDialogCancel } = useDialogPluginComponent();
 
 const params = defineProps({
-  paramCustNm: {
+  paramEmpNm: {
     type: String,
     required: false,
     default: null,
@@ -115,21 +115,28 @@ const gridOptions = {
     return {};
   },
 };
+const dateFormatter = params => {
+  const dateStr = params.value;
+  if (dateStr && dateStr.length === 8) {
+    return `${dateStr.slice(0, 4)}-${dateStr.slice(4, 6)}-${dateStr.slice(6)}`;
+  }
+  return dateStr;
+};
 
 const columnDefs = reactive({
   columns: [
-    { headerName: '코드', field: 'custCd', maxWidth: 80, minWidth: 80, pinned: 'left' },
-    { headerName: '고객명', field: 'custNm', minWidth: 100 },
-    { headerName: '법인명', field: 'businNm', minWidth: 100 },
-    { headerName: '주민(법인)번호', field: 'regNo', minWidth: 100 },
-    { headerName: '정지일자', field: 'closeDay', minWidth: 100 },
+    { headerName: '코드', field: 'empCd', maxWidth: 100, minWidth: 100, pinned: 'left' },
+    { headerName: '성명', field: 'empNm', minWidth: 100 },
+    { headerName: '부서명', field: 'deptNm', minWidth: 100 },
+    { headerName: '직위', field: 'pstnNm', minWidth: 100 },
+    { headerName: '퇴사일자', field: 'outDay', minWidth: 100, valueFormatter: dateFormatter },
   ],
 });
 
 const rowSelection = ref(null);
 const rowData = reactive({ rows: [] });
 const searchParams = ref({
-  searchNm: params.paramCustNm,
+  searchNm: params.paramEmpNm,
   searchCd: '',
   searchAll: 'N',
 });
@@ -141,7 +148,7 @@ onBeforeMount(() => {
 const selectedRows = ref(null);
 const onSelectionChanged = event => {
   selectedRows.value = event.api.getSelectedRows();
-  // alert(selectedRows.value[0].custCd);
+  // alert(selectedRows.value[0].empCd);
 };
 const gridApi = ref(null);
 const gridColumnApi = ref(null);
@@ -183,21 +190,21 @@ const onCellKeyDown = params => {
 
 const handleSelectedClick = () => {
   if (selectedRows.value && selectedRows.value.length > 0) {
-    const selectedCustCd = selectedRows.value[0].custCd;
-    const selectedCustNm = selectedRows.value[0].custNm;
+    const selectedEmpCd = selectedRows.value[0].empCd;
+    const selectedEmpNm = selectedRows.value[0].empNm;
 
     // Emit the selected values through onDismiss event
-    onDialogOK({ custCd: selectedCustCd, custNm: selectedCustNm });
+    onDialogOK({ empCd: selectedEmpCd, empNm: selectedEmpNm });
     onDialogCancel();
   }
 };
 
 const onRowDoubleClicked = params => {
   if (selectedRows.value && selectedRows.value.length > 0) {
-    const selectedCustCd = selectedRows.value[0].custCd;
-    const selectedCustNm = selectedRows.value[0].custNm;
+    const selectedEmpCd = selectedRows.value[0].empCd;
+    const selectedEmpNm = selectedRows.value[0].empNm;
     // Emit the selected values through onDismiss event
-    onDialogOK({ custCd: selectedCustCd, custNm: selectedCustNm });
+    onDialogOK({ empCd: selectedEmpCd, empNm: selectedEmpNm });
     // Close the dialog
     onDialogCancel();
   }
@@ -210,8 +217,8 @@ const onRowDoubleClicked = params => {
 // ***** 고객정보 검색리스트 *****************************//
 const getData = async () => {
   try {
-    const response = await api.post('/api/mst/helpCust_list', {
-      paramCustNm: searchParams.value.searchNm,
+    const response = await api.post('/api/mst/helpEmp_list', {
+      paramValueNm: searchParams.value.searchNm,
       paramCloseDay: params.paramCloseDay,
       paramAll: searchParams.value.searchAll,
     });
@@ -219,7 +226,7 @@ const getData = async () => {
     if (response.data.data.length > 0) {
       setTimeout(() => {
         if (gridApi.value) {
-          gridApi.value.setFocusedCell(0, 'custCd');
+          gridApi.value.setFocusedCell(0, 'empCd');
 
           const focusedRowIndex = 0; // Assuming it's the first row, you can adjust this index as needed
           const focusedRowNode = gridApi.value.getDisplayedRowAtIndex(focusedRowIndex);

@@ -2,7 +2,7 @@
   <q-page padding>
     <section class="row q-col-gutter-x-xl q-py-xs">
       <div class="col-12 col-sm-auto q-py-md flex flex-center">
-        <q-avatar square size="150px"> <q-img :src="`https://hr.energyshop.co.kr/images/${userImageName}?${new Date().getTime()}`" /></q-avatar>
+        <q-avatar square size="150px"> <q-img :src="`https://www.iszion.com/images/${userImageName}?${new Date().getTime()}`" /></q-avatar>
       </div>
       <div class="col-12 col-sm-grow column justify-between">
         <div class="row items-center">

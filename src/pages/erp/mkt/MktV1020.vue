@@ -88,6 +88,15 @@
               </ag-grid-vue>
             </div>
             <div class="q-pa-md flex flex-center">
+              <q-select
+                dense
+                borderless
+                v-model="pagination.pageRows"
+                options-dense
+                :options="pagination.pageOption"
+                class="q-mr-md"
+                @update:model-value="handelGetData"
+              />
               <q-pagination
                 v-model="currentPages"
                 :max="totalPages"
@@ -210,27 +219,28 @@
                   <q-input
                     :dense="dense"
                     stack-label
-                    class="col-xs-12 col-sm-4"
-                    v-model="formData.orcuCd"
-                    label="코드"
+                    class="col-xs-12 col-sm-9"
+                    v-model="formData.orcuNm"
+                    label="소속처"
                     :label-color="$q.dark.isActive ? 'green' : 'blue'"
                     :disable="formDisable"
                     maxlength="6"
+                    @keyup.enter="openHelpOrcuDialog()"
                   >
                     <template v-slot:append>
-                      <q-icon size="0.8em" v-if="formData.orcuCd !== ''" name="close" @click="formData.orcuCd = ''" class="cursor-pointer q-pt-md" />
-                      <q-icon size="0.8em" name="search" @click="openOrcuSearch()" class="cursor-pointer q-pt-md" />
+                      <q-icon size="0.8em" v-if="formData.orcuNm !== ''" name="close" @click="formData.orcuNm = ''" class="cursor-pointer q-pt-md" />
+                      <q-icon size="0.8em" name="search" @click="openHelpOrcuDialog()" class="cursor-pointer q-pt-md" />
                     </template>
                   </q-input>
                   <q-input
                     ref="orcuFocus"
                     stack-label
                     :dense="dense"
-                    class="col-xs-12 col-sm-8"
-                    v-model="formData.orcuNm"
-                    label="소속처"
+                    class="col-xs-12 col-sm-3"
+                    v-model="formData.orcuCd"
+                    label="코드"
                     :label-color="$q.dark.isActive ? 'green' : 'blue'"
-                    :disable="formDisable"
+                    readonly
                     maxlength="100"
                   />
                 </div>
@@ -453,6 +463,7 @@ import { isEqual } from 'lodash';
 import jsonUtil from 'src/js_comm/json-util';
 import notifySave from 'src/js_comm/notify-save';
 import commUtil from 'src/js_comm/comm-util';
+import HelpOrcu from 'components/subvue/HelpOrcu.vue';
 
 const $q = useQuasar();
 const dense = ref(false);
@@ -504,7 +515,11 @@ const isScreenVisibleProcess = () => {
   isScreenVisible.value = !isScreenVisible.value;
   isScreenVisible.value ? (isClassActive.value = true) : (isClassActive.value = false);
 };
+
 const contentZoneHeight = ref(500);
+const handleResize = () => {
+  contentZoneHeight.value = window.innerHeight - 270;
+};
 const contentZoneStyle = computed(() => ({
   height: `${contentZoneHeight.value}px`,
 }));
@@ -760,11 +775,6 @@ const saveDataSection = () => {
   }
 };
 
-const screenSizeHeight = ref(0);
-const handleResize = () => {
-  contentZoneHeight.value = window.innerHeight - 270;
-};
-
 // **************************************************************//
 // ***** DataBase 연결부분    *************************************//
 // **************************************************************//
@@ -915,7 +925,7 @@ const gridOptions = {
   },
   pagination: false,
   rowSelection: 'multiple' /* 'single' or 'multiple',*/,
-  enableColResize: true,
+  enableColResize: false,
   enableSorting: true,
   enableFilter: false,
   enableRangeSelection: true,
@@ -1077,6 +1087,7 @@ const currentGroup = ref(5); // 화면에 보여줄 최대 페이지 수
 const pagination = reactive({
   pageRows: 50,
   startRowNum: 0,
+  pageOption: [10, 50, 100, 300, 500, 1000],
 });
 
 const handlePageChange = newPage => {
@@ -1085,6 +1096,36 @@ const handlePageChange = newPage => {
   currentPages.value = newPage;
   // myGrid.value.api.paginationGoToPage(newPage - 1);
   getData();
+};
+
+const useDialog = ref(false);
+const openHelpOrcuDialog = () => {
+  useDialog.value = true;
+  openHelpOrcuDialog1();
+};
+
+const openHelpOrcuDialog1 = () => {
+  if (useDialog.value) {
+    $q.dialog({
+      component: HelpOrcu,
+      componentProps: {
+        paramValueNm: formData.value.orcuNm,
+        paramCloseDay: commUtil.unFormatDate(formData.value.makeDay),
+      },
+    })
+      .onOk(res => {
+        // console.log('res ::: ', res.valueCd, res.valueNm);
+        formData.value.orcuCd = res.valueCd;
+        formData.value.orcuNm = res.valueNm;
+      })
+      .onCancel(() => {
+        console.log('Cancel');
+      })
+      .onDismiss(() => {
+        // console.log('Called on OK or Cancel');
+        useDialog.value = false;
+      });
+  }
 };
 </script>
 

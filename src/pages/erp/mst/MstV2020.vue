@@ -343,7 +343,7 @@ const gridOptions = {
     editable: true,
   },
   rowSelection: 'multiple' /* 'single' or 'multiple',*/,
-  enableColResize: true,
+  enableColResize: false,
   enableSorting: true,
   enableFilter: false,
   enableRangeSelection: true,

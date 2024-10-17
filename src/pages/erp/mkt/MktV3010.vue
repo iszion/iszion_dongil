@@ -29,54 +29,78 @@
           </q-bar>
           <!--  end of contents list title bar -->
           <q-card-actions align="right" class="q-pa-none">
-            <q-toolbar>
-              <div class="row col-xs-9">
-                <div class="row q-col-gutter-md">
-                  <q-select
-                    dense
-                    stack-label
-                    options-dense
-                    class="q-pb-sm q-mr-lg"
-                    label-color="orange"
-                    v-model="searchParam.salesCd"
-                    :options="salesOptionsSearch"
-                    option-value="salesCd"
-                    option-label="salesNm"
-                    option-disable="inactive"
-                    emit-value
-                    map-options
-                    style="min-width: 130px; max-width: 130px"
-                    label="영업담당"
-                    @update:model-value="handelGetData"
-                  />
+            <q-toolbar class="row">
+              <div class="row q-col-gutter-md">
+                <q-select
+                  dense
+                  stack-label
+                  options-dense
+                  class="q-pb-sm q-mr-lg"
+                  label-color="orange"
+                  v-model="searchParam.salesCd"
+                  :options="salesOptionsSearch"
+                  option-value="salesCd"
+                  option-label="salesNm"
+                  option-disable="inactive"
+                  emit-value
+                  map-options
+                  style="min-width: 130px; max-width: 130px"
+                  label="영업담당"
+                  @update:model-value="handelGetData"
+                />
+                <q-select
+                  dense
+                  stack-label
+                  options-dense
+                  class="q-pb-sm q-mr-lg"
+                  label-color="orange"
+                  v-model="searchParam.consCd"
+                  :options="consOptionsSearch"
+                  option-value="commCd"
+                  option-label="commNm"
+                  option-disable="inactive"
+                  emit-value
+                  map-options
+                  style="min-width: 130px; max-width: 130px"
+                  label="공사구분"
+                  @update:model-value="handelGetData"
+                />
+                <q-select
+                  dense
+                  stack-label
+                  options-dense
+                  class="q-pb-sm q-mr-lg"
+                  label-color="orange"
+                  v-model="searchParam.stepCd"
+                  :options="stepOptionsSearch"
+                  option-value="commCd"
+                  option-label="commNm"
+                  option-disable="inactive"
+                  emit-value
+                  map-options
+                  style="min-width: 130px; max-width: 130px"
+                  label="진행상태"
+                  @update:model-value="handelGetData"
+                />
 
-                  <q-input
-                    stack-label
-                    bottom-slots
-                    label-color="orange"
-                    v-model="searchParam.word"
-                    label="검색"
-                    dense
-                    class="q-pb-none"
-                    style="width: 120px"
-                    @keyup.enter="handelGetData"
-                  >
-                    <template v-slot:append>
-                      <q-icon v-if="searchParam.word !== ''" name="close" @click="searchParam.word = ''" class="cursor-pointer" />
-                    </template>
-                  </q-input>
-                  <div class="row q-gutter-x-sm">
-                    <q-radio dense v-model="searchParam.orcuFg" val="" label="전체" @update:model-value="handelGetData" />
-                    <q-radio dense v-model="searchParam.orcuFg" val="1" label="발주처" @update:model-value="handelGetData" />
-                    <q-radio dense v-model="searchParam.orcuFg" val="2" label="시공사" @update:model-value="handelGetData" />
-                    <q-radio dense v-model="searchParam.orcuFg" val="3" label="설계사" @update:model-value="handelGetData" />
-                    <q-radio dense v-model="searchParam.orcuFg" val="4" label="협력사" @update:model-value="handelGetData" />
-                    <q-radio dense v-model="searchParam.orcuFg" val="9" label="기타" @update:model-value="handelGetData" />
-                  </div>
-                </div>
+                <q-input
+                  stack-label
+                  bottom-slots
+                  label-color="orange"
+                  v-model="searchParam.word"
+                  label="검색"
+                  dense
+                  class="q-pb-none"
+                  style="width: 120px"
+                  @keyup.enter="handelGetData"
+                >
+                  <template v-slot:append>
+                    <q-icon v-if="searchParam.word !== ''" name="close" @click="searchParam.word = ''" class="cursor-pointer" />
+                  </template>
+                </q-input>
               </div>
               <q-space />
-              <div class="q-gutter-sm col-xs-3">
+              <div class="q-gutter-sm">
                 <q-btn outline color="positive" dense @click="handelGetData"><q-icon name="search" size="xs" class="" /> 조회 </q-btn>
                 <q-btn v-if="isShowDeleteBtn" outline color="negative" dense @click="deleteDataSection">
                   <q-icon name="delete" size="xs" /> 삭제</q-btn
@@ -151,92 +175,71 @@
             <q-separator size="3px" />
 
             <q-card-section class="q-pa-none">
-              <div class="q-pa-md q-gutter-y-sm">
+              <div class="q-pa-md q-gutter-y-lg">
                 <div class="row q-col-gutter-x-xl">
                   <q-field :dense="dense" class="col-12 col-md-4" label="코드" label-color="orange" stack-label>
                     <template v-slot:control>
                       <div class="self-center full-width no-outline text-bold text-subtitle1" tabindex="0">
-                        {{ isSaveFg === 'I' ? '자동생성' : formData.orcuCd }}
+                        {{ isSaveFg === 'I' ? '자동생성' : formData.projectCd }}
                       </div>
                     </template>
                   </q-field>
-
-                  <q-select
-                    :dense="dense"
-                    class="col-xs-12 col-sm-3"
-                    :disable="formDisable"
-                    v-model="formData.region"
-                    :options="regionOptions"
-                    label="지역"
-                    :label-color="$q.dark.isActive ? 'green' : 'blue'"
-                    option-value="commCd"
-                    option-label="commNm"
-                    options-dense
-                    emit-value
-                    map-options
-                  />
+                </div>
+                <div class="row q-col-gutter-x-xl">
                   <q-input
                     :dense="dense"
-                    class="col-xs-12 col-sm-5"
+                    class="col-xs-12 col-sm-4"
                     v-model="formData.makeDay"
                     type="date"
                     label="등록일"
                     :label-color="$q.dark.isActive ? 'green' : 'blue'"
                     :disable="formDisable"
                   />
+                  <q-select
+                    :dense="dense"
+                    :disable="!formData.projectCd"
+                    class="super-small col-xs-12 col-sm-8"
+                    standout="text-white"
+                    :label-color="$q.dark.isActive ? 'green' : 'blue'"
+                    label="진행상태"
+                    v-model="formData.stepCd"
+                    :options="stepOptions"
+                    option-value="stepCd"
+                    option-label="stepNmX"
+                    options-dense
+                    emit-value
+                    map-options
+                  >
+                    <template v-slot:after>
+                      <q-btn padding="20px 5px" flat @click="isStepDialogVisible = true" :disable="!formData.projectCd">
+                        <q-icon name="done" class="q-pa-none q-ma-none" size="xs" />
+                        <q-tooltip class="bg-orange text-dark" self="center right" :offset="[10, 30]"> 진행상태정보 변경하기 </q-tooltip>
+                      </q-btn>
+                    </template>
+                    <q-tooltip class="bg-blue" anchor="top middle" self="bottom middle" :offset="[10, 10]">
+                      항상 해당프로젝트의 마지막 진행상태를 표기합니다.
+                    </q-tooltip>
+                  </q-select>
                 </div>
 
                 <div class="row q-col-gutter-x-xl">
                   <q-input
                     ref="startFocus"
+                    stack-label
                     :dense="dense"
-                    class="col-xs-12 col-sm-8"
-                    v-model="formData.orcuNm"
-                    label="크라이언트명"
+                    class="col-xs-12 col-sm-12"
+                    v-model="formData.projectNm"
+                    label="프로젝트명"
                     :label-color="$q.dark.isActive ? 'green' : 'blue'"
                     :disable="formDisable"
-                    maxlength="50"
-                  />
-                  <q-input
-                    :dense="dense"
-                    class="col-xs-12 col-sm-4"
-                    v-model="formData.orcuNmX"
-                    label="가칭명"
-                    :label-color="$q.dark.isActive ? 'green' : 'blue'"
-                    :disable="formDisable"
-                    maxlength="50"
+                    maxlength="200"
                   />
                 </div>
 
                 <div class="row q-col-gutter-x-xl">
                   <q-select
                     :dense="dense"
-                    class="col-xs-12 col-sm-6"
-                    :disable="formDisable"
-                    v-model="formData.orcuFg"
-                    :options="orcuFgOptions"
-                    label="유형"
-                    :label-color="$q.dark.isActive ? 'green' : 'blue'"
-                    option-value="value"
-                    option-label="label"
-                    options-dense
-                    emit-value
-                    map-options
-                  >
-                    <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
-                      <q-item v-bind="itemProps">
-                        <q-item-section>
-                          <q-item-label v-html="opt.label" />
-                        </q-item-section>
-                        <q-item-section side>
-                          <q-toggle :model-value="selected" @update:model-value="toggleOption(opt)" />
-                        </q-item-section>
-                      </q-item>
-                    </template>
-                  </q-select>
-
-                  <q-select
-                    :dense="dense"
+                    stack-label
                     class="col-xs-12 col-sm-6"
                     :disable="formDisable"
                     v-model="formData.salesCd"
@@ -260,104 +263,132 @@
                       </q-item>
                     </template>
                   </q-select>
-                </div>
 
-                <div class="row">
-                  <div class="col-xs-12 col-sm-6 q-col-gutter-x-xl">
-                    <q-input
-                      :dense="dense"
-                      v-model="formData.zipCd"
-                      label="우편번호"
-                      :label-color="$q.dark.isActive ? 'green' : 'blue'"
-                      :disable="formDisable"
-                      maxlength="5"
-                    >
-                      <template v-slot:append>
-                        <q-icon size="0.8em" v-if="formData.zipCd !== ''" name="close" @click="formData.zipCd = ''" class="cursor-pointer q-pt-md" />
-                        <q-icon size="0.8em" name="search" @click="openPostcodeSearch('1')" class="cursor-pointer q-pt-md" />
-                      </template>
-                    </q-input>
-                  </div>
-                </div>
-
-                <div class="row">
-                  <div class="col-12">
-                    <q-input
-                      :dense="dense"
-                      v-model="formData.addrB"
-                      label="소재지"
-                      :label-color="$q.dark.isActive ? 'green' : 'blue'"
-                      :disable="formDisable"
-                      maxlength="100"
-                    />
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-12">
-                    <q-input
-                      ref="addrDFocus"
-                      :dense="dense"
-                      v-model="formData.addrD"
-                      label="상세주소"
-                      :label-color="$q.dark.isActive ? 'green' : 'blue'"
-                      :disable="formDisable"
-                      maxlength="100"
-                    />
-                  </div>
+                  <q-select
+                    :dense="dense"
+                    stack-label
+                    class="col-xs-12 col-sm-6"
+                    :disable="formDisable"
+                    v-model="formData.levelCd"
+                    :options="levelOptions"
+                    label="영업규모"
+                    :label-color="$q.dark.isActive ? 'green' : 'blue'"
+                    option-value="commCd"
+                    option-label="commNm"
+                    options-dense
+                    emit-value
+                    map-options
+                  >
+                    <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
+                      <q-item v-bind="itemProps">
+                        <q-item-section>
+                          <q-item-label v-html="opt.commNm" />
+                        </q-item-section>
+                        <q-item-section side>
+                          <q-toggle :model-value="selected" @update:model-value="toggleOption(opt)" />
+                        </q-item-section>
+                      </q-item>
+                    </template>
+                  </q-select>
                 </div>
 
                 <div class="row q-col-gutter-x-xl">
-                  <div class="col-xs-12 col-sm-6">
-                    <q-input
-                      :dense="dense"
-                      v-model="formData.url"
-                      label="홈페이지"
-                      :label-color="$q.dark.isActive ? 'green' : 'blue'"
-                      :disable="formDisable"
-                      maxlength="50"
-                    />
-                  </div>
-                  <div class="col-xs-12 col-sm-6">
-                    <q-input
-                      :dense="dense"
-                      v-model="formData.email"
-                      label="이메일"
-                      :label-color="$q.dark.isActive ? 'green' : 'blue'"
-                      :disable="formDisable"
-                      maxlength="30"
-                    />
-                  </div>
+                  <q-select
+                    :dense="dense"
+                    stack-label
+                    class="col-xs-12 col-sm-6"
+                    :disable="formDisable"
+                    v-model="formData.typeCd"
+                    :options="typeOptions"
+                    label="발주유형"
+                    :label-color="$q.dark.isActive ? 'green' : 'blue'"
+                    option-value="commCd"
+                    option-label="commNm"
+                    options-dense
+                    emit-value
+                    map-options
+                  >
+                    <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
+                      <q-item v-bind="itemProps">
+                        <q-item-section>
+                          <q-item-label v-html="opt.commNm" />
+                        </q-item-section>
+                        <q-item-section side>
+                          <q-toggle :model-value="selected" @update:model-value="toggleOption(opt)" />
+                        </q-item-section>
+                      </q-item>
+                    </template>
+                  </q-select>
+
+                  <q-select
+                    :dense="dense"
+                    stack-label
+                    class="col-xs-12 col-sm-6"
+                    :disable="formDisable"
+                    v-model="formData.consCd"
+                    :options="consOptions"
+                    label="공사구분"
+                    :label-color="$q.dark.isActive ? 'green' : 'blue'"
+                    option-value="commCd"
+                    option-label="commNm"
+                    options-dense
+                    emit-value
+                    map-options
+                  >
+                    <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
+                      <q-item v-bind="itemProps">
+                        <q-item-section>
+                          <q-item-label v-html="opt.commNm" />
+                        </q-item-section>
+                        <q-item-section side>
+                          <q-toggle :model-value="selected" @update:model-value="toggleOption(opt)" />
+                        </q-item-section>
+                      </q-item>
+                    </template>
+                  </q-select>
                 </div>
 
                 <div class="row q-col-gutter-x-xl">
-                  <div class="col-xs-12 col-sm-6">
-                    <q-input
-                      :dense="dense"
-                      v-model="formData.tel"
-                      label="전화번호"
-                      :label-color="$q.dark.isActive ? 'green' : 'blue'"
-                      :disable="formDisable"
-                      maxlength="30"
-                    />
-                  </div>
-                  <div class="col-xs-12 col-sm-6 q-pt-md text-right">
-                    <q-toggle
-                      v-model="formData.useYn"
-                      :disable="formDisable"
-                      color="red"
-                      label="폐기"
-                      true-value="Y"
-                      false-value="N"
-                      left-label
-                      :label-color="$q.dark.isActive ? 'green' : 'blue'"
-                    />
-                  </div>
+                  <q-input
+                    :dense="dense"
+                    stack-label
+                    class="col-xs-12 col-sm-9"
+                    v-model="formData.orcu1Nm"
+                    label="소속처"
+                    :label-color="$q.dark.isActive ? 'green' : 'blue'"
+                    :disable="formDisable"
+                    maxlength="6"
+                    @keyup.enter="openHelpOrcuDialog()"
+                  >
+                    <template v-slot:append>
+                      <q-icon
+                        size="0.8em"
+                        v-if="formData.orcu1Nm !== ''"
+                        name="close"
+                        @click="formData.orcu1Nm = ''"
+                        class="cursor-pointer q-pt-md"
+                      />
+                      <q-icon size="0.8em" name="search" @click="openHelpOrcuDialog()" class="cursor-pointer q-pt-md" />
+                    </template>
+                  </q-input>
+                  <q-input
+                    ref="orcu1Focus"
+                    stack-label
+                    :dense="dense"
+                    class="col-xs-12 col-sm-3"
+                    v-model="formData.orcu1Cd"
+                    label="코드"
+                    :label-color="$q.dark.isActive ? 'green' : 'blue'"
+                    readonly
+                    maxlength="100"
+                  />
                 </div>
 
                 <div class="row q-col-gutter-x-xl">
                   <div class="col-12">
                     <q-input
                       :dense="dense"
+                      stack-label
                       :disable="formDisable"
                       type="textarea"
                       v-model="formData.explains"
@@ -365,8 +396,8 @@
                       :label-color="$q.dark.isActive ? 'green' : 'blue'"
                       autogrow
                       clearable
-                      :hint="`${byteCount.explains} / 100(한글50)자 까지 입력하실 수 있습니다.`"
-                      @update:model-value="updateByteCount('explains', formData.explains, 100)"
+                      :hint="`${byteCount.explains} / 200(한글150)자 까지 입력하실 수 있습니다.`"
+                      @update:model-value="updateByteCount('explains', formData.explains, 200)"
                     />
                   </div>
                 </div>
@@ -377,6 +408,24 @@
       </div>
       <!--  end of contents list -->
     </div>
+
+    <q-dialog v-model="isStepDialogVisible" persistent backdrop-filter="contrast(40%)" @hide="getDataStepCheck">
+      <q-card class="" style="width: 700px; max-width: 100vw">
+        <q-card-section class="q-pa-none">
+          <q-card bordered>
+            <!-- contents list title bar -->
+            <q-bar class="q-px-xs q-py-lg">
+              <q-icon name="list_alt" />
+              <span class="text-subtitle2 q-px-sm">프로젝트 진행상태관리</span>
+              <q-space />
+              <q-btn v-close-popup class="text-white bg-grey-8"><q-icon name="close" size="xs" class="" /> 닫기</q-btn>
+            </q-bar>
+            <!--  end of contents list title bar -->
+          </q-card>
+        </q-card-section>
+        <q-card-section> <STEP_EDIT :message="{ projectCd: formData.projectCd }" /> </q-card-section>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -394,18 +443,28 @@ import { isEqual } from 'lodash';
 import jsonUtil from 'src/js_comm/json-util';
 import notifySave from 'src/js_comm/notify-save';
 import commUtil from 'src/js_comm/comm-util';
+import STEP_EDIT from 'pages/erp/mkt/STEP_EDIT.vue';
+import HelpOrcu from 'components/subvue/HelpOrcu.vue';
 
 const $q = useQuasar();
 const dense = ref(false);
 let isSaveFg = null;
 
+const isStepDialogVisible = ref(false);
 const salesOptionsSearch = ref(null);
+const stepOptionsSearch = ref(null);
+const consOptionsSearch = ref(null);
 const salesOptions = ref(null);
-const regionOptions = ref(null);
+const consOptions = ref(null);
+const stepOptions = ref(null);
+const levelOptions = ref(null);
+const typeOptions = ref(null);
+const zoneOptions = ref(null);
 
 const searchParam = reactive({
-  orcuFg: '',
   salesCd: '',
+  consCd: '',
+  stepCd: '',
   word: '',
 });
 const statusEdit = reactive({
@@ -413,29 +472,6 @@ const statusEdit = reactive({
   message: '',
   color: '',
 });
-
-const orcuFgOptions = ref([
-  {
-    value: '1',
-    label: '발주처',
-  },
-  {
-    value: '2',
-    label: '시공사',
-  },
-  {
-    value: '3',
-    label: '설계사',
-  },
-  {
-    value: '4',
-    label: '협력사',
-  },
-  {
-    value: '9',
-    label: '기타',
-  },
-]);
 
 const formDisable = ref(true);
 const isScreenVisible = ref(true);
@@ -471,9 +507,16 @@ onBeforeUnmount(() => {
 onBeforeMount(() => {
   // 영업담당
   getDataSalesOption().then(() => {
-    // 지역
-    getDataCommOption('890').then(() => {
-      handelGetData();
+    getDataCommOption('102').then(() => {
+      getDataCommOption('103').then(() => {
+        getDataCommOption('203').then(() => {
+          getDataCommOption('301').then(() => {
+            getDataCommOption('890').then(() => {
+              handelGetData();
+            });
+          });
+        });
+      });
     });
   });
 });
@@ -505,37 +548,43 @@ const columnDefs = reactive({
       pinned: 'left',
     },
     {
-      headerName: '코드',
-      field: 'orcuCd',
-      minWidth: 90,
-      maxWidth: 90,
+      headerName: '관리번호',
+      field: 'projectCd',
+      minWidth: 100,
+      maxWidth: 100,
       pinned: 'left',
     },
     {
-      headerName: '크라이언트명',
-      field: 'orcuNm',
-      minWidth: 120,
+      headerName: '프로젝트명',
+      field: 'projectNm',
+      minWidth: 250,
     },
     {
-      headerName: '유령',
-      field: 'orcuFg',
+      headerName: '진행상태',
+      field: 'stepNm',
       minWidth: 100,
       maxWidth: 100,
-      valueFormatter: params => {
-        if (params.value === '1') {
-          return '발주처';
-        } else if (params.value === '2') {
-          return '시공사';
-        } else if (params.value === '3') {
-          return '설계사';
-        } else if (params.value === '4') {
-          return '협력사';
-        } else if (params.value === '9') {
-          return '기타';
-        } else {
-          return params.value; // In case you want to handle other values
-        }
-      },
+    },
+    {
+      headerName: '영업규모',
+      field: 'levelNm',
+      minWidth: 100,
+      maxWidth: 100,
+    },
+    {
+      headerName: '발주처',
+      field: 'orcu1Nm',
+      minWidth: 150,
+    },
+    {
+      headerName: '공사구분',
+      field: 'consNm',
+      minWidth: 100,
+    },
+    {
+      headerName: '유형',
+      field: 'typeNm',
+      minWidth: 100,
     },
     {
       headerName: '영업담당',
@@ -551,46 +600,18 @@ const columnDefs = reactive({
       maxWidth: 120,
     },
     {
-      headerName: 'ZIP',
-      field: 'zipCd',
-      minWidth: 80,
-      maxWidth: 80,
-    },
-    {
-      headerName: '기본주소',
-      field: 'addrB',
-      minWidth: 200,
-    },
-    {
-      headerName: '상세주소',
-      field: 'addrD',
-      minWidth: 150,
-    },
-    {
-      headerName: '지역',
-      field: 'region',
-      minWidth: 100,
-    },
-    {
-      headerName: '홈페이지',
-      field: 'url',
-      minWidth: 100,
-    },
-    {
-      headerName: '이메일',
-      field: 'email',
-      minWidth: 150,
-    },
-    {
-      headerName: '전화번호',
-      field: 'tel',
-      minWidth: 130,
+      headerName: '수주일',
+      field: 'orderDay',
+      valueFormatter: dateFormatter,
+      minWidth: 120,
+      maxWidth: 120,
     },
     {
       headerName: '폐기',
-      field: 'useYn',
-      maxWidth: 100,
-      minWidth: 100,
+      field: 'outDay',
+      valueFormatter: dateFormatter,
+      maxWidth: 120,
+      minWidth: 120,
     },
     {
       headerName: '참고사항',
@@ -598,31 +619,25 @@ const columnDefs = reactive({
       maxWidth: 100,
       minWidth: 100,
     },
-    {
-      headerName: '가칭명',
-      field: 'orcuNmX',
-      minWidth: 120,
-    },
   ],
 });
 
 const oldFormData = ref(null);
 const formData = ref({
-  orcuCd: '',
-  orcuFg: '',
-  orcuNm: '',
-  orcuNmX: '',
-  salesCd: '',
+  projectCd: '',
+  projectNm: '',
   makeDay: '',
-  zipCd: '',
-  addrB: '',
-  addrD: '',
-  region: '',
-  url: '',
-  email: '',
-  tel: '',
+  orderDay: '',
+  salesCd: '',
+  orcu1Cd: '',
+  orcu1Nm: '',
+  levelCd: '',
+  typeCd: '',
+  consCd: '',
+  stepCd: '',
+  zoneCd: '',
+  outDay: '',
   explains: '',
-  useYn: '',
 });
 
 const selectedRows = ref([]);
@@ -679,6 +694,35 @@ const deleteDataSection = () => {
     });
 };
 const saveDataSection = () => {
+  if (formData.value.orcu1Nm.length > 0 && formData.value.orcu1Cd.length === 0) {
+    $q.dialog({
+      dark: true,
+      title: '안내',
+      message: '발주처 코드가 정의 되어있지 않습니다.',
+      ok: {
+        label: '무시',
+        push: true,
+        color: 'negative',
+      },
+      cancel: {
+        label: '수정',
+        push: true,
+        color: 'grey-7',
+      },
+    })
+      .onOk(() => {
+        saveOkDataSection();
+      })
+      .onCancel(() => {})
+      .onDismiss(() => {
+        // 확인/취소 모두 실행되었을때
+      });
+  } else {
+    saveOkDataSection();
+  }
+};
+
+const saveOkDataSection = () => {
   formData.value.makeDay = commUtil.unFormatDate(formData.value.makeDay);
 
   if (isEqual(formData.value, oldFormData.value)) {
@@ -697,7 +741,6 @@ const saveDataSection = () => {
     saveDataAndHandleResult(jsonUtil.dataJsonParse(isSaveFg, formData.value));
   }
 };
-
 // **************************************************************//
 // ***** DataBase 연결부분    *************************************//
 // **************************************************************//
@@ -705,44 +748,14 @@ const saveDataSection = () => {
 // ***** 자료저장 및 삭제 처리부분 *****************************//
 const saveDataAndHandleResult = resFormData => {
   api
-    .post('/api/mkt/mkt1010_save', resFormData)
+    .post('/api/mkt/mkt3010_save', resFormData)
     .then(res => {
       if (res.data.rtn === '0') {
-        if (isSaveFg === 'I') {
-          formData.value.oldOrcuCd = formData.value.orcuCd;
-
-          let newData = [formData.value];
-          myGrid.value.api.applyTransaction({
-            add: newData,
-            addIndex: 0,
-          });
-          handelGetData();
-        } else if (isSaveFg === 'U') {
-          const selectedData = myGrid.value.api.getSelectedRows();
-          // selectedData[0] = { ...formData.value };
-          selectedData[0].orcuCd = formData.value.orcuCd;
-          selectedData[0].oldOrcuCd = formData.value.orcuCd;
-          selectedData[0].orcuNm = formData.value.orcuNm;
-          selectedData[0].orcuNmX = formData.value.orcuNmX;
-          selectedData[0].orcuFg = formData.value.orcuFg;
-          selectedData[0].salesCd = formData.value.salesCd;
-          selectedData[0].zipCd = formData.value.zipCd;
-          selectedData[0].addrB = formData.value.addrB;
-          selectedData[0].addrD = formData.value.addrD;
-          selectedData[0].region = formData.value.region;
-          selectedData[0].url = formData.value.url;
-          selectedData[0].email = formData.value.email;
-          selectedData[0].tel = formData.value.tel;
-          selectedData[0].explains = formData.value.explains;
-          selectedData[0].useYn = formData.value.useYn;
-          selectedData[0].makeDay = formData.value.makeDay;
-          myGrid.value.api.applyTransaction({
-            update: selectedData,
-          });
-          myGrid.value.api.deselectAll();
-        } else if (isSaveFg === 'D') {
+        if (isSaveFg === 'D') {
           const selectedData = myGrid.value.api.getSelectedRows();
           myGrid.value.api.applyTransaction({ remove: selectedData });
+        } else {
+          handelGetData();
         }
       }
       let saveStatus = {};
@@ -767,26 +780,27 @@ const getDataMaxPages = async () => {
   currentPages.value = 0;
   pagination.startRowNum = 0;
   try {
-    const response = await api.post('/api/mkt/mkt1010_maxPages', {
-      paramOrcuFg: searchParam.orcuFg,
+    const response = await api.post('/api/mkt/mkt3010_maxPages', {
       paramSalesCd: searchParam.salesCd,
+      paramConsCd: searchParam.consCd,
+      paramStepCd: searchParam.stepCd,
       paramSearchValue: searchParam.word,
       paramPageRows: pagination.pageRows,
       paramStartRowNum: pagination.startRowNum,
     });
     let maxRows = response.data.data[0].maxPages;
-
     totalPages.value = Math.ceil(maxRows / pagination.pageRows);
-    // console.log('totalPage : ', totalPages.value);
+    console.log('totalPage : ', totalPages.value);
   } catch (error) {
     console.error('Error fetching users:', error);
   }
 };
 const getData = async () => {
   try {
-    const response = await api.post('/api/mkt/mkt1010_list', {
-      paramOrcuFg: searchParam.orcuFg,
+    const response = await api.post('/api/mkt/mkt3010_list', {
       paramSalesCd: searchParam.salesCd,
+      paramConsCd: searchParam.consCd,
+      paramStepCd: searchParam.stepCd,
       paramSearchValue: searchParam.word,
       paramPageRows: pagination.pageRows,
       paramStartRowNum: pagination.startRowNum,
@@ -800,10 +814,10 @@ const getData = async () => {
 // ***** 사용자정보 목록 자료 가져오기 부분  *****************************//
 
 // ***** 사용자정보 선택된 자료 가져오기 부분  *****************************//
-const getDataSelect = async resOrcuCd => {
+const getDataSelect = async resProjectCd => {
   try {
-    const response = await api.post('/api/mkt/mkt1010_select', {
-      paramOrcuCd: resOrcuCd,
+    const response = await api.post('/api/mkt/mkt3010_select', {
+      paramProjectCd: resProjectCd,
     });
     formData.value = response.data.data[0];
     // console.log('select data ::: ', JSON.stringify(formData.value));
@@ -832,11 +846,31 @@ async function getDataCommOption(resCommCd1) {
   try {
     const response = await api.post('/api/mst/comm_option_list', { paramCommCd1: resCommCd1 });
     switch (resCommCd1) {
-      case '890':
-        regionOptions.value = response.data.data;
+      case '102': // 공사구분
+        consOptions.value = response.data.data;
+        consOptionsSearch.value = JSON.parse(JSON.stringify(response.data.data));
+        consOptionsSearch.value.unshift({ commCd: '', commNm: '전체' });
+        break;
+      case '103': // 발주유형
+        typeOptions.value = response.data.data;
+        break;
+      case '203': // 영업규모
+        levelOptions.value = response.data.data;
+        break;
+      case '301': // 진행상태
+        stepOptionsSearch.value = response.data.data;
+        stepOptionsSearch.value.unshift({ commCd: '', commNm: '전체' });
+        break;
+      case '890': // 지역구분
+        zoneOptions.value = response.data.data;
         break;
       default:
-        regionOptions.value = [];
+        consOptionsSearch.value = [];
+        consOptions.value = [];
+        stepOptionsSearch.value = [];
+        typeOptions.value = [];
+        levelOptions.value = [];
+        zoneOptions.value = [];
     }
 
     // console.log('getData1: ', JSON.stringify(response.data.data));
@@ -844,6 +878,28 @@ async function getDataCommOption(resCommCd1) {
     console.error('Error fetching users:', error);
   }
 }
+
+async function getDataStepOption(resProjectCd) {
+  try {
+    const response = await api.post('/api/mkt/step_list', { paramProjectCd: resProjectCd });
+    stepOptions.value = response.data.data;
+
+    // console.log('getData1: ', JSON.stringify(response.data.data));
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+}
+const getDataStepCheck = async () => {
+  if (!formData.value.projectCd) {
+  } else {
+    try {
+      const response = await api.post('/api/mkt/step_check', { paramProjectCd: formData.value.projectCd });
+      formData.value.stepCd = response.data.data[0].stepCd;
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    }
+  }
+};
 // **************************************************************//
 // ***** DataBase 연결부분 끝  *************************************//
 // **************************************************************//
@@ -923,14 +979,19 @@ const gridOptions = {
     isShowSaveBtn.value = false;
 
     if (selectedRows.value.length === 1) {
-      getDataSelect(selectedRows.value[0].orcuCd);
-      isShowSaveBtn.value = true;
-      isShowStatusEdit.value = true;
-      statusEdit.icon = 'edit_note';
-      statusEdit.message = '수정/삭제모드 입니다';
-      statusEdit.color = 'accent';
-      isSaveFg = 'U';
-      formDisable.value = false;
+      getDataSelect(selectedRows.value[0].projectCd).then(() => {
+        getDataStepCheck().then(() => {
+          getDataStepOption(selectedRows.value[0].projectCd).then(() => {
+            isShowSaveBtn.value = true;
+            isShowStatusEdit.value = true;
+            statusEdit.icon = 'edit_note';
+            statusEdit.message = '수정/삭제모드 입니다';
+            statusEdit.color = 'accent';
+            isSaveFg = 'U';
+            formDisable.value = false;
+          });
+        });
+      });
     } else if (selectedRows.value.length > 1) {
       isSaveFg = 'D';
       isShowStatusEdit.value = true;
@@ -972,29 +1033,45 @@ const gridOptions = {
 };
 
 // ********** 우편번호 처리
-const addrDFocus = ref(null);
-const openPostcodeSearch = resFg => {
-  new window.daum.Postcode({
-    oncomplete: data => {
-      if (resFg === '1') {
-        formData.value.zipCd = data.zonecode;
-        formData.value.addrB = `${data.address} ${data.buildingName || ''}`;
-        setTimeout(() => {
-          addrDFocus.value.focus();
-        }, 100);
-      } else {
-      }
-    },
-  }).open();
+const orcu1Focus = ref(null);
+
+const useDialog = ref(false);
+const openHelpOrcuDialog = () => {
+  useDialog.value = true;
+  openHelpOrcuDialog1();
 };
 
-const byteCount = ref({ orcuNm: 0, explains: 0 });
+const openHelpOrcuDialog1 = () => {
+  if (useDialog.value) {
+    $q.dialog({
+      component: HelpOrcu,
+      componentProps: {
+        paramValueNm: formData.value.orcu1Nm,
+        paramCloseDay: commUtil.unFormatDate(formData.value.makeDay),
+      },
+    })
+      .onOk(res => {
+        // console.log('res ::: ', res.valueCd, res.valueNm);
+        formData.value.orcu1Cd = res.valueCd;
+        formData.value.orcu1Nm = res.valueNm;
+      })
+      .onCancel(() => {
+        console.log('Cancel');
+      })
+      .onDismiss(() => {
+        // console.log('Called on OK or Cancel');
+        useDialog.value = false;
+      });
+  }
+};
+
+const byteCount = ref({ nacdNm: 0, explains: 0 });
 const updateByteCount = (ch, val, maxCnt) => {
   if (val) {
     switch (ch) {
-      case 'orcuNm':
+      case 'nacdNm':
         byteCount.value.rocuNm = commUtil.textByteLength(val);
-        if (byteCount.value.orcuNm > maxCnt) {
+        if (byteCount.value.nacdNm > maxCnt) {
           alert('한글 ' + maxCnt + '자 (한글 ' + Math.trunc(maxCnt / 2) + '자)까지 가능합니다.');
         }
         break;

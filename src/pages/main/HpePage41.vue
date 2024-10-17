@@ -64,7 +64,7 @@
                   <q-img
                     class="cursor-pointer q-pa-none q-ma-none"
                     v-if="data.imageFileNm"
-                    :src="`https://hr.energyshop.co.kr/imagesThumbnail/${data.imageFileNm}`"
+                    :src="`https://www.iszion.com/imagesThumbnail/${data.imageFileNm}`"
                     style="object-fit: cover; width: 100%; height: 100%"
                   />
                   <q-icon v-else name="face" color="teal" size="md" />
@@ -156,7 +156,7 @@ const getChartOptions = (title, label, isXs, isDarkMode) => ({
           title === '전문직'
             ? [
                 {
-                  icon: '<img src="https://hr.energyshop.co.kr/images/systemImg/s11.png" width="60" />', // Icon HTML
+                  icon: '<img src="https://www.iszion.com/images/systemImg/s11.png" width="60" />', // Icon HTML
                   index: -1, // Position in the toolbar
                   title: '( S1 업무지원직: ' + series3.value.hrCnt + '명 )',
                   class: 'custom-icon q-mr-xl q-mt-sm',

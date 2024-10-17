@@ -2,7 +2,7 @@
   <div v-if="rowData.imageFileNm">
     <q-avatar size="35px" class="cursor-pointer">
       <q-img
-        :src="`https://hr.energyshop.co.kr/imagesThumbnail/${rowData.imageFileNm}`"
+        :src="`https://www.iszion.com/imagesThumbnail/${rowData.imageFileNm}`"
         style="object-fit: cover; width: 100%; height: 100%"
         class="cursor-pointer"
         @click="imageDetailView()"
@@ -16,7 +16,7 @@
   <!-- 이미지 원본보기 Dialog -->
   <q-dialog v-model="dialogOpen">
     <q-card bordered style="max-width: 450px; width: 100%">
-      <q-img :src="`https://hr.energyshop.co.kr/images/${rowData.imageFileNm}`" style="max-width: 100%; max-height: 100vh" />
+      <q-img :src="`https://www.iszion.com/images/${rowData.imageFileNm}`" style="max-width: 100%; max-height: 100vh" />
       <q-card-section>
         <div class="row q-pa-none">
           <div class="col text-h6 ellipsis">{{ rowData.empNm }}</div>

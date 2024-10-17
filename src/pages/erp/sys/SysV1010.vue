@@ -131,7 +131,7 @@
                           <q-img
                             spinner-color="white"
                             class=""
-                            :src="`https://hr.energyshop.co.kr/images/${formData.imageFileNm}?${new Date().getTime()}`"
+                            :src="`https://www.iszion.com/images/${formData.imageFileNm}?${new Date().getTime()}`"
                             style="object-fit: cover; width: 100%; height: 100%"
                           />
                           <!--                          <q-img spinner-color="white" class="" :src="`https://www.iszion.com/images/${formData.imageFileNm}?${new Date().getTime()}`" />-->
@@ -691,7 +691,7 @@ const gridOptions = {
     editable: false,
   },
   rowSelection: 'multiple' /* 'single' or 'multiple',*/,
-  enableColResize: true,
+  enableColResize: false,
   enableSorting: true,
   enableFilter: false,
   enableRangeSelection: true,

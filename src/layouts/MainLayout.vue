@@ -11,7 +11,11 @@
 
         <q-separator class="q-mx-xs-sm q-mx-sm-md" dark vertical inset />
 
-        <q-btn rounded color="purple" dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
+        <q-btn color="purple" dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
+
+        <q-separator v-if="!$q.screen.gt.sm" class="q-mx-xs-sm q-mx-sm-md" dark vertical inset />
+        <q-btn v-if="!$q.screen.gt.sm" color="teal" dense icon="edit" aria-label="활동일지" @click="router.push({ path: '/main/mkt4010' })" />
+        <q-separator v-if="!$q.screen.gt.sm" class="q-mx-xs-sm q-mx-sm-md" dark vertical inset />
 
         <q-space />
         <!--  Main Menu List -->
@@ -87,7 +91,7 @@
             <q-img
               v-if="userImageName"
               loading="eager"
-              :src="`https://hr.energyshop.co.kr/imagesThumbnail/${userImageName}?${new Date().getTime()}`"
+              :src="`https://www.iszion.com/imagesThumbnail/${userImageName}?${new Date().getTime()}`"
               style="object-fit: cover; width: 100%; height: 100%"
             />
             <!--            <q-img loading="eager" :src="`https://www.iszion.com/images/${userImageName}?${new Date().getTime()}`" />-->
@@ -412,14 +416,15 @@ const userImageName = ref(null);
 const getDataSetUserInfo = async () => {
   try {
     const response = await api.post('/api/sys/user_info', { paramUserId: storeUser.setEmpCd });
-    // console.log('data: ', JSON.stringify(response.data.data));
     userImageName.value = response.data.data[0].imageFileNm;
     storgeUserInfoGroupSave(
       response.data.data[0].empCd +
         '|' +
-        response.data.data[0].empNm +
+        response.data.data[0].salesNm +
         '|' +
-        response.data.data[0].empNmx +
+        response.data.data[0].salesNmx +
+        '|' +
+        response.data.data[0].salesCd +
         '|' +
         response.data.data[0].deptCd +
         '|' +
@@ -436,6 +441,25 @@ const getDataSetUserInfo = async () => {
   } catch (error) {
     console.error('Error fetching users:', error);
   }
+};
+// ***** 유저정보 설정 부분 *****************************//
+const storgeUserInfoGroupSave = resSetUserInfoGroup => {
+  SessionStorage.set('setUserInfoGroup', resSetUserInfoGroup);
+  getStorgeSetUserInfoGroup();
+};
+
+const getStorgeSetUserInfoGroup = () => {
+  const _value = SessionStorage.getItem('setUserInfoGroup').split('|');
+  storeUser.setEmpCd = _value[0];
+  storeUser.setEmpNm = _value[1];
+  storeUser.setEmpNmx = _value[2];
+  storeUser.setSalesCd = _value[3];
+  storeUser.setDeptCd = _value[4];
+  storeUser.setDeptNm = _value[5];
+  storeUser.setPstnCd = _value[6];
+  storeUser.setPstnNm = _value[7];
+  storeUser.setLevelCd = _value[8];
+  storeUser.setLevelNm = _value[9];
 };
 // ***** 유저정보 처리 부분 끝 *****************************//
 
@@ -584,39 +608,6 @@ const addFavorites = () => {
     .onDismiss(() => {
       // 확인/취소 모두 실행되었을때
     });
-};
-
-// ***** 유저정보 설정 부분 *****************************//
-const storgeUserInfoGroupSave = resSetUserInfoGroup => {
-  SessionStorage.set('setUserInfoGroup', resSetUserInfoGroup);
-  getStorgeSetUserInfoGroup();
-};
-
-const getStorgeSetUserInfoGroup = () => {
-  const _value = SessionStorage.getItem('setUserInfoGroup').split('|');
-  storeUser.setEmpCd = _value[0];
-  storeUser.setEmpNm = _value[1];
-  storeUser.setEmpNmx = _value[2];
-  storeUser.setDeptCd = _value[3];
-  storeUser.setDeptNm = _value[4];
-  storeUser.setPstnCd = _value[5];
-  storeUser.setPstnNm = _value[6];
-  storeUser.setLevelCd = _value[7];
-  storeUser.setLevelNm = _value[8];
-  // console.log(
-  //   'Main SetUser Info Group :: ',
-  //   storeUser.setEmpCd,
-  //   storeUser.setEmpNm,
-  //   storeUser.setEmpNmx,
-  //   storeUser.setDepgCd,
-  //   storeUser.setDepgNm,
-  //   storeUser.setDeptCd,
-  //   storeUser.setDeptNm,
-  //   storeUser.setTitlCd,
-  //   storeUser.setTitlNm,
-  //   storeUser.setPstnCd,
-  //   storeUser.setPstnNm,
-  // );
 };
 </script>
 
