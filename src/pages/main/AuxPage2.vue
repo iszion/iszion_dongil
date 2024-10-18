@@ -50,7 +50,7 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 import 'ag-grid-community/styles/ag-theme-balham.css';
 import { AgGridVue } from 'ag-grid-vue3';
 import { useQuasar } from 'quasar';
-import { computed, onBeforeMount, onMounted, reactive, ref } from 'vue';
+import { computed, onBeforeMount, onMounted, reactive, ref, watch } from 'vue';
 import { api } from '/src/boot/axios';
 import SubHistory from 'components/subvue/SubHistory.vue';
 import SubDayDocList from 'components/subvue/SubDayDocList.vue';
@@ -65,6 +65,15 @@ const params = defineProps({
     default: null,
   },
 });
+
+watch(
+  () => params.currentDay,
+  newDay => {
+    getDataProject();
+    getDataSales();
+  },
+  { immediate: false }, // 컴포넌트가 마운트될 때도 실행안함
+);
 
 onBeforeMount(() => {
   getDataProject();

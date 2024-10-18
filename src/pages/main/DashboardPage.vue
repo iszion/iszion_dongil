@@ -1,12 +1,10 @@
 <template>
-  <q-page padding class="q-pa-xs-none q-pa-sm-xs q-col-gutter-md">
-    <div class="row">
-      <div class="col-12">
-        <!-- 나의일정 -->
-        <aux-page />
-      </div>
+  <q-page padding class="q-gutter-y-md">
+    <div class="col-12">
+      <!-- 메인 데시보드 -->
+      <aux-page />
     </div>
-    <div class="row q-col-gutter-md">
+    <div class="row q-col-gutter-x-md">
       <div class="col-12 col-md-6">
         <!-- 나의일정 -->
         <event-view />

@@ -15,13 +15,13 @@
         <div>
           <div class="q-pa-md q-gutter-y-sm">
             <div class="row q-col-gutter-x-xl">
-              <q-field label="작성일자" stack-label class="col-xs-12 col-sm-4 text-subtitle1">
+              <q-field label="작성일자" :label-color="$q.dark.isActive ? 'green' : 'blue'" stack-label class="col-xs-12 col-sm-4 text-subtitle1">
                 <template v-slot:control>
                   <div class="self-center full-width no-outline" tabindex="0">{{ commUtil.formatWeekDate(formData.stdDay) }}</div>
                 </template>
               </q-field>
 
-              <q-field label="일지유형" stack-label class="col-xs-12 col-sm-3 text-subtitle1">
+              <q-field label="일지유형" :label-color="$q.dark.isActive ? 'green' : 'blue'" stack-label class="col-xs-12 col-sm-3 text-subtitle1">
                 <template v-slot:control>
                   <div class="self-center full-width no-outline" tabindex="0">{{ formData.typeNm }}</div>
                 </template>
@@ -45,7 +45,7 @@
             </div>
             <div class="row q-col-gutter-x-xl">
               <div class="col-xs-12 col-sm-10">
-                <q-field label="프로젝트명" stack-label class="text-subtitle1">
+                <q-field label="프로젝트명" :label-color="$q.dark.isActive ? 'green' : 'blue'" stack-label class="text-subtitle1">
                   <template v-slot:control>
                     <div class="self-center full-width no-outline" tabindex="0">{{ formData.projectNm }}</div>
                   </template>
@@ -155,7 +155,7 @@ const getDataSelect = async () => {
       paramSeq: params.paramSeq,
     });
     formData.value = response.data.data[0];
-    console.log('formData : ', JSON.stringify(formData.value));
+    // console.log('formData : ', JSON.stringify(formData.value));
   } catch (error) {
     console.error('Error fetching users:', error);
   }

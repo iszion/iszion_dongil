@@ -31,13 +31,13 @@
                   <div class="text-subtitle1 text-bold text-pink">{{ commUtil.formatWeekDate(data.stdDay) }} [ {{ data.salesNm }} ]</div>
                   <q-space />
                   <q-fab padding="xs" color="amber" text-color="black" icon="more_vert" direction="left">
-                    <q-fab-action padding="xs" color="amber" text-color="black" @click="onRepleCall(data)" icon="reply" />
+                    <q-fab-action padding="xs" color="amber" text-color="black" @click="onReplyCall(data)" icon="reply" />
                     <q-fab-action padding="xs" color="amber" text-color="black" @click="onDayDocCall(data)" icon="article" />
                   </q-fab>
                 </div>
                 <div v-if="!$q.screen.lt.md && index % 2 !== 0" class="row">
                   <q-fab padding="xs" color="amber" text-color="black" icon="more_vert" direction="right">
-                    <q-fab-action padding="xs" color="amber" text-color="black" @click="onRepleCall(data)" icon="reply" />
+                    <q-fab-action padding="xs" color="amber" text-color="black" @click="onReplyCall(data)" icon="reply" />
                     <q-fab-action padding="xs" color="amber" text-color="black" @click="onDayDocCall(data)" icon="article" />
                   </q-fab>
 
@@ -48,7 +48,7 @@
                   <div class="text-subtitle1 text-bold text-pink">{{ commUtil.formatWeekDate(data.stdDay) }} [ {{ data.salesNm }} ]</div>
                   <q-space />
                   <q-fab padding="xs" color="amber" text-color="black" icon="more_vert" direction="left">
-                    <q-fab-action padding="xs" color="amber" text-color="black" @click="onRepleCall(data)" icon="reply" />
+                    <q-fab-action padding="xs" color="amber" text-color="black" @click="onReplyCall(data)" icon="reply" />
                     <q-fab-action padding="xs" color="amber" text-color="black" @click="onDayDocCall(data)" icon="article" />
                   </q-fab>
                 </div>
@@ -100,7 +100,7 @@ onMounted(() => {
   getData();
 });
 
-const onRepleCall = data => {
+const onReplyCall = data => {
   $q.dialog({
     component: SubDayReply,
     componentProps: {

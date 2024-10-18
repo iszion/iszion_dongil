@@ -1,7 +1,7 @@
 <template>
-  <q-card>
+  <q-card class="q-pa-xs-none q-pa-sm-xs">
     <q-card-section class="q-pa-xs text-center" :class="$q.dark.isActive ? 'bg-blue-grey-8 text-white ' : 'bg-blue-grey-4 text-dark '">
-      <div class="row flex-center">
+      <div class="row flex-center q-px-xs-xs q-px-sm-sm">
         <q-btn dense round color="primary"
           ><q-icon name="event" size="xs" />
           <q-popup-proxy @before-show="updateProxy" transition-show="scale" transition-hide="scale">
@@ -231,7 +231,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { api } from 'boot/axios';
 import SubCountList from 'components/subvue/SubCountList.vue';
 import AuxPage1 from 'pages/main/AuxPage1.vue';
@@ -246,6 +246,11 @@ const proxyDate = ref(commUtil.getToday());
 const updateProxy = () => {
   proxyDate.value = currentDay.value;
 };
+
+watch(currentDay, newVal => {
+  // currentDay 값이 변경될 때마다 데이터를 다시 가져옵니다.
+  getData();
+});
 
 const save = () => {
   currentDay.value = proxyDate.value;

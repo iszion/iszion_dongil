@@ -761,6 +761,8 @@ const saveDataAndHandleResult = resFormData => {
       saveStatus.rtn = res.data.rtn;
       saveStatus.rtnMsg = res.data.rtnMsg;
       notifySave.notifyView(saveStatus);
+
+      handleGetDataEvent();
     })
     .catch(error => {
       console.log('error: ', error);

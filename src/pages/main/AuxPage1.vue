@@ -57,6 +57,7 @@
 import { onBeforeMount, onMounted, reactive, ref, watch } from 'vue';
 import { useQuasar } from 'quasar';
 import { api } from 'boot/axios';
+import commUtil from 'src/js_comm/comm-util';
 
 const $q = useQuasar();
 const isXsScreen = ref($q.screen.lt.sm);
@@ -69,6 +70,14 @@ const params = defineProps({
   },
 });
 
+watch(
+  () => params.currentDay,
+  newDay => {
+    getData();
+  },
+  { immediate: false }, // 컴포넌트가 마운트될 때도 실행안함
+);
+
 const labelNm = ref({
   year4: Number(params.currentDay.substring(0, 4)) - 4,
   year3: Number(params.currentDay.substring(0, 4)) - 3,
@@ -76,6 +85,14 @@ const labelNm = ref({
   year1: Number(params.currentDay.substring(0, 4)) - 1,
   year0: Number(params.currentDay.substring(0, 4)),
 });
+const labelNmUpdate = () => {
+  labelNm.value.year4 = Number(params.currentDay.substring(0, 4)) - 4;
+  labelNm.value.year3 = Number(params.currentDay.substring(0, 4)) - 3;
+  labelNm.value.year2 = Number(params.currentDay.substring(0, 4)) - 2;
+  labelNm.value.year1 = Number(params.currentDay.substring(0, 4)) - 1;
+  labelNm.value.year0 = Number(params.currentDay.substring(0, 4));
+};
+
 const rowData = ref([]);
 const data = reactive({
   data1: {
@@ -155,9 +172,21 @@ const chartOptions = ref({
   },
 });
 
-onBeforeMount(async () => {
+onBeforeMount(() => {
+  getData();
+});
+
+onMounted(() => {});
+// **************************************************************//
+// ***** DataBase 연결부분    *************************************//
+// **************************************************************//
+
+const getData = async () => {
   try {
-    const response = await fetchData('/api/aux/auxPage1_list');
+    const response = await api.post('/api/aux/auxPage1_list', {
+      paramSyear: params.currentDay.substring(0, 4) - 4,
+      paramEyear: params.currentDay.substring(0, 4),
+    });
     if (response) {
       rowData.value = response.data.data;
       // console.log('rowData : ', JSON.stringify(rowData));
@@ -213,6 +242,7 @@ onBeforeMount(async () => {
       data.data4.ordAmt3 = Math.round(response.data.data[3].ordAmt3 / 1000000);
       data.data4.ordAmt4 = Math.round(response.data.data[3].ordAmt4 / 1000000);
 
+      labelNmUpdate();
       // 차트 시리즈 업데이트
       series1.value = [
         {
@@ -488,24 +518,6 @@ onBeforeMount(async () => {
     }
   } catch (error) {
     console.error('Error initializing data:', error);
-  }
-});
-onMounted(() => {});
-// **************************************************************//
-// ***** DataBase 연결부분    *************************************//
-// **************************************************************//
-
-// ***** 목표진행율 가져오기 부분  *****************************//
-const fetchData = async endpoint => {
-  try {
-    const response = await api.post(endpoint, {
-      paramSyear: params.currentDay.substring(0, 4) - 4,
-      paramEyear: params.currentDay.substring(0, 4),
-    });
-    return response;
-  } catch (error) {
-    console.error(`Error fetching data from ${endpoint}:`, error);
-    return [0]; // Return a default value to prevent the chart from breaking
   }
 };
 </script>

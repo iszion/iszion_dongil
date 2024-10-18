@@ -19,6 +19,7 @@ const routes = [
       { path: 'mkt3010', component: () => import('pages/erp/mkt/MktV3010.vue') },
       { path: 'mkt3020', component: () => import('pages/erp/mkt/MktV3020.vue') },
       { path: 'mkt4010', component: () => import('pages/erp/mkt/MktV4010.vue') },
+      { path: 'mkt4020', component: () => import('pages/erp/mkt/MktV4020.vue') },
       { path: 'stepEdit', component: () => import('pages/erp/mkt/STEP_EDIT.vue') },
 
       { path: 'mst1010', component: () => import('pages/erp/mst/MstV1010.vue') },
