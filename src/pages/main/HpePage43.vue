@@ -119,7 +119,7 @@ const columnDefs = reactive({
     {
       headerName: '#',
       width: 60,
-      pinned: 'left',
+      pinned: !$q.screen.xs && !$q.screen.sm ? 'left' : null,
       editable: false,
       valueGetter: function (params) {
         // Customize row numbers as needed

@@ -505,7 +505,7 @@ const getDataDocA = async resProgId => {
 const getDataDocU = async resProgId => {
   const paramData = { paramProgId: resProgId };
   try {
-    const response = await api.post('/api/sys/sys4020_docU_select', paramData);
+    const response = await api.post('/api/sys/sys4020_docB_select', paramData);
     if (isEmpty(response.data.data)) {
       menualDocU.value.progId = selectedProgId.value;
       menualDocU.value.contents = '메뉴얼자료가 없습니다';
@@ -544,7 +544,7 @@ const getGroupData = async () => {
 // saveStatus = 0=수정성공 1=신규성공 2=삭제성공 3=수정에러 4=시스템에러
 const saveDataDocUndHandleResult = resFormData => {
   api
-    .post('/api/sys/sys4020_docU_save', resFormData)
+    .post('/api/sys/sys4020_docB_save', resFormData)
     .then(res => {
       let saveStatus = {};
       saveStatus.rtn = res.data.rtn;

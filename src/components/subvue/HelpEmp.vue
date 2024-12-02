@@ -103,7 +103,7 @@ const gridOptions = {
   },
   localeText: { noRowsToShow: '자료가 없습니다.' },
   getRowStyle: function (param) {
-    console.log('param: ', param.data.closeDay);
+    // console.log('param: ', param.data.closeDay);
     if (param.data.closeDay) {
       if (param.data.closeDay <= params.paramCloseDay) {
         param.data.closeDay = commUtil.formatDate(param.data.closeDay);
@@ -168,7 +168,7 @@ const onCellKeyDown = params => {
       // 상하 키를 누를 때 행 이동 로직 추가
       const currentRowIndex = params.rowIndex;
       let nextRowIndex = currentRowIndex;
-      console.log('index : ', nextRowIndex);
+      // console.log('index : ', nextRowIndex);
       if (key === 'ArrowUp') {
         nextRowIndex = currentRowIndex - 1;
       } else if (key === 'ArrowDown') {
@@ -189,6 +189,7 @@ const onCellKeyDown = params => {
 };
 
 const handleSelectedClick = () => {
+  // console.log('sel :: ', JSON.stringify(selectedRows.value));
   if (selectedRows.value && selectedRows.value.length > 0) {
     const selectedEmpCd = selectedRows.value[0].empCd;
     const selectedEmpNm = selectedRows.value[0].empNm;

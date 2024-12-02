@@ -1,51 +1,51 @@
 <template>
   <div class="row q-col-gutter-md">
     <div class="col-xs-12 col-sm-6 col-md-6 col-lg-3">
-      <q-card bordered class="q-pa-xs">
+      <q-card bordered class="">
         <q-bar class="text-subtitle1 text-bold">
-          <span class="q-mr-sm" :class="$q.dark.isActive ? 'text-orange' : 'text-deep-orange'"> ( 관급 )</span>목표대비 수주달성율
+          <span class="q-mr-sm" :class="$q.dark.isActive ? 'text-orange' : 'text-deep-orange'"> ( 관급 )</span>목표/수주실적
           <q-space />
           <span class="text-subtitle2 text-teal">[ 단위: 백만원 ]</span>
         </q-bar>
-        <q-card-section class="q-pb-none">
+        <q-card-section class="q-pa-xs">
           <apexchart type="bar" height="250" :options="chartOptions" :series="series1"></apexchart>
         </q-card-section>
       </q-card>
     </div>
     <div class="col-xs-12 col-sm-6 col-md-6 col-lg-3">
-      <q-card bordered class="q-pa-xs">
+      <q-card bordered class="">
         <q-bar class="text-subtitle1 text-bold">
-          <span class="q-mr-sm" :class="$q.dark.isActive ? 'text-orange' : 'text-deep-orange'"> ( 사급 )</span>목표대비 수주달성율
+          <span class="q-mr-sm" :class="$q.dark.isActive ? 'text-orange' : 'text-deep-orange'"> ( 사급 )</span>목표/수주실적
           <q-space />
           <span class="text-subtitle2 text-teal">[ 단위: 백만원 ]</span>
         </q-bar>
-        <q-card-section class="q-pb-none">
+        <q-card-section class="q-pa-xs">
           <apexchart type="bar" height="250" :options="chartOptions" :series="series2"></apexchart>
         </q-card-section>
       </q-card>
     </div>
     <div class="col-xs-12 col-sm-6 col-md-6 col-lg-3">
-      <q-card bordered class="q-pa-xs">
+      <q-card bordered class="">
         <q-bar class="text-subtitle1 text-bold">
-          <span class="q-mr-sm" :class="$q.dark.isActive ? 'text-orange' : 'text-deep-orange'"> ( 자재판매 )</span>목표대비 수주달성율
+          <span class="q-mr-sm" :class="$q.dark.isActive ? 'text-orange' : 'text-deep-orange'"> ( 자재판매 )</span>목표/수주실적
           <q-space />
           <span class="text-subtitle2 text-teal">[ 단위: 백만원 ]</span>
         </q-bar>
 
-        <q-card-section class="q-pb-none">
+        <q-card-section class="q-pa-xs">
           <apexchart type="bar" height="250" :options="chartOptions" :series="series3"></apexchart>
         </q-card-section>
       </q-card>
     </div>
     <div class="col-xs-12 col-sm-6 col-md-6 col-lg-3">
-      <q-card bordered class="q-pa-xs">
+      <q-card bordered class="">
         <q-bar class="text-subtitle1 text-bold">
-          <span class="q-mr-sm" :class="$q.dark.isActive ? 'text-orange' : 'text-deep-orange'"> ( 누수보수 )</span>목표대비 수주달성율
+          <span class="q-mr-sm" :class="$q.dark.isActive ? 'text-orange' : 'text-deep-orange'"> ( 누수보수 )</span>목표/수주실적
           <q-space />
           <span class="text-subtitle2 text-teal">[ 단위: 백만원 ]</span>
         </q-bar>
 
-        <q-card-section class="q-pb-none">
+        <q-card-section class="q-pa-xs">
           <apexchart type="bar" height="250" :options="chartOptions" :series="series4"></apexchart>
         </q-card-section>
       </q-card>

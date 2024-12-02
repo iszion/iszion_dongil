@@ -1,5 +1,5 @@
 <template>
-  <q-card bordered class="q-pa-xs">
+  <q-card bordered class="">
     <q-bar class="q-py-xs text-subtitle1 text-bold">
       게시글 <span class="text-subtitle2 q-px-sm">( {{ message.deptNm }})</span>
       <q-space />
@@ -37,12 +37,13 @@
   </q-card>
 
   <!--  게시글 조회 부분 -->
-  <q-dialog full-width full-height v-model="isDialogView">
+  <q-dialog :maximized="$q.screen.lt.md" full-width full-height v-model="isDialogView">
     <q-card>
       <q-bar class="q-py-xs text-subtitle1 text-bold">
+        <q-btn rounded dense color="dark" icon="close" size="sm" class="q-pa-xs q-px-md" v-close-popup>닫기</q-btn>
+        <q-space />
         게시판 관리
         <q-space />
-        <q-btn rounded dense color="dark" icon="close" size="xs" class="q-pa-xs" v-close-popup />
       </q-bar>
       <q-card-section>
         <div class="row q-px-sm items-center">

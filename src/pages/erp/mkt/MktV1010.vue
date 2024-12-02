@@ -492,7 +492,7 @@ const columnDefs = reactive({
       field: 'rowNum',
       minWidth: 70,
       filter: true,
-      pinned: 'left',
+      pinned: !$q.screen.xs && !$q.screen.sm ? 'left' : null,
     },
     {
       headerName: '',
@@ -502,14 +502,14 @@ const columnDefs = reactive({
       checkboxSelection: true,
       headerCheckboxSelection: true,
       filter: false,
-      pinned: 'left',
+      pinned: !$q.screen.xs && !$q.screen.sm ? 'left' : null,
     },
     {
       headerName: '코드',
       field: 'orcuCd',
       minWidth: 90,
       maxWidth: 90,
-      pinned: 'left',
+      pinned: !$q.screen.xs && !$q.screen.sm ? 'left' : null,
     },
     {
       headerName: '크라이언트명',

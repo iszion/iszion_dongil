@@ -7,7 +7,7 @@
         <q-space />
         <div class="text-subtitle1 text-bold">
           [ <span class="text-blue"> {{ commUtil.formatWeekDate(params.paramStdDay) }} {{ params.paramSalesNm }}</span> ]
-          <span class="q-ml-md gt-xs">활동일지 리플</span>
+          <span class="q-ml-md gt-xs">활동일지 점검 및 피드백</span>
         </div>
         <q-space />
       </q-toolbar>
@@ -80,14 +80,16 @@
             ref="startFocus"
             :disable="formDisable"
             outlined
+            type="textarea"
+            autogrow
             color="teal"
             label-color="orange"
             v-model="formData.reply"
             label="전달내용"
-            counter
             clearable
+            :hint="`${byteCount.reply} /200(한글100자) 까지 입력하실 수 있습니다.`"
+            @update:model-value="updateByteCount('reply', formData.reply, 200)"
           >
-            <template v-slot:hint> 한글100자(영문200자)까지 가능 </template>
           </q-input>
           <div class="text-right">
             <q-rating
@@ -348,6 +350,24 @@ const dayFormat = resDay => {
 
   // console.log('reg_day: ', formattedDate);
   return formattedDate;
+};
+
+// ************* Byte Check
+
+const byteCount = ref({ reply: 0 });
+const updateByteCount = (ch, val, maxCnt) => {
+  if (val) {
+    switch (ch) {
+      case 'reply':
+        byteCount.value.reply = commUtil.textByteLength(val);
+        if (byteCount.value.reply > maxCnt) {
+          alert('한글 ' + maxCnt + '자 (한글 ' + Math.trunc(maxCnt / 2) + '자)까지 가능합니다.');
+        }
+        break;
+      default:
+        break;
+    }
+  }
 };
 </script>
 

@@ -20,9 +20,12 @@ const routes = [
       { path: 'mkt3020', component: () => import('pages/erp/mkt/MktV3020.vue') },
       { path: 'mkt4010', component: () => import('pages/erp/mkt/MktV4010.vue') },
       { path: 'mkt4020', component: () => import('pages/erp/mkt/MktV4020.vue') },
+      { path: 'mkt4030', component: () => import('pages/erp/mkt/MktV4030.vue') },
+      { path: 'mkt4050', component: () => import('pages/erp/mkt/MktV4050.vue') },
       { path: 'stepEdit', component: () => import('pages/erp/mkt/STEP_EDIT.vue') },
 
       { path: 'mst1010', component: () => import('pages/erp/mst/MstV1010.vue') },
+      { path: 'mst1020', component: () => import('pages/erp/mst/MstV1020.vue') },
       { path: 'mst1210', component: () => import('pages/erp/mst/MstV1210.vue') },
       { path: 'mst1220', component: () => import('pages/erp/mst/MstV1220.vue') },
 
@@ -36,9 +39,12 @@ const routes = [
       { path: 'mst2060', component: () => import('pages/erp/mst/MstV2060.vue') },
       { path: 'mst5090', component: () => import('pages/erp/mst/MstV5090.vue') },
       { path: 'mstgrid', component: () => import('pages/erp/mst/MstVgrid.vue') },
+      { path: 'mstgridfocus', component: () => import('pages/erp/mst/MstVgridFocus.vue') },
       { path: 'mstprint', component: () => import('pages/erp/mst/MstVprint.vue') },
       { path: 'mstexcel', component: () => import('pages/erp/mst/MstVexcel.vue') },
       { path: 'mstgps', component: () => import('pages/erp/mst/MstVgps.vue') },
+      { path: 'mstvoice', component: () => import('pages/erp/mst/MstVvoice.vue') },
+      { path: 'msteditor', component: () => import('pages/erp/mst/MstVeditor.vue') },
 
       { path: 'sys1010', component: () => import('pages/erp/sys/SysV1010.vue') },
       { path: 'sys1110', component: () => import('pages/erp/sys/SysV1110.vue') },
@@ -47,6 +53,7 @@ const routes = [
       { path: 'sys1910', component: () => import('pages/erp/sys/SysV1910.vue') },
       { path: 'sys4010', component: () => import('pages/erp/sys/SysV4010.vue') },
       { path: 'sys4020', component: () => import('pages/erp/sys/SysV4020.vue') },
+      { path: 'sys4030', component: () => import('pages/erp/sys/SysV4030.vue') },
       { path: 'sys5010', component: () => import('pages/erp/sys/SysV5010.vue') },
       { path: 'sys5020', component: () => import('pages/erp/sys/SysV5020.vue') },
       { path: 'sys5030', component: () => import('pages/erp/sys/SysV5030.vue') },

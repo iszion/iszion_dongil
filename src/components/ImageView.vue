@@ -2,7 +2,7 @@
   <div v-if="rowData.imageFileNm">
     <q-avatar size="35px" class="cursor-pointer">
       <q-img
-        :src="`https://www.iszion.com/imagesThumbnail/${rowData.imageFileNm}`"
+        :src="`https://www.iszion.com/images/thumb/${rowData.imageFileNm}`"
         style="object-fit: cover; width: 100%; height: 100%"
         class="cursor-pointer"
         @click="imageDetailView()"

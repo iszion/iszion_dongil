@@ -73,10 +73,10 @@ module.exports = configure(function (/* ctx */) {
       // publicPath: process.env.NODE_ENV === 'production' ? '/production-sub-path/' : '/',
       // analyze: true,
       env: {
-        SERVER_URL: 'http://192.168.141.13:8080',
+        SERVER_URL: 'http://192.168.141.13:8083',
         // SERVER_URL: 'https://hr.energyshop.co.kr:8080',
+        // SERVER_URL: 'https://t3.iszion.co.kr:8083',
         // SERVER_URL: 'https://www.iszion.com:8080',
-        // SERVER_URL: 'https://211.235.225.3:8080',
         // SERVER_URL: 'http://localhost:8080',
       },
       // rawDefine: {}iszion_erp_backend.war
@@ -121,7 +121,7 @@ module.exports = configure(function (/* ctx */) {
         // },
       },
 
-      // iconSet: 'material-icons', // Quasar icon set
+      iconSet: 'material-icons', // Quasar icon set
       // lang: 'en-US', // Quasar language pack
 
       // For special cases outside of where the auto-import strategy can have an impact

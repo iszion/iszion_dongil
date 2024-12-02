@@ -271,6 +271,26 @@ const columnDefsSet = () => {
       },
     },
     {
+      headerName: '결재문서',
+      headerComponent: CompCheckHeader,
+      headerComponentParams: {
+        headerCheckYn: false,
+        updateSelectedValue: row => {
+          checkAll('gnAux', row.value ? 'Y' : 'N');
+        },
+      },
+      field: 'gnAux',
+      maxWidth: 110,
+      minWidth: 110,
+      cellStyle: { textAlign: 'center' },
+      cellRenderer: CompToggleAux,
+      cellRendererParams: {
+        updateSelectedValue: row => {
+          handleCellValueChanged();
+        },
+      },
+    },
+    {
       headerName: '영업관리',
       headerComponent: CompCheckHeader,
       headerComponentParams: {

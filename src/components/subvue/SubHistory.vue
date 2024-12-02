@@ -1,24 +1,24 @@
 <template>
   <!-- notice dialogRef here -->
-  <q-dialog :maximized="$q.screen.lt.md" :style="{ width: '70vw', maxWidth: '100vw' }" full-height ref="dialogRef">
-    <q-card class="my-card q-dialog-plugin">
+  <q-dialog :maximized="$q.screen.lt.md" full-height ref="dialogRef">
+    <q-card class="my-card q-dialog-plugin" :style="{ width: '100%', maxWidth: '80vh' }">
       <q-toolbar :class="$q.dark.isActive ? 'bg-teal-8' : 'bg-orange'">
         <q-btn @click.stop="onDialogCancel"> <q-icon name="close" size="xs" class="q-mr-xs" />닫기</q-btn>
         <q-space />
         <span class="text-h6 text-bold q-ml-sm"> {{ params.paramProjectNm }} </span>
         <q-space />
       </q-toolbar>
-      <q-card-section class="grid-container">
+      <q-card-section class="grid-container q-pa-none">
         <q-timeline :layout="layout" color="secondary" class="q-ma-none">
-          <q-scroll-area style="height: 100vh; width: 100%">
+          <q-scroll-area style="height: 100vh; width: 100%" class="q-pa-md">
             <q-timeline-entry
               class="q-ma-sm"
               v-for="(data, index) in rowData.rows"
               :key="index"
               :avatar="
                 data.imageFileNm
-                  ? `https://www.iszion.com/imagesThumbnail/${data.imageFileNm}?${new Date().getTime()}`
-                  : `https://www.iszion.com/imagesThumbnail/iszion_logo.png`
+                  ? `https://www.iszion.com/images/thumb/${data.imageFileNm}?${new Date().getTime()}`
+                  : `https://www.iszion.com/images/thumb/iszion_logo.png`
               "
               color="teal"
               :side="index % 2 === 0 ? 'left' : 'right'"
@@ -162,8 +162,4 @@ const getData = async () => {
 // **************************************************************//
 </script>
 
-<style lang="sass" scoped>
-.my-card
-  width: 100%
-  max-width: 700px
-</style>
+<style lang="sass" scoped></style>

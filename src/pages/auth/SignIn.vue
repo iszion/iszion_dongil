@@ -3,24 +3,29 @@
     <div class="row">
       <div class="col-sm-6 col-md-8 col-lg-9" :class="leftColStyle">
         <div style="padding: 50px; height: 97vh" class="flex flex-center">
-          <q-img src="~assets/images/renew_bg_001.jpg"></q-img>
+          <q-img src="~assets/images/renew_bg_001.png"></q-img>
         </div>
       </div>
 
       <div
-        class="col-12 col-sm-6 col-md-4 col-lg-3 flex flex-center q-pt-xs-xl q-px-xl"
+        class="col-12 col-sm-6 col-md-4 col-lg-3 flex flex-center q-pt-xs-sm q-px-xl"
         :class="$q.dark.isActive ? 'bg-dark' : $q.screen.gt.xs ? 'bg-grey-3' : 'bg-white'"
       >
         <q-card flat :class="$q.dark.isActive ? 'bg-dark' : $q.screen.gt.xs ? 'bg-grey-3' : 'bg-white'" class="q-px-xl">
+          <q-card-section v-if="$q.screen.xs" class="q-pb-md q-pt-lg">
+            <q-img src="~assets/images/mk_logo.png" style="width: 60vw" />
+          </q-card-section>
           <q-card-section class="q-mb-lg flex flex-center">
-            <q-img v-if="$q.dark.mode" src="~assets/images/renew_auth_logo2.png" style="width: 220px" />
-            <q-img v-else src="~assets/images/renew_auth_logo1.png" style="width: 220px" />
+            <div v-if="!$q.screen.xs">
+              <q-img v-if="$q.dark.mode" src="~assets/images/renew_auth_logo2.png" style="width: 220px" />
+              <q-img v-else src="~assets/images/renew_auth_logo1.png" style="width: 220px" />
+            </div>
             <q-item-label>
               <div class="text-bold q-mt-lg text-deep-orange" style="font-size: 1.65em">{{ $t('project_name') }}</div>
             </q-item-label>
           </q-card-section>
           <q-card-section>
-            <q-form @submit="onSubmit" class="q-gutter-y-lg">
+            <q-form @submit="onSubmit" class="q-gutter-y-lg q-pb-xl">
               <q-input
                 ref="userId"
                 label-color="orange"
@@ -43,7 +48,7 @@
                 lazy-rules
                 :rules="[val => !!val || $t('login_password_hint')]"
               ></q-input>
-              <q-toggle v-model="form.idSave" :label="$t('login_id_save')" />
+              <q-toggle v-model="form.idSave" :label="$t('login_id_save')" class="q-mt-xl" />
               <q-btn type="submit" class="full-width q-mt-xl" unelevated color="primary" size="lg" :label="$t('login_button')" />
             </q-form>
           </q-card-section>

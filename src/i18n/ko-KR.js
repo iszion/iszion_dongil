@@ -23,7 +23,7 @@ export default {
 
   /* *****  Main Menu 부분  *****  */
   main_menu_fav: '즐겨찾기',
-  main_menu_aux: '관리운영',
+  main_menu_aux: '전자결재',
   main_menu_man: '대시보드',
   main_menu_mkt: '영업관리',
   main_menu_mst: '기준정보',

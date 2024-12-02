@@ -1,13 +1,13 @@
 <template>
   <div class="row q-col-gutter-md">
     <div class="col-xs-12 col-sm-6 col-md-6">
-      <q-card bordered class="q-pa-xs">
+      <q-card bordered class="">
         <q-bar class="text-subtitle1 text-bold">
           최근 1주일 프로젝트 활동정보
           <q-space />
           <span class="text-subtitle2 text-teal"></span>
         </q-bar>
-        <q-card-section class="q-pb-none">
+        <q-card-section class="q-pa-xs">
           <div :style="{ height: 300 + 'px' }">
             <ag-grid-vue
               ref="myGrid"
@@ -21,13 +21,13 @@
       </q-card>
     </div>
     <div class="col-xs-12 col-sm-6 col-md-6">
-      <q-card bordered class="q-pa-xs">
+      <q-card bordered class="">
         <q-bar class="text-subtitle1 text-bold">
           최근 1주일 활동일지 등록정보
           <q-space />
           <span class="text-subtitle2 text-teal"></span>
         </q-bar>
-        <q-card-section class="q-pb-none">
+        <q-card-section class="q-pa-xs">
           <div :style="{ height: 300 + 'px' }">
             <ag-grid-vue
               ref="myGrid1"
@@ -227,7 +227,7 @@ const getDataProject = async () => {
 
     rowData.projects = response.data.data;
     myGrid.value.api.setGridOption('rowData', rowData.projects);
-    console.log('rowData : ', JSON.stringify(rowData.projects));
+    // console.log('rowData : ', JSON.stringify(rowData.projects));
   } catch (error) {
     console.error('Error fetching users:', error);
   }

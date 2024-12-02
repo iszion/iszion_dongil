@@ -45,7 +45,7 @@
           <q-separator size="3px" />
 
           <q-card-section class="q-pa-xs">
-            <div :style="contentZoneStyle" class="q-editor q-py-sm" :class="$q.dark.isActive ? 'bg-dark' : 'bg-white'">
+            <div :style="treeZoneStyle" class="q-editor q-py-sm" :class="$q.dark.isActive ? 'bg-dark' : 'bg-white'">
               <q-tree
                 dense
                 :nodes="menuList"
@@ -67,15 +67,15 @@
                 <template #header-file="props">
                   <div class="row items-center">
                     <q-icon
-                      :color="props.node.docUyn === 'Y' ? ($q.dark.isActive ? 'white' : 'dark') : $q.dark.isActive ? 'grey-7' : 'grey-5'"
-                      :class="props.node.docUyn === 'Y' ? 'text-bold' : ''"
+                      :color="props.node.docByn === 'Y' ? ($q.dark.isActive ? 'white' : 'dark') : $q.dark.isActive ? 'grey-7' : 'grey-5'"
+                      :class="props.node.docByn === 'Y' ? 'text-bold' : ''"
                       size="12px"
                       class="q-mr-sm"
                       :name="props.node.icon || 'share'"
                     />
                     <div
                       :class="
-                        props.node.docUyn === 'Y'
+                        props.node.docByn === 'Y'
                           ? $q.dark.isActive
                             ? 'text-bold text-white'
                             : 'text-bold text-dark'
@@ -133,6 +133,11 @@
 
           <q-card-section class="q-pa-xs">
             <q-card flat bordered class="q-ma-xs q-pa-none">
+              <!-- Color Picker and Apply Button -->
+              <div v-if="editColor" :style="colorPickerStyle">
+                <!--                    <q-btn icon="check" round color="green" @click="applyColor" />-->
+                <q-color v-model="textColor" no-header style="width: 90px" no-footer @click="applyColor" />
+              </div>
               <q-editor
                 :disable="!selectedProgId"
                 class="q-editor"
@@ -140,74 +145,22 @@
                 ref="contentsFocus"
                 v-model="formData.contents"
                 :dense="$q.screen.lt.md"
-                :toolbar="[
-                  [
-                    {
-                      label: $q.lang.editor.align,
-                      icon: $q.iconSet.editor.align,
-                      fixedLabel: true,
-                      list: 'only-icons',
-                      options: ['left', 'center', 'right', 'justify'],
-                    },
-                    {
-                      label: $q.lang.editor.align,
-                      icon: $q.iconSet.editor.align,
-                      fixedLabel: true,
-                      options: ['left', 'center', 'right', 'justify'],
-                    },
-                  ],
-                  ['bold', 'italic', 'strike', 'underline', 'subscript', 'superscript'],
-                  ['token', 'hr', 'link', 'custom_btn'],
-                  ['print', 'fullscreen'],
-                  [
-                    {
-                      label: $q.lang.editor.formatting,
-                      icon: $q.iconSet.editor.formatting,
-                      list: 'no-icons',
-                      options: ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'code'],
-                    },
-                    {
-                      label: $q.lang.editor.fontSize,
-                      icon: $q.iconSet.editor.fontSize,
-                      fixedLabel: true,
-                      fixedIcon: true,
-                      list: 'no-icons',
-                      options: ['size-1', 'size-2', 'size-3', 'size-4', 'size-5', 'size-6', 'size-7'],
-                    },
-                    {
-                      label: $q.lang.editor.defaultFont,
-                      icon: $q.iconSet.editor.font,
-                      fixedIcon: true,
-                      list: 'no-icons',
-                      options: [
-                        'default_font',
-                        'arial',
-                        'arial_black',
-                        'comic_sans',
-                        'courier_new',
-                        'impact',
-                        'lucida_grande',
-                        'times_new_roman',
-                        'verdana',
-                      ],
-                    },
-                    'removeFormat',
-                  ],
-                  ['quote', 'unordered', 'ordered', 'outdent', 'indent'],
-
-                  ['undo', 'redo'],
-                  ['viewsource'],
-                ]"
-                :fonts="{
-                  arial: 'Arial',
-                  arial_black: 'Arial Black',
-                  comic_sans: 'Comic Sans MS',
-                  courier_new: 'Courier New',
-                  impact: 'Impact',
-                  lucida_grande: 'Lucida Grande',
-                  times_new_roman: 'Times New Roman',
-                  verdana: 'Verdana',
+                :definitions="{
+                  insert_img: {
+                    tip: '사진 첨부',
+                    label: '사진넣기',
+                    icon: 'photo',
+                    handler: insertImg,
+                  },
+                  font_color: {
+                    tip: 'Change font color',
+                    icon: 'colorize',
+                    label: '글색상',
+                    handler: fontColor,
+                  },
                 }"
+                :toolbar="toolbar"
+                :fonts="fonts"
               />
             </q-card>
           </q-card-section>
@@ -234,8 +187,11 @@ import notifySave from 'src/js_comm/notify-save';
 const $q = useQuasar();
 
 const contentZoneHeight = ref(500);
+const treeZoneStyle = computed(() => ({
+  height: `${contentZoneHeight.value + 50}px`,
+}));
 const contentZoneStyle = computed(() => ({
-  height: `${contentZoneHeight.value}px`,
+  height: `${contentZoneHeight.value + 40}px`,
 }));
 
 const menuList = ref([]);
@@ -355,7 +311,7 @@ const saveDataDocSection = () => {
         // 확인/취소 모두 실행되었을때
       });
   } else {
-    saveDataDocUndHandleResult(jsonUtil.dataJsonParse(isSaveFg, formData.value));
+    saveDataDocBndHandleResult(jsonUtil.dataJsonParse(isSaveFg, formData.value));
     selected.value = null;
   }
 };
@@ -377,7 +333,7 @@ const deleteDataDocSection = () => {
     // persistent: true,
   })
     .onOk(() => {
-      saveDataDocUndHandleResult(jsonUtil.dataJsonParse(isSaveFg, formData.value));
+      saveDataDocBndHandleResult(jsonUtil.dataJsonParse(isSaveFg, formData.value));
       selected.value = null;
     })
     .onCancel(() => {})
@@ -446,7 +402,7 @@ const getSubMenuData = async () => {
 const getDataDoc = async resProgId => {
   const paramData = { paramProgId: resProgId };
   try {
-    const response = await api.post('/api/sys/sys4020_docU_select', paramData);
+    const response = await api.post('/api/sys/sys4020_docB_select', paramData);
     if (isEmpty(response.data.data)) {
       isSaveFg = 'I';
       formData.value.progId = selectedProgId.value;
@@ -471,9 +427,9 @@ const getDataDoc = async resProgId => {
 
 // ***** 자료저장 및 삭제 처리부분 *****************************//
 // saveStatus = 0=수정성공 1=신규성공 2=삭제성공 3=수정에러 4=시스템에러
-const saveDataDocUndHandleResult = resFormData => {
+const saveDataDocBndHandleResult = resFormData => {
   api
-    .post('/api/sys/sys4020_docU_save', resFormData)
+    .post('/api/sys/sys4020_docB_save', resFormData)
     .then(res => {
       if (res.data.rtn === '0') {
         if (isSaveFg === 'I') {
@@ -514,6 +470,134 @@ const getGroupData = async () => {
 // **************************************************************//
 // ***** DataBase 연결부분 끝  *************************************//
 // **************************************************************//
+
+//*** 이미지 삽입 ********
+function insertImg() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.png, .jpg, .jpeg';
+
+  input.onchange = () => {
+    const file = input.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.src = reader.result;
+
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+
+        ctx.drawImage(img, 0, 0, img.width, img.height);
+
+        // 파일 크기를 줄이기 위해 이미지 품질을 설정합니다(0~1 사이, 1은 전체 품질)
+        const quality = 0.3; // 0.5 낮은 퀄릴티, 0.8 높은 퀄리티
+
+        // Use JPEG format for quality reduction; PNG does not support quality settings in toDataURL
+        const dataUrl = canvas.toDataURL('image/jpeg', quality);
+
+        // Insert the image with reduced file size
+        formData.value.contents += `<div><img style="max-width: 100%;" src="${dataUrl}" /></div>`;
+      };
+    };
+    reader.readAsDataURL(file);
+  };
+  input.click();
+} //*** 이미지 삽입 끝 ********
+
+//*** 폰트 컬러 지정 ********
+const textColor = ref('#000');
+const editColor = ref(false);
+const qEditorContents = ref(null);
+const colorPickerStyle = ref({ top: '0px', left: '0px' });
+
+function applyColor() {
+  const selection = window.getSelection();
+
+  if (selection.rangeCount > 0) {
+    const range = selection.getRangeAt(0);
+    if (selection.isCollapsed) {
+      // If there is no text selected, create a span with the chosen color
+      const span = document.createElement('span');
+      span.style.color = textColor.value;
+      span.appendChild(document.createTextNode('\u200B')); // Zero-width space to allow typing
+
+      range.insertNode(span);
+      range.setStart(span.firstChild, 1); // Move the cursor inside the span
+      range.collapse(true);
+
+      selection.removeAllRanges();
+      selection.addRange(range);
+    } else {
+      // If text is selected, use execCommand to apply the color
+      document.execCommand('foreColor', false, textColor.value);
+    }
+  }
+
+  editColor.value = false;
+}
+function fontColor(event) {
+  editColor.value = !editColor.value;
+  console.log('event : ', JSON.stringify(event));
+  const { clientX, clientY } = event;
+  colorPickerStyle.value = {
+    top: `${clientY - 120}px`, // Position below the button
+    left: `${clientY + 20}px`, // Align horizontally with the button
+    position: 'absolute',
+  };
+}
+//*** 폰트 컬러 지정 끝 ********
+
+const toolbar = [
+  [
+    {
+      label: $q.lang.editor.fontSize,
+      icon: $q.iconSet.editor.fontSize,
+      fixedLabel: true,
+      fixedIcon: true,
+      list: 'no-icons',
+      options: ['size-1', 'size-2', 'size-3', 'size-4', 'size-5', 'size-6', 'size-7'],
+    },
+    {
+      label: $q.lang.editor.defaultFont,
+      icon: $q.iconSet.editor.font,
+      fixedIcon: true,
+      list: 'no-icons',
+      options: ['default_font', 'arial', 'arial_black', 'comic_sans', 'courier_new', 'impact', 'lucida_grande', 'times_new_roman', 'verdana'],
+    },
+    {
+      label: $q.lang.editor.align,
+      icon: $q.iconSet.editor.align,
+      fixedLabel: true,
+      list: 'only-icons',
+      options: ['left', 'center', 'right', 'justify'],
+    },
+  ],
+
+  ['bold', 'italic', 'strike', 'underline', 'subscript', 'superscript', 'font_color'],
+  ['insert_img'],
+  ['hr', 'link'],
+  ['print', 'fullscreen'],
+  ['unordered', 'ordered', 'outdent', 'indent'],
+
+  ['undo', 'redo'],
+  ['viewsource'],
+];
+
+const fonts = {
+  arial: 'Arial',
+  arial_black: 'Arial Black',
+  comic_sans: 'Comic Sans MS',
+  courier_new: 'Courier New',
+  impact: 'Impact',
+  lucida_grande: 'Lucida Grande',
+  times_new_roman: 'Times New Roman',
+  verdana: 'Verdana',
+};
 </script>
 <style scoped>
 .q-editor {

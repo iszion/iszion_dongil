@@ -19,6 +19,8 @@
                     <div class="row q-pb-sm">
                       <q-btn outline color="positive" dense @click="getData"><q-icon name="refresh" size="xs" class="q-mr-sm" />다시불러오기</q-btn>
                       <q-space />
+                      <span class="text-subtitle2">기존 담당자 변경 시 담당자를 수정합니다. 영업사원 추가 시 신규를 클릭합니다.</span>
+                      <q-space />
                       <div class="q-gutter-xs">
                         <q-btn v-if="selectedRows.length > 0" outline color="negative" dense @click="deleteDataSection">
                           <q-icon name="delete" size="xs" /> 삭제</q-btn
@@ -153,16 +155,10 @@ const updateDataSub = ref([]);
 const showSaveBtn = ref(false);
 const showDeleteBtn = ref(false);
 
-const dateFormatter = params => {
-  const dateStr = params.value;
-  if (dateStr && dateStr.length === 8) {
-    return `${dateStr.slice(0, 4)}-${dateStr.slice(4, 6)}-${dateStr.slice(6)}`;
-  }
-  return dateStr;
-};
 // 편집기에서 날짜 값을 가져올 때
-const dateValueGetter = params => {
-  const dateStr = params.data.changeDay;
+// 날짜 형식 변환기
+const dateGetter = (params, field) => {
+  const dateStr = params.data[field];
   if (dateStr && dateStr.length === 8) {
     return `${dateStr.slice(0, 4)}-${dateStr.slice(4, 6)}-${dateStr.slice(6)}`;
   }
@@ -170,15 +166,14 @@ const dateValueGetter = params => {
 };
 
 // 편집 후 데이터를 저장할 때
-const dateValueSetter = params => {
+const dateSetter = (params, field) => {
   const dateStr = params.newValue.replace(/-/g, '');
   if (dateStr.length === 8) {
-    params.data.changeDay = dateStr;
+    params.data[field] = dateStr;
     return true;
   }
   return false;
 };
-
 onBeforeUnmount(() => {
   window.removeEventListener('resize', handleResize);
 });
@@ -296,9 +291,9 @@ const columnDefsSub = ref([
     maxWidth: 130,
     minWidth: 130,
     cellEditor: 'agDateStringCellEditor',
-    valueFormatter: dateFormatter,
-    valueGetter: dateValueGetter,
-    valueSetter: dateValueSetter,
+    // valueFormatter: params => dateGetter(params, 'changeDay'),
+    valueGetter: params => dateGetter(params, 'changeDay'),
+    valueSetter: params => dateSetter(params, 'changeDay'),
   },
   {
     headerName: '사번',
@@ -350,7 +345,7 @@ const handleCellValueChangedSub = event => {
   if (ch) {
     updateDataSub.value.push(rowDataItem);
   }
-  console.log('updateSub :: ', JSON.stringify(updateDataSub.value));
+  // console.log('updateSub :: ', JSON.stringify(updateDataSub.value));
 };
 
 //*******************************************************//
@@ -427,6 +422,9 @@ const deleteDataSection = () => {
 
       const selectedData = myGrid.value.api.getSelectedRows();
       myGrid.value.api.applyTransaction({ remove: selectedData });
+
+      rowData.rowsSub = [];
+      rowDataSubBack.value = [];
     })
     .onCancel(() => {})
     .onDismiss(() => {
@@ -505,8 +503,11 @@ const saveDataSection = () => {
       });
   } else {
     saveDataAndHandleResult(jsonUtil.jsonFiller(iu, iuD));
+    let _salesCd = selectedRows.value[0].salesCd;
     setTimeout(() => {
-      getData();
+      getData().then(() => {
+        getDataSub(_salesCd);
+      });
     }, 500);
   }
 };
@@ -870,11 +871,11 @@ const openHelpEmpDialog = status => {
       },
     })
       .onOk(res => {
-        console.log('res ::: ', res.empCd, res.empNm);
+        // console.log('res ::: ', res.empCd, res.empNm);
         const selectedData = myGrid.value.api.getSelectedRows();
         selectedData[0].empCd = res.empCd;
         selectedData[0].salesNm = res.empNm;
-        console.log('res : ', JSON.stringify(selectedData));
+        // console.log('res : ', JSON.stringify(selectedData));
 
         myGrid.value.api.applyTransaction({
           update: selectedData,

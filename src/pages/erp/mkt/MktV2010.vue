@@ -149,7 +149,7 @@ const columnDefsSet = () => {
       headerCheckboxSelection: true,
 
       filter: false,
-      pinned: 'left',
+      pinned: !$q.screen.xs && !$q.screen.sm ? 'left' : null,
     },
     {
       headerName: '코드',
@@ -157,7 +157,7 @@ const columnDefsSet = () => {
       maxWidth: 80,
       minWidth: 80,
       editable: false,
-      pinned: 'left',
+      pinned: !$q.screen.xs && !$q.screen.sm ? 'left' : null,
       cellEditorParams: {
         maxLength: 5, // 최대 길이
       },
@@ -167,7 +167,7 @@ const columnDefsSet = () => {
       field: 'salesNm',
       maxWidth: 100,
       minWidth: 100,
-      pinned: 'left',
+      pinned: !$q.screen.xs && !$q.screen.sm ? 'left' : null,
       editable: false,
     },
     {
@@ -175,7 +175,7 @@ const columnDefsSet = () => {
       field: 'o00Amt',
       minWidth: 140,
       maxWidth: 140,
-      pinned: 'left',
+      pinned: !$q.screen.xs && !$q.screen.sm ? 'left' : null,
       valueFormatter: params => {
         if (params.value != null) {
           return new Intl.NumberFormat('ko-KR', {
@@ -403,7 +403,7 @@ const columnDefsSet = () => {
       field: 'totAmt',
       minWidth: 140,
       maxWidth: 140,
-      pinned: 'right',
+      pinned: !$q.screen.xs && !$q.screen.sm ? 'right' : null,
       editable: false,
       valueFormatter: params => {
         if (params.value != null) {

@@ -1,5 +1,5 @@
 <template>
-  <q-card bordered class="q-pa-xs">
+  <q-card bordered class="">
     <q-bar class="q-py-xs text-subtitle1 text-bold">
       나의일정 <span class="text-subtitle2 q-px-sm"></span>
       <q-space />

@@ -253,12 +253,24 @@ const contentGridAfterHeight = computed(() => ({
 const rowData = reactive({ rows: [], rowsOrd: [] });
 const rowDataOrdBack = ref([]);
 
-const dateFormatter = params => {
-  const dateStr = params.value;
+// 편집기에서 날짜 값을 가져올 때
+// 날짜 형식 변환기
+const dateGetter = (params, field) => {
+  const dateStr = params.data[field];
   if (dateStr && dateStr.length === 8) {
     return `${dateStr.slice(0, 4)}-${dateStr.slice(4, 6)}-${dateStr.slice(6)}`;
   }
   return dateStr;
+};
+
+// 편집 후 데이터를 저장할 때
+const dateSetter = (params, field) => {
+  const dateStr = params.newValue.replace(/-/g, '');
+  if (dateStr.length === 8) {
+    params.data[field] = dateStr;
+    return true;
+  }
+  return false;
 };
 
 onBeforeUnmount(() => {
@@ -293,20 +305,20 @@ const columnDefs = reactive({
       field: 'rowNum',
       minWidth: 70,
       filter: true,
-      pinned: 'left',
+      pinned: !$q.screen.xs && !$q.screen.sm ? 'left' : null,
     },
     {
       headerName: '관리번호',
       field: 'projectCd',
       minWidth: 100,
       maxWidth: 100,
-      pinned: 'left',
+      pinned: !$q.screen.xs && !$q.screen.sm ? 'left' : null,
     },
     {
       headerName: '프로젝트명',
       field: 'projectNm',
       minWidth: 250,
-      pinned: 'left',
+      pinned: !$q.screen.xs && !$q.screen.sm ? 'left' : null,
     },
     {
       headerName: '계약',
@@ -350,21 +362,21 @@ const columnDefs = reactive({
     {
       headerName: '등록일',
       field: 'makeDay',
-      valueFormatter: dateFormatter,
+      valueFormatter: params => dateGetter(params, 'makeDay'),
       minWidth: 120,
       maxWidth: 120,
     },
     {
       headerName: '수주일',
       field: 'orderDay',
-      valueFormatter: dateFormatter,
+      valueFormatter: params => dateGetter(params, 'orderDay'),
       minWidth: 120,
       maxWidth: 120,
     },
     {
       headerName: '폐기',
       field: 'outDay',
-      valueFormatter: dateFormatter,
+      valueFormatter: params => dateGetter(params, 'outDay'),
       maxWidth: 120,
       minWidth: 120,
     },
@@ -378,9 +390,10 @@ const columnDefs = reactive({
   columnsOrd: [
     {
       headerName: '#',
-      width: 60,
+      maxWidth: 50,
+      minWidth: 50,
       editable: false,
-      pinned: 'left',
+      pinned: !$q.screen.xs && !$q.screen.sm ? 'left' : null,
       valueGetter: function (params) {
         // Customize row numbers as needed
         return params.node.rowIndex + 1;
@@ -396,14 +409,17 @@ const columnDefs = reactive({
       headerCheckboxSelection: true,
 
       filter: false,
-      pinned: 'left',
+      pinned: !$q.screen.xs && !$q.screen.sm ? 'left' : null,
     },
     {
       headerName: '계약(변경)일',
       field: 'ordDay',
       maxWidth: 130,
       minWidth: 130,
-      valueFormatter: dateFormatter,
+      cellEditor: 'agDateStringCellEditor',
+      // valueFormatter: params => dateGetter(params, 'ordDay'),
+      valueGetter: params => dateGetter(params, 'ordDay'),
+      valueSetter: params => dateSetter(params, 'ordDay'),
     },
     {
       headerName: '공법명',
@@ -873,7 +889,7 @@ const gridOptions1 = {
   defaultColDef: {
     flex: 1,
     sortable: true,
-    filter: true,
+    filter: false,
     floatingFilter: false,
     editable: true,
   },

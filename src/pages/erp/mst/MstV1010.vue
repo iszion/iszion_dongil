@@ -94,182 +94,232 @@
       <!--  end of contents list -->
       <!-- contents List -->
       <div v-if="isScreenVisible" class="col-12 col-lg-4">
-        <q-form class="">
-          <q-card bordered>
-            <!-- contents list title bar -->
-            <q-bar class="q-px-sm">
-              <q-icon name="list_alt" />
-              <span class="text-subtitle2 q-px-sm">자료 조회/조정/삭제</span>
-              <q-space />
-              <q-chip v-if="isShowStatusEdit" size="sm" outline :color="statusEdit.color" class="q-px-md">
-                <q-icon :name="statusEdit.icon" class="q-mr-sm" size="15px" /> {{ statusEdit.message }}
-              </q-chip>
-            </q-bar>
-            <!--  end of contents list title bar -->
-            <q-card-actions align="right" class="q-pa-none">
-              <q-toolbar class="row">
-                <div class="q-gutter-xs"></div>
-                <q-space />
-                <div class="q-gutter-xs">
-                  <q-btn v-if="isShowSaveBtn" outline color="primary" dense @click="saveDataSection"><q-icon name="save" size="xs" /> 저장 </q-btn>
-                  <q-btn outline color="positive" dense @click="addDataSection"><q-icon name="add" size="xs" /> 신규 </q-btn>
+        <q-card bordered>
+          <!-- contents list title bar -->
+          <q-bar class="q-px-sm">
+            <q-icon name="list_alt" />
+            <span class="text-subtitle2 q-px-sm">자료 조회/조정/삭제</span>
+            <q-space />
+            <q-chip v-if="isShowStatusEdit" size="sm" outline :color="statusEdit.color" class="q-px-md">
+              <q-icon :name="statusEdit.icon" class="q-mr-sm" size="15px" /> {{ statusEdit.message }}
+            </q-chip>
+          </q-bar>
+          <!--  end of contents list title bar -->
+
+          <q-tabs v-model="screenTab" dense class="text-grey" active-color="primary" indicator-color="primary" align="justify" narrow-indicator>
+            <q-tab name="info" label="인사정보" />
+            <q-tab name="sign" label="싸인정보" />
+          </q-tabs>
+
+          <q-separator />
+
+          <q-tab-panels v-model="screenTab" animated>
+            <q-tab-panel name="info" class="q-pa-none">
+              <q-card-actions align="right" class="q-pt-md q-pb-none">
+                <q-toolbar class="row">
+                  <div class="q-gutter-xs"></div>
+                  <q-space />
+                  <div class="q-gutter-xs">
+                    <q-btn v-if="isShowSaveBtn" outline color="primary" dense @click="saveDataSection"><q-icon name="save" size="xs" /> 저장 </q-btn>
+                    <q-btn outline color="positive" dense @click="addDataSection"><q-icon name="add" size="xs" /> 신규 </q-btn>
+                  </div>
+                </q-toolbar>
+              </q-card-actions>
+
+              <q-separator size="3px" />
+
+              <q-card-section class="q-pa-md">
+                <div class="row q-col-gutter-xl">
+                  <div class="col-12 col-md-6">
+                    <q-card class="text-center">
+                      <q-img
+                        :src="`https://www.iszion.com/images/${formData.imageFileNm}?${new Date().getTime()}`"
+                        spinner-color="white"
+                        style="width: 150px; height: 150px; max-width: 200px"
+                        :fit="'scale-down'"
+                      />
+                      <!--                        <q-img :src="`https://www.iszion.com/images/${formData.imageFileNm}?${new Date().getTime()}`" />-->
+                      <q-card-actions>
+                        <q-btn
+                          v-if="!formDisable"
+                          round
+                          color="primary"
+                          glossy
+                          text-color="white"
+                          icon="photo_camera"
+                          class="cursor-pointer"
+                          @click="handleImageUploadEmp"
+                        />
+                        <q-space />
+                        <q-btn
+                          v-if="!formDisable"
+                          round
+                          :disable="isImageDelete"
+                          color="red"
+                          glossy
+                          text-color="white"
+                          icon="delete_forever"
+                          class="cursor-pointer"
+                          @click="handleImageDeleteEmp"
+                        />
+                      </q-card-actions>
+                      <!--                        <div class="text-center">{{ formData.imageFileNm }}</div>-->
+                    </q-card>
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <q-input
+                      class="text-bold text-subtitle1"
+                      ref="empCdFocus"
+                      v-model="formData.empCd"
+                      label="사원번호"
+                      label-color="orange"
+                      :disable="formDisableEmpCd"
+                    >
+                      <template v-slot:append>
+                        <q-icon size="0.8em" name="done" class="cursor-pointer q-mt-lg" @click="getDataEmpCdCheck">
+                          <q-tooltip transition-show="rotate" transition-hide="rotate" class="bg-amber text-black shadow-4">
+                            사번 중복체크
+                          </q-tooltip>
+                        </q-icon>
+                      </template>
+                    </q-input>
+                    <q-input ref="empNmFocus" v-model="formData.empNm" label="성명" label-color="orange" :disable="formDisable" />
+
+                    <q-select
+                      :disable="formDisable"
+                      v-model="formData.deptCd"
+                      :options="deptOptions"
+                      label="소속팀"
+                      label-color="orange"
+                      option-value="commCd"
+                      option-label="commNm"
+                      options-dense
+                      emit-value
+                      map-options
+                    >
+                      <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
+                        <q-item v-bind="itemProps">
+                          <q-item-section>
+                            <q-item-label v-html="opt.commNm" />
+                          </q-item-section>
+                          <q-item-section side>
+                            <q-toggle :model-value="selected" @update:model-value="toggleOption(opt)" />
+                          </q-item-section>
+                        </q-item>
+                      </template>
+                    </q-select>
+                  </div>
                 </div>
-              </q-toolbar>
-            </q-card-actions>
 
-            <q-separator size="3px" />
+                <div class="row q-col-gutter-xl">
+                  <div class="col-12 col-md-6">
+                    <q-select
+                      :disable="formDisable"
+                      v-model="formData.titlCd"
+                      :options="titlOptions"
+                      label="직급"
+                      label-color="orange"
+                      option-value="commCd"
+                      option-label="commNm"
+                      options-dense
+                      emit-value
+                      map-options
+                    >
+                      <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
+                        <q-item v-bind="itemProps">
+                          <q-item-section>
+                            <q-item-label v-html="opt.commNm" />
+                          </q-item-section>
+                          <q-item-section side>
+                            <q-toggle :model-value="selected" @update:model-value="toggleOption(opt)" />
+                          </q-item-section>
+                        </q-item>
+                      </template>
+                    </q-select>
 
-            <q-card-section class="q-pa-none">
-              <q-card flat bordered class="q-ma-xs q-pa-md">
+                    <q-input v-model="formData.mobile" label="Mobile" label-color="orange" :disable="formDisable" />
+                    <q-input v-model="formData.inDay" type="date" label="입사일" label-color="orange" :disable="formDisable" />
+                    <q-input v-model="formData.outDay" type="date" label="퇴사일" label-color="orange" :disable="formDisable" />
+                    <q-input v-model="formData.birthday" type="date" label="생년월일" label-color="orange" :disable="formDisable" />
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <q-select
+                      options-dense
+                      :disable="formDisable"
+                      v-model="formData.pstnCd"
+                      :options="pstnOptions"
+                      option-value="commCd"
+                      option-label="commNm"
+                      label="직위"
+                      label-color="orange"
+                      emit-value
+                      map-options
+                    >
+                      <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
+                        <q-item v-bind="itemProps">
+                          <q-item-section>
+                            <q-item-label v-html="opt.commNm" />
+                          </q-item-section>
+                          <q-item-section side>
+                            <q-toggle :model-value="selected" @update:model-value="toggleOption(opt)" />
+                          </q-item-section>
+                        </q-item>
+                      </template>
+                    </q-select>
+
+                    <q-input v-model="formData.email" label="이메일" label-color="orange" :disable="formDisable" />
+
+                    <q-input v-model="formData.eduLevel" label="최종학력" label-color="orange" :disable="formDisable" />
+                    <q-input v-model="formData.finalSchool" label="최종학교" label-color="orange" :disable="formDisable" />
+                    <q-separator class="q-mb-xs" />
+                  </div>
+                </div>
+                <div class="col-12">
+                  <q-input type="textarea" autogrow v-model="formData.explains" label="참고사항" label-color="orange" :disable="formDisable" />
+                </div>
+              </q-card-section>
+            </q-tab-panel>
+            <q-tab-panel name="sign" class="flex flex-center">
+              <q-card class="">
                 <div class="q-pa-md">
-                  <div class="row q-col-gutter-xl">
-                    <div class="col-12 col-md-6">
-                      <q-card class="q-ma-xs q-pa-sm">
-                        <q-img :src="`https://www.iszion.com/images/${formData.imageFileNm}?${new Date().getTime()}`" />
-                        <!--                        <q-img :src="`https://www.iszion.com/images/${formData.imageFileNm}?${new Date().getTime()}`" />-->
-                        <div class="row q-pa-xs">
-                          <q-btn
-                            v-if="!formDisable"
-                            round
-                            color="primary"
-                            glossy
-                            text-color="white"
-                            icon="photo_camera"
-                            class="cursor-pointer"
-                            @click="handleImageUpload"
-                          />
-                          <q-space />
-                          <q-btn
-                            v-if="!formDisable"
-                            round
-                            :disable="isImageDelete"
-                            color="red"
-                            glossy
-                            text-color="white"
-                            icon="delete_forever"
-                            class="cursor-pointer"
-                            @click="handleImageDelete"
-                          />
-                        </div>
-                        <!--                        <div class="text-center">{{ formData.imageFileNm }}</div>-->
-                      </q-card>
-                    </div>
-                    <div class="col-12 col-md-6">
-                      <q-input
-                        class="text-bold text-subtitle1"
-                        ref="empCdFocus"
-                        v-model="formData.empCd"
-                        label="사원번호"
-                        label-color="orange"
-                        :disable="formDisableEmpCd"
-                      >
-                        <template v-slot:append>
-                          <q-icon size="0.8em" name="done" class="cursor-pointer q-mt-lg" @click="getDataEmpCdCheck">
-                            <q-tooltip transition-show="rotate" transition-hide="rotate" class="bg-amber text-black shadow-4">
-                              사번 중복체크
-                            </q-tooltip>
-                          </q-icon>
-                        </template>
-                      </q-input>
-                      <q-input ref="empNmFocus" v-model="formData.empNm" label="성명" label-color="orange" :disable="formDisable" />
-
-                      <q-select
-                        :disable="formDisable"
-                        v-model="formData.deptCd"
-                        :options="deptOptions"
-                        label="소속팀"
-                        label-color="orange"
-                        option-value="commCd"
-                        option-label="commNm"
-                        options-dense
-                        emit-value
-                        map-options
-                      >
-                        <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
-                          <q-item v-bind="itemProps">
-                            <q-item-section>
-                              <q-item-label v-html="opt.commNm" />
-                            </q-item-section>
-                            <q-item-section side>
-                              <q-toggle :model-value="selected" @update:model-value="toggleOption(opt)" />
-                            </q-item-section>
-                          </q-item>
-                        </template>
-                      </q-select>
-                    </div>
-                  </div>
-
-                  <div class="row q-col-gutter-xl">
-                    <div class="col-12 col-md-6">
-                      <q-select
-                        :disable="formDisable"
-                        v-model="formData.titlCd"
-                        :options="titlOptions"
-                        label="직급"
-                        label-color="orange"
-                        option-value="commCd"
-                        option-label="commNm"
-                        options-dense
-                        emit-value
-                        map-options
-                      >
-                        <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
-                          <q-item v-bind="itemProps">
-                            <q-item-section>
-                              <q-item-label v-html="opt.commNm" />
-                            </q-item-section>
-                            <q-item-section side>
-                              <q-toggle :model-value="selected" @update:model-value="toggleOption(opt)" />
-                            </q-item-section>
-                          </q-item>
-                        </template>
-                      </q-select>
-
-                      <q-input v-model="formData.mobile" label="Mobile" label-color="orange" :disable="formDisable" />
-                      <q-input v-model="formData.inDay" type="date" label="입사일" label-color="orange" :disable="formDisable" />
-                      <q-input v-model="formData.outDay" type="date" label="퇴사일" label-color="orange" :disable="formDisable" />
-                      <q-input v-model="formData.birthday" type="date" label="생년월일" label-color="orange" :disable="formDisable" />
-                    </div>
-                    <div class="col-12 col-md-6">
-                      <q-select
-                        options-dense
-                        :disable="formDisable"
-                        v-model="formData.pstnCd"
-                        :options="pstnOptions"
-                        option-value="commCd"
-                        option-label="commNm"
-                        label="직위"
-                        label-color="orange"
-                        emit-value
-                        map-options
-                      >
-                        <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
-                          <q-item v-bind="itemProps">
-                            <q-item-section>
-                              <q-item-label v-html="opt.commNm" />
-                            </q-item-section>
-                            <q-item-section side>
-                              <q-toggle :model-value="selected" @update:model-value="toggleOption(opt)" />
-                            </q-item-section>
-                          </q-item>
-                        </template>
-                      </q-select>
-
-                      <q-input v-model="formData.email" label="이메일" label-color="orange" :disable="formDisable" />
-
-                      <q-input v-model="formData.eduLevel" label="최종학력" label-color="orange" :disable="formDisable" />
-                      <q-input v-model="formData.finalSchool" label="최종학교" label-color="orange" :disable="formDisable" />
-                      <q-separator class="q-mb-xs" />
-                    </div>
-                  </div>
-                  <div class="col-12">
-                    <q-input type="textarea" autogrow v-model="formData.explains" label="참고사항" label-color="orange" :disable="formDisable" />
-                  </div>
+                  <q-img
+                    class="rounded-borders"
+                    :src="`https://www.iszion.com/images/sign/${formData.signFileNm}?${new Date().getTime()}`"
+                    spinner-color="white"
+                    style="width: 100px; height: 100px"
+                    :fit="'scale-down'"
+                  />
                 </div>
+                <q-separator size="3px" />
+
+                <q-card-actions>
+                  <q-btn
+                    v-if="!formDisable"
+                    round
+                    color="primary"
+                    glossy
+                    text-color="white"
+                    icon="photo_camera"
+                    class="cursor-pointer"
+                    @click="handleImageUploadSign"
+                  />
+                  <q-space />
+                  <q-btn
+                    v-if="!formDisable"
+                    round
+                    :disable="isSignDelete"
+                    color="red"
+                    glossy
+                    text-color="white"
+                    icon="delete_forever"
+                    class="cursor-pointer"
+                    @click="handleImageDeleteSign"
+                  />
+                </q-card-actions>
               </q-card>
-            </q-card-section>
-          </q-card>
-        </q-form>
+            </q-tab-panel>
+          </q-tab-panels>
+        </q-card>
       </div>
       <!--  end of contents list -->
     </div>
@@ -294,6 +344,7 @@ import commUtil from 'src/js_comm/comm-util';
 import ImageView from 'components/ImageView.vue';
 
 const $q = useQuasar();
+const screenTab = ref('info');
 
 let isSaveFg = null;
 
@@ -302,6 +353,7 @@ const deptOptions = ref(null);
 const pstnOptions = ref(null);
 const titlOptions = ref(null);
 const isImageDelete = ref(true);
+const isSignDelete = ref(true);
 
 const searchParam = reactive({
   deptCd: '',
@@ -477,6 +529,8 @@ const formData = ref({
   finalSchool: '',
   imageFileNm: '',
   imageFileNmFull: '',
+  signFileNm: '',
+  signFileNmFull: '',
 });
 
 const selectedDept = computed(() => {
@@ -585,10 +639,8 @@ const handleResize = () => {
 // ***** DataBase 연결부분    *************************************//
 // **************************************************************//
 
-// ***** 자료저장 및 삭제 처리부분 *****************************//
-// saveStatus = 0=수정성공 1=신규성공 2=삭제성공 3=수정에러 4=시스템에러
-
-const handleImageUpload = () => {
+// ***** 인사 이미지 업로드 처리부분 *****************************//
+const handleImageUploadEmp = () => {
   // const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
   // const isAndroid = /Android/.test(navigator.userAgent);
   // 파일 선택 대화 상자 열기
@@ -608,14 +660,14 @@ const handleImageUpload = () => {
 
     if (file) {
       // 파일이 선택된 경우, 여기에서 파일 업로드 로직을 추가할 수 있습니다.
-      await uploadFile(file);
+      await uploadFileEmp(file);
       await nextTick();
     }
   };
   input.click();
 };
 
-const uploadFile = async file => {
+const uploadFileEmp = async file => {
   try {
     const param = new FormData();
     param.append('file', file); // 'file'은 서버에서 받는 파라미터 이름
@@ -636,10 +688,10 @@ const uploadFile = async file => {
   }
 };
 
-const handleImageDelete = () => {
+const handleImageDeleteEmp = () => {
   $q.dialog({
     dark: true,
-    title: '사진삭제',
+    title: '사진 삭제',
     message: '이미지를 삭제 하시겠습니까?',
     ok: {
       label: '삭제하기',
@@ -653,14 +705,14 @@ const handleImageDelete = () => {
     },
   })
     .onOk(() => {
-      imageDeleteCall();
+      imageDeleteCallEmp();
     })
     .onCancel(() => {})
     .onDismiss(() => {
       // 확인/취소 모두 실행되었을때
     });
 };
-const imageDeleteCall = async () => {
+const imageDeleteCallEmp = async () => {
   const response = await api.delete('/api/mst/mst1010_fileDelete', {
     params: {
       filename: formData.value.imageFileNm,
@@ -669,6 +721,103 @@ const imageDeleteCall = async () => {
   });
   if (response.data === 'SUCCESS') {
     formData.value.imageFileNm = ''; // 이미지 삭제 후 이미지 파일명을 비움
+    let saveStatus = {
+      rtn: '0',
+      rtnMsg: '삭제되었습니다',
+    };
+    notifySave.notifyView1(saveStatus, 1000);
+  } else {
+    let saveStatus = {
+      rtn: '3',
+      rtnMsg: '삭제실패~~~',
+    };
+    notifySave.notifyView1(saveStatus, 1000);
+  }
+};
+
+// ***** 싸인 이미지 업로드 처리부분 *****************************//
+const handleImageUploadSign = () => {
+  // const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+  // const isAndroid = /Android/.test(navigator.userAgent);
+  // 파일 선택 대화 상자 열기
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*'; // 이미지 파일만 선택 가능하도록 설정 (선택 사항)
+  // input.capture = 'environment'; // 모든 기기에서 카메라만 사용 가능하고 파일선택은 안됨
+  // if (isAndroid) {
+  //   input.capture = 'camera'; // Force camera usage on Android
+  // }
+  input.onchange = async event => {
+    const file = event.target.files[0];
+    console.log('File object: ', file);
+    console.log('file name : ' + file.name);
+    console.log('File type: ', file.type);
+    console.log('File size: ', file.size);
+
+    if (file) {
+      // 파일이 선택된 경우, 여기에서 파일 업로드 로직을 추가할 수 있습니다.
+      await uploadFileSign(file);
+      await nextTick();
+    }
+  };
+  input.click();
+};
+
+const uploadFileSign = async file => {
+  try {
+    const param = new FormData();
+    param.append('file', file); // 'file'은 서버에서 받는 파라미터 이름
+    param.append('empCd', formData.value.empCd);
+    const response = await api.post('/api/mst/mst1010_fileSave_sign', param, {
+      headers: {
+        'Content-Type': 'multipart/form-data', // 파일 업로드를 위한 헤더
+      },
+    });
+    // 서버의 응답 처리
+    formData.value.signFileNm = formData.value.empCd + '_' + file.name;
+    await nextTick(); // Ensure Vue reactivity updates the view
+
+    // console.log('File uploaded successfully:', response.data);
+  } catch (error) {
+    // 오류 처리
+    console.error('Error uploading file:', error);
+  }
+};
+
+const handleImageDeleteSign = () => {
+  $q.dialog({
+    dark: true,
+    title: '싸인 삭제',
+    message: '싸인 이미지를 삭제 하시겠습니까?',
+    ok: {
+      label: '삭제하기',
+      push: true,
+      color: 'negative',
+    },
+    cancel: {
+      label: '취소',
+      push: true,
+      color: 'grey-7',
+    },
+  })
+    .onOk(() => {
+      imageDeleteCallSign();
+    })
+    .onCancel(() => {})
+    .onDismiss(() => {
+      // 확인/취소 모두 실행되었을때
+    });
+};
+
+const imageDeleteCallSign = async () => {
+  const response = await api.delete('/api/mst/mst1010_fileDelete_sign', {
+    params: {
+      filename: formData.value.signFileNm,
+      empCd: formData.value.empCd,
+    },
+  });
+  if (response.data === 'SUCCESS') {
+    formData.value.signFileNm = ''; // 이미지 삭제 후 이미지 파일명을 비움
     let saveStatus = {
       rtn: '0',
       rtnMsg: '삭제되었습니다',
@@ -715,8 +864,12 @@ const saveDataAndHandleResult = resFormData => {
           selectedData[0].finalSchool = formData.value.finalSchool;
           selectedData[0].inDay = formData.value.inDay;
           selectedData[0].outDay = formData.value.outDay;
+
           selectedData[0].imageFileNm = formData.value.imageFileNm;
           selectedData[0].imageFileNmFull = formData.value.imageFileNmFull;
+
+          selectedData[0].signFileNm = formData.value.signFileNm;
+          selectedData[0].signFileNmFull = formData.value.signFileNmFull;
 
           selectedData[0].deptNm = selectedDept.value;
           selectedData[0].pstnNm = selectedPstn.value;
@@ -903,7 +1056,8 @@ const gridOptions = {
 
     if (selectedRows.value.length === 1) {
       getDataSelect(selectedRows.value[0].stdYear, selectedRows.value[0].empCd);
-      isImageDelete.value = !selectedRows.value[0].imageFileNm;
+      isImageDelete.value = selectedRows.value[0].imageFileNm;
+      isSignDelete.value = selectedRows.value[0].signFileNm;
       isShowStatusEdit.value = true;
       isShowSaveBtn.value = true;
       statusEdit.icon = 'edit_note';

@@ -64,7 +64,7 @@
                   <q-img
                     class="cursor-pointer q-pa-none q-ma-none"
                     v-if="data.imageFileNm"
-                    :src="`https://www.iszion.com/imagesThumbnail/${data.imageFileNm}`"
+                    :src="`https://www.iszion.com/images/thumb/${data.imageFileNm}`"
                     style="object-fit: cover; width: 100%; height: 100%"
                   />
                   <q-icon v-else name="face" color="teal" size="md" />

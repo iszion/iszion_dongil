@@ -55,7 +55,7 @@
           <q-separator size="3px" />
 
           <q-card-section class="q-pa-xs">
-            <div :style="contentZoneStyle" class="q-editor q-py-sm" :class="$q.dark.isActive ? 'bg-dark' : 'bg-white'">
+            <div :style="treeZoneStyle" class="q-editor q-py-sm" :class="$q.dark.isActive ? 'bg-dark' : 'bg-white'">
               <q-tree
                 dense
                 :nodes="menuList"
@@ -144,6 +144,11 @@
 
           <q-card-section class="q-pa-xs">
             <q-card flat bordered class="q-ma-xs q-pa-none">
+              <!-- Color Picker and Apply Button -->
+              <div v-if="editColor" :style="colorPickerStyle">
+                <!--                    <q-btn icon="check" round color="green" @click="applyColor" />-->
+                <q-color v-model="textColor" no-header style="width: 90px" no-footer @click="applyColor" />
+              </div>
               <q-editor
                 :disable="!selectedProgId"
                 class="q-editor"
@@ -151,70 +156,22 @@
                 ref="contentsFocus"
                 v-model="formData.contents"
                 :dense="$q.screen.lt.md"
-                :definitions="definitions"
-                :toolbar="[
-                  [
-                    {
-                      label: $q.lang.editor.formatting,
-                      icon: $q.iconSet.editor.formatting,
-                      list: 'no-icons',
-                      options: ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'code'],
-                    },
-                    {
-                      label: $q.lang.editor.fontSize,
-                      icon: $q.iconSet.editor.fontSize,
-                      fixedLabel: true,
-                      fixedIcon: true,
-                      list: 'no-icons',
-                      options: ['size-1', 'size-2', 'size-3', 'size-4', 'size-5', 'size-6', 'size-7'],
-                    },
-                    {
-                      label: $q.lang.editor.defaultFont,
-                      icon: $q.iconSet.editor.font,
-                      fixedIcon: true,
-                      list: 'no-icons',
-                      options: [
-                        'default_font',
-                        'arial',
-                        'arial_black',
-                        'comic_sans',
-                        'courier_new',
-                        'impact',
-                        'lucida_grande',
-                        'times_new_roman',
-                        'verdana',
-                      ],
-                    },
-                    'removeFormat',
-                  ],
-                  [
-                    {
-                      label: $q.lang.editor.align,
-                      icon: $q.iconSet.editor.align,
-                      fixedLabel: true,
-                      list: 'only-icons',
-                      options: ['left', 'center', 'right', 'justify'],
-                    },
-                  ],
-                  ['bold', 'italic', 'strike', 'underline', 'subscript', 'superscript'],
-                  ['token', 'hr', 'link', 'custom_btn'],
-                  ['insert_img'],
-                  ['print', 'fullscreen'],
-                  ['quote', 'unordered', 'ordered', 'outdent', 'indent'],
-
-                  ['undo', 'redo'],
-                  ['viewsource'],
-                ]"
-                :fonts="{
-                  arial: 'Arial',
-                  arial_black: 'Arial Black',
-                  comic_sans: 'Comic Sans MS',
-                  courier_new: 'Courier New',
-                  impact: 'Impact',
-                  lucida_grande: 'Lucida Grande',
-                  times_new_roman: 'Times New Roman',
-                  verdana: 'Verdana',
+                :definitions="{
+                  insert_img: {
+                    tip: '사진 첨부',
+                    label: '사진넣기',
+                    icon: 'photo',
+                    handler: insertImg,
+                  },
+                  font_color: {
+                    tip: 'Change font color',
+                    icon: 'colorize',
+                    label: '글색상',
+                    handler: fontColor,
+                  },
                 }"
+                :toolbar="toolbar"
+                :fonts="fonts"
               />
             </q-card>
           </q-card-section>
@@ -243,8 +200,11 @@ const storeUser = useUserInfoStore();
 const $q = useQuasar();
 
 const contentZoneHeight = ref(500);
+const treeZoneStyle = computed(() => ({
+  height: `${contentZoneHeight.value + 50}px`,
+}));
 const contentZoneStyle = computed(() => ({
-  height: `${contentZoneHeight.value}px`,
+  height: `${contentZoneHeight.value + 40}px`,
 }));
 
 const menuList = ref([]);
@@ -518,37 +478,137 @@ const getGroupData = async () => {
   }
 };
 
-const definitions = ref({
-  insert_img: {
-    tip: '사진 첨부',
-    label: '사진넣기',
-    icon: 'photo',
-    handler: insertImg,
-  },
-});
+// **************************************************************//
+// ***** DataBase 연결부분 끝  *************************************//
+// **************************************************************//
 
+//*** 이미지 삽입 ********
 function insertImg() {
   const input = document.createElement('input');
   input.type = 'file';
   input.accept = '.png, .jpg, .jpeg';
-  let file;
-  input.onchange = _ => {
-    const files = Array.from(input.files);
-    file = files[0];
+
+  input.onchange = () => {
+    const file = input.files[0];
+    if (!file) return;
 
     const reader = new FileReader();
-    let dataUrl = '';
-    reader.onloadend = () => {
-      dataUrl = reader.result;
-      formData.value.contents += '<div><img style="max-width: 250px;" src="' + dataUrl + '" /></div>';
+    reader.onload = () => {
+      const img = new Image();
+      img.src = reader.result;
+
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+
+        ctx.drawImage(img, 0, 0, img.width, img.height);
+
+        // 파일 크기를 줄이기 위해 이미지 품질을 설정합니다(0~1 사이, 1은 전체 품질)
+        const quality = 0.3; // 0.5 낮은 퀄릴티, 0.8 높은 퀄리티
+
+        // Use JPEG format for quality reduction; PNG does not support quality settings in toDataURL
+        const dataUrl = canvas.toDataURL('image/jpeg', quality);
+
+        // Insert the image with reduced file size
+        formData.value.contents += `<div><img style="max-width: 100%;" src="${dataUrl}" /></div>`;
+      };
     };
     reader.readAsDataURL(file);
   };
   input.click();
+} //*** 이미지 삽입 끝 ********
+
+//*** 폰트 컬러 지정 ********
+const textColor = ref('#000');
+const editColor = ref(false);
+const qEditorContents = ref(null);
+const colorPickerStyle = ref({ top: '0px', left: '0px' });
+
+function applyColor() {
+  const selection = window.getSelection();
+
+  if (selection.rangeCount > 0) {
+    const range = selection.getRangeAt(0);
+    if (selection.isCollapsed) {
+      // If there is no text selected, create a span with the chosen color
+      const span = document.createElement('span');
+      span.style.color = textColor.value;
+      span.appendChild(document.createTextNode('\u200B')); // Zero-width space to allow typing
+
+      range.insertNode(span);
+      range.setStart(span.firstChild, 1); // Move the cursor inside the span
+      range.collapse(true);
+
+      selection.removeAllRanges();
+      selection.addRange(range);
+    } else {
+      // If text is selected, use execCommand to apply the color
+      document.execCommand('foreColor', false, textColor.value);
+    }
+  }
+
+  editColor.value = false;
 }
-// **************************************************************//
-// ***** DataBase 연결부분 끝  *************************************//
-// **************************************************************//
+function fontColor(event) {
+  editColor.value = !editColor.value;
+  console.log('event : ', JSON.stringify(event));
+  const { clientX, clientY } = event;
+  colorPickerStyle.value = {
+    top: `${clientY - 120}px`, // Position below the button
+    left: `${clientY + 20}px`, // Align horizontally with the button
+    position: 'absolute',
+  };
+}
+//*** 폰트 컬러 지정 끝 ********
+
+const toolbar = [
+  [
+    {
+      label: $q.lang.editor.fontSize,
+      icon: $q.iconSet.editor.fontSize,
+      fixedLabel: true,
+      fixedIcon: true,
+      list: 'no-icons',
+      options: ['size-1', 'size-2', 'size-3', 'size-4', 'size-5', 'size-6', 'size-7'],
+    },
+    {
+      label: $q.lang.editor.defaultFont,
+      icon: $q.iconSet.editor.font,
+      fixedIcon: true,
+      list: 'no-icons',
+      options: ['default_font', 'arial', 'arial_black', 'comic_sans', 'courier_new', 'impact', 'lucida_grande', 'times_new_roman', 'verdana'],
+    },
+    {
+      label: $q.lang.editor.align,
+      icon: $q.iconSet.editor.align,
+      fixedLabel: true,
+      list: 'only-icons',
+      options: ['left', 'center', 'right', 'justify'],
+    },
+  ],
+
+  ['bold', 'italic', 'strike', 'underline', 'subscript', 'superscript', 'font_color'],
+  ['insert_img'],
+  ['hr', 'link'],
+  ['print', 'fullscreen'],
+  ['unordered', 'ordered', 'outdent', 'indent'],
+
+  ['undo', 'redo'],
+  ['viewsource'],
+];
+
+const fonts = {
+  arial: 'Arial',
+  arial_black: 'Arial Black',
+  comic_sans: 'Comic Sans MS',
+  courier_new: 'Courier New',
+  impact: 'Impact',
+  lucida_grande: 'Lucida Grande',
+  times_new_roman: 'Times New Roman',
+  verdana: 'Verdana',
+};
 </script>
 <style scoped>
 .q-editor {

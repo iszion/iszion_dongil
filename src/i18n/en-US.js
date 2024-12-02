@@ -23,7 +23,7 @@ export default {
 
   /* *****  Main Menu 부분  *****  */
   main_menu_fav: 'Favorites',
-  main_menu_aux: 'Operation',
+  main_menu_aux: 'Approval',
   main_menu_man: 'DashBoard',
   main_menu_mkt: 'sales Marketing',
   main_menu_hrt: 'evaluate report',

@@ -1,27 +1,32 @@
 <template>
   <q-layout view="hHh lpR fFf">
-    <q-header class="shadow-1 bg-grey-8">
+    <q-header class="shadow-3" :class="$q.dark.isActive ? 'bg-dark' : 'bg-white'">
       <q-toolbar>
+        <q-btn flat dense round aria-label="Menu" @click="toggleLeftDrawer" class="q-mr-md" :class="$q.dark.isActive ? 'text-white' : 'text-dark'"
+          ><q-icon name="menu" size="sm" />
+        </q-btn>
+
         <q-avatar square size="sm" @click="handleHomeClick" class="cursor-pointer">
           <img src="../assets/images/iszion_logo.png" />
         </q-avatar>
-        <div v-show="$q.screen.gt.md" class="text-h6 text-bold text-deep-orange q-pl-sm self-center cursor-pointer" @click="handleHomeClick">
+        <div
+          v-show="$q.screen.gt.md"
+          class="text-h6 text-bold text-deep-orange q-pl-sm self-center cursor-pointer"
+          :class="$q.dark.isActive ? 'text-white' : 'text-dark'"
+          @click="handleHomeClick"
+        >
           {{ $t('project_name') }}
         </div>
 
-        <q-separator class="q-mx-xs-sm q-mx-sm-md" dark vertical inset />
-
-        <q-btn color="purple" dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
-
-        <q-separator v-if="!$q.screen.gt.sm" class="q-mx-xs-sm q-mx-sm-md" dark vertical inset />
+        <q-separator v-if="!$q.screen.gt.sm" class="q-mx-xs-sm q-mx-sm-md" :class="$q.dark.isActive ? 'light' : 'dark'" vertical inset />
         <q-btn v-if="!$q.screen.gt.sm" color="teal" dense icon="edit" aria-label="활동일지" @click="router.push({ path: '/main/mkt4010' })" />
-        <q-separator v-if="!$q.screen.gt.sm" class="q-mx-xs-sm q-mx-sm-md" dark vertical inset />
+        <q-separator v-if="!$q.screen.gt.sm" class="q-mx-xs-sm q-mx-sm-md" :class="$q.dark.isActive ? 'light' : 'dark'" vertical inset />
 
         <q-space />
         <!--  Main Menu List -->
         <q-tabs
           v-model="activeTab"
-          active-class="text-white text-bold"
+          active-class="text-orange text-bold"
           dense
           no-caps
           inline-label
@@ -32,11 +37,11 @@
         >
           <template v-for="m in menuListData.mainMenu" :key="m.menu_cd">
             <q-tab :name="m.name" @click="selectMenu(m)" class="text-bold text-subtitle2">
-              <q-icon :name="m.icon" class="q-mr-xs" />
+              <q-icon :name="m.icon" class="q-mr-xs" :class="$q.dark.isActive ? 'text-white' : 'text-dark'" />
               <q-tooltip class="lt-sm bg-indigo" :offset="[10, 10]">
                 {{ m.label }}
               </q-tooltip>
-              <span class="gt-sm">{{ m.label }}</span>
+              <span class="gt-sm" :class="$q.dark.isActive ? 'text-white' : 'text-dark'">{{ m.label }}</span>
               <!--              {{ $q.screen.md ? null : $t(m.labelExt) }}-->
             </q-tab>
           </template>
@@ -44,8 +49,15 @@
         </q-tabs>
         <!--  end of Main Menu List -->
         <q-space />
-        <q-separator class="q-mx-sm-sm" dark vertical inset />
-        <q-btn flat round dense :icon="$q.dark.isActive ? 'light_mode' : 'dark_mode'" @click="toggleDarkMode">
+        <q-separator class="q-mx-sm-sm" :class="$q.dark.isActive ? 'light' : 'dark'" vertical inset />
+        <q-btn
+          flat
+          round
+          dense
+          :icon="$q.dark.isActive ? 'light_mode' : 'dark_mode'"
+          :class="$q.dark.isActive ? 'text-white' : 'text-dark'"
+          @click="toggleDarkMode"
+        >
           <q-tooltip
             class="bg-amber text-black shadow-4"
             anchor="top middle"
@@ -60,7 +72,7 @@
           </q-tooltip>
         </q-btn>
         <!-- dark_mode-->
-        <q-separator v-if="$q.screen.xs" class="q-mx-sm-sm" dark vertical inset />
+        <q-separator v-if="$q.screen.xs" class="q-mx-sm-sm" :class="$q.dark.isActive ? 'light' : 'dark'" vertical inset />
         <!-- MAIN MENU ICON  -->
         <q-btn flat round dence icon="apps" v-if="!$q.screen.gt.sm">
           <q-menu :offset="[40, 10]" transition-show="flip-right" transition-hide="flip-left">
@@ -77,7 +89,7 @@
           </q-menu>
         </q-btn>
         <!-- MAIN MENU ICON  끝  -->
-        <q-separator class="q-mx-sm-sm" dark vertical inset />
+        <q-separator class="q-mx-sm-sm" :class="$q.dark.isActive ? 'light' : 'dark'" vertical inset />
 
         <!-- 사용자 관리 ICON   -->
         <q-btn flat size="sm" class="q-pa-none q-ml-sm">
@@ -85,16 +97,16 @@
             <div v-show="$q.screen.gt.md" class="text-subtitle2 text-bold q-mr-sm text-orange" style="font-size: 1.2em">
               {{ storeUser.setDeptNm }}
             </div>
-            <div class="text-subtitle2 text-bold q-mr-sm">{{ storeUser.setEmpNm }}</div>
+            <div class="text-subtitle2 text-bold q-mr-sm" :class="$q.dark.isActive ? 'text-white' : 'text-dark'">{{ storeUser.setEmpNm }}</div>
           </div>
           <q-avatar rounded color="white" class="flex flex-center">
             <q-img
               v-if="userImageName"
               loading="eager"
-              :src="`https://www.iszion.com/imagesThumbnail/${userImageName}?${new Date().getTime()}`"
+              :src="`https://www.iszion.com/images/thumb/${userImageName}?${new Date().getTime()}`"
               style="object-fit: cover; width: 100%; height: 100%"
             />
-            <!--            <q-img loading="eager" :src="`https://www.iszion.com/images/${userImageName}?${new Date().getTime()}`" />-->
+            <!--            <q-img loading="eager" :src="`https://www.iszion.com/images/thumb/${userImageName}?${new Date().getTime()}`" />-->
             <q-icon v-if="!userImageName" name="face" color="teal" size="40px" style="height: 40px" />
           </q-avatar>
           <q-menu :offset="[0, 10]" transition-show="scale" transition-hide="scale">

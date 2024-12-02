@@ -1,9 +1,12 @@
 <template>
-  <q-card class="q-pa-xs-none q-pa-sm-xs">
-    <q-card-section class="q-pa-xs text-center" :class="$q.dark.isActive ? 'bg-blue-grey-8 text-white ' : 'bg-blue-grey-4 text-dark '">
+  <q-card class="">
+    <q-card-section class="q-pa-xs text-center" :class="$q.dark.isActive ? 'bg-grey-9 text-white ' : 'bg-grey-5 text-dark '">
       <div class="row flex-center q-px-xs-xs q-px-sm-sm">
-        <q-btn dense round color="primary"
-          ><q-icon name="event" size="xs" />
+        <div class="q-ml-sm">
+          <q-badge color="teal" class="text-subtitle1 text-bold"> {{ currentDay }} </q-badge>
+        </div>
+        <q-btn dense flat :color="$q.dark.isActive ? 'white' : 'grey-8'"
+          ><q-icon name="calendar_month" size="md" />
           <q-popup-proxy @before-show="updateProxy" transition-show="scale" transition-hide="scale">
             <q-date minimal v-model="proxyDate" mask="YYYY-MM-DD">
               <div class="row items-center justify-end q-gutter-sm">
@@ -13,9 +16,6 @@
             </q-date>
           </q-popup-proxy>
         </q-btn>
-        <div class="q-ml-sm">
-          <q-badge color="teal" class="text-subtitle1 text-bold"> {{ currentDay }} </q-badge>
-        </div>
         <q-space />
         <div class="text-h6">프로젝트 진행</div>
         <q-space />
@@ -222,9 +222,15 @@
         <!-- 목표대비 수주달성율 -->
         <aux-page1 :currentDay="commUtil.unFormatDate(currentDay)" />
       </div>
-      <div class="">
-        <!-- 최근1주일 활동기록 -->
-        <aux-page2 :currentDay="commUtil.unFormatDate(currentDay)" />
+      <div class="row q-col-gutter-sm-x-md">
+        <div v-if="isLineViewVisible" class="col-xs-12 col-sm-12 col-md-12 col-lg-4">
+          <!-- 전자결재정보 -->
+          <aux-page3 />
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-12" :class="isLineViewVisible ? 'col-lg-8' : ' col-lg-12'">
+          <!-- 최근1주일 활동기록 -->
+          <aux-page2 :currentDay="commUtil.unFormatDate(currentDay)" />
+        </div>
       </div>
     </q-card-section>
   </q-card>
@@ -236,8 +242,11 @@ import { api } from 'boot/axios';
 import SubCountList from 'components/subvue/SubCountList.vue';
 import AuxPage1 from 'pages/main/AuxPage1.vue';
 import AuxPage2 from 'pages/main/AuxPage2.vue';
+import AuxPage3 from 'pages/main/AuxPage3.vue';
 import commUtil from 'src/js_comm/comm-util';
 import { useQuasar } from 'quasar';
+import { useUserInfoStore } from 'src/store/setUserInfo';
+const storeUser = useUserInfoStore();
 
 const $q = useQuasar();
 
@@ -280,6 +289,7 @@ const rowData = ref([
 
 onMounted(() => {
   getData();
+  getDataLineCheck();
 });
 
 const handleCountView = (resTitle, resFg, resStepCd, darkBC, darkTC, lightBC, lightTC) => {
@@ -309,6 +319,19 @@ const handleCountView = (resTitle, resFg, resStepCd, darkBC, darkTC, lightBC, li
 // **************************************************************//
 // ***** DataBase 연결부분    *************************************//
 // **************************************************************//
+const isLineViewVisible = ref(false);
+const getDataLineCheck = async () => {
+  try {
+    const response = await api.post('/api/aux/auxMline_check', {
+      paramEmpCd: storeUser.setEmpCd,
+    });
+    if (response.data.data) {
+      isLineViewVisible.value = response.data.data[0].useYn === 'Y';
+    }
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
+};
 
 const getData = async () => {
   try {

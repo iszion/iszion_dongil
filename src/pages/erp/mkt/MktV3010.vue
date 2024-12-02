@@ -535,7 +535,7 @@ const columnDefs = reactive({
       field: 'rowNum',
       minWidth: 70,
       filter: true,
-      pinned: 'left',
+      pinned: !$q.screen.xs && !$q.screen.sm ? 'left' : null,
     },
     {
       headerName: '',
@@ -545,14 +545,14 @@ const columnDefs = reactive({
       checkboxSelection: true,
       headerCheckboxSelection: true,
       filter: false,
-      pinned: 'left',
+      pinned: !$q.screen.xs && !$q.screen.sm ? 'left' : null,
     },
     {
       headerName: '관리번호',
       field: 'projectCd',
       minWidth: 100,
       maxWidth: 100,
-      pinned: 'left',
+      pinned: !$q.screen.xs && !$q.screen.sm ? 'left' : null,
     },
     {
       headerName: '프로젝트명',
